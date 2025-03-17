@@ -1,0 +1,32 @@
+{
+  "name": "Arkadia Map Extension",
+  "manifest_version": 3,
+  "version": "1",
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_icon": "icon32.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://arkadia.rpg.pl/*"],
+      "js": ["main.js"],
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["embedded.html"],
+      "matches": [ "<all_urls>" ],
+      "dynamic_url": true
+    }
+  ],
+  "externally_connectable": {
+    "matches": ["<all_urls>"]
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ]
+}
