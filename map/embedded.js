@@ -1,7 +1,7 @@
-import {MapReader, Renderer, Settings} from "mudlet-map-renderer";
-import convert from "color-convert";
-
 const limit = 20;
+
+import {MapReader, Renderer, Settings} from "mudlet-map-renderer";
+
 const polishToEnglish = {
     ["polnoc"]: "north",
     ["poludnie"]: "south",
@@ -52,33 +52,74 @@ function getShortDir(dir) {
 class EmbeddedMap {
 
     constructor() {
+        this.event = new EventTarget();
+        this.locationHistory = []
+        this.gmcpPosition = {};
+        this.destinations = []
         this.map = document.querySelector("#map");
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
-        this.renderer = new Renderer(this.map, this.reader, this.reader.getArea(1, 0), this.reader.getColors(), this.settings);
-        this.gmcpPosition = {};
-        this.event = new EventTarget();
+        this.settings.areaName = false
 
         this.hashes = {};
         Object.values(this.reader.roomIndex).forEach(room => this.hashes[room.hash] = room);
 
+        this.renderRoomById(1)
+        this.refreshPosition = true;
+
         window.addEventListener("message", (e) => {
-            switch (e.data.type) {
-                case "mapPosition":
-                    this.gmcpPosition = e.data.data;
-                    this.event.dispatchEvent(new CustomEvent("mapPosition"));
-                    break;
+            const {type, data} = e.data
+            switch (type) {
+                case "gmcp.room.info":
+                    this.gmcpPosition = data.map;
+                    if (this.refreshPosition) {
+                        this.setMapPosition(this.gmcpPosition)
+                        this.refreshPosition = false
+                    }
+                    break
                 case "refreshPosition":
                     this.setMapPosition(this.gmcpPosition);
                     break;
                 case "command":
-                    parent.postMessage({
-                        type: "command",
-                        payload: this.parseCommand(e.data.data)
-                    }, "https://arkadia.rpg.pl");
+                    this.sendMessage("command", this.parseCommand(data))
+                    break;
+                case "moveBack":
+                    this.moveBack()
+                    break;
+                case "setPosition":
+                    this.setMapRoomById(data)
+                    break;
+                case "move":
+                    this.move(data)
+                    break;
+                case "leadTo":
+                    this.leadTo(data)
+                    break;
+                case 'refreshPositionWhenAble':
+                    this.refreshPosition = true
                     break;
             }
         });
+
+        this.event.addEventListener('onRoom', ({detail: room}) => {
+            if (room.userData.bind) {
+                this.sendMessage("bindButton", {
+                    Name: room.userData.bind,
+                    Replacement: room.userData.bind,
+                    Panel: "bottom",
+                    BindButton: true
+                },)
+            } else {
+                this.sendMessage("clearBindButton")
+            }
+        })
+    }
+
+    sendMessage(type, payload) {
+        parent.postMessage({
+            type: type,
+            payload: payload
+        }, "https://arkadia.rpg.pl");
     }
 
     renderRoomById(id) {
@@ -93,53 +134,89 @@ class EmbeddedMap {
                 yMin: room.y - limit,
                 yMax: room.y + limit
             });
-            this.renderer.clear();
+            this.renderer?.clear();
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
             this.renderer.controls.centerRoom(room.id);
             this.renderer.controls.view.zoom = 0.35;
 
             this.currentRoom = room;
+            this.event.dispatchEvent(new CustomEvent('onRoom', {detail: room}))
 
-            this.renderer.controls.renderPath(
-                this.currentRoom.id,
-                5168,
-                convert.hex.rgb("#FF0000").map(item => item / 255)
-            );
+            if (this.destinations.indexOf(room.id) > -1) {
+                this.destinations.splice(this.destinations.indexOf(room.id), 1)
+            }
+
+            this.destinations.forEach(destination => {
+                this.renderer.controls.renderPath(room.id, destination)
+            })
         }
     }
 
     parseCommand(command) {
-        let commandToBeSent = command;
         if (command === "zerknij" || command === "spojrz" || command === "sp") {
-            this.event.addEventListener("mapPosition", () => {
-                this.setMapPosition(this.gmcpPosition);
-            }, {once: true});
+            this.refreshPosition = true;
         }
+        return this.move(command) ?? command;
+    }
+
+    move(direction) {
+        let actualDirection = direction
         if (this.currentRoom) {
+            if (this.currentRoom.userData.dir_bind) {
+                const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map(item => item.split("=")))
+                if (dirBinds[getLongDir(actualDirection)]) {
+                    direction = dirBinds[getLongDir(actualDirection)]
+                    return direction
+                }
+            }
             const allExits = Object.assign({}, this.currentRoom.exits, this.currentRoom.specialExits);
-            const potentialExit = getLongDir(command);
+            const potentialExit = getLongDir(direction);
             if (!this.currentRoom.exits[potentialExit]) {
                 const exits = Object.entries(allExits).filter(([exit, id]) => {
                     const target = this.reader.getRoomById(id);
-                    return this.findRoomByExit(this.currentRoom, target, getLongDir(command));
+                    return this.findRoomByExit(this.currentRoom, target, getLongDir(direction));
                 }).map(([exit]) => exit);
                 if (exits.length > 0) {
-                    commandToBeSent = getShortDir(exits[0]);
+                    actualDirection = getShortDir(exits[0]);
                 }
             }
 
-            this.renderRoomById(allExits[getLongDir(commandToBeSent)]);
+            const locationId = allExits[getLongDir(actualDirection)]
+            this.locationHistory.push(locationId)
+            this.renderRoomById(locationId);
+            this.sendMessage('enterLocation', locationId)
         }
+        return actualDirection;
+    }
 
-        return commandToBeSent ?? command;
+    refresh() {
+        this.renderRoom(this.currentRoom)
     }
 
     setMapPosition(data) {
         if (data && data.x && data.y && data.id && data.name) {
-            const hash = `${data.x}:${data.y - 19}:0:${data.name}`;
+            const hash = `${data.x}:${data.y}:0:${data.name}`;
             const room = this.hashes[hash];
-            this.renderRoom(room);
+            this.setMapRoom(room)
         }
+    }
+
+    setMapRoomById(id) {
+        this.setMapRoom(this.reader.getRoomById(id))
+    }
+
+    setMapRoom(room) {
+        this.renderRoom(room);
+        this.locationHistory = [room.id]
+    }
+
+    leadTo(id) {
+        if (id) {
+            this.destinations.push(parseInt(id))
+        } else {
+            this.destinations = []
+        }
+        this.refresh()
     }
 
     findRoomByExit(room, targetRoom, targetDir) {
@@ -151,10 +228,10 @@ class EmbeddedMap {
         const c_z = room.z;
 
         if (targetDir === "south") {
-            return x === c_x && y > c_y && z === c_z;
+            return x === c_x && y < c_y && z === c_z;
         }
         if (targetDir === "north") {
-            return x === c_x && y < c_y && z === c_z;
+            return x === c_x && y > c_y && z === c_z;
         }
         if (targetDir === "east") {
             return x > c_x && y === c_y && z === c_z;
@@ -182,9 +259,11 @@ class EmbeddedMap {
         }
     }
 
+    moveBack() {
+        this.locationHistory.pop()
+        this.renderRoomById(this.locationHistory[this.locationHistory.length - 1])
+    }
+
 }
 
 window.embedded = new EmbeddedMap();
-
-embedded.renderRoomById(3756);
-embedded.parseCommand("n");
