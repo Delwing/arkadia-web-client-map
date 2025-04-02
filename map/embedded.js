@@ -51,7 +51,7 @@ function getShortDir(dir) {
 
 class EmbeddedMap {
 
-    constructor() {
+    constructor(mapData, colors) {
         this.event = new EventTarget();
         this.locationHistory = []
         this.gmcpPosition = {};
@@ -266,4 +266,10 @@ class EmbeddedMap {
 
 }
 
-window.embedded = new EmbeddedMap();
+const loadListener = (event) => {
+    if (event.data.mapData && event.data.colors) {
+        window.embedded = new EmbeddedMap(event.data.mapData, event.data.colors)
+    }
+    window.removeEventListener("message", loadListener)
+}
+window.addEventListener("message", loadListener)

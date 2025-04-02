@@ -36,22 +36,24 @@ function App() {
 
     return (
         <>
-            <Container className="mt-4">
+            <Container className="my-4">
                 <h2 className={'mb-4'}>Ustawienia</h2>
                 <Form>
                     <Row>
-                        <Col xs={6}>
+                        <Col>
                             <Card>
                                 <CardBody>
                                     <Form.Group className="mb-3">
                                         <Form.Label><h5>Ładowanie triggerów dla gildii</h5></Form.Label>
                                         <Row>
                                             {guilds.map(guild => (
+                                                <Col style={{width: "85px", flex: "0"}}>
                                                 <Form.Check id={`guild-${guild}`} name={'guild'} value={guild}
-                                                            style={{flexBasis: 1}} key={guild} label={guild}
+                                                             key={guild} label={guild}
                                                             onChange={event => onChange(event, guild)}
                                                             className={'mx-2'}
                                                             checked={settings.guilds.indexOf(guild) != -1}/>
+                                                </Col>
                                             ))}
                                         </Row>
                                     </Form.Group>

@@ -12,7 +12,7 @@ function loadIframe(tabId) {
             let download = async (url, ttl) => {
                 return chrome.storage.local.get(url).then(item => {
                     const cacheContent = item[url]
-                    if (cacheContent.value && cacheContent.cacheTime && cacheContent.cacheTime + cacheContent.ttl > Date.now()) {
+                    if (cacheContent && cacheContent.value && cacheContent.cacheTime && cacheContent.cacheTime + cacheContent.ttl > Date.now()) {
                         return cacheContent.value;
                     } else {
                         return fetch(url).then(data => data.json()).then(data => {
@@ -51,6 +51,12 @@ function loadIframe(tabId) {
             window.dispatchEvent(new CustomEvent('ready'))
 
             download('https://delwing.github.io/arkadia-mapa/data/npc.json', 60 * 60 * 24).then(item => window.dispatchEvent(new CustomEvent('npc', {detail: item})))
+            Promise.all([
+                download('https://delwing.github.io/arkadia-mapa/data/mapExport.json', 60 * 60 * 24),
+                download('https://delwing.github.io/arkadia-mapa/data/colors.json', 60 * 60 * 24)
+            ]).then(([mapData, colors]) => {
+                iframe.contentWindow?.postMessage({mapData: mapData, colors: colors}, '*')
+            })
 
             const buttonPanel = document.body.querySelector('#panel_bottom')
 
@@ -67,6 +73,6 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
     }
 });
 
-chrome.action.onClicked.addListener(async function (tab) {
-    loadIframe(tab.id)
-})
+// chrome.action.onClicked.addListener(async function (tab) {
+//     loadIframe(tab.id)
+// })

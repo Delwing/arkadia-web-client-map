@@ -2,9 +2,6 @@ import xml2js from "xml2js";
 import xpath from "xml2js-xpath";
 import * as fs from "node:fs";
 
-
-const path = 'TriggerPackage'
-
 fs.readFile('./data/Arkadia.xml', {encoding: 'utf8'}, function (err, data) {
     let results = []
     xml2js.parseString(data, (err,document) => {
@@ -16,4 +13,5 @@ fs.readFile('./data/Arkadia.xml', {encoding: 'utf8'}, function (err, data) {
         results = results.concat(...matches)
     })
     fs.writeFileSync('blockers.json', JSON.stringify(results))
+    console.log(`${results.length} blockers generated.`)
 });

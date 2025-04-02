@@ -6,7 +6,8 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_icon": "icon32.png"
+    "default_icon": "icon32.png",
+    "default_popup": "options/index.html"
   },
   "commands": {
     "reload": {
@@ -30,7 +31,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "map/embedded.html"
+        "embedded.html"
       ],
       "matches": [
         "<all_urls>"
@@ -38,7 +39,10 @@
       "dynamic_url": true
     }
   ],
-  "options_page": "options/dist/index.html",
+  "options_ui": {
+    "page": "options/index.html",
+    "open_in_tab": false
+  },
   "externally_connectable": {
     "matches": [
       "<all_urls>"
@@ -49,6 +53,7 @@
     "activeTab",
     "scripting",
     "storage",
+    "unlimitedStorage",
     "commands"
   ],
   "host_permissions": [

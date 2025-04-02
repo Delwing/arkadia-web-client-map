@@ -1,7 +1,7 @@
 import ClientExtension from "./ClientExtension";
 import People from "./People";
 
-chrome.runtime.sendMessage('ndmaahkebmmmjcebidefopgocgbbkikh', 'ready');
+chrome.runtime.sendMessage('nojgicofjcfkigobjkdmimillpgfcfkb', 'ready');
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
