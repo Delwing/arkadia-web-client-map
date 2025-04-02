@@ -1,51 +1,16 @@
 {
-  "name": "arkadia-www-client",
-  "version": "0.0.1",
-  "main": "map/embedded.js",
   "license": "MIT",
+  "private": "true",
+  "workspaces": [
+    "client",
+    "map",
+    "options",
+    "scripts"
+  ],
   "scripts": {
-    "prepublish": "browserify map/embedded.js > dist/embedded.js & browserify client/main.js > dist/main.js",
-    "watchEmbedded": "watchify map/embedded.js -o dist/embedded.js",
-    "watchMain": "watchify client/main.js -o dist/main.js"
-  },
-  "dependencies": {
-    "color-convert": "^2.0.1",
-    "mudlet-map-renderer": "^0.0.25",
-    "xml2js-xpath": "^0.13.0"
+    "watch": "lerna run watch --stream"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/preset-env": "^7.15.0",
-    "babelify": "^10.0.0",
-    "browserify": "^17.0.0",
-    "uglify-js": "^3.17.4",
-    "watchify": "^4.0.0",
-    "xml2js": "^0.6.2",
-    "xpath-html": "^1.0.3"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            [
-              "@babel/preset-env",
-              {
-                "useBuiltIns": "entry",
-                "corejs": "2",
-                "targets": {
-                  "firefox": "60",
-                  "chrome": "61"
-                }
-              }
-            ]
-          ]
-        }
-      ]
-    ]
-  },
-  "files": [
-    "dist/bundle.min.js"
-  ]
+    "lerna": "^8.2.1"
+  }
 }

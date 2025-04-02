@@ -1,0 +1,47 @@
+{
+  "name": "arkadia-www-client-map",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "prepublish": "yarn run build",
+    "build": "browserify embedded.js > ../extension/dist/embedded.js",
+    "watch": "watchify embedded.js -o ../extension/dist/embedded.js -v"
+  },
+  "dependencies": {
+    "mudlet-map-renderer": "^0.0.25"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babelify": "^10.0.0",
+    "browserify": "^17.0.0",
+    "uglify-js": "^3.17.4",
+    "watchify": "^4.0.0",
+    "vite": "^6.2.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            [
+              "@babel/preset-env",
+              {
+                "useBuiltIns": "entry",
+                "corejs": "2",
+                "targets": {
+                  "firefox": "60",
+                  "chrome": "61"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    ]
+  },
+  "files": [
+    "dist/bundle.min.js"
+  ]
+}
