@@ -1,7 +1,10 @@
 import ClientExtension from "./ClientExtension";
 import People from "./People";
 
-chrome.runtime.sendMessage('nojgicofjcfkigobjkdmimillpgfcfkb', 'ready');
+chrome.runtime.sendMessage('plhdpplcdllacoikolmghbppjkjbebnc', 'ready');
+const port = chrome.runtime.connect('plhdpplcdllacoikolmghbppjkjbebnc')
+
+console.log("Client extension loaded")
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
@@ -9,7 +12,7 @@ const originalUnsetPosition = Maps.unset_position
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
 
 
-let clientExtension = new ClientExtension()
+let clientExtension = new ClientExtension(port)
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)

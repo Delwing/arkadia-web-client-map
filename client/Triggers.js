@@ -1,5 +1,3 @@
-import {Script} from "./ClientExtension";
-
 const stripAnsiCodes = str => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 
 export default class Triggers {
@@ -37,7 +35,7 @@ export default class Triggers {
                 }
             }
             if (matches) {
-                rawLine = trigger.callback(rawLine, line, matches, new Script(rawLine, line)) ?? rawLine
+                rawLine = trigger.callback(rawLine, line, matches) ?? rawLine
             }
         })
         return rawLine
