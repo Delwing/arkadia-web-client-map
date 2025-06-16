@@ -1,3 +1,7 @@
+const color = function (string, color) {
+    return `\x1B[22;38;5;${color}m${string}\x1B[0m`
+};
+
 function toTitleCase(str) {
     return str.replace(
         /\w\S*/g,
@@ -16,7 +20,7 @@ export default class PackageHelper {
             npc.forEach(item => this.npcs[item.name] = item.loc)
         })
 
-        clientExtension.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_, __, matches) => {
+        clientExtension.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (rawLine, __, matches) => {
             const name = toTitleCase(matches[1])
             const location = this.npcs[name]
             if (location) {
@@ -41,6 +45,8 @@ export default class PackageHelper {
                 }
             }
             clientExtension.addEventListener('enterLocation', this.listener)
+
+            //return rawLine.replace(matches[1], color(matches[1], 228))
         })
     }
 

@@ -54,7 +54,8 @@
     "scripting",
     "storage",
     "unlimitedStorage",
-    "commands"
+    "commands",
+    "https://arkadia.rpg.pl/*"
   ],
   "host_permissions": [
     "https://arkadia.rpg.pl/*"

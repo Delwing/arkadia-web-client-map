@@ -267,9 +267,8 @@ class EmbeddedMap {
 }
 
 const loadListener = (event) => {
-    if (event.data.mapData && event.data.colors) {
+    if (event.data.mapData !== undefined && event.data.colors !== undefined) {
         window.embedded = new EmbeddedMap(event.data.mapData, event.data.colors)
     }
-    window.removeEventListener("message", loadListener)
 }
 window.addEventListener("message", loadListener)

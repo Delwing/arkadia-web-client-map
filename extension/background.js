@@ -4,6 +4,14 @@ chrome.commands.onCommand.addListener(shortcut => {
     }
 })
 
+chrome.runtime.onConnectExternal.addListener(function(port) {
+    chrome.storage.local.onChanged.addListener(msg => {
+        port.postMessage({settings: msg.settings.newValue})
+    })
+    chrome.storage.local.get('settings').then(settings => {port.postMessage(settings)})
+});
+
+
 function loadIframe(tabId) {
     chrome.scripting.executeScript({
         target: {tabId: tabId},
