@@ -1,18 +1,13 @@
 import ClientExtension from "./ClientExtension";
 import People from "./People";
 
-chrome.runtime.sendMessage('plhdpplcdllacoikolmghbppjkjbebnc', 'ready');
-const port = chrome.runtime.connect('plhdpplcdllacoikolmghbppjkjbebnc')
-
-console.log("Client extension loaded")
-
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
 const originalUnsetPosition = Maps.unset_position
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
 
 
-let clientExtension = new ClientExtension(port)
+let clientExtension = new ClientExtension()
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)
@@ -97,6 +92,11 @@ window.addEventListener('ready', () => {
     };
 })
 
+window.addEventListener('map-loaded', event => {
+    const port = chrome.runtime.connect(event.detail)
+    clientExtension.connect(port)
+})
+
 /*
     Blockers
  */
@@ -106,7 +106,7 @@ blockers.forEach(blocker => {
     let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
     clientExtension.registerTrigger(blockerPattern, () => {
         return clientExtension.sendEvent('moveBack');
-    })
+    }, "blocker")
 })
 
 /*
@@ -127,17 +127,19 @@ follows.forEach(follow => {
     clientExtension.registerTrigger(follow, (rawLine, line) => {
         const matches = line.match(follow)
         clientExtension.sendEvent('move', matches[3])
-    })
+    }, "follow")
 })
 
 clientExtension.registerTrigger('Wykonuje komende \'idz ', () => {
     clientExtension.sendEvent('refreshPositionWhenAble')
 })
 
-
-clientExtension.registerTrigger('testing', (line, rawLine, matches, script) => {
-    script.fg()
+clientExtension.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, () => {
+    clientExtension.playSound("beep")
+    clientExtension.setFunctionalBind("zejdz ze statku", () => {
+        Input.send("zejdz ze statku")
+        clientExtension.sendEvent('refreshPositionWhenAble')
+    })
 })
 
 window.clientExtension = clientExtension
-

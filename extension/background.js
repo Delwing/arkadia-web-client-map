@@ -1,21 +1,26 @@
 chrome.commands.onCommand.addListener(shortcut => {
     if (shortcut === 'reload') {
+        console.log('Reloading Arkadia Map extension')
         chrome.runtime.reload()
     }
 })
 
-chrome.runtime.onConnectExternal.addListener(function(port) {
+chrome.runtime.onConnectExternal.addListener(function (port) {
     chrome.storage.local.onChanged.addListener(msg => {
-        port.postMessage({settings: msg.settings.newValue})
+        if (msg.settings) {
+            port.postMessage({settings: msg.settings.newValue})
+        }
     })
-    chrome.storage.local.get('settings').then(settings => {port.postMessage(settings)})
+    chrome.storage.local.get('settings').then(settings => {
+        port.postMessage(settings)
+    })
 });
 
 
 function loadIframe(tabId) {
     chrome.scripting.executeScript({
         target: {tabId: tabId},
-        func: () => {
+        func: async () => {
 
             let download = async (url, ttl) => {
                 return chrome.storage.local.get(url).then(item => {
@@ -39,7 +44,6 @@ function loadIframe(tabId) {
             if (oldIframe) {
                 oldIframe.remove();
             }
-
             const rightPanel = document.body.querySelector("#panel_elems_right")
 
             const div = document.createElement('div')
@@ -48,15 +52,13 @@ function loadIframe(tabId) {
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('id', 'cm-frame');
-            iframe.setAttribute('style', `width: ${size}px;height: ${size}px; border: 1px solid #323232;`);
+            iframe.setAttribute('style', `width: ${size};height: ${size}; border: 1px solid #323232;`);
             iframe.setAttribute('allow', '');
             iframe.src = chrome.runtime.getURL('embedded.html');
 
             div.appendChild(iframe)
 
             rightPanel.prepend(div);
-
-            window.dispatchEvent(new CustomEvent('ready'))
 
             download('https://delwing.github.io/arkadia-mapa/data/npc.json', 60 * 60 * 24).then(item => window.dispatchEvent(new CustomEvent('npc', {detail: item})))
             Promise.all([
@@ -66,21 +68,37 @@ function loadIframe(tabId) {
                 iframe.contentWindow?.postMessage({mapData: mapData, colors: colors}, '*')
             })
 
+            let init = (settings) => {
+                const replaceMap = settings?.replaceMap
+                const size = replaceMap ? 215 : 355;
+                document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
+                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''}`);
+                iframe.setAttribute('style', `width: ${size}px;height: ${size}px; border: 1px solid #323232;`);
+
+            }
+
+            chrome.storage.local.get('settings').then(value => {
+                init(value.settings);
+                window.dispatchEvent(new CustomEvent('ready'))
+            })
+            chrome.storage.local.onChanged.addListener(ev => {
+                if (ev.settings) {
+                    init(ev.settings.newValue)
+                }
+            })
+
             const buttonPanel = document.body.querySelector('#panel_bottom')
 
             const newPanel = document.createElement('div')
             newPanel.setAttribute('id', 'additional-buttons')
             buttonPanel.appendChild(newPanel)
+            window.dispatchEvent(new CustomEvent('map-loaded', {detail: chrome.runtime.id}))
         }
     })
 }
 
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message === 'ready') {
         loadIframe(sender.tab.id);
     }
 });
-
-// chrome.action.onClicked.addListener(async function (tab) {
-//     loadIframe(tab.id)
-// })

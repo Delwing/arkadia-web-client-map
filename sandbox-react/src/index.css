@@ -1,0 +1,22 @@
+body {
+    background: #000;
+    color: #fff;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding: 10px;
+}
+
+#output {
+    border: 1px solid #333;
+    height: 600px;
+    font-family: monospace;
+    color: #fff;
+    padding: 5px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: 13px;
+    overflow: auto;
+}
+
+textarea {
+    font-family: monospace;
+}

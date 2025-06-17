@@ -3,7 +3,7 @@ const stripAnsiCodes = str => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(
 export default class Triggers {
 
     clientExtension
-    triggers = []
+    triggers = new Map()
 
     constructor(clientExtension) {
         this.clientExtension = clientExtension;
@@ -11,21 +11,27 @@ export default class Triggers {
 
     registerTrigger(pattern, callback, tag) {
         const uuid = crypto.randomUUID()
-        this.triggers.push({
+        this.triggers.set(uuid, {
             pattern: pattern,
             callback: callback,
-            uuid: uuid,
             tag: tag
         })
+        return uuid;
     }
 
     removeByTag(tag) {
-        this.triggers = this.triggers.filter(trigger => trigger.tag !== tag)
+        this.triggers.entries().filter(([key, trigger]) => trigger.tag === tag).forEach(([key, trigger]) => {
+            this.removeTrigger(key)
+        })
+    }
+
+    removeTrigger(uuid) {
+        this.triggers.delete(uuid)
     }
 
     parseLine(rawLine) {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, '')
-        this.triggers.forEach(trigger => {
+        this.triggers.entries().forEach(([uuid, trigger]) => {
             let matches
             if (trigger.pattern instanceof RegExp) {
                 matches = line.match(trigger.pattern)
@@ -35,7 +41,7 @@ export default class Triggers {
                 }
             }
             if (matches) {
-                rawLine = trigger.callback(rawLine, line, matches) ?? rawLine
+                rawLine = trigger.callback(rawLine, line, matches, uuid) ?? rawLine
             }
         })
         return rawLine
