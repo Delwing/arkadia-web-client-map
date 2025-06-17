@@ -26,6 +26,14 @@
         "dist/main.js"
       ],
       "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://arkadia.rpg.pl/*"
+      ],
+      "js": [
+        "loader.js"
+      ]
     }
   ],
   "web_accessible_resources": [
@@ -45,7 +53,7 @@
   },
   "externally_connectable": {
     "matches": [
-      "<all_urls>"
+      "https://arkadia.rpg.pl/*"
     ]
   },
   "permissions": [
@@ -54,8 +62,7 @@
     "scripting",
     "storage",
     "unlimitedStorage",
-    "commands",
-    "https://arkadia.rpg.pl/*"
+    "commands"
   ],
   "host_permissions": [
     "https://arkadia.rpg.pl/*"

@@ -182,9 +182,11 @@ class EmbeddedMap {
             }
 
             const locationId = allExits[getLongDir(actualDirection)]
-            this.locationHistory.push(locationId)
-            this.renderRoomById(locationId);
-            this.sendMessage('enterLocation', locationId)
+            if (locationId) {
+                this.locationHistory.push(locationId)
+                this.renderRoomById(locationId);
+                this.sendMessage('enterLocation', {id: locationId, room: JSON.parse(JSON.stringify(this.currentRoom))});
+            }
         }
         return actualDirection;
     }
@@ -269,6 +271,7 @@ class EmbeddedMap {
 const loadListener = (event) => {
     if (event.data.mapData !== undefined && event.data.colors !== undefined) {
         window.embedded = new EmbeddedMap(event.data.mapData, event.data.colors)
+
     }
 }
 window.addEventListener("message", loadListener)

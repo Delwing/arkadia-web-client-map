@@ -12,6 +12,6 @@ fs.readFile('./data/Arkadia.xml', {encoding: 'utf8'}, function (err, data) {
             })
         results = results.concat(...matches)
     })
-    fs.writeFileSync('blockers.json', JSON.stringify(results))
+    fs.writeFileSync('./blockers.json', JSON.stringify(results))
     console.log(`${results.length} blockers generated.`)
 });

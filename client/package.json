@@ -8,7 +8,8 @@
     "watch": "watchify main.js -o ../extension/dist/main.js -v"
   },
   "dependencies": {
-    "mudlet-map-renderer": "^0.0.25"
+    "mudlet-map-renderer": "^0.0.25",
+    "howler": "^2.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
