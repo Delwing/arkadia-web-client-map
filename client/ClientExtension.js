@@ -1,7 +1,7 @@
 import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
-const {Howl} = require('howler');
+import {Howl} from "howler"
 
 const originalSend = Input.send
 
@@ -12,24 +12,17 @@ export default class ClientExtension {
     packageHelper = new PackageHelper(this)
     mapHelper = new MapHelper(this)
     panel = document.getElementById("panel_buttons_bottom")
-    functionalBind = () => {}
+    functionalBind = () => {
+    }
     sounds = {
-        beep: new Howl({src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav', html5: true, preload: true})
+        // beep: new Howl({
+        //     src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
+        //     preload: true,
+        // })
     }
 
     constructor() {
         window.addEventListener('message', ({data: data}) => {
-            if (data.type === 'command') {
-                originalSend(data.payload)
-            }
-            if (data.type === 'bindButton') {
-                Conf.data.buttons.push(data.payload)
-                Conf.refresh()
-            }
-            if (data.type === 'clearBindButton') {
-                Conf.data.buttons = Conf.data.buttons.filter(item => !item.BindButton)
-                Conf.refresh()
-            }
             this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
         })
         window.addEventListener('keydown', (ev) => {
@@ -51,11 +44,17 @@ export default class ClientExtension {
     }
 
     addEventListener(event, listener, options) {
-        this.eventTarget.addEventListener(event, listener, options)
+        const reference = listener
+        this.eventTarget.addEventListener(event, reference, options)
+        return () => this.eventTarget.removeEventListener(event, reference, options)
     }
 
     removeEventListener(event, listener) {
         this.eventTarget.removeEventListener(event, listener)
+    }
+
+    sendCommand(command) {
+        originalSend(this.mapHelper.parseCommand(command))
     }
 
     registerTrigger(pattern, callback, tag) {
@@ -74,7 +73,6 @@ export default class ClientExtension {
     }
 
     onLine(line) {
-        console.log(line)
         //TODO might better to find previous valid ANSI sequence in unmodified line, that way we might be able to restore original color, not default one
         let result = line.split('\n').map(partial => this.triggers.parseLine(partial)).join('\n')
         if (line.substring(0, 1) === '') {
@@ -86,9 +84,8 @@ export default class ClientExtension {
 
     sendEvent(type, payload) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
-
         const frame = document.getElementById('cm-frame');
-        return frame?.contentWindow.postMessage(this.createEvent(type, payload), '*',);
+        return frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
     }
 
     createEvent(type, payload) {
@@ -140,8 +137,5 @@ export function color(colorCode) {
 
 export function colorString(rawLine, string, colorCode) {
     const matchIndex = rawLine.indexOf(string)
-    const colorCodeIndex = rawLine.indexOf('\x1B[22;38;5;')
-    const colorCodeEndIndex = rawLine.indexOf('m]', colorCodeIndex)
-    const originalColor = rawLine.substring(colorCodeIndex, colorCodeEndIndex)
-    return rawLine.substring(0, matchIndex) + color(colorCode) + rawLine.substring(string) + originalColor + rawLine.substring(matchIndex + string.length)
+    return rawLine.substring(0, matchIndex) + color(colorCode - 1) + string + '\x1B[0m' + rawLine.substring(matchIndex + string.length)
 }

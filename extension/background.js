@@ -65,6 +65,7 @@ function loadIframe(tabId) {
                 download('https://delwing.github.io/arkadia-mapa/data/mapExport.json', 60 * 60 * 24),
                 download('https://delwing.github.io/arkadia-mapa/data/colors.json', 60 * 60 * 24)
             ]).then(([mapData, colors]) => {
+                window.dispatchEvent(new CustomEvent('map-ready', {detail: {mapData, colors}}))
                 iframe.contentWindow?.postMessage({mapData: mapData, colors: colors}, '*')
             })
 

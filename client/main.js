@@ -37,17 +37,17 @@ const aliases = [
     },
     {
         pattern: /\/cofnij$/, callback: () => {
-            return clientExtension.sendEvent('moveBack');
+            return clientExtension.mapHelper.moveBack();
         }
     },
     {
         pattern: /\/move (.*)$/, callback: (matches) => {
-            return clientExtension.sendEvent('move', matches[1]);
+            return clientExtension.mapHelper.move(matches[1]);
         }
     },
     {
         pattern: /\/ustaw (.*)$/, callback: (matches) => {
-            return clientExtension.sendEvent('setPosition', matches[1]);
+            return clientExtension.mapHelper.setMapRoomById(matches[1]);
         }
     },
     {
@@ -74,7 +74,7 @@ window.addEventListener('ready', () => {
         })
         if (!isAlias && command !== undefined) {
             command.split("#").forEach(subcommand => {
-                clientExtension.sendEvent('command', command)
+                clientExtension.sendCommand(subcommand);
             })
         }
     }

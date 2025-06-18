@@ -1,3 +1,5 @@
+import {colorString} from "./ClientExtension";
+
 function toTitleCase(str) {
     return str.replace(
         /\w\S*/g,
@@ -6,8 +8,8 @@ function toTitleCase(str) {
 }
 
 const tag = "packageHelper";
-
-const packageLineRegex = /^ \|.*?(?<index>'\d+)?\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr|(?<time>'\d+))/
+const pickCommand = "wybierz paczke"
+const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr|(?<time>\d+))/
 
 export default class PackageHelper {
 
@@ -15,6 +17,8 @@ export default class PackageHelper {
     npcs = {}
     enabled = false;
     packages = []
+    commandListener;
+    pick;
 
     constructor(clientExtension) {
         this.clientExtension = clientExtension
@@ -61,16 +65,28 @@ export default class PackageHelper {
         }, tag)
         this.clientExtension.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, () => {
             this.packages = []
-            const triggers = Object.entries(this.npcs).map(item => {
-                const name = item[0]
-                return this.clientExtension.registerTrigger(new RegExp(name + "\\b"), (rawLine, line, matches) => {
-                    line.match(packageLineRegex)
-                    const index = matches.index
-                    return rawLine.substring(0, index) + `\x1B[22;38;5;50m${name}\x1B[0m`  + rawLine.substring(index + name.length)
-                })
+            const packageLineTrigger = this.clientExtension.registerTrigger(packageLineRegex, (rawLine, line, matches) => {
+                const name = matches.groups.name
+                this.packages.push({name: name, time: matches.groups.time})
+                return this.npcs[name] ? colorString(rawLine, matches.groups.name, 50) : rawLine
             })
+            // if (this.commandListener) {
+            //     this.commandListener();
+            //     delete this.commandListener
+            // }
+            // this.commandListener = this.clientExtension.addEventListener("command", ({detail: command}) => {
+            //     if (!command.startsWith(pickCommand)) {
+            //         return;
+            //     }
+            //     this.pick = command.substring(pickCommand.length + 1).trim()
+            //     const toRemove = this.clientExtension.registerOneTimeTrigger(/Pracownik poczty przekazuje ci jakas paczke\./, (_, __, ___, uuid) => {
+            //         this.currentPackage = this.packages[this.pick - 1]
+            //         console.log(this.currentPackage)
+            //     })
+            // })
             this.clientExtension.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, () => {
-                triggers?.forEach(trigger => {this.clientExtension.removeTrigger(trigger)})
+                this.clientExtension.removeTrigger(packageLineTrigger)
+                //console.log(this.packages)
             })
         })
         this.clientExtension.println(`Asystent paczek włączony.`)
