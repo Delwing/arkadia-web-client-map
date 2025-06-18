@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
+    "prebuild": "mkdirp ../extension/dist/",
     "prepublish": "yarn run build",
     "build": "browserify embedded.js > ../extension/dist/embedded.js",
     "watch": "watchify embedded.js -o ../extension/dist/embedded.js -v"
@@ -15,9 +16,10 @@
     "@babel/preset-env": "^7.15.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
+    "mkdirp": "^3.0.1",
     "uglify-js": "^3.17.4",
-    "watchify": "^4.0.0",
-    "vite": "^6.3.4"
+    "vite": "^6.3.4",
+    "watchify": "^4.0.0"
   },
   "browserify": {
     "transform": [

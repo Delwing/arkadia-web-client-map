@@ -1,15 +1,36 @@
 import "./sandbox.js"
-import "@components/dist/main.js"
+import "@client/main.js"
 
 import npc from "./npc.json";
-window.dispatchEvent(new CustomEvent("npc", { detail: npc }));
+import mapData from "../../data/mapExport.json"
+import colors from "../../data/colors.json"
 
-window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("settings", {detail: {settings: {guilds: ["NPC", "MC"], packageHelper: true}}}))
+window.dispatchEvent(new CustomEvent("npc", {detail: npc}));
+
+document.getElementById("cm-frame")?.contentWindow.postMessage({mapData, colors}, '*')
+
+window.dispatchEvent(new CustomEvent("ready"));
+window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("settings", {
+    detail: {
+        settings: {
+            guilds: ["NPC", "MC"],
+            packageHelper: true
+        }
+    }
+}))
+
+
+window.dispatchEvent(new CustomEvent("map-ready", {
+    detail: {
+        mapData, colors
+    }
+}));
+
 window.clientExtension.fake = (text) => {
     Output.send(Text.parse_patterns(window.clientExtension.onLine(text)))
 }
 
-const fakeMe = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
+const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
     " o============================================================================o\n" +
     " |                Adresat badz                     Cena          Czas na      |\n" +
     " |               urzad pocztowy                  zl/sr/md      dostarczenie   |\n" +
@@ -24,4 +45,6 @@ const fakeMe = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj p
     " |      Symbolem * oznaczono przesylki ciezkie.                               |\n" +
     " o============================================================================o"
 
-window.clientExtension.fake(fakeMe)
+window.clientExtension.fake(table)
+Input.send("wybierz paczke 1")
+window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")

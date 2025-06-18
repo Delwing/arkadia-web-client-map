@@ -3,19 +3,21 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
+    "prebuild": "mkdirp ../extension/dist/",
     "prepublish": "yarn run build",
     "build": "browserify main.js > ../extension/dist/main.js",
-    "watch": "watchify main.js -o ../extension/dist/main.js -v"
+    "watch": "watchify main.js -o ../extension/dist/main.js -v --debug"
   },
   "dependencies": {
-    "mudlet-map-renderer": "^0.0.25",
-    "howler": "^2.2.4"
+    "howler": "^2.2.4",
+    "mudlet-map-renderer": "^0.0.25"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
+    "mkdirp": "^3.0.1",
     "uglify-js": "^3.17.4",
     "watchify": "^4.0.0",
     "xml2js": "^0.6.2",

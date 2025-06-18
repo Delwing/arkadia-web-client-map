@@ -1,0 +1,29 @@
+name: Auto release
+on:
+  push:
+    branches: [ master ]
+jobs:
+  process-map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Dist
+        run: yarn install && yarn build
+      - id: release
+        name: Bump version and release
+        uses: rymndhng/release-on-push-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          bump_version_scheme: minor
+          use_github_release_notes: true
+          tag_prefix: ""
+          release_name: "Release <RELEASE_VERSION>"
+      - name: Upload process map file to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: arkadia-extension.zip
+          asset_name: arkadia-extension.zip
+          tag: ${{ steps.release.outputs.tag_name }}
+          overwrite: true
