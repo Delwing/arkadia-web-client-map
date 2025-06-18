@@ -27,3 +27,14 @@ jobs:
           asset_name: arkadia-extension.zip
           tag: ${{ steps.release.outputs.tag_name }}
           overwrite: true
+      - run: yarn --cwd sandbox install && yarn --cwd sandbox build
+      - run: node action/page.js
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './sandbox/dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
