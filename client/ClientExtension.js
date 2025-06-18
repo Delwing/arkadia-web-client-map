@@ -2,6 +2,7 @@ import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import {Howl} from "howler"
+import {color} from "./Colors";
 
 const originalSend = Input.send
 
@@ -97,7 +98,7 @@ export default class ClientExtension {
 
     setFunctionalBind(printable, callback) {
         this.functionalBind = callback
-        this.println(`\t\x1B[22;38;5;49mbind \x1B[22;38;5;222m]\x1B[22;38;5;49m: ${printable}`)
+        this.println(`\t${color(49)}bind ${color(222)}]${color(49)}: ${printable}`)
     }
 
     clearFunctionalBind() {
@@ -106,6 +107,9 @@ export default class ClientExtension {
     }
 
     print(printable) {
+        if (typeof printable === 'object') {
+            printable = JSON.stringify(printable)
+        }
         Output.flush_buffer()
         Output.send(Text.parse_patterns(printable))
     }
@@ -129,13 +133,4 @@ export default class ClientExtension {
     playSound(key) {
         this.sounds[key].play()
     }
-}
-
-export function color(colorCode) {
-    return `\x1B[22;38;5;${colorCode}m`
-}
-
-export function colorString(rawLine, string, colorCode) {
-    const matchIndex = rawLine.indexOf(string)
-    return rawLine.substring(0, matchIndex) + color(colorCode - 1) + string + '\x1B[0m' + rawLine.substring(matchIndex + string.length)
 }
