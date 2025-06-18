@@ -1,4 +1,4 @@
-import {colorString} from "./ClientExtension";
+import {colorString, findClosestColor} from "./Colors";
 
 function toTitleCase(str) {
     return str.replace(
@@ -68,7 +68,7 @@ export default class PackageHelper {
             const packageLineTrigger = this.clientExtension.registerTrigger(packageLineRegex, (rawLine, line, matches) => {
                 const name = matches.groups.name
                 this.packages.push({name: name, time: matches.groups.time})
-                return this.npcs[name] ? colorString(rawLine, matches.groups.name, 50) : rawLine
+                return this.npcs[name] ? colorString(rawLine, matches.groups.name, findClosestColor('#63ba41')) : rawLine
             })
             // if (this.commandListener) {
             //     this.commandListener();
@@ -86,7 +86,7 @@ export default class PackageHelper {
             // })
             this.clientExtension.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, () => {
                 this.clientExtension.removeTrigger(packageLineTrigger)
-                //console.log(this.packages)
+                this.clientExtension.println(this.packages)
             })
         })
         this.clientExtension.println(`Asystent paczek włączony.`)

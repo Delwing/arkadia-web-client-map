@@ -9,6 +9,7 @@
     "watch": "watchify main.js -o ../extension/dist/main.js -v --debug"
   },
   "dependencies": {
+    "color-convert": "^3.1.0",
     "howler": "^2.2.4",
     "mudlet-map-renderer": "^0.0.25"
   },
@@ -30,15 +31,7 @@
         {
           "presets": [
             [
-              "@babel/preset-env",
-              {
-                "useBuiltIns": "entry",
-                "corejs": "2",
-                "targets": {
-                  "firefox": "60",
-                  "chrome": "61"
-                }
-              }
+              "@babel/preset-env"
             ]
           ]
         }

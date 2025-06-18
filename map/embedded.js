@@ -1,4 +1,4 @@
-const limit = 20;
+const limit = 25;
 
 import {MapReader, Renderer, Settings} from "mudlet-map-renderer";
 
@@ -10,8 +10,6 @@ class EmbeddedMap {
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
-        this.settings.emboss = true
-        this.settings.borders = true
 
         this.renderRoomById(1)
 
@@ -43,8 +41,7 @@ class EmbeddedMap {
             this.renderer?.clear();
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
             this.renderer.controls.centerRoom(room.id);
-            this.renderer.controls.view.zoom = 0.35;
-
+            this.renderer.controls.view.zoom = 0.30;
 
             this.currentRoom = room;
 
@@ -76,7 +73,6 @@ class EmbeddedMap {
 const loadListener = (event) => {
     if (event.data.mapData !== undefined && event.data.colors !== undefined) {
         window.embedded = new EmbeddedMap(event.data.mapData, event.data.colors)
-
     }
 }
 window.addEventListener("message", loadListener)
