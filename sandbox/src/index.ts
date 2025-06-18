@@ -1,13 +1,13 @@
-import "./sandbox.js"
-import "@client/main.js"
+import "./sandbox.ts"
+import "@client/src/main.ts"
 
 import npc from "./npc.json";
 import mapData from "../../data/mapExport.json"
 import colors from "../../data/colors.json"
 
 window.dispatchEvent(new CustomEvent("npc", {detail: npc}));
-
-document.getElementById("cm-frame")?.contentWindow.postMessage({mapData, colors}, '*')
+const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
+frame.contentWindow?.postMessage({mapData, colors}, '*')
 
 window.dispatchEvent(new CustomEvent("ready"));
 window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("settings", {
@@ -26,8 +26,8 @@ window.dispatchEvent(new CustomEvent("map-ready", {
     }
 }));
 
-window.clientExtension.fake = (text) => {
-    Output.send(Text.parse_patterns(window.clientExtension.onLine(text)))
+window.clientExtension.fake = (text: string) => {
+    window.Output.send(window.Text.parse_patterns(window.clientExtension.onLine(text)))
 }
 
 const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
@@ -46,5 +46,5 @@ const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj po
     " o============================================================================o"
 
 window.clientExtension.fake(table)
-Input.send("wybierz paczke 1")
+window.Input.send("wybierz paczke 1")
 window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")

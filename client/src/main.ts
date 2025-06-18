@@ -22,7 +22,7 @@ Gmcp.parse_option_subnegotiation = (match) => {
             data = clientExtension.onLine(data)
             parsed.text = btoa(data)
             match = `${prefix}É${type} ${JSON.stringify(parsed)}${postfix}`
-            clientExtension.sendEvent(`gmcp_msg.${parsed.type}`)
+            clientExtension.sendEvent(`gmcp_msg.${parsed.type}`, parsed)
         }
     }
     return gmcpParseOption(match)
@@ -32,32 +32,33 @@ Gmcp.parse_option_subnegotiation = (match) => {
 const aliases = [
     {
         pattern: /\/fake (.*)/, callback: (matches) => {
+            // @ts-ignore
             return Output.send(Text.parse_patterns(clientExtension.onLine(matches[1])));
         }
     },
     {
         pattern: /\/cofnij$/, callback: () => {
-            return clientExtension.mapHelper.moveBack();
+            clientExtension.mapHelper.moveBack();
         }
     },
     {
         pattern: /\/move (.*)$/, callback: (matches) => {
-            return clientExtension.mapHelper.move(matches[1]);
+            clientExtension.mapHelper.move(matches[1]);
         }
     },
     {
         pattern: /\/ustaw (.*)$/, callback: (matches) => {
-            return clientExtension.mapHelper.setMapRoomById(matches[1]);
+            clientExtension.mapHelper.setMapRoomById(matches[1]);
         }
     },
     {
         pattern: /\/prowadz (.*)$/, callback: (matches) => {
-            return clientExtension.sendEvent('leadTo', matches[1]);
+            clientExtension.sendEvent('leadTo', matches[1]);
         }
     },
     {
-        pattern: /\/prowadz-$/, callback: (matches) => {
-            return clientExtension.sendEvent('leadTo');
+        pattern: /\/prowadz-$/, callback: () => {
+            clientExtension.sendEvent('leadTo');
         }
     }
 ]
@@ -86,14 +87,14 @@ window.addEventListener('ready', () => {
         originalSetPosition(e)
         clientExtension.sendEvent('mapPosition', Maps.data)
     };
-    Maps.unset_position = (e) => {
-        originalUnsetPosition(e)
+    Maps.unset_position = () => {
+        originalUnsetPosition()
         clientExtension.sendEvent('mapPosition', {})
     };
 })
 
 window.addEventListener('map-loaded', event => {
-    const port = chrome.runtime.connect(event.detail)
+    const port = chrome.runtime.connect((<CustomEvent>event).detail)
     clientExtension.connect(port)
 })
 
@@ -104,15 +105,15 @@ import blockers from './blockers.json'
 
 blockers.forEach(blocker => {
     let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
-    clientExtension.registerTrigger(blockerPattern, () => {
-        return clientExtension.sendEvent('moveBack');
+    clientExtension.Triggers.registerTrigger(blockerPattern, (): undefined => {
+        clientExtension.sendEvent('moveBack');
     }, "blocker")
 })
 
 /*
     People
  */
-const people = new People(clientExtension)
+new People(clientExtension)
 
 /*
     Follows
@@ -124,17 +125,17 @@ const follows = [
 ]
 
 follows.forEach(follow => {
-    clientExtension.registerTrigger(follow, (rawLine, line) => {
+    clientExtension.Triggers.registerTrigger(follow, (_rawLine, line): undefined => {
         const matches = line.match(follow)
         clientExtension.sendEvent('move', matches[3])
     }, "follow")
 })
 
-clientExtension.registerTrigger('Wykonuje komende \'idz ', () => {
+clientExtension.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
     clientExtension.sendEvent('refreshPositionWhenAble')
 })
 
-clientExtension.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, () => {
+clientExtension.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, (): undefined => {
     clientExtension.playSound("beep")
     clientExtension.setFunctionalBind("zejdz ze statku", () => {
         Input.send("zejdz ze statku")
@@ -142,4 +143,4 @@ clientExtension.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
     })
 })
 
-window.clientExtension = clientExtension
+window["clientExtension"] = clientExtension
