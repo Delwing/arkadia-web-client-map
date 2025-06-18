@@ -1,8 +1,6 @@
-import Convert from "ansi-to-html";
+import convert from "color-convert";
 
-const converter = new Convert({})
-
-const colorTable = [
+export const colorTable = [
     "#000000",
     "#800000",
     "#008000",
@@ -261,107 +259,27 @@ const colorTable = [
     "#eeeeee",
 ]
 
-const output = document.getElementById("output");
-
-window.Input = {
-    send(command) {
-        Output.send("→ " + command);
-    }
-}
-window.Maps = {}
-window.Gmcp = {}
-window.Output = {
-    send(content) {
-        const div = document.createElement("div");
-        div.innerHTML = converter.toHtml(content)
-        output.appendChild(div)
-        output.scrollTop = output.scrollHeight
-
-    },
-    flush_buffer() {
-    },
-    clear() {
-        output.innerHTML = ''
-    }
-}
-window.Text = {
-    parse_patterns(input) {
-        let activeColors = [];
-        let spanStartIndices = [];
-        let spanEndIndices = [];
-        let offset = 0;
-        let output = input;
-
-        const ansiRegex = /\033\[([0-9]+(?:;[0-9]+)*)m/g;
-
-        for (let match; match = ansiRegex.exec(input);) {
-            const ansiSequence = match[1];
-            const currentSpanCount = spanEndIndices.length;
-            const matchPos = match.index + offset;
-
-            if (ansiSequence === "0" || ansiSequence === "39;22") {
-                if (spanStartIndices.length > currentSpanCount) {
-                    if (spanStartIndices[currentSpanCount] <= matchPos - 1) {
-                        spanEndIndices[currentSpanCount] = matchPos - 1;
-                    } else {
-                        activeColors.splice(currentSpanCount, 1);
-                        spanStartIndices.splice(currentSpanCount, 1);
-                    }
-                }
-            } else if (ansiSequence.startsWith("22;38;5;")) {
-                const colorIndex = parseInt(ansiSequence.slice(8), 10);
-                if (spanStartIndices.length > currentSpanCount) {
-                    if (spanStartIndices[currentSpanCount] <= matchPos - 1) {
-                        spanEndIndices[currentSpanCount] = matchPos - 1;
-                    } else {
-                        activeColors.splice(currentSpanCount, 1);
-                        spanStartIndices.splice(currentSpanCount, 1);
-                    }
-                }
-                activeColors.push(colorTable[colorIndex]);
-                spanStartIndices.push(matchPos);
-            } else if (ansiSequence.startsWith("22;")) {
-                const colorIndex = parseInt(ansiSequence.slice(3), 10) - 30;
-                activeColors.push(colorTable[colorIndex]);
-                spanStartIndices.push(matchPos);
-            } else if (ansiSequence.endsWith(";1")) {
-                const colorIndex = parseInt(ansiSequence.slice(0, -2), 10) - 30;
-                activeColors.push(colorTable[colorIndex]);
-                spanStartIndices.push(matchPos);
-            }
-
-            // Remove the ANSI sequence from the string
-            output = output.slice(0, matchPos) + output.slice(matchPos + match[0].length);
-            offset -= match[0].length;
-        }
-
-        if (spanStartIndices.length > spanEndIndices.length) {
-            spanEndIndices.push(output.length);
-        }
-
-        // Sort spans by end index descending so inserting HTML doesn't shift indexes
-        const spanIndices = spanEndIndices.map((_, i) => i);
-        spanIndices.sort((a, b) => spanEndIndices[b] - spanEndIndices[a]);
-
-        for (const index of spanIndices) {
-            const start = spanStartIndices[index];
-            const end = spanEndIndices[index];
-            const color = activeColors[index];
-            const content = output.slice(start, end + 1);
-
-            if (content) {
-                const span = `<span style="color: ${color}">${content}</span>`;
-                output = output.slice(0, start) + span + output.slice(end + 1);
-            }
-        }
-
-        return output;
-    }
+export function color(colorCode) {
+    return `\x1B[22;38;5;${colorCode}m`
 }
 
-window.Conf = {
-    refresh() {},
-    data: {
-        buttons: []
-    }
+export function colorString(rawLine, string, colorCode) {
+    const matchIndex = rawLine.indexOf(string)
+    return rawLine.substring(0, matchIndex) + color(colorCode) + string + '\x1B[0m' + rawLine.substring(matchIndex + string.length)
+}
+
+
+export function findClosestColor(hex) {
+    const targetRgb = convert.hex.rgb(hex)
+    let distance = 99999999999999
+    let currentPick: number = 0;
+    colorTable.forEach((colorsKey, index) => {
+        const rgb = convert.hex.rgb(colorsKey)
+        const compDistance = Math.pow(targetRgb[0] - rgb[0], 2) + Math.pow(targetRgb[1] - rgb[1], 2) + Math.pow(targetRgb[2] - rgb[2], 2)
+        if (compDistance < distance) {
+            currentPick = index
+            distance = compDistance
+        }
+    })
+    return currentPick
 }

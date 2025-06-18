@@ -1,4 +1,5 @@
 import {MapReader} from "mudlet-map-renderer";
+import ClientExtension from "./ClientExtension";
 
 const polishToEnglish = {
     ["polnoc"]: "north",
@@ -39,11 +40,11 @@ const exits = {
     "d": "down"
 };
 
-function getLongDir(dir) {
+function getLongDir(dir: string): string {
     return polishToEnglish[dir] ?? exits[dir] ?? dir;
 }
 
-function getShortDir(dir) {
+function getShortDir(dir: string): string {
     return longToShort[dir] ?? dir;
 }
 
@@ -56,12 +57,15 @@ export default class MapHelper {
     mapReader
     refreshPosition = true;
     hashes = {};
+    gmcpPosition: Position;
+    roomBind: HTMLButtonElement
 
-    constructor(clientExtension) {
+    constructor(clientExtension: ClientExtension) {
         this.clientExtension = clientExtension
         this.clientExtension.addEventListener('enterLocation', (event) => this.handleNewLocation(event.detail))
-        window.addEventListener('map-ready', (event) => {
+        window.addEventListener('map-ready', (event: CustomEvent) => {
             this.mapReader = new MapReader(event.detail.mapData, event.detail.colors)
+            // @ts-ignore
             Object.values(this.mapReader.roomIndex).forEach(room => this.hashes[room.hash] = room);
             this.renderRoomById(1, false)
         })
@@ -95,7 +99,7 @@ export default class MapHelper {
             const allExits = Object.assign({}, this.currentRoom.exits, this.currentRoom.specialExits);
             const potentialExit = getLongDir(direction);
             if (!this.currentRoom.exits[potentialExit]) {
-                const exits = Object.entries(allExits).filter(([exit, id]) => {
+                const exits = Object.entries(allExits).filter(([_, id]) => {
                     const target = this.mapReader.getRoomById(id);
                     return this.findRoomByExit(this.currentRoom, target, getLongDir(direction));
                 }).map(([exit]) => exit);
@@ -193,7 +197,7 @@ export default class MapHelper {
         }
     }
 
-    handleNewLocation({id: id, room: room}) {
+    handleNewLocation({room: room}) {
         this.clientExtension.clearFunctionalBind();
         if (this.drinkableButton) {
             this.drinkableButton.remove()

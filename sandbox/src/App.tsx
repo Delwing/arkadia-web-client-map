@@ -1,29 +1,32 @@
 import {Button, Form, InputGroup} from "react-bootstrap";
-import {createRef, useRef, useState} from "react";
-import {Controls} from "./Controls.jsx";
+import {createRef, useState} from "react";
+import {Controls} from "./Controls.tsx";
+import type {KeyboardEvent} from 'react';
 
 
 export default function App() {
 
     const [text, setText] = useState('')
-    const input = createRef();
+    const input = createRef<HTMLInputElement>();
 
     function send() {
         //window.clientExtension.fake(text)
-        Input.send(text.trim())
-        input?.current.select()
+        window.Input.send(text.trim())
+        input?.current?.select()
     }
 
-    function handleKeyDown(ev) {
-        if (ev.keyCode === 13 && !ev.shiftKey) {
+
+    function handleKeys(ev: KeyboardEvent) {
+        if (ev.code === '13' && !ev.shiftKey) {
             ev.preventDefault()
+            send()
         }
     }
 
-    function handleKeys(ev) {
-        if (ev.keyCode === 13 && !ev.shiftKey) {
+
+    function handleKeyDown(ev: KeyboardEvent) {
+        if (ev.code === '13' && !ev.shiftKey) {
             ev.preventDefault()
-            send()
         }
     }
 

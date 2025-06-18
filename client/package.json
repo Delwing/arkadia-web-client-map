@@ -5,8 +5,8 @@
   "scripts": {
     "prebuild": "mkdirp ../extension/dist/",
     "prepublish": "yarn run build",
-    "build": "browserify main.js > ../extension/dist/main.js",
-    "watch": "watchify main.js -o ../extension/dist/main.js -v --debug"
+    "build": "webpack",
+    "watch": "webpack --watch"
   },
   "dependencies": {
     "color-convert": "^3.1.0",
@@ -14,31 +14,12 @@
     "mudlet-map-renderer": "^0.0.25"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/preset-env": "^7.15.0",
-    "babelify": "^10.0.0",
-    "browserify": "^17.0.0",
     "mkdirp": "^3.0.1",
-    "uglify-js": "^3.17.4",
-    "watchify": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
     "xml2js": "^0.6.2",
     "xpath-html": "^1.0.3"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            [
-              "@babel/preset-env"
-            ]
-          ]
-        }
-      ]
-    ]
-  },
-  "files": [
-    "dist/bundle.min.js"
-  ]
+  }
 }

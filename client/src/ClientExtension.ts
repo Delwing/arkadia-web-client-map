@@ -9,13 +9,13 @@ const originalSend = Input.send
 export default class ClientExtension {
 
     eventTarget = new EventTarget()
-    triggers = new Triggers(this)
+    Triggers = new Triggers(this)
     packageHelper = new PackageHelper(this)
     mapHelper = new MapHelper(this)
     panel = document.getElementById("panel_buttons_bottom")
     functionalBind = () => {
     }
-    sounds = {
+    sounds: Record<string, Howl> = {
         // beep: new Howl({
         //     src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
         //     preload: true,
@@ -44,13 +44,13 @@ export default class ClientExtension {
         })
     }
 
-    addEventListener(event, listener, options) {
+    addEventListener(event: string, listener: (arg: CustomEvent) => void, options?: AddEventListenerOptions | boolean) {
         const reference = listener
         this.eventTarget.addEventListener(event, reference, options)
         return () => this.eventTarget.removeEventListener(event, reference, options)
     }
 
-    removeEventListener(event, listener) {
+    removeEventListener(event: string, listener: EventListenerOrEventListenerObject | null) {
         this.eventTarget.removeEventListener(event, listener)
     }
 
@@ -58,24 +58,9 @@ export default class ClientExtension {
         originalSend(this.mapHelper.parseCommand(command))
     }
 
-    registerTrigger(pattern, callback, tag) {
-        return this.triggers.registerTrigger(pattern, callback, tag)
-    }
-
-    registerOneTimeTrigger(pattern, callback, tag) {
-        return this.triggers.registerTrigger(pattern, (...args) => {
-            callback(args)
-            this.triggers.removeTrigger(args[3])
-        }, tag)
-    }
-
-    removeTrigger(uuid) {
-        return this.triggers.removeTrigger(uuid)
-    }
-
     onLine(line) {
         //TODO might better to find previous valid ANSI sequence in unmodified line, that way we might be able to restore original color, not default one
-        let result = line.split('\n').map(partial => this.triggers.parseLine(partial)).join('\n')
+        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial)).join('\n')
         if (line.substring(0, 1) === '') {
             const resetSequence = line.substring(0, 14)
             result = result.replace(/\[0m/g, resetSequence)
@@ -83,9 +68,9 @@ export default class ClientExtension {
         return result
     }
 
-    sendEvent(type, payload) {
+    sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
-        const frame = document.getElementById('cm-frame');
+        const frame = document.getElementById('cm-frame') as HTMLIFrameElement;
         return frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
     }
 
@@ -111,6 +96,7 @@ export default class ClientExtension {
             printable = JSON.stringify(printable)
         }
         Output.flush_buffer()
+        // @ts-ignore
         Output.send(Text.parse_patterns(printable))
     }
 

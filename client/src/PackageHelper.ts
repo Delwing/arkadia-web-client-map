@@ -1,4 +1,5 @@
 import {colorString, findClosestColor} from "./Colors";
+import ClientExtension from "./ClientExtension";
 
 function toTitleCase(str) {
     return str.replace(
@@ -13,16 +14,16 @@ const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w'
 
 export default class PackageHelper {
 
-    clientExtension
+    clientExtension: ClientExtension
     npcs = {}
     enabled = false;
     packages = []
     commandListener;
     pick;
 
-    constructor(clientExtension) {
+    constructor(clientExtension: ClientExtension) {
         this.clientExtension = clientExtension
-        window.addEventListener('npc', ({detail: npc}) => {
+        window.addEventListener('npc', ({detail: npc}: CustomEvent) => {
             npc.forEach(item => this.npcs[item.name] = item.loc)
         })
 
@@ -37,18 +38,18 @@ export default class PackageHelper {
     }
 
     init() {
-        this.clientExtension.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (rawLine, __, matches) => {
+        this.clientExtension.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
             const name = toTitleCase(matches[1])
             const location = this.npcs[name]
             if (location) {
                 this.clientExtension.sendEvent('leadTo', location)
             }
-            if (this.listener) {
-                this.clientExtension.removeEventListener('enterLocation', this.listener)
+            if (this.commandListener) {
+                this.clientExtension.removeEventListener('enterLocation', this.commandListener)
             }
-            this.listener = ({detail: {id: roomId, room: room}}) => {
+            this.commandListener = ({detail: {id: roomId}}) => {
                 if (roomId === location) {
-                    this.clientExtension.removeEventListener('enterLocation', this.listener)
+                    this.clientExtension.removeEventListener('enterLocation', this.commandListener)
                     const button = this.clientExtension.createButton('oddaj paczke', () => {
                         Input.send("oddaj paczke")
                         button.remove()
@@ -61,15 +62,16 @@ export default class PackageHelper {
                     }, {once: true})
                 }
             }
-            this.clientExtension.addEventListener('enterLocation', this.listener)
+            this.clientExtension.addEventListener('enterLocation', this.commandListener)
         }, tag)
-        this.clientExtension.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, () => {
+        this.clientExtension.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
             this.packages = []
-            const packageLineTrigger = this.clientExtension.registerTrigger(packageLineRegex, (rawLine, line, matches) => {
+            const packageLineTrigger = this.clientExtension.Triggers.registerTrigger(packageLineRegex, (rawLine, _line, matches: RegExpMatchArray) => {
                 const name = matches.groups.name
                 this.packages.push({name: name, time: matches.groups.time})
                 return this.npcs[name] ? colorString(rawLine, matches.groups.name, findClosestColor('#63ba41')) : rawLine
             })
+            console.log(pickCommand)
             // if (this.commandListener) {
             //     this.commandListener();
             //     delete this.commandListener
@@ -84,8 +86,8 @@ export default class PackageHelper {
             //         console.log(this.currentPackage)
             //     })
             // })
-            this.clientExtension.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, () => {
-                this.clientExtension.removeTrigger(packageLineTrigger)
+            this.clientExtension.Triggers.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, (): undefined => {
+                this.clientExtension.Triggers.removeTrigger(packageLineTrigger)
                 this.clientExtension.println(this.packages)
             })
         })
@@ -93,7 +95,7 @@ export default class PackageHelper {
     }
 
     disable() {
-        this.clientExtension.triggers.removeByTag(tag)
+        this.clientExtension.Triggers.removeByTag(tag)
         this.clientExtension.println(`Asystent paczek wyłączony.`)
     }
 
