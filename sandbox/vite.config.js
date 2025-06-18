@@ -11,7 +11,7 @@ export default defineConfig({
       '@map': path.resolve(__dirname, '../map')
     },
   },
-  base: ".",
+  base: "./",
   build: {
     rollupOptions: {
       input: {
