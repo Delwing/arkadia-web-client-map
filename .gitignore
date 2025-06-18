@@ -1,7 +1,6 @@
 .idea
 dist
 node_modules
-data
 *.iml
 extension/options
 client.js
