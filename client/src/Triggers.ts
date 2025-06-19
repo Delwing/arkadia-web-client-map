@@ -1,4 +1,4 @@
-import ClientExtension from "./ClientExtension";
+import Client from "./Client";
 
 const stripAnsiCodes = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 
@@ -14,10 +14,10 @@ export interface Trigger {
 
 export default class Triggers {
 
-    clientExtension: ClientExtension;
+    clientExtension: Client;
     triggers: Map<string, Trigger> = new Map()
 
-    constructor(clientExtension: ClientExtension) {
+    constructor(clientExtension: Client) {
         this.clientExtension = clientExtension;
     }
 

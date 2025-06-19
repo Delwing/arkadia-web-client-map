@@ -1,5 +1,5 @@
 import {colorString, findClosestColor} from "./Colors";
-import ClientExtension from "./ClientExtension";
+import Client from "./Client";
 
 function toTitleCase(str) {
     return str.replace(
@@ -14,20 +14,25 @@ const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w'
 
 export default class PackageHelper {
 
-    clientExtension: ClientExtension
-    npcs = {}
+    private client: Client
+    npc: Record<string, number> = {}
     enabled = false;
-    packages = []
-    commandListener;
-    pick;
 
-    constructor(clientExtension: ClientExtension) {
-        this.clientExtension = clientExtension
+    private packages = []
+    private remover = () => {
+    };
+    private locationListener;
+
+    private pick: number
+    private currentPackage: { name: string; time?: number };
+
+    constructor(clientExtension: Client) {
+        this.client = clientExtension
         window.addEventListener('npc', ({detail: npc}: CustomEvent) => {
-            npc.forEach(item => this.npcs[item.name] = item.loc)
+            npc.forEach(item => this.npc[item.name] = item.loc)
         })
 
-        this.clientExtension.addEventListener('settings', (event) => {
+        this.client.addEventListener('settings', (event) => {
             this.enabled = event.detail.settings.packageHelper;
             if (this.enabled) {
                 this.init()
@@ -38,65 +43,74 @@ export default class PackageHelper {
     }
 
     init() {
-        this.clientExtension.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
-            const name = toTitleCase(matches[1])
-            const location = this.npcs[name]
-            if (location) {
-                this.clientExtension.sendEvent('leadTo', location)
-            }
-            if (this.commandListener) {
-                this.clientExtension.removeEventListener('enterLocation', this.commandListener)
-            }
-            this.commandListener = ({detail: {id: roomId}}) => {
-                if (roomId === location) {
-                    this.clientExtension.removeEventListener('enterLocation', this.commandListener)
-                    const button = this.clientExtension.createButton('oddaj paczke', () => {
-                        Input.send("oddaj paczke")
-                        button.remove()
-                    })
-                    this.clientExtension.addEventListener('gmcp.objects.data', () => {
-                        this.clientExtension.setFunctionalBind('oddaj paczke', () => {
-                            button?.remove()
-                            return Input.send('oddaj paczke');
-                        })
-                    }, {once: true})
-                }
-            }
-            this.clientExtension.addEventListener('enterLocation', this.commandListener)
+        this.client.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
+            this.leadToPackage(toTitleCase(matches[1]));
         }, tag)
-        this.clientExtension.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
-            this.packages = []
-            const packageLineTrigger = this.clientExtension.Triggers.registerTrigger(packageLineRegex, (rawLine, _line, matches: RegExpMatchArray) => {
-                const name = matches.groups.name
-                this.packages.push({name: name, time: matches.groups.time})
-                return this.npcs[name] ? colorString(rawLine, matches.groups.name, findClosestColor('#63ba41')) : rawLine
-            })
-            console.log(pickCommand)
-            // if (this.commandListener) {
-            //     this.commandListener();
-            //     delete this.commandListener
-            // }
-            // this.commandListener = this.clientExtension.addEventListener("command", ({detail: command}) => {
-            //     if (!command.startsWith(pickCommand)) {
-            //         return;
-            //     }
-            //     this.pick = command.substring(pickCommand.length + 1).trim()
-            //     const toRemove = this.clientExtension.registerOneTimeTrigger(/Pracownik poczty przekazuje ci jakas paczke\./, (_, __, ___, uuid) => {
-            //         this.currentPackage = this.packages[this.pick - 1]
-            //         console.log(this.currentPackage)
-            //     })
-            // })
-            this.clientExtension.Triggers.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, (): undefined => {
-                this.clientExtension.Triggers.removeTrigger(packageLineTrigger)
-                this.clientExtension.println(this.packages)
-            })
+        this.client.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
+            this.onPackageList();
         })
-        this.clientExtension.println(`Asystent paczek włączony.`)
+        this.client.println(`Asystent paczek włączony.`)
+    }
+
+    private onPackageList() {
+        this.packages = []
+        const packageLineTrigger = this.client.Triggers.registerTrigger(packageLineRegex, this.packageLineCallback())
+        this.remover();
+        this.remover = this.client.addEventListener("command", ({detail: command}) => this.handleCommand(command));
+        this.client.Triggers.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, (): undefined => {
+            this.client.Triggers.removeTrigger(packageLineTrigger)
+            this.client.println(this.packages)
+        })
+    }
+
+    private handleCommand(command: string) {
+        if (!command.startsWith(pickCommand)) {
+            return;
+        }
+        this.pick = parseInt(command.substring(pickCommand.length + 1).trim())
+        this.client.Triggers.registerOneTimeTrigger(/Pracownik poczty przekazuje ci jakas paczke\./, (): undefined => {
+            this.currentPackage = this.packages[this.pick - 1]
+            this.leadToPackage(this.currentPackage.name)
+        })
+    }
+
+    private packageLineCallback() {
+        return (rawLine: string, _line: string, matches: RegExpMatchArray) => {
+            const name = matches.groups.name
+            this.packages.push({name: name, time: matches.groups.time})
+            return this.npc[name] ? colorString(rawLine, matches.groups.name, findClosestColor('#63ba41')) : rawLine
+        };
+    }
+
+    private leadToPackage(name: string) {
+        const location = this.npc[name]
+        if (location) {
+            this.client.sendEvent('leadTo', location)
+        }
+        if (this.locationListener) {
+            this.client.removeEventListener('enterLocation', this.locationListener)
+        }
+        this.locationListener = ({detail: {id: roomId}}) => {
+            if (roomId === location) {
+                this.client.removeEventListener('enterLocation', this.locationListener)
+                const button = this.client.createButton('oddaj paczke', () => {
+                    Input.send("oddaj paczke")
+                    button.remove()
+                })
+                this.client.addEventListener('gmcp.objects.data', () => {
+                    this.client.FunctionalBind.set('oddaj paczke', () => {
+                        button?.remove()
+                        return Input.send('oddaj paczke');
+                    })
+                }, {once: true})
+            }
+        }
+        this.client.addEventListener('enterLocation', this.locationListener)
     }
 
     disable() {
-        this.clientExtension.Triggers.removeByTag(tag)
-        this.clientExtension.println(`Asystent paczek wyłączony.`)
+        this.client.Triggers.removeByTag(tag)
+        this.client.println(`Asystent paczek wyłączony.`)
     }
 
 }

@@ -33,7 +33,6 @@ interface ClientText {
     parse_patterns(text: string): string
 }
 
-// @ts-ignore
 declare var Text: ClientText;
 
 interface ClientGmcp {

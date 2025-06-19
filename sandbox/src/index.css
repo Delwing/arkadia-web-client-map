@@ -20,8 +20,12 @@ body {
     padding: 5px 10px;
 }
 
-textarea {
+textarea, input {
     font-family: monospace;
+}
+
+#map {
+    width: 30%;
 }
 
 iframe {

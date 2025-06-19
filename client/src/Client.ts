@@ -2,19 +2,19 @@ import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import {Howl} from "howler"
-import {color} from "./Colors";
+import Port = chrome.runtime.Port;
+import {FunctionalBind} from "./scripts/functionalBind";
 
 const originalSend = Input.send
 
-export default class ClientExtension {
+export default class Client {
 
     eventTarget = new EventTarget()
+    FunctionalBind = new FunctionalBind(this)
     Triggers = new Triggers(this)
     packageHelper = new PackageHelper(this)
     mapHelper = new MapHelper(this)
     panel = document.getElementById("panel_buttons_bottom")
-    functionalBind = () => {
-    }
     sounds: Record<string, Howl> = {
         // beep: new Howl({
         //     src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
@@ -26,17 +26,12 @@ export default class ClientExtension {
         window.addEventListener('message', ({data: data}) => {
             this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
         })
-        window.addEventListener('keydown', (ev) => {
-            if (ev.code === 'BracketRight') {
-                this.functionalBind();
-                ev.preventDefault()
-            }
-        })
+
 
         Object.values(this.sounds).forEach((sound) => sound.load())
     }
 
-    connect(port) {
+    connect(port: Port) {
         port.onMessage.addListener((message) => {
             if (message.settings) {
                 this.eventTarget.dispatchEvent(new CustomEvent('settings', {detail: message}))
@@ -54,7 +49,8 @@ export default class ClientExtension {
         this.eventTarget.removeEventListener(event, listener)
     }
 
-    sendCommand(command) {
+    sendCommand(command: string) {
+        this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
         originalSend(this.mapHelper.parseCommand(command))
     }
 
@@ -81,16 +77,6 @@ export default class ClientExtension {
         }
     }
 
-    setFunctionalBind(printable, callback) {
-        this.functionalBind = callback
-        this.println(`\t${color(49)}bind ${color(222)}]${color(49)}: ${printable}`)
-    }
-
-    clearFunctionalBind() {
-        this.functionalBind = () => {
-        };
-    }
-
     print(printable) {
         if (typeof printable === 'object') {
             printable = JSON.stringify(printable)
@@ -106,7 +92,7 @@ export default class ClientExtension {
         this.print("\n")
     }
 
-    createButton(name, callback) {
+    createButton(name: string, callback: () => void) {
         let button = document.createElement('input')
         button.value = name
         button.type = 'button'
@@ -116,7 +102,7 @@ export default class ClientExtension {
         return button
     }
 
-    playSound(key) {
+    playSound(key: string) {
         this.sounds[key].play()
     }
 }

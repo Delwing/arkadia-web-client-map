@@ -1,13 +1,13 @@
 import people from './people.json'
-import ClientExtension from "./ClientExtension";
+import Client from "./Client";
 
 export default class People {
 
     tag = 'people'
-    clientExtension: ClientExtension
+    clientExtension: Client
     guildFilter: string[] = []
 
-    constructor(clientExtension: ClientExtension) {
+    constructor(clientExtension: Client) {
         this.clientExtension = clientExtension
         this.clientExtension.addEventListener('settings', (event: CustomEvent) => {
             this.guildFilter = event.detail.settings.guilds

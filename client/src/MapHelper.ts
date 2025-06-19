@@ -1,5 +1,6 @@
 import {MapReader} from "mudlet-map-renderer";
-import ClientExtension from "./ClientExtension";
+import Client from "./Client";
+import Room = MapData.Room;
 
 const polishToEnglish = {
     ["polnoc"]: "north",
@@ -50,19 +51,19 @@ function getShortDir(dir: string): string {
 
 export default class MapHelper {
 
-    currentRoom;
-    locationHistory = []
-    clientExtension
+    currentRoom: Room;
+    locationHistory: number[] = []
+    client: Client
     drinkableButton
     mapReader
     refreshPosition = true;
     hashes = {};
     gmcpPosition: Position;
-    roomBind: HTMLButtonElement
+    roomBind: HTMLInputElement
 
-    constructor(clientExtension: ClientExtension) {
-        this.clientExtension = clientExtension
-        this.clientExtension.addEventListener('enterLocation', (event) => this.handleNewLocation(event.detail))
+    constructor(clientExtension: Client) {
+        this.client = clientExtension
+        this.client.addEventListener('enterLocation', (event) => this.handleNewLocation(event.detail))
         window.addEventListener('map-ready', (event: CustomEvent) => {
             this.mapReader = new MapReader(event.detail.mapData, event.detail.colors)
             // @ts-ignore
@@ -70,7 +71,7 @@ export default class MapHelper {
             this.renderRoomById(1, false)
         })
 
-        this.clientExtension.addEventListener('gmcp.room.info', (event) => {
+        this.client.addEventListener('gmcp.room.info', (event: CustomEvent) => {
             this.gmcpPosition = event.detail.map;
             if (this.refreshPosition) {
                 this.setMapPosition(this.gmcpPosition)
@@ -86,11 +87,11 @@ export default class MapHelper {
         return this.move(command) ?? command;
     }
 
-    move(direction) {
+    move(direction: string) {
         let actualDirection = direction
         if (this.currentRoom) {
             if (this.currentRoom.userData.dir_bind) {
-                const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map(item => item.split("=")))
+                const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map((item: string) => item.split("=")))
                 if (dirBinds[getLongDir(actualDirection)]) {
                     direction = dirBinds[getLongDir(actualDirection)]
                     return direction
@@ -121,19 +122,19 @@ export default class MapHelper {
         this.renderRoom(this.currentRoom)
     }
 
-    setMapPosition(data) {
-        if (data && data.x && data.y && data.id && data.name) {
+    setMapPosition(data: Position) {
+        if (data && data.x && data.y && data.name) {
             const hash = `${data.x}:${data.y}:0:${data.name}`;
             const room = this.hashes[hash];
             this.setMapRoom(room)
         }
     }
 
-    setMapRoomById(id) {
+    setMapRoomById(id: number) {
         this.setMapRoom(this.mapReader.getRoomById(id))
     }
 
-    setMapRoom(room) {
+    setMapRoom(room: Room) {
         this.locationHistory = [room.id]
         this.renderRoom(room);
     }
@@ -146,18 +147,18 @@ export default class MapHelper {
         this.renderRoomById(this.locationHistory[this.locationHistory.length - 1])
     }
 
-    renderRoom(room) {
+    renderRoom(room: Room) {
         this.renderRoomById(room.id)
     }
 
-    renderRoomById(id, sendEvent = true) {
+    renderRoomById(id: number, sendEvent = true) {
         this.currentRoom = this.mapReader.getRoomById(id)
         if (sendEvent) {
-            this.clientExtension.sendEvent('enterLocation', {id: id, room: this.currentRoom});
+            this.client.sendEvent('enterLocation', {id: id, room: this.currentRoom});
         }
     }
 
-    findRoomByExit(room, targetRoom, targetDir) {
+    findRoomByExit(room: Room, targetRoom: Room, targetDir: string) {
         const x = targetRoom.x;
         const y = targetRoom.y;
         const z = targetRoom.z;
@@ -198,19 +199,19 @@ export default class MapHelper {
     }
 
     handleNewLocation({room: room}) {
-        this.clientExtension.clearFunctionalBind();
+        this.client.FunctionalBind.clear();
         if (this.drinkableButton) {
             this.drinkableButton.remove()
             delete this.drinkableButton
         }
         if (room.userData.drinkable) {
-            this.clientExtension.setFunctionalBind("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
-            this.drinkableButton = this.clientExtension.createButton("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
+            this.client.FunctionalBind.set("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
+            this.drinkableButton = this.client.createButton("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
 
         }
 
         if (room.userData.bind) {
-            this.roomBind = this.clientExtension.createButton(room.userData.bind_printable, () => this.clientExtension.sendCommand(room.userData.bind))
+            this.roomBind = this.client.createButton(room.userData.bind_printable, () => this.client.sendCommand(room.userData.bind))
         } else {
             if (this.roomBind) {
                 this.roomBind.remove()
