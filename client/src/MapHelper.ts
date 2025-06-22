@@ -78,6 +78,10 @@ export default class MapHelper {
                 this.refreshPosition = false
             }
         })
+
+        this.client.addEventListener('refreshPositionWhenAble', () => {
+            this.refreshPosition = true;
+        });
     }
 
     parseCommand(command) {

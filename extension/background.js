@@ -1,6 +1,5 @@
 chrome.commands.onCommand.addListener(shortcut => {
     if (shortcut === 'reload') {
-        console.log('Reloading Arkadia Map extension')
         chrome.runtime.reload()
     }
 })
@@ -10,9 +9,25 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
         if (msg.settings) {
             port.postMessage({settings: msg.settings.newValue})
         }
+        if (msg.npc) {
+            port.postMessage({npc: msg.npc.newValue})
+        }
     })
     chrome.storage.local.get('settings').then(settings => {
         port.postMessage(settings)
+    })
+    chrome.storage.local.get('npc').then(npc => {
+        port.postMessage(npc)
+    })
+
+    port.onMessage.addListener(msg => {
+        if (msg.type === 'NEW_NPC') {
+            chrome.storage.local.get('npc').then(data => {
+                const npc = data.npc ?? []
+                npc.push({name: msg.name, loc: msg.loc})
+                chrome.storage.local.set({ npc: npc })
+            })
+        }
     })
 });
 
@@ -60,7 +75,6 @@ function loadIframe(tabId) {
 
             rightPanel.prepend(div);
 
-            download('https://delwing.github.io/arkadia-mapa/data/npc.json', 60 * 60 * 24).then(item => window.dispatchEvent(new CustomEvent('npc', {detail: item})))
             Promise.all([
                 download('https://delwing.github.io/arkadia-mapa/data/mapExport.json', 60 * 60 * 24),
                 download('https://delwing.github.io/arkadia-mapa/data/colors.json', 60 * 60 * 24)
@@ -93,7 +107,8 @@ function loadIframe(tabId) {
             const newPanel = document.createElement('div')
             newPanel.setAttribute('id', 'additional-buttons')
             buttonPanel.appendChild(newPanel)
-            window.dispatchEvent(new CustomEvent('map-loaded', {detail: chrome.runtime.id}))
+
+            window.dispatchEvent(new CustomEvent('extension-loaded', {detail: chrome.runtime.id}))
         }
     })
 }

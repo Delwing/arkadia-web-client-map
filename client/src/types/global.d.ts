@@ -5,7 +5,8 @@ interface ClientInput {
 declare var Input: ClientInput;
 
 interface ClientOutput {
-    send(command: string): void;
+    buffer: string[];
+    send(out: string, type: string): any;
 
     flush_buffer(): void;
 }

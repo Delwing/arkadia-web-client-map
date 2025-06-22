@@ -261,7 +261,7 @@ const colorTable = [
     "#eeeeee",
 ]
 
-const output = document.getElementById("output")!;
+const output = document.getElementById("main_text_output_msg_wrapper")!;
 
 window.Input = {
     send(command) {
@@ -284,7 +284,15 @@ window.Gmcp = {
 window.Output = {
     send(content) {
         const div = document.createElement("div");
-        div.innerHTML = converter.toHtml(content)
+        div.className = "output_msg"
+        window.Output.buffer = [content]
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "output_msg_text"
+        contentDiv.innerHTML = converter.toHtml(content)
+
+        div.appendChild(contentDiv)
+
         output.appendChild(div)
         output.scrollTop = output.scrollHeight
 
@@ -293,7 +301,8 @@ window.Output = {
     },
     clear() {
         output.innerHTML = ''
-    }
+    },
+    buffer: []
 }
 
 // @ts-ignore

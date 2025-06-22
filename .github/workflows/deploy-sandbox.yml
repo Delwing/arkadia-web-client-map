@@ -1,0 +1,25 @@
+name: Auto release
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  pages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Dist
+        run: yarn install && yarn build
+      - run: yarn --cwd sandbox install && yarn --cwd sandbox build
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './sandbox/dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

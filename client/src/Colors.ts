@@ -263,13 +263,12 @@ export function color(colorCode) {
     return `\x1B[22;38;5;${colorCode}m`
 }
 
-export function colorString(rawLine, string, colorCode) {
+export function colorString(rawLine: string, string: string, colorCode: number) {
     const matchIndex = rawLine.indexOf(string)
     return rawLine.substring(0, matchIndex) + color(colorCode) + string + '\x1B[0m' + rawLine.substring(matchIndex + string.length)
 }
 
-
-export function findClosestColor(hex) {
+export function findClosestColor(hex: string): number {
     const targetRgb = convert.hex.rgb(hex)
     let distance = 99999999999999
     let currentPick: number = 0;

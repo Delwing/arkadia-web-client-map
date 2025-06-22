@@ -5,6 +5,7 @@ const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
 const originalUnsetPosition = Maps.unset_position
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
+const originalOutputSend = Output.send
 
 
 let client = new Client()
@@ -55,6 +56,13 @@ Maps.unset_position = () => {
     client.sendEvent('mapPosition', {})
 };
 
+Output.send = (out, type): any => {
+    const bufferSize = Output.buffer.length
+    const result = originalOutputSend(out, type)
+    client.sendEvent('output-sent', bufferSize)
+    return result;
+}
+
 
 const aliases = [
     {
@@ -65,17 +73,17 @@ const aliases = [
     },
     {
         pattern: /\/cofnij$/, callback: () => {
-            client.mapHelper.moveBack();
+            client.Map.moveBack();
         }
     },
     {
         pattern: /\/move (.*)$/, callback: (matches: RegExpMatchArray) => {
-            client.mapHelper.move(matches[1]);
+            client.Map.move(matches[1]);
         }
     },
     {
         pattern: /\/ustaw (.*)$/, callback: (matches: RegExpMatchArray) => {
-            client.mapHelper.setMapRoomById(parseInt(matches[1]));
+            client.Map.setMapRoomById(parseInt(matches[1]));
         }
     },
     {
@@ -90,7 +98,7 @@ const aliases = [
     }
 ]
 
-window.addEventListener('map-loaded', event => {
+window.addEventListener('extension-loaded', event => {
     const port: Port = chrome.runtime.connect((<CustomEvent>event).detail)
     client.connect(port)
 })
@@ -104,7 +112,7 @@ import Port = chrome.runtime.Port;
 blockers.forEach(blocker => {
     let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
     client.Triggers.registerTrigger(blockerPattern, (): undefined => {
-        client.sendEvent('moveBack');
+        client.Map.moveBack()
     }, "blocker")
 })
 
