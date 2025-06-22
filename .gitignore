@@ -5,3 +5,4 @@ node_modules
 extension/options
 client.js
 arkadia-extension.zip
+vite.config.js

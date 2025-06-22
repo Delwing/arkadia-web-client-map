@@ -2,7 +2,6 @@ import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import {Howl} from "howler"
-import Port = chrome.runtime.Port;
 import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 
@@ -10,7 +9,7 @@ const originalSend = Input.send
 
 export default class Client {
 
-    port: Port;
+    port: chrome.runtime.Port;
     eventTarget = new EventTarget()
     FunctionalBind = new FunctionalBind(this)
     Triggers = new Triggers(this)
@@ -34,7 +33,7 @@ export default class Client {
         Object.values(this.sounds).forEach((sound) => sound.load())
     }
 
-    connect(port: Port) {
+    connect(port: chrome.runtime.Port) {
         port.onMessage.addListener((message) => {
             Object.entries(message).forEach(([key, value]) => {
                 this.eventTarget.dispatchEvent(new CustomEvent(key, {detail: value}))

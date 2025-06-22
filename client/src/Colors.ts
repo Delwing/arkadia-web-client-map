@@ -259,13 +259,19 @@ export const colorTable = [
     "#eeeeee",
 ]
 
+const RESET = '\x1B[0m'
+
 export function color(colorCode) {
     return `\x1B[22;38;5;${colorCode}m`
 }
 
+export function encloseColor(string: string, colorCode: number) {
+    return color(colorCode) + string + RESET;
+}
+
 export function colorString(rawLine: string, string: string, colorCode: number) {
     const matchIndex = rawLine.indexOf(string)
-    return rawLine.substring(0, matchIndex) + color(colorCode) + string + '\x1B[0m' + rawLine.substring(matchIndex + string.length)
+    return rawLine.substring(0, matchIndex) + color(colorCode) + string + RESET + rawLine.substring(matchIndex + string.length)
 }
 
 export function findClosestColor(hex: string): number {

@@ -6,7 +6,7 @@ declare var Input: ClientInput;
 
 interface ClientOutput {
     buffer: string[];
-    send(out: string, type: string): any;
+    send(out: string, type?: string): any;
 
     flush_buffer(): void;
 }
