@@ -21,9 +21,17 @@ export default class OutputHandler {
                 if (msg) {
                     Array.from(msg.querySelectorAll("span")).filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
                         el.style.cursor = "pointer"
+                        el.style.textDecoration = " underline"
+                        el.style.textDecorationStyle = "dotted"
+                        el.style.textDecorationSkipInk = "auto"
                         const clickIndex = el.textContent.indexOf("{click:")
+                        const clickTitleSeparator = el.textContent.indexOf(":", clickIndex + 7)
                         const closerIndex = el.textContent.indexOf("}", clickIndex)
-                        const callbackIndex = el.textContent.substring(clickIndex + 7, closerIndex)
+                        const hasTitle = clickTitleSeparator > clickIndex && clickTitleSeparator < closerIndex
+                        if (hasTitle) {
+                            el.title = el.textContent.substring(clickTitleSeparator + 1, closerIndex)
+                        }
+                        const callbackIndex = el.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex)
                         el.textContent = el.textContent.substring(0, clickIndex) + el.textContent.substring(closerIndex + 1)
                         el.onclick = () => {
                             this.clickerCallbacks[callbackIndex]?.apply()
@@ -34,9 +42,9 @@ export default class OutputHandler {
         })
     }
 
-    makeClickable(rawLine: string, string: string, callback: Function) {
+    makeClickable(rawLine: string, string: string, callback: Function, title?: string) {
         const matchIndex = rawLine.indexOf(string)
         this.clickerCallbacks.push(callback)
-        return rawLine.substring(0, matchIndex) + `{click:${this.clickerCallbacks.length - 1}}${string}` +  rawLine.substring(matchIndex + string.length)
+        return rawLine.substring(0, matchIndex) + `{click:${this.clickerCallbacks.length - 1}${title ? ":" + title : ""}}${string}` +  rawLine.substring(matchIndex + string.length)
     }
 }
