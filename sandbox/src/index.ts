@@ -5,17 +5,15 @@ import npc from "./npc.json";
 import mapData from "../../data/mapExport.json"
 import colors from "../../data/colors.json"
 
-window.dispatchEvent(new CustomEvent("npc", {detail: npc}));
+window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
 frame.contentWindow?.postMessage({mapData, colors}, '*')
 
 window.dispatchEvent(new CustomEvent("ready"));
 window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("settings", {
     detail: {
-        settings: {
-            guilds: ["NPC", "MC"],
-            packageHelper: true
-        }
+        guilds: ["NPC", "MC"],
+        packageHelper: true
     }
 }))
 
@@ -49,7 +47,6 @@ const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj po
     " |      Symbolem * oznaczono przesylki ciezkie.                               |\n" +
     " o============================================================================o"
 
-window.clientExtension.fake(table)
 window.clientExtension.fake(table)
 window.Input.send("wybierz paczke 3")
 window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")

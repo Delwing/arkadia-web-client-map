@@ -3,6 +3,8 @@ interface ClientInput {
 }
 
 interface ClientOutput {
+    buffer: string[];
+
     send(command: string): void;
 
     clear(): void

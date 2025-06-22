@@ -26,14 +26,16 @@ export default class PackageHelper {
     private pick: number
     private currentPackage: { name: string; time?: number };
 
+    deliveryTrigger: string;
+
     constructor(clientExtension: Client) {
         this.client = clientExtension
-        window.addEventListener('npc', ({detail: npc}: CustomEvent) => {
-            npc.forEach(item => this.npc[item.name] = item.loc)
+        this.client.addEventListener('npc', (event) => {
+            event.detail.forEach((item: { name: string | number; loc: number; }) => this.npc[item.name] = item.loc)
         })
 
         this.client.addEventListener('settings', (event) => {
-            this.enabled = event.detail.settings.packageHelper;
+            this.enabled = event.detail.packageHelper;
             if (this.enabled) {
                 this.init()
             } else {
@@ -59,7 +61,6 @@ export default class PackageHelper {
         this.remover = this.client.addEventListener("command", ({detail: command}) => this.handleCommand(command));
         this.client.Triggers.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, (): undefined => {
             this.client.Triggers.removeTrigger(packageLineTrigger)
-            this.client.println(this.packages)
         })
     }
 
@@ -68,17 +69,33 @@ export default class PackageHelper {
             return;
         }
         this.pick = parseInt(command.substring(pickCommand.length + 1).trim())
-        this.client.Triggers.registerOneTimeTrigger(/Pracownik poczty przekazuje ci jakas paczke\./, (): undefined => {
+        this.client.Triggers.registerOneTimeTrigger(/^.* przekazuje ci jakas paczke\./, (): undefined => {
             this.currentPackage = this.packages[this.pick - 1]
             this.leadToPackage(this.currentPackage.name)
+            this.deliveryTrigger = this.client.Triggers.registerOneTimeTrigger(/^(Oddajesz|Zwracasz) pocztowa paczke/, (_, __, matches): undefined => {
+                if (matches[1] === 'Oddajesz') {
+                    if (!this.npc[this.currentPackage.name]) {
+                        this.client.println(`Nowy adresat: ${this.currentPackage.name} | ${this.client.Map.currentRoom.id}`)
+                        this.client.port.postMessage({
+                            type: 'NEW_NPC',
+                            name: this.currentPackage.name,
+                            loc: this.client.Map.currentRoom.id
+                        })
+                    }
+                }
+                this.currentPackage = undefined;
+            })
         })
     }
 
     private packageLineCallback() {
         return (rawLine: string, _line: string, matches: RegExpMatchArray) => {
+            const index = matches.groups.number
             const name = matches.groups.name
             this.packages.push({name: name, time: matches.groups.time})
-            return this.npc[name] ? colorString(rawLine, matches.groups.name, findClosestColor('#63ba41')) : rawLine
+            return this.npc[name] ? this.client.OutputHandler.makeClickable(colorString(rawLine, name, findClosestColor('#63ba41')), name, () => {
+                Input.send("wybierz paczke " + index)
+            }) : rawLine
         };
     }
 

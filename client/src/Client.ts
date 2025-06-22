@@ -4,16 +4,19 @@ import MapHelper from "./MapHelper";
 import {Howl} from "howler"
 import Port = chrome.runtime.Port;
 import {FunctionalBind} from "./scripts/functionalBind";
+import OutputHandler from "./OutputHandler";
 
 const originalSend = Input.send
 
 export default class Client {
 
+    port: Port;
     eventTarget = new EventTarget()
     FunctionalBind = new FunctionalBind(this)
     Triggers = new Triggers(this)
     packageHelper = new PackageHelper(this)
-    mapHelper = new MapHelper(this)
+    Map = new MapHelper(this)
+    OutputHandler = new OutputHandler(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
         // beep: new Howl({
@@ -33,10 +36,12 @@ export default class Client {
 
     connect(port: Port) {
         port.onMessage.addListener((message) => {
-            if (message.settings) {
-                this.eventTarget.dispatchEvent(new CustomEvent('settings', {detail: message}))
-            }
+            Object.entries(message).forEach(([key, value]) => {
+                this.eventTarget.dispatchEvent(new CustomEvent(key, {detail: value}))
+            })
         })
+        this.port = port;
+        console.log("Client connected to background service.")
     }
 
     addEventListener(event: string, listener: (arg: CustomEvent) => void, options?: AddEventListenerOptions | boolean) {
@@ -51,7 +56,7 @@ export default class Client {
 
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        originalSend(this.mapHelper.parseCommand(command))
+        originalSend(this.Map.parseCommand(command))
     }
 
     onLine(line) {
