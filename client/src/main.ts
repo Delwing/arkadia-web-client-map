@@ -19,9 +19,9 @@ Gmcp.parse_option_subnegotiation = (match) => {
         const parsed = JSON.parse(data)
         client.sendEvent(`gmcp.${type}`, parsed)
         if (type === "gmcp_msgs") {
-            let data = atob(parsed.text)
-            data = client.onLine(data)
-            parsed.text = btoa(data)
+            let text = atob(parsed.text)
+            text = client.onLine(text, parsed.type)
+            parsed.text = btoa(text)
             match = `${prefix}É${type} ${JSON.stringify(parsed)}${postfix}`
             client.sendEvent(`gmcp_msg.${parsed.type}`, parsed)
         }

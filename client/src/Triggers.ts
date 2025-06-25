@@ -4,7 +4,7 @@ const stripAnsiCodes = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*(?:[
 
 type TriggerCallback = (rawLine: string, line: string, matches: {
     index: number
-} | RegExpMatchArray, uuid: string) => string | undefined
+} | RegExpMatchArray, type: string) => string | undefined
 
 export interface Trigger {
     pattern: string | RegExp;
@@ -32,10 +32,11 @@ export default class Triggers {
     }
 
     registerOneTimeTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string) {
-        return this.registerTrigger(pattern, (rawLine, line, matches, uuid): string => {
+        const uuid = this.registerTrigger(pattern, (rawLine, line, matches, type): string => {
             this.removeTrigger(uuid)
-            return callback(rawLine, line, matches, uuid)
+            return callback(rawLine, line, matches, type)
         }, tag)
+        return uuid;
     }
 
     removeByTag(tag: string) {
@@ -48,9 +49,9 @@ export default class Triggers {
         this.triggers.delete(uuid)
     }
 
-    parseLine(rawLine: string) {
+    parseLine(rawLine: string, type: string) {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, '')
-        Array.from(this.triggers.entries()).forEach(([uuid, trigger]) => {
+        Array.from(this.triggers.entries()).forEach(([_, trigger]) => {
             let matches: { index: number } | RegExpMatchArray;
             if (trigger.pattern instanceof RegExp) {
                 matches = line.match(trigger.pattern)
@@ -60,7 +61,7 @@ export default class Triggers {
                 }
             }
             if (matches) {
-                rawLine = trigger.callback(rawLine, line, matches, uuid) ?? rawLine
+                rawLine = trigger.callback(rawLine, line, matches, type) ?? rawLine
             }
         })
         return rawLine

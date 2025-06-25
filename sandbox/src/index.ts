@@ -28,8 +28,8 @@ window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("gmcp.room.info
     detail: {map: {x: 80, y: 89, z: 0, name: "Wissenland"}}
 }));
 
-window.clientExtension.fake = (text: string) => {
-    window.Output.send(window.Text.parse_patterns(window.clientExtension.onLine(text)))
+window.clientExtension.fake = (text: string, type?: string) => {
+    window.Output.send(window.Text.parse_patterns(window.clientExtension.onLine(text, type)), type)
 }
 
 const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
@@ -50,3 +50,6 @@ const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj po
 window.clientExtension.fake(table)
 window.Input.send("wybierz paczke 3")
 window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")
+
+
+window.clientExtension.fake("Ledwo muskasz brudnego brzydkiego goblina ciezkim bojowym toporem, trafiajac go w lewe ramie.", "combat.avatar")
