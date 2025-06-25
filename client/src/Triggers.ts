@@ -135,7 +135,6 @@ export default class Triggers {
         this.triggers.forEach(trigger => {
             rawLine = trigger.execute(rawLine, type);
         });
-
         return rawLine;
     }
 
