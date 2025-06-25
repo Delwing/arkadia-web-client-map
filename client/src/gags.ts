@@ -107,28 +107,24 @@ export default function registerGagTriggers(manager: Triggers) {
 }
 
 function registerGroup(parent: Triggers | Trigger, group: GagGroup) {
-    const hasPatterns = !!group.patterns && group.patterns.length > 0;
-    const hasTriggers = !!group.triggers && group.triggers.length > 0;
-    const hasGroups = !!group.groups && group.groups.length > 0;
+    const patterns = Array.isArray(group.patterns) ? group.patterns : [];
+    const triggers = Array.isArray(group.triggers) ? group.triggers : [];
+    const groups = Array.isArray(group.groups) ? group.groups : [];
 
-    if (!hasPatterns && !hasTriggers && !hasGroups) {
-        return;
-    }
-
-    if (!hasPatterns && !hasTriggers) {
-        (group.groups || []).forEach(gr => registerGroup(parent, gr));
+    if (patterns.length === 0 && triggers.length === 0) {
+        groups.forEach(gr => registerGroup(parent, gr));
         return;
     }
 
     let container: Triggers | Trigger = parent;
-    (group.patterns || []).forEach(pat => {
+    patterns.forEach(pat => {
         const pattern = toPattern(pat);
         container = container instanceof Trigger
             ? container.registerChild(pattern, undefined, group.name)
             : (parent as Triggers).registerTrigger(pattern, undefined, group.name);
     });
-    (group.triggers || []).forEach(tr => registerTrigger(container, tr));
-    (group.groups || []).forEach(gr => registerGroup(container, gr));
+    triggers.forEach(tr => registerTrigger(container, tr));
+    groups.forEach(gr => registerGroup(container, gr));
 }
 
 function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
