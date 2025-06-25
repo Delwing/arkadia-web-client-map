@@ -1,70 +1,125 @@
 import Client from "./Client";
 
-const stripAnsiCodes = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+const stripAnsiCodes = (str: string) =>
+    str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
 
-type TriggerCallback = (rawLine: string, line: string, matches: {
-    index: number
-} | RegExpMatchArray, type: string) => string | undefined
+type TriggerCallback = (
+    rawLine: string,
+    line: string,
+    matches: { index: number } | RegExpMatchArray,
+    type: string
+) => string | undefined;
 
-export interface Trigger {
-    pattern: string | RegExp;
-    callback: TriggerCallback
-    tag?: string;
+export class Trigger {
+    id = crypto.randomUUID();
+    children: Map<string, Trigger> = new Map();
+
+    constructor(
+        private manager: Triggers,
+        public pattern: string | RegExp,
+        public callback: TriggerCallback,
+        public tag?: string,
+        public parent?: Trigger
+    ) {}
+
+    registerChild(
+        pattern: string | RegExp,
+        callback: TriggerCallback,
+        tag?: string
+    ) {
+        const child = new Trigger(this.manager, pattern, callback, tag, this);
+        this.children.set(child.id, child);
+        return child;
+    }
+
+    registerOneTimeChild(
+        pattern: string | RegExp,
+        callback: TriggerCallback,
+        tag?: string
+    ) {
+        const child = this.registerChild(
+            pattern,
+            (rawLine, line, matches, type) => {
+                this.manager.removeTrigger(child);
+                return callback(rawLine, line, matches, type);
+            },
+            tag
+        );
+        return child;
+    }
+
+    execute(rawLine: string, type: string) {
+        const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
+        let matches: { index: number } | RegExpMatchArray;
+        if (this.pattern instanceof RegExp) {
+            matches = line.match(this.pattern);
+        } else if (rawLine.toLowerCase().indexOf(this.pattern.toLowerCase()) > -1) {
+            matches = { index: rawLine.toLowerCase().indexOf(this.pattern.toLowerCase()) };
+        }
+        if (matches) {
+            rawLine = this.callback(rawLine, line, matches, type) ?? rawLine;
+            this.children.forEach(child => {
+                rawLine = child.execute(rawLine, type);
+            });
+        }
+        return rawLine;
+    }
 }
 
 export default class Triggers {
 
     clientExtension: Client;
-    triggers: Map<string, Trigger> = new Map()
+    triggers: Map<string, Trigger> = new Map();
 
     constructor(clientExtension: Client) {
         this.clientExtension = clientExtension;
     }
 
-    registerTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string): string {
-        const uuid = crypto.randomUUID()
-        this.triggers.set(uuid, {
-            pattern: pattern,
-            callback: callback,
-            tag: tag
-        })
-        return uuid;
+    private removeByTagRecursive(tag: string, collection: Map<string, Trigger>) {
+        Array.from(collection.values()).forEach(trigger => {
+            if (trigger.tag === tag) {
+                this.removeTrigger(trigger);
+            } else {
+                this.removeByTagRecursive(tag, trigger.children);
+            }
+        });
+    }
+
+    registerTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string) {
+        const trigger = new Trigger(this, pattern, callback, tag);
+        this.triggers.set(trigger.id, trigger);
+        return trigger;
     }
 
     registerOneTimeTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string) {
-        const uuid = this.registerTrigger(pattern, (rawLine, line, matches, type): string => {
-            this.removeTrigger(uuid)
-            return callback(rawLine, line, matches, type)
-        }, tag)
-        return uuid;
+        const trigger = this.registerTrigger(
+            pattern,
+            (rawLine, line, matches, type) => {
+                this.removeTrigger(trigger);
+                return callback(rawLine, line, matches, type);
+            },
+            tag
+        );
+        return trigger;
     }
 
     removeByTag(tag: string) {
-        Array.from(this.triggers.entries()).filter(([, trigger]) => trigger.tag === tag).forEach(([key]) => {
-            this.removeTrigger(key)
-        })
+        this.removeByTagRecursive(tag, this.triggers);
     }
 
-    removeTrigger(uuid: string) {
-        this.triggers.delete(uuid)
+    removeTrigger(trigger: Trigger) {
+        if (trigger.parent) {
+            trigger.parent.children.delete(trigger.id);
+        } else {
+            this.triggers.delete(trigger.id);
+        }
     }
 
     parseLine(rawLine: string, type: string) {
-        const line = stripAnsiCodes(rawLine).replace(/\s$/g, '')
-        Array.from(this.triggers.entries()).forEach(([_, trigger]) => {
-            let matches: { index: number } | RegExpMatchArray;
-            if (trigger.pattern instanceof RegExp) {
-                matches = line.match(trigger.pattern)
-            } else if (rawLine.toLowerCase().indexOf(trigger.pattern.toLowerCase()) > -1) {
-                matches = {
-                    index: rawLine.toLowerCase().indexOf(trigger.pattern.toLowerCase())
-                }
-            }
-            if (matches) {
-                rawLine = trigger.callback(rawLine, line, matches, type) ?? rawLine
-            }
-        })
-        return rawLine
+        this.triggers.forEach(trigger => {
+            rawLine = trigger.execute(rawLine, type);
+        });
+        return rawLine;
     }
 
 }
