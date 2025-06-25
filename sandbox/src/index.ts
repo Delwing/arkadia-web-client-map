@@ -56,6 +56,7 @@ window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")
 window.clientExtension.Triggers.registerTrigger((rawLine, line, _matches, type) => {
     return type == "combat.avatar" ? {index: 0} : undefined
 }, (rawLine, line, matches, type) => {
+    window.clientExtension.println("Should be after")
     return color(25) + rawLine
 })
 window.clientExtension.fake("Ledwo muskasz brudnego brzydkiego goblina ciezkim bojowym toporem, trafiajac go w lewe ramie.", "combat.avatar")
