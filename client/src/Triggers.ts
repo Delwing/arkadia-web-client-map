@@ -132,10 +132,26 @@ export default class Triggers {
     }
 
     parseLine(rawLine: string, type: string) {
+        const buffered: Array<[string, string | undefined]> = []
+        const originalOutputSend = Output.send
+
+        Output.send = (out: string, outType?: string): any => {
+            buffered.push([out, outType])
+        }
+
+        const flush = () => {
+            buffered.forEach(([out, outType]) => originalOutputSend(out, outType))
+        }
+
+        this.clientExtension.addEventListener('output-sent', flush, {once: true})
+
         this.triggers.forEach(trigger => {
-            rawLine = trigger.execute(rawLine, type);
-        });
-        return rawLine;
+            rawLine = trigger.execute(rawLine, type)
+        })
+
+        Output.send = originalOutputSend
+
+        return rawLine
     }
 
 }
