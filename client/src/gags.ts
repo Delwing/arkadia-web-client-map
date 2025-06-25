@@ -107,13 +107,19 @@ export default function registerGagTriggers(manager: Triggers) {
 }
 
 function registerGroup(parent: Triggers | Trigger, group: GagGroup) {
-    if (
-        (!group.patterns || group.patterns.length === 0) &&
-        (!group.triggers || group.triggers.length === 0) &&
-        (!group.groups || group.groups.length === 0)
-    ) {
+    const hasPatterns = !!group.patterns && group.patterns.length > 0;
+    const hasTriggers = !!group.triggers && group.triggers.length > 0;
+    const hasGroups = !!group.groups && group.groups.length > 0;
+
+    if (!hasPatterns && !hasTriggers && !hasGroups) {
         return;
     }
+
+    if (!hasPatterns && !hasTriggers) {
+        (group.groups || []).forEach(gr => registerGroup(parent, gr));
+        return;
+    }
+
     let container: Triggers | Trigger = parent;
     (group.patterns || []).forEach(pat => {
         const pattern = toPattern(pat);
