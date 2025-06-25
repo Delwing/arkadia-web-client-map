@@ -16,6 +16,10 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "typeRoots": [
+      "./src",
+      "./node_modules/@types"
+    ],
     "paths": {
       "@extension/*": [
         "../extension/*"
