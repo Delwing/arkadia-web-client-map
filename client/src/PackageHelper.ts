@@ -1,5 +1,6 @@
 import {colorString, findClosestColor} from "./Colors";
 import Client from "./Client";
+import { Trigger } from "./Triggers";
 
 function toTitleCase(str) {
     return str.replace(
@@ -26,7 +27,7 @@ export default class PackageHelper {
     private pick: number
     private currentPackage: { name: string; time?: number };
 
-    deliveryTrigger: string;
+    deliveryTrigger: Trigger;
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
