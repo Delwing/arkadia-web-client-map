@@ -1,3 +1,5 @@
+import Client from "@client/src/Client.ts";
+
 interface ClientInput {
     send(command: string): void;
 }
@@ -46,17 +48,21 @@ interface ClientConf {
 
 }
 
+interface FakeClient extends Client {
+    fake: Function
+}
 
-declare var clientExtensions: ClientExtension
 
-interface Window {
-    Input: ClientInput;
-    Output: ClientOutput;
-    Maps: ClientMap;
-    Text: ClientText;
-    Conf: ClientConf
-    Gmcp: ClientGmcp;
-    clientExtension: ClientExtension
+declare global {
+    interface Window {
+        Input: ClientInput;
+        Output: ClientOutput;
+        Maps: ClientMap;
+        Text: ClientText;
+        Conf: ClientConf
+        Gmcp: ClientGmcp;
+        clientExtension: FakeClient
+    }
 }
 
 declare var Input: ClientInput;
