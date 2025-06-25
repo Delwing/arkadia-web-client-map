@@ -58,9 +58,9 @@ export default class Client {
         originalSend(this.Map.parseCommand(command))
     }
 
-    onLine(line) {
+    onLine(line: string, type: string) {
         //TODO might better to find previous valid ANSI sequence in unmodified line, that way we might be able to restore original color, not default one
-        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial)).join('\n')
+        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         if (line.substring(0, 1) === '') {
             const resetSequence = line.substring(0, 14)
             result = result.replace(/\[0m/g, resetSequence)
