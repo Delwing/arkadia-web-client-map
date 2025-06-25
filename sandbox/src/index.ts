@@ -4,6 +4,7 @@ import "@client/src/main.ts"
 import npc from "./npc.json";
 import mapData from "../../data/mapExport.json"
 import colors from "../../data/colors.json"
+import {color} from "@client/src/Colors.ts";
 
 window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
@@ -52,4 +53,9 @@ window.Input.send("wybierz paczke 3")
 window.clientExtension.fake("Pracownik poczty przekazuje ci jakas paczke.")
 
 
+window.clientExtension.Triggers.registerTrigger((rawLine, line, _matches, type) => {
+    return type == "combat.avatar" ? {index: 0} : undefined
+}, (rawLine, line, matches, type) => {
+    return color(25) + rawLine
+})
 window.clientExtension.fake("Ledwo muskasz brudnego brzydkiego goblina ciezkim bojowym toporem, trafiajac go w lewe ramie.", "combat.avatar")
