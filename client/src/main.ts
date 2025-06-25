@@ -1,5 +1,6 @@
 import Client from "./Client";
 import People from "./People";
+import registerGagTriggers from "./gags";
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
@@ -120,6 +121,7 @@ blockers.forEach(blocker => {
     People
  */
 new People(client)
+registerGagTriggers(client.Triggers)
 
 /*
     Follows
