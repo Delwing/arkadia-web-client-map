@@ -1,0 +1,120 @@
+const fs = require('fs');
+const path = require('path');
+const xml2js = require('xml2js');
+
+const repoPath = process.argv[2] || '.';
+const luaDir = path.join(repoPath, 'skrypty');
+const xmlPath = path.join(repoPath, 'Arkadia.xml');
+
+const funcCalls = {};
+const funcRe = /^function\s+(trigger_func_[^(]+)\s*\(/;
+const callRe = /scripts\.gags:(gag_own_spec|gag_prefix|gag_spec|gag)\(([^)]*)\)/;
+
+function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const ent of entries) {
+        const full = path.join(dir, ent.name);
+        if (ent.isDirectory()) {
+            walk(full);
+        } else if (ent.isFile() && full.endsWith('.lua')) {
+            parseLua(full);
+        }
+    }
+}
+
+function parseLua(file) {
+    const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+    let current = null;
+    for (const line of lines) {
+        const trimmed = line.trim();
+        const mFunc = funcRe.exec(trimmed);
+        if (mFunc) {
+            current = mFunc[1];
+            continue;
+        }
+        if (current) {
+            if (trimmed === 'end') {
+                current = null;
+                continue;
+            }
+            const mCall = callRe.exec(line);
+            if (mCall) {
+                const func = mCall[1];
+                const args = mCall[2].split(',').map(a => a.trim());
+                if (!funcCalls[current]) funcCalls[current] = [];
+                funcCalls[current].push({ func, args });
+            }
+        }
+    }
+}
+
+walk(luaDir);
+
+function toArray(x) {
+    if (!x) return [];
+    return Array.isArray(x) ? x : [x];
+}
+
+function extractPatterns(obj) {
+    const pats = toArray(obj.regexCodeList && obj.regexCodeList.string).filter(Boolean);
+    const props = toArray(obj.regexCodePropertyList && obj.regexCodePropertyList.integer);
+    const out = [];
+    for (let i = 0; i < Math.max(pats.length, props.length); i++) {
+        const pattern = pats[i] || '';
+        const type = props[i] !== undefined ? Number(props[i]) : null;
+        if (pattern || type !== null) out.push({ pattern, type });
+    }
+    return out;
+}
+
+function getCalls(script) {
+    let funcName = script;
+    if (funcName.endsWith('()')) funcName = funcName.slice(0, -2);
+    if (funcCalls[funcName]) return funcCalls[funcName];
+    const mCall = callRe.exec(script);
+    if (mCall) {
+        return [{ func: mCall[1], args: mCall[2].split(',').map(a => a.trim()) }];
+    }
+    return [];
+}
+
+function processTrigger(tr) {
+    const scriptNode = tr.script;
+    if (!scriptNode) return null;
+    const script = String(scriptNode).trim();
+    if (!script) return null;
+    const calls = getCalls(script);
+    if (calls.length === 0) return null;
+    return {
+        name: tr.name || '',
+        patterns: extractPatterns(tr),
+        calls,
+    };
+}
+
+function processGroup(gr) {
+    const group = {
+        name: gr.name || '',
+        patterns: extractPatterns(gr),
+        triggers: [],
+        groups: [],
+    };
+    toArray(gr.Trigger).forEach(t => {
+        const res = processTrigger(t);
+        if (res) group.triggers.push(res);
+    });
+    toArray(gr.TriggerGroup).forEach(g => {
+        const sub = processGroup(g);
+        if (sub.triggers.length || sub.groups.length) group.groups.push(sub);
+    });
+    return group;
+}
+
+const xmlData = fs.readFileSync(xmlPath, 'utf8');
+xml2js.parseString(xmlData, { explicitArray: false }, (err, result) => {
+    if (err) throw err;
+    const root = result.MudletPackage && result.MudletPackage.TriggerPackage;
+    if (!root) return;
+    const groups = toArray(root.TriggerGroup).map(processGroup).filter(Boolean);
+    fs.writeFileSync("./client/src/gags.json", JSON.stringify(groups));
+});
