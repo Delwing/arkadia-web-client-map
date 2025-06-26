@@ -100,7 +100,7 @@ function SettingsForm() {
                         </label>
                     </div>
                 </div>
-                <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleSubmission()}>Zapisz</button>
+                <button className="btn btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
             </div>
         </>
     )

@@ -34,8 +34,8 @@ function Npc() {
     return (
         <>
             <div className={'m-2'}>
-                <button className={'mb-2 mr-2 px-2 py-1 text-sm bg-blue-600 text-white rounded'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
-                <button className={'mb-2 px-2 py-1 text-sm bg-red-600 text-white rounded'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
+                <button className={'btn btn-primary btn-sm mb-2 mr-2'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
+                <button className={'btn btn-error btn-sm mb-2'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
                 <table className="min-w-full border border-gray-700 text-sm">
                     <tbody>
                     {npcs.sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
