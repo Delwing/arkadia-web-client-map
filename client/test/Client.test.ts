@@ -65,3 +65,26 @@ test('sendCommand dispatches event and sends parsed command', () => {
   expect((window as any).Input.send).toHaveBeenCalledWith('parsed:test');
 });
 
+test('onLine sends printed messages after line and restores Output.send', () => {
+  const client = new Client();
+  const originalOutputSend = (window as any).Output.send;
+
+  client.Triggers.parseLine = jest.fn(() => {
+    expect((window as any).Output.send).not.toBe(originalOutputSend);
+    client.print('printed');
+    return 'processed';
+  });
+
+  const result = client.onLine('line', '');
+
+  expect(result).toBe('processed');
+  expect((window as any).Output.send).toBe(originalOutputSend);
+  expect(originalOutputSend).not.toHaveBeenCalled();
+
+  originalOutputSend(result);
+  client.sendEvent('output-sent');
+
+  expect(originalOutputSend).toHaveBeenNthCalledWith(1, 'processed');
+  expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
+});
+
