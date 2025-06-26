@@ -1,3 +1,5 @@
+const parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
+
 import Client from '../src/Client';
 
 jest.mock('../src/Triggers', () => ({ __esModule: true, default: jest.fn().mockImplementation(() => ({ parseLine: jest.fn((l: string) => l) })) }));
@@ -5,10 +7,8 @@ jest.mock('../src/PackageHelper', () => ({ __esModule: true, default: jest.fn() 
 jest.mock('../src/OutputHandler', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/scripts/functionalBind', () => ({ FunctionalBind: jest.fn() }));
 
-let parseCommand: jest.Mock;
 
 jest.mock('../src/MapHelper', () => {
-  parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
   return {
     __esModule: true,
     default: jest.fn().mockImplementation(() => ({ parseCommand })),
