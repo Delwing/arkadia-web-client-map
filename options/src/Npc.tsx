@@ -34,12 +34,12 @@ function Npc() {
     return (
         <>
             <div className={'m-2'}>
-                <button className={'mb-2 mr-2 px-2 py-1 text-sm bg-blue-600 text-white rounded'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
-                <button className={'mb-2 px-2 py-1 text-sm bg-red-600 text-white rounded'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
-                <table className="min-w-full border border-gray-700 text-sm">
+                <button className={'btn btn-primary btn-sm mb-2 mr-2'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
+                <button className={'btn btn-error btn-sm mb-2'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
+                <table className="min-w-full border border-gray-700 text-sm table-zebra">
                     <tbody>
                     {npcs.sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
-                        <tr key={item.name + '-' + item.loc} className="odd:bg-gray-800 even:bg-gray-700">
+                        <tr key={item.name + '-' + item.loc}>
                             <td className="px-2 py-1 border border-gray-700">{item.name}</td>
                             <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
                         </tr>))}
