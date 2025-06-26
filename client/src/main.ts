@@ -108,6 +108,11 @@ const aliases = [
         pattern: /\/prowadz-$/, callback: () => {
             client.sendEvent('leadTo');
         }
+    },
+    {
+        pattern: /\/zlok$/, callback: () => {
+            Maps.refresh_position();
+        }
     }
 ]
 
