@@ -9,7 +9,7 @@ const gmcpParseOption = Gmcp.parse_option_subnegotiation
 const originalOutputSend = Output.send
 
 
-let client = new Client()
+export const client = new Client()
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)

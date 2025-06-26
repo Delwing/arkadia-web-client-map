@@ -109,4 +109,8 @@ export default class Client {
     playSound(key: string) {
         this.sounds[key].play()
     }
+
+    prefix(rawLine: string, prefix: string) {
+        return prefix + rawLine;
+    }
 }

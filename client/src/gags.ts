@@ -1,44 +1,65 @@
-import Triggers, { Trigger } from "./Triggers";
+import Triggers, {Trigger} from "./Triggers";
 import gagsData from "./gags.json";
+import {client} from "./main";
+import {encloseColor, findClosestColor} from "./Colors";
+
+const gagColors = {
+    "moje_ciosy": "#f0f8ff",
+    "moje_spece": "#adff2f",
+    "innych_ciosy": "#d3d3d3",
+    "innych_ciosy_we_mnie": "#d3d3d3",
+    "innych_spece": "#708090",
+    "moje_uniki": "#4682b4",
+    "innych_uniki": "#2f4f4f",
+    "moje_parowanie": "#4682b4",
+    "innych_parowanie": "#2f4f4f",
+    "zaslony_udane": "#00bfff",
+    "zaslony_nieudane": "#483d8b",
+    "bron": "#ffd700",
+    "npc": "#fffaf0",
+    "npc_spece": "#fffaf0"
+};
+const combatTypes = ["combat.avatar", "combat.team", "combat.others"]
 
 export function isCombatMsg(
     _rawLine: string,
     _line: string,
     _matches: any,
-    _type: string
+    type: string
 ): RegExpMatchArray | { index: number } | undefined {
-    // TODO: implement combat message detection
-    return undefined;
+    return combatTypes.indexOf(type) > -1 ? {index: 0} : undefined;
 }
 
 export function gagsIsType(
-    _typeName: string,
+    checkedType: string,
     _rawLine: string,
     _line: string,
     _matches: any,
-    _type: string
+    type: string
 ): RegExpMatchArray | { index: number } | undefined {
-    // TODO: implement type check
-    return undefined;
+    return checkedType == type ? {index: 0} : undefined;
 }
 
-export function gag(..._args: any[]) {
-    // TODO: implement gag
+export function gag(rawLine: string, power: string, totalPower: string, kind: string) {
+    return gagPrefix(rawLine, `${power}/${totalPower}`, kind)
 }
 
-export function gagOwnSpec(..._args: any[]) {
-    // TODO: implement gag_own_spec
+export function gagOwnSpec(rawLine: string, power: string, totalPower: string) {
+    if (totalPower) {
+        gagSpec(rawLine, '', power, totalPower, "moje_spece")
+    }
+    return gagPrefix(rawLine, `${power}/${totalPower}`, "moje_spece");
 }
 
-export function gagPrefix(..._args: any[]) {
-    // TODO: implement gag_prefix
+export function gagPrefix(rawLine: string, prefix: string, type: string) {
+    return client.prefix(rawLine, encloseColor(`[${prefix}] `, findClosestColor(gagColors[type])));
 }
 
-export function gagSpec(..._args: any[]) {
-    // TODO: implement gag_spec
+export function gagSpec(rawLine: string, prefix: string, power: string, totalPower: string, kind: string) {
+    return gagPrefix(rawLine, `${prefix}${power}/${totalPower}`, kind)
 }
 
-const callMap: Record<string, (...args: any[]) => void> = {
+const callMap: Record<string, (...args: any[]) => string> = {
     gag,
     gag_own_spec: gagOwnSpec,
     gag_prefix: gagPrefix,
@@ -134,13 +155,13 @@ function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
         const pattern = toPattern(pat);
         const isLast = index === tr.patterns.length - 1;
         const callback = isLast
-            ? () => {
-                  (tr.calls || []).forEach(c => {
-                      const fn = callMap[c.func];
-                      if (fn) fn(...c.args.map(parseArg));
-                  });
-                  return undefined;
-              }
+            ? (rawLine: string) => {
+                (tr.calls || []).forEach(c => {
+                    const fn = callMap[c.func];
+                    if (fn) rawLine = fn(rawLine, ...c.args.map(parseArg));
+                });
+                return rawLine;
+            }
             : undefined;
         container = container instanceof Trigger
             ? container.registerChild(pattern, callback, tr.name)
