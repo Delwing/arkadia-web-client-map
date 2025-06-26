@@ -1,4 +1,5 @@
 import {Button, Form, InputGroup, Tab, Tabs} from "react-bootstrap";
+import {createPortal} from "react-dom";
 import {createRef, useEffect, useState} from "react";
 import {Controls} from "./Controls.tsx";
 import TriggerTester from "./TriggerTester.tsx";
@@ -13,8 +14,10 @@ export default function App() {
 
     useEffect(() => {
         const main = document.getElementById('main-container')
+        const tester = document.getElementById('tester-container')
         const bottom = document.getElementById('panel_buttons_bottom')
         if (main) main.style.display = tab === 'client' ? 'flex' : 'none'
+        if (tester) tester.style.display = tab === 'tester' ? 'block' : 'none'
         if (bottom) bottom.style.display = tab === 'client' ? '' : 'none'
     }, [tab])
 
@@ -55,10 +58,9 @@ export default function App() {
                         </InputGroup>
                     </Form>
                 </Tab>
-                <Tab eventKey="tester" title="Trigger Tester" className="pt-3">
-                    <TriggerTester/>
-                </Tab>
+                <Tab eventKey="tester" title="Trigger Tester" className="pt-3" />
             </Tabs>
+            {tab === 'tester' && createPortal(<TriggerTester/>, document.getElementById('tester-container')!)}
         </>
     )
 }
