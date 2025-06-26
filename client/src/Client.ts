@@ -5,6 +5,8 @@ import {Howl} from "howler"
 import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 
+const originalSend = Input.send
+
 export default class Client {
 
     port: chrome.runtime.Port;
@@ -53,7 +55,7 @@ export default class Client {
 
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        Input.send(this.Map.parseCommand(command))
+        originalSend(this.Map.parseCommand(command))
     }
 
     onLine(line: string, type: string) {

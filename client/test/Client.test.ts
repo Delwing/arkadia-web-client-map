@@ -1,3 +1,4 @@
+(window as any).Input = { send: jest.fn() };
 const parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
 
 import Client from '../src/Client';
@@ -17,7 +18,6 @@ jest.mock('../src/MapHelper', () => {
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="panel_buttons_bottom"></div><iframe id="cm-frame"></iframe>';
-  (window as any).Input = { send: jest.fn() };
   (window as any).Output = { flush_buffer: jest.fn(), send: jest.fn() };
   (window as any).Text = { parse_patterns: jest.fn((v: any) => v) };
 });
