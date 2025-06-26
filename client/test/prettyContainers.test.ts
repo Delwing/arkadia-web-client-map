@@ -48,4 +48,17 @@ describe('prettyContainers', () => {
     const last = table.trim().split('\n').pop()!;
     expect(last).toMatch(/^\\-+\/$/);
   });
+
+  test('formatTable applies transforms', () => {
+    const parsed = parseContainer(input)!;
+    const cat = categorizeItems(parsed.items, groups);
+    const transforms = [
+      {
+        check: (item: string) => item.includes('piryt'),
+        transform: (v: string) => v.toUpperCase(),
+      },
+    ];
+    const table = formatTable('POJEMNIK', cat, { columns: 1, transforms });
+    expect(table).toMatch(/ZLOCISTY PIRYT/);
+  });
 });

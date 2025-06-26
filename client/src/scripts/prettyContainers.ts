@@ -15,14 +15,14 @@ export type ParsedContainer = {
     items: ContainerItem[];
 };
 
-function createRegexpFilter(patterns: (string | RegExp)[]): (item: string) => boolean {
+export function createRegexpFilter(patterns: (string | RegExp)[]): (item: string) => boolean {
     const regs = patterns.map(p => typeof p === 'string' ? new RegExp(p, 'i') : p);
     return (item: string) => regs.some(r => r.test(item));
 }
 
 function parseItems(content: string): ContainerItem[] {
     let rest = content.trim();
-    rest = rest.replace(/\s+i\s+([^,]+)\.$/, ', $1');
+    rest = rest.replace(/\s+i\s+([^,]+)(\.)?$/, ', $1');
     rest = rest.replace(/\.$/, '');
     const parts = rest.split(/,\s*/).map(p => p.trim()).filter(p => p.length > 0);
     return parts.map(p => {
@@ -34,13 +34,17 @@ function parseItems(content: string): ContainerItem[] {
     });
 }
 
-function parseContainer(matches: RegExpMatchArray): ParsedContainer | null {
+export function parseContainer(line: string | RegExpMatchArray): ParsedContainer | null {
+    const matches: RegExpMatchArray | null =
+        typeof line === 'string'
+            ? defaultContainerPatterns.map(p => line.match(p)).find(Boolean) || null
+            : line;
     if (matches && (matches.groups?.content || matches.groups?.container)) {
         const container = matches.groups?.container?.trim() ?? '';
         const content = matches.groups?.content ?? '';
         return {container, items: parseItems(content)};
     }
-    return null
+    return null;
 }
 
 
@@ -66,9 +70,15 @@ function center(str: string, len: number) {
     return ' '.repeat(left) + str + ' '.repeat(right);
 }
 
+export type TransformDefinition = {
+    check: (item: string, count: string | number, group: string) => boolean;
+    transform: (value: string) => string;
+};
+
 export type FormatOptions = {
     columns?: number;
     padding?: number;
+    transforms?: TransformDefinition[];
 };
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
@@ -78,8 +88,19 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
 
+    const transforms = opts.transforms ?? [];
+
     const allLines = entries.flatMap(([name, items]) => {
-        const itemTexts = items.map(it => `${String(it.count).padStart(3, ' ')} | ${it.name}`);
+        const itemTexts = items.map(it => {
+            let text = `${String(it.count).padStart(3, ' ')} | ${it.name}`;
+            for (const tr of transforms) {
+                if (tr.check(it.name, it.count, name)) {
+                    text = tr.transform(text);
+                    break;
+                }
+            }
+            return text;
+        });
         return [name, ...itemTexts];
     });
 
@@ -112,7 +133,15 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             for (let c = 0; c < columns; c++) {
                 const grp = pair[c];
                 const item = grp && grp[1][i];
-                const text = item ? `${String(item.count).padStart(3, ' ')} | ${item.name}` : '';
+                let text = item ? `${String(item.count).padStart(3, ' ')} | ${item.name}` : '';
+                if (item && grp) {
+                    for (const tr of transforms) {
+                        if (tr.check(item.name, item.count, grp[0])) {
+                            text = tr.transform(text);
+                            break;
+                        }
+                    }
+                }
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
