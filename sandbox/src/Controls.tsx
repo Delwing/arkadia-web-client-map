@@ -1,12 +1,11 @@
 import {createPortal} from "react-dom";
-import {Button} from "react-bootstrap";
 
 export function Controls() {
 
     return <>
         {createPortal(
-            <Button size={"sm"} variant={'secondary'} onClick={() => window.Output.clear()}>Reset</Button>,
-            document.getElementById('controls')!
+            <button className="text-sm bg-gray-600 text-white px-2 py-1 rounded" onClick={() => window.Output.clear()}>Reset</button>,
+            document.getElementById('controls')!,
         )}
     </>
 }
