@@ -70,7 +70,7 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
         <li>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 {trigger.children.size > 0 && (
-                    <button className="text-sm text-blue-500 p-0 mr-1" onClick={() => setExpanded(!expanded)}>
+                    <button className="btn btn-xs btn-link p-0 mr-1" onClick={() => setExpanded(!expanded)}>
                         {expanded ? '▾' : '▸'}
                     </button>
                 )}
@@ -94,8 +94,8 @@ export default function TriggerTester() {
     return (
         <div className="mt-3">
             <div className="flex gap-2 mb-2">
-                <input className="flex-grow border border-gray-600 bg-transparent px-2 py-1" placeholder="Test line" value={line} onChange={e => setLine(e.currentTarget.value)} />
-                <select className="border border-gray-600 bg-gray-900 px-2 py-1 w-auto" value={type} onChange={e => setType(e.currentTarget.value)}>
+                <input className="input input-bordered flex-grow" placeholder="Test line" value={line} onChange={e => setLine(e.currentTarget.value)} />
+                <select className="select select-bordered w-auto" value={type} onChange={e => setType(e.currentTarget.value)}>
                     <option value="">(none)</option>
                     {typeOptions.map(opt => (
                         <option key={opt} value={opt}>{opt}</option>
