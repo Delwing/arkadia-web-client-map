@@ -4,15 +4,14 @@ Rozszerzenie przeglądarki, które rozbudowuje klienta webowego [Arkadia](https:
 
 ## Pakiety
 
-| Pakiet      | Opis |
-|-------------|---------------------------------------------------------------|
-| `extension` | Końcowe zasoby rozszerzenia (manifest, ikony i pliki statyczne). |
-| `client`    | Skrypt content script napisany w TypeScript i bundlowany przy użyciu Webpacka. |
-| `map`       | Skrypt iframu mapy bundlowany za pomocą Browserify. |
-| `options`   | Strona opcji oparta na React zbudowana przy użyciu Vite. |
-| `scripts`   | Skrypty pomocnicze do generowania plików danych. |
-| `sandbox`   | Lokalna piaskownica do rozwoju (nie jest częścią publikowanego rozszerzenia). |
-| `data`      | Przykładowe dane używane przez skrypty pomocnicze. |
+| Pakiet      | Opis                                                              |
+|-------------|-------------------------------------------------------------------|
+| `extension` | Gotowe rozszerzenie                                               |
+| `client`    | Content script, zawiera modyfikacje klienta i skrypty             |
+| `map`       | Iframe mapy                                                       |
+| `options`   | Strona opcji rozszerzenia                                         |
+| `scripts`   | Skrypty pomocnicze do generowania plików danych.                  |
+| `sandbox`   | Sandbox do rozwoju (nie jest częścią publikowanego rozszerzenia). |
 
 ## Instalowanie zależności
 
@@ -42,9 +41,9 @@ Możesz również uruchamiać skrypty pojedynczej przestrzeni roboczej, na przyk
 yarn workspace client build
 ```
 
-## Instalacja z wydań
+## Instalacja
 
-Gotowe archiwa są dostępne na stronie GitHub Releases projektu. Aby załadować wydanie do Chrome w trybie deweloperskim:
+Plik .zip z rozszerzeniem do pobrania z https://github.com/Delwing/arkadia-web-client-extension/releases/latest. Aby załadować wtyczkę do Chrome w trybie deweloperskim:
 
 1. Pobierz plik `arkadia-extension.zip` z wybranego wydania i rozpakuj go.
 2. Otwórz w Chrome stronę `chrome://extensions` i włącz **Tryb dewelopera** za pomocą przełącznika w prawym górnym rogu.
@@ -53,9 +52,9 @@ Gotowe archiwa są dostępne na stronie GitHub Releases projektu. Aby załadowa�
 
 Rozszerzenie pojawi się na liście i będzie można je ponownie wczytać po pobraniu nowszego wydania.
 
-## Uruchamianie piaskownicy
+## Uruchamianie sandbox
 
-Piaskownica to osobna aplikacja React przydatna do lokalnych testów. Uruchom ją poleceniem:
+Sandbox to osobna aplikacja przydatna do lokalnych testów. Uruchom ją poleceniem:
 
 ```bash
 cd sandbox
