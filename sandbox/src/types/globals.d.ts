@@ -15,14 +15,6 @@ interface ClientOutput {
 }
 
 
-interface Position {
-    x: number;
-    y: number;
-    z: number;
-    id: string;
-    name: string;
-}
-
 interface ClientMap {
     refresh_position(): void
 
@@ -36,8 +28,6 @@ interface ClientMap {
 interface ClientText {
     parse_patterns(text: string): string
 }
-
-declare var Text: ClientText;
 
 interface ClientGmcp {
     parse_option_subnegotiation(subnegotiation: string): void
@@ -61,11 +51,20 @@ declare global {
         Text: ClientText;
         Conf: ClientConf
         Gmcp: ClientGmcp;
-        clientExtension: FakeClient
+        clientExtension: Client
+    }
+
+    declare var Input: ClientInput;
+    declare var Maps: ClientMap;
+    declare var Gmcp: ClientGmcp;
+    declare var Output: ClientOutput;
+    declare var Text: ClientText;
+
+    interface Position {
+        x: number;
+        y: number;
+        z: number;
+        id: string;
+        name: string;
     }
 }
-
-declare var Input: ClientInput;
-declare var Maps: ClientMap;
-declare var Gmcp: ClientGmcp;
-declare var Output: ClientOutput;
