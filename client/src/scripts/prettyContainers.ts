@@ -69,16 +69,17 @@ function center(str: string, len: number) {
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, columns = 1): string {
     const allItems: ContainerItem[] = Object.values(groups).flat();
     const itemLines = allItems.map(it => `${String(it.count).padStart(3, ' ')} | ${it.name}`);
-    let colWidth = Math.max(title.length, ...itemLines.map(l => l.length)) + 2;
+    const colWidth = Math.max(title.length, ...itemLines.map(l => l.length)) + 2;
     const width = columns * colWidth + (columns - 1) * 3 + 2;
     const horiz = '-'.repeat(width - 2);
-    let out = `/${horiz}\\\n`;
-    out += `|${center(title, width - 2)}|\n`;
-    out += `+${horiz}+\n`;
+    const lines: string[] = [];
+    lines.push(`/${horiz}\\`);
+    lines.push(`|${center(title, width - 2)}|`);
+    lines.push(`+${horiz}+`);
     for (const [gName, items] of Object.entries(groups)) {
         if (items.length === 0) continue;
-        out += `|${pad(' ' + gName, width - 2)}|\n`;
-        out += `+${horiz}+\n`;
+        lines.push(`|${pad(' ' + gName, width - 2)}|`);
+        lines.push(`+${horiz}+`);
         for (let i = 0; i < items.length; i += columns) {
             let line = '|';
             for (let c = 0; c < columns; c++) {
@@ -91,14 +92,14 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 }
                 line += c === columns - 1 ? '' : ' | ';
             }
-            line += '|\n';
-            out += line;
+            line += '|';
+            lines.push(line);
         }
-        out += `+${horiz}+\n`;
+        lines.push(`+${horiz}+`);
     }
-    out = out.slice(0, -1); // remove last \n
-    out += `\\${horiz}/`;
-    return out;
+    // replace final separator with closing line
+    lines[lines.length - 1] = `\\${horiz}/`;
+    return lines.join('\n');
 }
 
 export function prettyPrintContainer(matches: RegExpMatchArray, columns = 1, title = 'POJEMNIK') {

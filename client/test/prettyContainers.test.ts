@@ -39,4 +39,12 @@ describe('prettyContainers', () => {
     // Should have two counts in one line when columns=2
     expect(table.split('\n').some(line => line.split('|').length > 4)).toBe(true);
   });
+
+  test('formatTable ends with closing line', () => {
+    const parsed = parseContainer(input)!;
+    const cat = categorizeItems(parsed.items, groups);
+    const table = formatTable('POJEMNIK', cat, 1);
+    const last = table.trim().split('\n').pop()!;
+    expect(last).toMatch(/^\\-+\/$/);
+  });
 });
