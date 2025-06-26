@@ -1,5 +1,6 @@
 import Client from "./Client";
 import People from "./People";
+import registerGagTriggers from "./scripts/gags";
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
@@ -8,7 +9,7 @@ const gmcpParseOption = Gmcp.parse_option_subnegotiation
 const originalOutputSend = Output.send
 
 
-let client = new Client()
+export const client = new Client()
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)
@@ -120,6 +121,7 @@ blockers.forEach(blocker => {
     People
  */
 new People(client)
+registerGagTriggers(client.Triggers)
 
 /*
     Follows
@@ -148,5 +150,8 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
         client.sendEvent('refreshPositionWhenAble')
     })
 })
+
+import initKillTrigger from "./scripts/kill"
+initKillTrigger(client)
 
 window["clientExtension"] = client

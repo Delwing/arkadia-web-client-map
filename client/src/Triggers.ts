@@ -6,9 +6,18 @@ const stripAnsiCodes = (str: string) =>
 type TriggerCallback = (
     rawLine: string,
     line: string,
-    matches: { index: number } | RegExpMatchArray,
+    matches: RegExpMatchArray,
     type: string
 ) => string | undefined;
+
+type TriggerMatchFunction = (
+    rawLine: string,
+    line: string,
+    _matches: RegExpMatchArray | undefined,
+    type: string
+) => RegExpMatchArray | undefined;
+
+type TriggerPattern = string | RegExp | TriggerMatchFunction;
 
 export class Trigger {
     id = crypto.randomUUID();
@@ -16,15 +25,15 @@ export class Trigger {
 
     constructor(
         private manager: Triggers,
-        public pattern: string | RegExp,
-        public callback: TriggerCallback,
+        public pattern: TriggerPattern,
+        public callback?: TriggerCallback,
         public tag?: string,
         public parent?: Trigger
     ) {}
 
     registerChild(
-        pattern: string | RegExp,
-        callback: TriggerCallback,
+        pattern: TriggerPattern,
+        callback?: TriggerCallback,
         tag?: string
     ) {
         const child = new Trigger(this.manager, pattern, callback, tag, this);
@@ -33,7 +42,7 @@ export class Trigger {
     }
 
     registerOneTimeChild(
-        pattern: string | RegExp,
+        pattern: TriggerPattern,
         callback: TriggerCallback,
         tag?: string
     ) {
@@ -50,14 +59,22 @@ export class Trigger {
 
     execute(rawLine: string, type: string) {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
-        let matches: { index: number } | RegExpMatchArray;
+        let matches: RegExpMatchArray | undefined;
         if (this.pattern instanceof RegExp) {
             matches = line.match(this.pattern);
-        } else if (rawLine.toLowerCase().indexOf(this.pattern.toLowerCase()) > -1) {
-            matches = { index: rawLine.toLowerCase().indexOf(this.pattern.toLowerCase()) };
+        } else if (typeof this.pattern === "string") {
+            const index = rawLine.toLowerCase().indexOf(this.pattern.toLowerCase());
+            if (index > -1) {
+                matches = [rawLine.substring(index, this.pattern.length)];
+                matches.index = index;
+            }
+        } else if (typeof this.pattern === "function") {
+            matches = this.pattern(rawLine, line, undefined, type);
         }
         if (matches) {
-            rawLine = this.callback(rawLine, line, matches, type) ?? rawLine;
+            if (this.callback) {
+                rawLine = this.callback(rawLine, line, matches, type) ?? rawLine;
+            }
             this.children.forEach(child => {
                 rawLine = child.execute(rawLine, type);
             });
@@ -85,13 +102,13 @@ export default class Triggers {
         });
     }
 
-    registerTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string) {
+    registerTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string) {
         const trigger = new Trigger(this, pattern, callback, tag);
         this.triggers.set(trigger.id, trigger);
         return trigger;
     }
 
-    registerOneTimeTrigger(pattern: string | RegExp, callback: TriggerCallback, tag?: string) {
+    registerOneTimeTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string) {
         const trigger = this.registerTrigger(
             pattern,
             (rawLine, line, matches, type) => {

@@ -3,6 +3,7 @@ import Convert from "ansi-to-html";
 const converter = new Convert({})
 
 const colorTable = [
+    "dummy",
     "#000000",
     "#800000",
     "#008000",

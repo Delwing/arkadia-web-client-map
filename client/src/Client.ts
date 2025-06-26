@@ -59,12 +59,23 @@ export default class Client {
     }
 
     onLine(line: string, type: string) {
+        const buffer: {out: string, type?: string}[] = [];
+        const originalOutputSend = Output.send;
+        Output.send = (out: string, outputType?: string): any => {
+            buffer.push({out, type: outputType});
+        };
+
+        this.addEventListener('output-sent', () => {
+            buffer.forEach(item => Output.send(item.out, item.type));
+        }, {once: true});
+
         //TODO might better to find previous valid ANSI sequence in unmodified line, that way we might be able to restore original color, not default one
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         if (line.substring(0, 1) === '') {
             const resetSequence = line.substring(0, 14)
             result = result.replace(/\[0m/g, resetSequence)
         }
+        Output.send = originalOutputSend;
         return result
     }
 
@@ -108,5 +119,9 @@ export default class Client {
 
     playSound(key: string) {
         this.sounds[key].play()
+    }
+
+    prefix(rawLine: string, prefix: string) {
+        return prefix + rawLine;
     }
 }
