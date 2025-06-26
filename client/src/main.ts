@@ -154,4 +154,7 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
 import initKillTrigger from "./scripts/kill"
 initKillTrigger(client)
 
+import initInlineCompassRose from "./scripts/inlineCompassRose"
+initInlineCompassRose(client)
+
 window["clientExtension"] = client
