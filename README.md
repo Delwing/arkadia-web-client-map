@@ -1,50 +1,60 @@
-# Arkadia Web Client Extension
+# Rozszerzenie Arkadia Web Client
 
-A browser extension that augments the [Arkadia](https://arkadia.rpg.pl/) web client with features such as an embedded map, additional triggers and a configurable options page. The project is organised as a Yarn workspaces monorepo managed with Lerna.
+Rozszerzenie przeglądarki, które rozbudowuje klienta webowego [Arkadia](https://arkadia.rpg.pl/) o takie funkcje jak wbudowana mapa, dodatkowe triggery oraz konfigurowalna strona opcji. Projekt jest zorganizowany jako monorepo Yarn workspaces zarządzane przez Lerna.
 
-## Packages
+## Pakiety
 
-| Package    | Description                                                      |
-|------------|------------------------------------------------------------------|
-| `extension`| Final extension assets (manifest, icons and static files).       |
-| `client`   | Content script written in TypeScript and bundled with Webpack.   |
-| `map`      | Map iframe script bundled with Browserify.                       |
-| `options`  | React based options page built with Vite.                        |
-| `scripts`  | Helper scripts for generating data files.                        |
-| `sandbox`  | Local development sandbox (not part of the published extension). |
-| `data`     | Sample data used by helper scripts.                              |
+| Pakiet      | Opis                                                              |
+|-------------|-------------------------------------------------------------------|
+| `extension` | Gotowe rozszerzenie                                               |
+| `client`    | Content script, zawiera modyfikacje klienta i skrypty             |
+| `map`       | Iframe mapy                                                       |
+| `options`   | Strona opcji rozszerzenia                                         |
+| `scripts`   | Skrypty pomocnicze do generowania plików danych.                  |
+| `sandbox`   | Sandbox do rozwoju (nie jest częścią publikowanego rozszerzenia). |
 
-## Installing dependencies
+## Instalowanie zależności
 
 ```bash
 yarn install
 ```
 
-## Building the extension
+## Budowanie rozszerzenia
 
-Run the following command from the repository root:
+Uruchom poniższe polecenie w katalogu głównym repozytorium:
 
 ```bash
 yarn build
 ```
 
-This invokes each workspace build task via Lerna and then packages the `extension` directory into an archive named `arkadia-extension.<timestamp>.zip`.
+Polecenie wywołuje zadania budujące wszystkich przestrzeni roboczych przez Lerna i pakuje katalog `extension` do archiwum o nazwie `arkadia-extension.<timestamp>.zip`.
 
-During development you can rebuild automatically on changes:
+W trakcie rozwoju możesz automatycznie przebudowywać projekt po zmianach:
 
 ```bash
 yarn watch
 ```
 
-You can also execute scripts for a single workspace, for example:
+Możesz również uruchamiać skrypty pojedynczej przestrzeni roboczej, na przykład:
 
 ```bash
 yarn workspace client build
 ```
 
-## Running the sandbox
+## Instalacja
 
-The sandbox is a separate React application useful for local testing. Run it with:
+Plik .zip z rozszerzeniem do pobrania z https://github.com/Delwing/arkadia-web-client-extension/releases/latest. Aby załadować wtyczkę do Chrome w trybie deweloperskim:
+
+1. Pobierz plik `arkadia-extension.zip` z wybranego wydania i rozpakuj go.
+2. Otwórz w Chrome stronę `chrome://extensions` i włącz **Tryb dewelopera** za pomocą przełącznika w prawym górnym rogu.
+3. Kliknij **Wczytaj rozpakowany** i wskaż rozpakowany katalog `extension`.
+4. Możesz też po prostu przeciągnąć pobrane archiwum zip na stronę `chrome://extensions`, a Chrome sam zainstaluje rozszerzenie.
+
+Rozszerzenie pojawi się na liście i będzie można je ponownie wczytać po pobraniu nowszego wydania.
+
+## Uruchamianie sandbox
+
+Sandbox to osobna aplikacja przydatna do lokalnych testów. Uruchom ją poleceniem:
 
 ```bash
 cd sandbox
@@ -52,8 +62,8 @@ yarn install
 yarn dev
 ```
 
-Then open `http://localhost:5173` in your browser to try out features without packaging the extension.
+Następnie otwórz w przeglądarce `http://localhost:5173`, aby wypróbować funkcje bez pakowania rozszerzenia.
 
-## License
+## Licencja
 
 MIT
