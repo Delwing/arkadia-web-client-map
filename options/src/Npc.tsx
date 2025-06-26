@@ -1,5 +1,4 @@
 import './App.css'
-import {Button, Container, Table} from "react-bootstrap";
 import {useEffect, useState} from "react";
 import storage from "./storage.ts";
 
@@ -34,19 +33,19 @@ function Npc() {
 
     return (
         <>
-            <Container className={'m-2'}>
-                <Button size={'sm'} className={'mb-2 me-2'} onClick={() => downloadNpcs()}>Pobierz bazę</Button>
-                <Button size={'sm'} className={'mb-2'} onClick={() => clearNpcs()}>Wyczyść bazę</Button>
-                <Table striped bordered hover>
+            <div className={'m-2'}>
+                <button className={'mb-2 mr-2 px-2 py-1 text-sm bg-blue-600 text-white rounded'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
+                <button className={'mb-2 px-2 py-1 text-sm bg-red-600 text-white rounded'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
+                <table className="min-w-full border border-gray-700 text-sm">
                     <tbody>
                     {npcs.sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
-                        <tr key={item.name + '-' + item.loc}>
-                            <td>{item.name}</td>
-                            <td>{item.loc}</td>
+                        <tr key={item.name + '-' + item.loc} className="odd:bg-gray-800 even:bg-gray-700">
+                            <td className="px-2 py-1 border border-gray-700">{item.name}</td>
+                            <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
                         </tr>))}
                     </tbody>
-                </Table>
-            </Container>
+                </table>
+            </div>
         </>
     )
 }

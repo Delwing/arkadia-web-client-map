@@ -1,5 +1,4 @@
 import './App.css'
-import {Button, Card, CardBody, Col, Container, Form, Row} from "react-bootstrap";
 import {ChangeEvent, useEffect, useState} from "react";
 import storage from "./storage.ts";
 
@@ -54,58 +53,55 @@ function SettingsForm() {
 
     return (
         <>
-            <Container className="my-4">
-                <Form>
-                    <Row>
-                        <Col>
-                            <Card>
-                                <CardBody>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label><h5>Ładowanie triggerów dla gildii</h5></Form.Label>
-                                        <Row>
-                                            {guilds.map(guild => (
-                                                <Col style={{width: "85px", flex: "0"}} key={guild}>
-                                                <Form.Check id={`guild-${guild}`} name={'guild'} value={guild}
-                                                            label={guild}
-                                                            onChange={event => onChange(event, guild)}
-                                                            className={'mx-2'}
-                                                            checked={settings.guilds.indexOf(guild) != -1}/>
-                                                </Col>
-                                            ))}
-                                        </Row>
-                                    </Form.Group>
-                                </CardBody>
-                            </Card>
-                            <Card>
-                                <CardBody>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label><h5>Pozostałe opcje</h5></Form.Label>
-                                        <Row>
-                                            <Col>
-
-                                                    <Form.Check id={'replaceMap'} name={'replaceMap'}
-                                                                key={'replaceMap'} label={'Zamień wbudowaną mapę'}
-                                                                onChange={event => onChangeSetting((settings) => settings.replaceMap = event.target.checked)}
-                                                                className={'mx-2'}
-                                                                checked={settings.replaceMap}/>
-                                            </Col>
-                                            <Col>
-
-                                                <Form.Check id={'packageHelper'} name={'packageHelper'}
-                                                            key={'packageHelper'} label={'Asystent paczek'}
-                                                            onChange={event => onChangeSetting((settings) => settings.packageHelper = event.target.checked)}
-                                                            className={'mx-2'}
-                                                            checked={settings.packageHelper}/>
-                                            </Col>
-                                        </Row>
-                                    </Form.Group>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
-                    <Button className={'mt-2'} onClick={() => handleSubmission()}>Zapisz</Button>
-                </Form>
-            </Container>
+            <div className="my-4 p-2">
+                <div className="mb-4 border rounded p-2">
+                    <h5 className="font-bold mb-2">Ładowanie triggerów dla gildii</h5>
+                    <div className="flex flex-wrap gap-2">
+                        {guilds.map(guild => (
+                            <label className="flex items-center gap-1 w-20" key={guild}>
+                                <input
+                                    type="checkbox"
+                                    id={`guild-${guild}`}
+                                    name="guild"
+                                    value={guild}
+                                    onChange={event => onChange(event, guild)}
+                                    className="mx-1"
+                                    checked={settings.guilds.indexOf(guild) != -1}
+                                />
+                                {guild}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+                <div className="mb-4 border rounded p-2">
+                    <h5 className="font-bold mb-2">Pozostałe opcje</h5>
+                    <div className="flex flex-wrap gap-4">
+                        <label className="flex items-center gap-1">
+                            <input
+                                type="checkbox"
+                                id="replaceMap"
+                                name="replaceMap"
+                                onChange={event => onChangeSetting((s) => s.replaceMap = event.target.checked)}
+                                className="mx-1"
+                                checked={settings.replaceMap}
+                            />
+                            Zamień wbudowaną mapę
+                        </label>
+                        <label className="flex items-center gap-1">
+                            <input
+                                type="checkbox"
+                                id="packageHelper"
+                                name="packageHelper"
+                                onChange={event => onChangeSetting((s) => s.packageHelper = event.target.checked)}
+                                className="mx-1"
+                                checked={settings.packageHelper}
+                            />
+                            Asystent paczek
+                        </label>
+                    </div>
+                </div>
+                <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleSubmission()}>Zapisz</button>
+            </div>
         </>
     )
 }
