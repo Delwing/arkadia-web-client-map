@@ -66,44 +66,75 @@ function center(str: string, len: number) {
     return ' '.repeat(left) + str + ' '.repeat(right);
 }
 
-export function formatTable(title: string, groups: Record<string, ContainerItem[]>, columns = 1): string {
-    const allItems: ContainerItem[] = Object.values(groups).flat();
-    const itemLines = allItems.map(it => `${String(it.count).padStart(3, ' ')} | ${it.name}`);
-    const colWidth = Math.max(title.length, ...itemLines.map(l => l.length)) + 2;
+export type FormatOptions = {
+    columns?: number;
+    padding?: number;
+};
+
+export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
+    const columns = opts.columns ?? 1;
+    const padding = opts.padding ?? 1;
+    const padSpace = ' '.repeat(padding);
+
+    const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
+
+    const allLines = entries.flatMap(([name, items]) => {
+        const itemTexts = items.map(it => `${String(it.count).padStart(3, ' ')} | ${it.name}`);
+        return [name, ...itemTexts];
+    });
+
+    const colWidth = Math.max(title.length + padding * 2, ...allLines.map(l => l.length + padding * 2));
+    const cell = (text: string) => pad(`${padSpace}${text}${padSpace}`, colWidth);
     const width = columns * colWidth + (columns - 1) * 3 + 2;
     const horiz = '-'.repeat(width - 2);
     const lines: string[] = [];
     lines.push(`/${horiz}\\`);
     lines.push(`|${center(title, width - 2)}|`);
     lines.push(`+${horiz}+`);
-    for (const [gName, items] of Object.entries(groups)) {
-        if (items.length === 0) continue;
-        lines.push(`|${pad(' ' + gName, width - 2)}|`);
+
+    for (let row = 0; row < entries.length; row += columns) {
+        const pair = entries.slice(row, row + columns);
+
+        // group names
+        let gLine = '|';
+        for (let c = 0; c < columns; c++) {
+            const grp = pair[c];
+            gLine += cell(grp ? grp[0] : '');
+            gLine += c === columns - 1 ? '' : ' | ';
+        }
+        gLine += '|';
+        lines.push(gLine);
         lines.push(`+${horiz}+`);
-        for (let i = 0; i < items.length; i += columns) {
-            let line = '|';
+
+        const maxItems = Math.max(...pair.map(([,_items]) => _items.length));
+        for (let i = 0; i < maxItems; i++) {
+            let rowLine = '|';
             for (let c = 0; c < columns; c++) {
-                const it = items[i + c];
-                if (it) {
-                    const text = `${String(it.count).padStart(3, ' ')} | ${it.name}`;
-                    line += pad(text, colWidth);
-                } else {
-                    line += ' '.repeat(colWidth);
-                }
-                line += c === columns - 1 ? '' : ' | ';
+                const grp = pair[c];
+                const item = grp && grp[1][i];
+                const text = item ? `${String(item.count).padStart(3, ' ')} | ${item.name}` : '';
+                rowLine += cell(text);
+                rowLine += c === columns - 1 ? '' : ' | ';
             }
-            line += '|';
-            lines.push(line);
+            rowLine += '|';
+            lines.push(rowLine);
         }
         lines.push(`+${horiz}+`);
     }
-    // replace final separator with closing line
+
     lines[lines.length - 1] = `\\${horiz}/`;
     return lines.join('\n');
 }
 
-export function prettyPrintContainer(matches: RegExpMatchArray, columns = 1, title = 'POJEMNIK') {
-    const parsed = parseContainer(matches);
+export function prettyPrintContainer(
+    line: string,
+    defs: GroupDefinition[],
+    columns = 1,
+    title = 'POJEMNIK',
+    patterns: RegExp[] = defaultContainerPatterns,
+    padding = 1,
+) {
+    return formatTable(tableTitle, categorized, { columns, padding });
     if (!parsed) return '';
     const categorized = categorizeItems(parsed.items, defs);
     const tableTitle = title || parsed.container;

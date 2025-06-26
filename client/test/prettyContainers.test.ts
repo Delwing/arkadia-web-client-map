@@ -27,7 +27,7 @@ describe('prettyContainers', () => {
   test('formatTable prints table', () => {
     const parsed = parseContainer(input)!;
     const cat = categorizeItems(parsed.items, groups);
-    const table = formatTable('POJEMNIK', cat, 1);
+    const table = formatTable('POJEMNIK', cat, { columns: 1 });
     expect(table).toMatch(/kamienie/);
     expect(table).toMatch(/upiorny mglisty calun/);
   });
@@ -35,15 +35,16 @@ describe('prettyContainers', () => {
   test('formatTable supports multiple columns', () => {
     const parsed = parseContainer(input)!;
     const cat = categorizeItems(parsed.items, groups);
-    const table = formatTable('POJEMNIK', cat, 2);
-    // Should have two counts in one line when columns=2
-    expect(table.split('\n').some(line => line.split('|').length > 4)).toBe(true);
+    const table = formatTable('POJEMNIK', cat, { columns: 2 });
+    const firstHeader = table.split('\n')[3];
+    expect(firstHeader).toMatch(/ubrania/);
+    expect(firstHeader).toMatch(/kamienie/);
   });
 
   test('formatTable ends with closing line', () => {
     const parsed = parseContainer(input)!;
     const cat = categorizeItems(parsed.items, groups);
-    const table = formatTable('POJEMNIK', cat, 1);
+    const table = formatTable('POJEMNIK', cat, { columns: 1 });
     const last = table.trim().split('\n').pop()!;
     expect(last).toMatch(/^\\-+\/$/);
   });
