@@ -35,7 +35,7 @@ const polishToShort: Record<string, string> = {
 export default function initInlineCompassRose(client: Client) {
     let exits = new Set<string>();
 
-    client.addEventListener('gmcp.room.exits', () => {
+    client.addEventListener('gmcp_msg.room.exits', () => {
         const data = (window as any).gmcp?.room?.info;
         exits = new Set(parseExits(data));
         showCompassRose();
@@ -61,7 +61,7 @@ export default function initInlineCompassRose(client: Client) {
         if (polishToShort[exit]) return polishToShort[exit];
         if (shortToLong[exit]) return exit;
         const long = exit.toLowerCase();
-        const short = Object.entries(shortToLong).find(([s, l]) => l === long);
+        const short = Object.entries(shortToLong).find(([_, l]) => l === long);
         if (short) return short[0];
         return '';
     }
