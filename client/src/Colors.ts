@@ -1,4 +1,7 @@
-import convert from "color-convert";
+function hexToRgb(hex: string): [number, number, number] {
+    const value = parseInt(hex.replace(/^#/, ''), 16);
+    return [(value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff];
+}
 
 export const colorTable = [
     "#000000",
@@ -275,11 +278,11 @@ export function colorString(rawLine: string, string: string, colorCode: number) 
 }
 
 export function findClosestColor(hex: string): number {
-    const targetRgb = convert.hex.rgb(hex)
+    const targetRgb = hexToRgb(hex)
     let distance = 99999999999999
     let currentPick: number = 0;
     colorTable.forEach((colorsKey, index) => {
-        const rgb = convert.hex.rgb(colorsKey)
+        const rgb = hexToRgb(colorsKey)
         const compDistance = Math.pow(targetRgb[0] - rgb[0], 2) + Math.pow(targetRgb[1] - rgb[1], 2) + Math.pow(targetRgb[2] - rgb[2], 2)
         if (compDistance < distance) {
             currentPick = index
