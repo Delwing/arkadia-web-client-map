@@ -61,7 +61,7 @@ export default class Client {
     }
 
     onLine(line: string, type: string) {
-        const buffer: {out: string, type?: string}[] = [];
+        const buffer: { out: string, type?: string }[] = [];
         const originalOutputSend = Output.send;
         Output.send = (out: string, outputType?: string): any => {
             buffer.push({out, type: outputType});
@@ -94,16 +94,17 @@ export default class Client {
         }
     }
 
-    print(printable) {
+    print(printable: string) {
         if (typeof printable === 'object') {
             printable = JSON.stringify(printable)
         }
-        Output.flush_buffer()
         // @ts-ignore
-        Output.send(Text.parse_patterns(printable))
+        const text = Text.parse_patterns(printable)
+        Output.flush_buffer()
+        Output.send(text)
     }
 
-    println(printable) {
+    println(printable: string) {
         this.print("\n")
         this.print(printable)
         this.print("\n")
