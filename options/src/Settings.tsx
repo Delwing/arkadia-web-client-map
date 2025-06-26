@@ -13,6 +13,7 @@ interface Settings {
     guilds: string[];
     packageHelper: boolean;
     replaceMap: boolean;
+    inlineCompassRose: boolean;
 }
 
 function SettingsForm() {
@@ -20,7 +21,8 @@ function SettingsForm() {
     const [settings, setSettings] = useState<Settings>({
         guilds: [],
         packageHelper: false,
-        replaceMap: false
+        replaceMap: false,
+        inlineCompassRose: false,
     })
 
     function onChangeSetting(modifier: (settings: Settings) => void) {
@@ -97,6 +99,17 @@ function SettingsForm() {
                                 checked={settings.packageHelper}
                             />
                             Asystent paczek
+                        </label>
+                        <label className="flex items-center gap-1">
+                            <input
+                                type="checkbox"
+                                id="inlineCompassRose"
+                                name="inlineCompassRose"
+                                onChange={event => onChangeSetting((s) => s.inlineCompassRose = event.target.checked)}
+                                className="mx-1"
+                                checked={settings.inlineCompassRose}
+                            />
+                            Róża wiatrów w linii
                         </label>
                     </div>
                 </div>
