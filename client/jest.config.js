@@ -1,10 +1,12 @@
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  roots: ['<rootDir>/test'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-    },
+  roots: [
+    '<rootDir>/test',
+  ],
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {},
+    ],
   },
-};
+}
