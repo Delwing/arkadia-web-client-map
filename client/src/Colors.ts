@@ -261,8 +261,8 @@ export const colorTable = [
 
 const RESET = '\x1B[0m'
 
-export function color(colorCode) {
-    return `\x1B[22;38;5;${colorCode}m`
+export function color(colorCode:number) {
+    return `\x1B[22;38;5;${colorCode+1}m`
 }
 
 export function encloseColor(string: string, colorCode: number) {

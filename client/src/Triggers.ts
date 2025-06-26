@@ -6,16 +6,16 @@ const stripAnsiCodes = (str: string) =>
 type TriggerCallback = (
     rawLine: string,
     line: string,
-    matches: { index: number } | RegExpMatchArray,
+    matches: RegExpMatchArray,
     type: string
 ) => string | undefined;
 
 type TriggerMatchFunction = (
     rawLine: string,
     line: string,
-    _matches: { index: number } | RegExpMatchArray | undefined,
+    _matches: RegExpMatchArray | undefined,
     type: string
-) => { index: number } | RegExpMatchArray | undefined;
+) => RegExpMatchArray | undefined;
 
 type TriggerPattern = string | RegExp | TriggerMatchFunction;
 
@@ -59,13 +59,14 @@ export class Trigger {
 
     execute(rawLine: string, type: string) {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
-        let matches: { index: number } | RegExpMatchArray | undefined;
+        let matches: RegExpMatchArray | undefined;
         if (this.pattern instanceof RegExp) {
             matches = line.match(this.pattern);
         } else if (typeof this.pattern === "string") {
             const index = rawLine.toLowerCase().indexOf(this.pattern.toLowerCase());
             if (index > -1) {
-                matches = { index };
+                matches = [rawLine.substring(index, this.pattern.length)];
+                matches.index = index;
             }
         } else if (typeof this.pattern === "function") {
             matches = this.pattern(rawLine, line, undefined, type);
