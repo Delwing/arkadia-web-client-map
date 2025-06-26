@@ -41,8 +41,10 @@ Gmcp.parse_option_subnegotiation = (match) => {
                 detail = JSON.parse(text)
                 if (parsed.type === 'room.exits') {
                     setGmcp('room.info.exits', detail)
+                    client.sendEvent('gmcp.room.exits', detail)
                 } else {
                     setGmcp(parsed.type, detail)
+                    client.sendEvent(`gmcp.${parsed.type}`, detail)
                 }
             } catch {
                 detail = text
