@@ -106,10 +106,10 @@ function SettingsForm() {
                                 id="inlineCompassRose"
                                 name="inlineCompassRose"
                                 onChange={event => onChangeSetting((s) => s.inlineCompassRose = event.target.checked)}
-                                className="mx-1"
+                                className="mx-1 checkbox checkbox-sm"
                                 checked={settings.inlineCompassRose}
                             />
-                            Róża wiatrów w linii
+                            Róża wiatrów
                         </label>
                     </div>
                 </div>
