@@ -11,7 +11,7 @@ const funcRe = /^function\s+(trigger_func_[^(]+)\s*\(/;
 const callRe = /scripts\.gags:(gag_own_spec|gag_prefix|gag_spec|gag)\(([^)]*)\)/;
 
 function walk(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const entries = fs.readdirSync(dir, {withFileTypes: true});
     for (const ent of entries) {
         const full = path.join(dir, ent.name);
         if (ent.isDirectory()) {
@@ -40,9 +40,12 @@ function parseLua(file) {
             const mCall = callRe.exec(line);
             if (mCall) {
                 const func = mCall[1];
-                const args = mCall[2].split(',').map(a => a.trim());
+                const args = mCall[2].split(',')
+                    .map(a => a.replace(/"/g, ""))
+                    .map(a => a.replace("scripts.gags.fin_prefix", "FIN"))
+                    .map(a => a.trim());
                 if (!funcCalls[current]) funcCalls[current] = [];
-                funcCalls[current].push({ func, args });
+                funcCalls[current].push({func, args});
             }
         }
     }
@@ -60,9 +63,9 @@ function extractPatterns(obj) {
     const props = toArray(obj.regexCodePropertyList && obj.regexCodePropertyList.integer);
     const out = [];
     for (let i = 0; i < Math.max(pats.length, props.length); i++) {
-        const pattern = pats[i] || '';
+        const pattern = pats[i].replaceAll(/\?'(.*?)'/g, "?<$1>") || '';
         const type = props[i] !== undefined ? Number(props[i]) : null;
-        if (pattern || type !== null) out.push({ pattern, type });
+        if (pattern || type !== null) out.push({pattern, type});
     }
     return out;
 }
@@ -73,7 +76,12 @@ function getCalls(script) {
     if (funcCalls[funcName]) return funcCalls[funcName];
     const mCall = callRe.exec(script);
     if (mCall) {
-        return [{ func: mCall[1], args: mCall[2].split(',').map(a => a.trim()) }];
+        return [{
+            func: mCall[1], args: mCall[2].split(',')
+                .map(a => a.replace(/"/g, ""))
+                .map(a => a.replace("scripts.gags.fin_prefix", "FIN"))
+                .map(a => a.trim())
+        }];
     }
     return [];
 }
@@ -111,10 +119,10 @@ function processGroup(gr) {
 }
 
 const xmlData = fs.readFileSync(xmlPath, 'utf8');
-xml2js.parseString(xmlData, { explicitArray: false }, (err, result) => {
+xml2js.parseString(xmlData, {explicitArray: false}, (err, result) => {
     if (err) throw err;
     const root = result.MudletPackage && result.MudletPackage.TriggerPackage;
     if (!root) return;
     const groups = toArray(root.TriggerGroup).map(processGroup).filter(Boolean);
-    fs.writeFileSync("./client/src/gags.json", JSON.stringify(groups));
+    fs.writeFileSync("./client/src/scripts/gags.json", JSON.stringify(groups));
 });
