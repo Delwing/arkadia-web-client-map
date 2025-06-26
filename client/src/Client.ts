@@ -1,6 +1,7 @@
 import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
+import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
 import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
@@ -16,6 +17,7 @@ export default class Client {
     packageHelper = new PackageHelper(this)
     Map = new MapHelper(this)
     OutputHandler = new OutputHandler(this)
+    inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
         // beep: new Howl({
