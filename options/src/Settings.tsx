@@ -54,7 +54,7 @@ function SettingsForm() {
     return (
         <>
             <div className="my-4 p-2">
-                <div className="mb-4 border rounded p-2">
+                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Ładowanie triggerów dla gildii</h5>
                     <div className="flex flex-wrap gap-2">
                         {guilds.map(guild => (
@@ -65,7 +65,7 @@ function SettingsForm() {
                                     name="guild"
                                     value={guild}
                                     onChange={event => onChange(event, guild)}
-                                    className="mx-1"
+                                    className="checkbox checkbox-sm mx-1"
                                     checked={settings.guilds.indexOf(guild) != -1}
                                 />
                                 {guild}
@@ -73,7 +73,7 @@ function SettingsForm() {
                         ))}
                     </div>
                 </div>
-                <div className="mb-4 border rounded p-2">
+                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Pozostałe opcje</h5>
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-1">
@@ -82,7 +82,7 @@ function SettingsForm() {
                                 id="replaceMap"
                                 name="replaceMap"
                                 onChange={event => onChangeSetting((s) => s.replaceMap = event.target.checked)}
-                                className="mx-1"
+                                className="mx-1 checkbox checkbox-sm"
                                 checked={settings.replaceMap}
                             />
                             Zamień wbudowaną mapę
@@ -93,14 +93,14 @@ function SettingsForm() {
                                 id="packageHelper"
                                 name="packageHelper"
                                 onChange={event => onChangeSetting((s) => s.packageHelper = event.target.checked)}
-                                className="mx-1"
+                                className="mx-1 checkbox checkbox-sm"
                                 checked={settings.packageHelper}
                             />
                             Asystent paczek
                         </label>
                     </div>
                 </div>
-                <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleSubmission()}>Zapisz</button>
+                <button className="btn btn-soft btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
             </div>
         </>
     )
