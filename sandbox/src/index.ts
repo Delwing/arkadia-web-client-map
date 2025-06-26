@@ -17,7 +17,8 @@ window.dispatchEvent(new CustomEvent("ready"));
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("settings", {
     detail: {
         guilds: [],
-        packageHelper: true
+        packageHelper: true,
+        inlineCompassRose: true
     }
 }))
 
