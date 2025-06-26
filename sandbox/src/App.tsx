@@ -1,4 +1,4 @@
-import {Button, Form, InputGroup, Tab, Tabs} from "react-bootstrap";
+import {Button, Form, InputGroup, Nav} from "react-bootstrap";
 import {createPortal} from "react-dom";
 import {createRef, useEffect, useState} from "react";
 import {Controls} from "./Controls.tsx";
@@ -42,24 +42,33 @@ export default function App() {
         }
     }
 
+    const nav = (
+        <Nav variant="tabs" activeKey={tab} onSelect={(k) => setTab((k as string) || 'client')} className="ms-2">
+            <Nav.Item>
+                <Nav.Link eventKey="client">Client</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+                <Nav.Link eventKey="tester">Trigger Tester</Nav.Link>
+            </Nav.Item>
+        </Nav>
+    )
+
     return (
         <>
+            {createPortal(nav, document.getElementById('controls')!)}
             <Controls/>
-            <Tabs activeKey={tab} onSelect={(k) => setTab(k || 'client')} className="mt-3">
-                <Tab eventKey="client" title="Client" className="pt-3">
-                    <Form onSubmit={(e) => {
-                        e.preventDefault();
-                        send()
-                    }}>
-                        <InputGroup className="mb-3">
-                            <Form.Control ref={input} value={text} onKeyDown={handleKeyDown} onKeyUp={handleKeys}
-                                          onChange={event => setText(event.currentTarget.value)}></Form.Control>
-                            <Button variant={'secondary'} onClick={send}>Wyślij</Button>
-                        </InputGroup>
-                    </Form>
-                </Tab>
-                <Tab eventKey="tester" title="Trigger Tester" className="pt-3" />
-            </Tabs>
+            {tab === 'client' && (
+                <Form onSubmit={(e) => {
+                    e.preventDefault();
+                    send()
+                }}>
+                    <InputGroup className="mb-3 mt-3">
+                        <Form.Control ref={input} value={text} onKeyDown={handleKeyDown} onKeyUp={handleKeys}
+                                      onChange={event => setText(event.currentTarget.value)}></Form.Control>
+                        <Button variant={'secondary'} onClick={send}>Wyślij</Button>
+                    </InputGroup>
+                </Form>
+            )}
             {tab === 'tester' && createPortal(<TriggerTester/>, document.getElementById('tester-container')!)}
         </>
     )
