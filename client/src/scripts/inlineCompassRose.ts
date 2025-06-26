@@ -61,24 +61,16 @@ export default function initInlineCompassRose(client: Client) {
         if (polishToShort[exit]) return polishToShort[exit];
         if (shortToLong[exit]) return exit;
         const long = exit.toLowerCase();
-        const label = hasExit(short) ? short.toUpperCase() : ' '.repeat(short.length);
-            '',
-            `       ${printExit('nw')}  ${printExit('n')}  ${printExit('ne')}       ${printExit('u')}`,
-            '       ' +
-                '  ' + (hasExit('nw') ? '\\' : ' ') +
-                ' ' + (hasExit('n') ? '|' : ' ') +
-                ' ' + (hasExit('ne') ? '/' : ' ') +
-                '         ' + (hasExit('u') ? '|' : ''),
-            `       ${printExit('w')}${hasExit('w') ? '---' : '   '}${color(DIM_GRAY)}X${RESET}${hasExit('e') ? '---' : '   '}${printExit('e')}       ${(hasExit('d') || hasExit('u')) ? 'o' : ''}`,
-            '       ' +
-                '  ' + (hasExit('sw') ? '/' : ' ') +
-                ' ' + (hasExit('s') ? '|' : ' ') +
-                ' ' + (hasExit('se') ? '\\' : ' ') +
-                '         ' + (hasExit('d') ? '|' : ''),
-            `       ${printExit('sw')}  ${printExit('s')}  ${printExit('se')}       ${printExit('d')}`,
-            '',
-            ''
-        ].join('\n'));
+        const short = Object.entries(shortToLong).find(([_, l]) => l === long);
+        if (short) return short[0];
+        return '';
+    }
+
+    function hasExit(short: string): boolean {
+        return exits.has(short);
+    }
+
+    function printExit(short: string): string {
         const label = hasExit(short) ? short.toUpperCase() : " ".repeat(short.length);
         return color(SPRING_GREEN) + label + RESET;
     }
@@ -87,12 +79,14 @@ export default function initInlineCompassRose(client: Client) {
         client.println([
             "",
             `       ${printExit("nw")}  ${printExit("n")}  ${printExit("ne")}       ${printExit("u")}`,
-            `       ${hasExit("nw") ? "\\" : " "} ${hasExit("n") ? "|" : " "} ${hasExit("ne") ? "/" : " "}         ${hasExit("u") ? "|" : ""}`,
+            `         ${hasExit("nw") ? "\\" : " "} ${hasExit("n") ? "|" : " "} ${hasExit("ne") ? "/" : " "}         ${hasExit("u") ? "|" : ""}`,
             `       ${printExit("w")}${hasExit("w") ? "---" : "   "}${color(DIM_GRAY)}X${RESET}${hasExit("e") ? "---" : "   "}${printExit("e")}       ${(hasExit("d") || hasExit("u")) ? "o" : ""}`,
-            `       ${hasExit("sw") ? "/" : " "} ${hasExit("s") ? "|" : " "} ${hasExit("se") ? "\\" : " "}         ${hasExit("d") ? "|" : ""}`,
+            `         ${hasExit("sw") ? "/" : " "} ${hasExit("s") ? "|" : " "} ${hasExit("se") ? "\\" : " "}         ${hasExit("d") ? "|" : ""}`,
             `       ${printExit("sw")}  ${printExit("s")}  ${printExit("se")}       ${printExit("d")}`,
             "",
             ""
         ].join("\n"));
     }
 }
+
+
