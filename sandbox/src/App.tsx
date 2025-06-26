@@ -1,5 +1,5 @@
-import {Button, Form, InputGroup} from "react-bootstrap";
-import {createRef, useState} from "react";
+import {Button, Form, InputGroup, Tab, Tabs} from "react-bootstrap";
+import {createRef, useEffect, useState} from "react";
 import {Controls} from "./Controls.tsx";
 import TriggerTester from "./TriggerTester.tsx";
 import type {KeyboardEvent} from 'react';
@@ -8,7 +8,15 @@ import type {KeyboardEvent} from 'react';
 export default function App() {
 
     const [text, setText] = useState('')
+    const [tab, setTab] = useState('client')
     const input = createRef<HTMLInputElement>();
+
+    useEffect(() => {
+        const main = document.getElementById('main-container')
+        const bottom = document.getElementById('panel_buttons_bottom')
+        if (main) main.style.display = tab === 'client' ? 'flex' : 'none'
+        if (bottom) bottom.style.display = tab === 'client' ? '' : 'none'
+    }, [tab])
 
     function send() {
         //window.clientExtension.fake(text)
@@ -34,17 +42,23 @@ export default function App() {
     return (
         <>
             <Controls/>
-            <Form onSubmit={(e) => {
-                e.preventDefault();
-                send()
-            }}>
-                <InputGroup className="mt-3">
-                    <Form.Control ref={input} value={text} onKeyDown={handleKeyDown} onKeyUp={handleKeys}
-                                  onChange={event => setText(event.currentTarget.value)}></Form.Control>
-                    <Button variant={'secondary'} onClick={send}>Wyślij</Button>
-                </InputGroup>
-            </Form>
-            <TriggerTester/>
+            <Tabs activeKey={tab} onSelect={(k) => setTab(k || 'client')} className="mt-3">
+                <Tab eventKey="client" title="Client" className="pt-3">
+                    <Form onSubmit={(e) => {
+                        e.preventDefault();
+                        send()
+                    }}>
+                        <InputGroup className="mb-3">
+                            <Form.Control ref={input} value={text} onKeyDown={handleKeyDown} onKeyUp={handleKeys}
+                                          onChange={event => setText(event.currentTarget.value)}></Form.Control>
+                            <Button variant={'secondary'} onClick={send}>Wyślij</Button>
+                        </InputGroup>
+                    </Form>
+                </Tab>
+                <Tab eventKey="tester" title="Trigger Tester" className="pt-3">
+                    <TriggerTester/>
+                </Tab>
+            </Tabs>
         </>
     )
 }

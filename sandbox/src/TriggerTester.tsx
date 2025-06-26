@@ -55,9 +55,21 @@ function matches(trigger: any, rawLine: string, type = "") {
     return result;
 }
 
-function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: string; type: string; parentMatched: boolean}) {
+function hasMatch(trigger: any, line: string, type: string, parentMatched: boolean): boolean {
+    const matched = parentMatched && !!matches(trigger, line, type);
+    if (matched) return true;
+    for (const child of trigger.children.values()) {
+        if (hasMatch(child, line, type, matched)) return true;
+    }
+    return false;
+}
+
+function TriggerNode({trigger, line, type, parentMatched, showMatchedOnly}: {trigger: any; line: string; type: string; parentMatched: boolean; showMatchedOnly: boolean}) {
     const [expanded, setExpanded] = useState(false);
     const matched = parentMatched && !!matches(trigger, line, type);
+    if (showMatchedOnly && !hasMatch(trigger, line, type, parentMatched)) {
+        return null;
+    }
     let patternStr: string;
     if (trigger.pattern instanceof RegExp) {
         patternStr = trigger.pattern.toString();
@@ -79,7 +91,7 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
             {expanded && trigger.children.size > 0 && (
                 <ul style={{paddingLeft: "1rem", listStyleType: "none"}}>
                     {Array.from(trigger.children.values()).map((child: any) => (
-                        <TriggerNode key={child.id} trigger={child} line={line} type={type} parentMatched={matched} />
+                        <TriggerNode key={child.id} trigger={child} line={line} type={type} parentMatched={matched} showMatchedOnly={showMatchedOnly} />
                     ))}
                 </ul>
             )}
@@ -90,10 +102,11 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
 export default function TriggerTester() {
     const [line, setLine] = useState("");
     const [type, setType] = useState("");
+    const [showMatchedOnly, setShowMatchedOnly] = useState(false);
     const triggers = Array.from(window.clientExtension.Triggers.triggers.values());
     return (
         <div className="mt-3">
-            <div className="d-flex gap-2 mb-2">
+            <div className="d-flex gap-2 mb-2 align-items-center">
                 <input className="form-control" placeholder="Test line" value={line} onChange={e => setLine(e.currentTarget.value)} />
                 <select className="form-select w-auto" value={type} onChange={e => setType(e.currentTarget.value)}>
                     <option value="">(none)</option>
@@ -101,10 +114,14 @@ export default function TriggerTester() {
                         <option key={opt} value={opt}>{opt}</option>
                     ))}
                 </select>
+                <label className="ms-2">
+                    <input type="checkbox" className="form-check-input me-1" checked={showMatchedOnly} onChange={e => setShowMatchedOnly(e.currentTarget.checked)} />
+                    Show matched only
+                </label>
             </div>
             <ul style={{listStyleType: "none", paddingLeft: 0}}>
                 {triggers.map(trigger => (
-                    <TriggerNode key={trigger.id} trigger={trigger} line={line} type={type} parentMatched={true} />
+                    <TriggerNode key={trigger.id} trigger={trigger} line={line} type={type} parentMatched={true} showMatchedOnly={showMatchedOnly} />
                 ))}
             </ul>
         </div>
