@@ -171,5 +171,7 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
 import initKillTrigger from "./scripts/kill"
 initKillTrigger(client)
 
+import initContainers from "./scripts/prettyContainers"
+initContainers(client)
 
 window["clientExtension"] = client
