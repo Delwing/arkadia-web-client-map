@@ -34,6 +34,7 @@ fakeClient.eventTarget.dispatchEvent(new CustomEvent("gmcp.room.info", {
 }));
 
 fakeClient.fake = (text: string, type?: string) => {
+    client.sendEvent("gmcp_msg." + type, {})
     window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type)
 }
 
@@ -85,3 +86,5 @@ fakeClient.fake("Brzydki zgarbiony goblin umarl.", "combat.avatar");
 fakeClient.fake("Zabiles zgarbionego brzydkiego goblina.");
 fakeClient.fake("Wyszczerzony zielony goblin ledwo muska cie krzywym krotkim nozem, trafiajac cie w korpus.", "combat.avatar");
 
+fakeClient.fake("Karczma.", 'room.short')
+fakeClient.fake("Sa tutaj dwa widoczne wyjscia: polnoc i poludniowy-zachod..", 'room.exits')

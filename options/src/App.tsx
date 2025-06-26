@@ -11,13 +11,13 @@ function App() {
         <div className="p-2">
             <div className="mb-2 border-b flex">
                 <button
-                    className={`px-4 py-2 font-medium ${tab === 'settings' ? 'border-b-2 border-blue-500' : ''}`}
+                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'settings' ? 'border-b-2 border-blue-500' : ''}`}
                     onClick={() => setTab('settings')}
                 >
                     Ustawienia
                 </button>
                 <button
-                    className={`px-4 py-2 font-medium ${tab === 'npc' ? 'border-b-2 border-blue-500' : ''}`}
+                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'npc' ? 'border-b-2 border-blue-500' : ''}`}
                     onClick={() => setTab('npc')}
                 >
                     Odbiorcy paczek
