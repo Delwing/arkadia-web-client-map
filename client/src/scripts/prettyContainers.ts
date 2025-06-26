@@ -106,7 +106,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         lines.push(gLine);
         lines.push(`+${horiz}+`);
 
-        const maxItems = Math.max(...pair.map(([,_items]) => _items.length));
+        const maxItems = Math.max(...pair.map(([, _items]) => _items.length));
         for (let i = 0; i < maxItems; i++) {
             let rowLine = '|';
             for (let c = 0; c < columns; c++) {
@@ -127,19 +127,18 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
 }
 
 export function prettyPrintContainer(
-    line: string,
-    defs: GroupDefinition[],
+    matches: RegExpMatchArray,
     columns = 1,
     title = 'POJEMNIK',
-    patterns: RegExp[] = defaultContainerPatterns,
     padding = 1,
 ) {
-    return formatTable(tableTitle, categorized, { columns, padding });
+    const parsed = parseContainer(matches);
     if (!parsed) return '';
     const categorized = categorizeItems(parsed.items, defs);
     const tableTitle = title || parsed.container;
-    return formatTable(tableTitle, categorized, columns);
+    return formatTable(tableTitle, categorized, {columns, padding});
 }
+
 
 const defaultContainerPatterns: RegExp[] = [
     /^Otwart(?:y|a|e) (?<container>.+? (?:plecak|torba|sakwa|sakiewka|szkatulka|wor|worek))(?: z .*?)? zawiera (?<content>.*)\.$/i,
@@ -199,7 +198,7 @@ const defs = [
 export default function initContainers(client: Client) {
     defaultContainerPatterns.forEach(pattern => {
         client.Triggers.registerTrigger(pattern, (_, __, matches): undefined => {
-            client.print(prettyPrintContainer(matches))
+            client.print(prettyPrintContainer(matches, 2, null, 5))
         });
     })
 }
