@@ -1,6 +1,7 @@
 import {Button, Form, InputGroup} from "react-bootstrap";
 import {createRef, useState} from "react";
 import {Controls} from "./Controls.tsx";
+import TriggerTester from "./TriggerTester.tsx";
 import type {KeyboardEvent} from 'react';
 
 
@@ -43,6 +44,7 @@ export default function App() {
                     <Button variant={'secondary'} onClick={send}>Wyślij</Button>
                 </InputGroup>
             </Form>
+            <TriggerTester/>
         </>
     )
 }
