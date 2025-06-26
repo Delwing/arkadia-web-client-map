@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "watch": "vite build --watch"
-
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
