@@ -35,8 +35,9 @@ const polishToShort: Record<string, string> = {
 export default function initInlineCompassRose(client: Client) {
     let exits = new Set<string>();
 
-    client.addEventListener('gmcp.room.exits', (event: CustomEvent) => {
-        exits = new Set(parseExits(event.detail));
+    client.addEventListener('gmcp.room.exits', () => {
+        const data = (window as any).gmcp?.room?.info;
+        exits = new Set(parseExits(data));
         showCompassRose();
     });
 

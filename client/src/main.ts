@@ -2,6 +2,17 @@ import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
 
+export const gmcp: Record<string, any> = (window as any).gmcp || ((window as any).gmcp = {});
+
+function setGmcp(path: string, value: any) {
+    const parts = path.split('.');
+    let obj = gmcp;
+    for (let i = 0; i < parts.length - 1; i++) {
+        obj = obj[parts[i]] = obj[parts[i]] || {};
+    }
+    obj[parts[parts.length - 1]] = value;
+}
+
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
 const originalUnsetPosition = Maps.unset_position
@@ -18,13 +29,27 @@ Gmcp.parse_option_subnegotiation = (match) => {
     if (message.substring(0, 1) === 'É') {
         const [type, data] = [message.substring(1, message.indexOf(" ")), message.substring(message.indexOf(" "))]
         const parsed = JSON.parse(data)
+        setGmcp(type, parsed)
         client.sendEvent(`gmcp.${type}`, parsed)
         if (type === "gmcp_msgs") {
             let text = atob(parsed.text)
             text = client.onLine(text, parsed.type)
             parsed.text = btoa(text)
             match = `${prefix}É${type} ${JSON.stringify(parsed)}${postfix}`
-            client.sendEvent(`gmcp_msg.${parsed.type}`, parsed)
+            let detail: any
+            try {
+                detail = JSON.parse(text)
+                if (parsed.type === 'room.exits') {
+                    setGmcp('room.info.exits', detail)
+                    client.sendEvent('gmcp.room.exits', detail)
+                } else {
+                    setGmcp(parsed.type, detail)
+                    client.sendEvent(`gmcp.${parsed.type}`, detail)
+                }
+            } catch {
+                detail = text
+            }
+            client.sendEvent(`gmcp_msg.${parsed.type}`, detail)
         }
     }
     return gmcpParseOption(match)
