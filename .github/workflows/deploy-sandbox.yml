@@ -1,4 +1,4 @@
-name: Auto release
+name: Deploy sandbox
 on:
   push:
     branches: [ master ]
