@@ -1,4 +1,6 @@
 import Client from "../Client";
+import {encloseColor, findClosestColor} from "../Colors";
+import {stripAnsiCodes} from "../Triggers";
 
 export type GroupDefinition = {
     name: string;
@@ -15,9 +17,10 @@ export type ParsedContainer = {
     items: ContainerItem[];
 };
 
-export function createRegexpFilter(patterns: (string | RegExp)[]): (item: string) => boolean {
-    const regs = patterns.map(p => typeof p === 'string' ? new RegExp(p, 'i') : p);
-    return (item: string) => regs.some(r => r.test(item));
+export function createRegexpFilter(patterns: string[], isEndOfLine: boolean = false): (item: string) => boolean {
+    const regs = "(" + patterns.map(pattern => "(^|\\s)" + pattern + (isEndOfLine ? "\\S*$" : "")).join("|") + ")"
+    const regex = new RegExp(regs);
+    return (item: string) => regex.test(item);
 }
 
 function parseItems(content: string): ContainerItem[] {
@@ -60,7 +63,7 @@ export function categorizeItems(items: ContainerItem[], groups: GroupDefinition[
 }
 
 function pad(str: string, len: number) {
-    return str + ' '.repeat(Math.max(0, len - str.length));
+    return str + ' '.repeat(Math.max(0, len - stripAnsiCodes(str).length));
 }
 
 function center(str: string, len: number) {
@@ -78,7 +81,6 @@ export type TransformDefinition = {
 export type FormatOptions = {
     columns?: number;
     padding?: number;
-    transforms?: TransformDefinition[];
 };
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
@@ -87,8 +89,6 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     const padSpace = ' '.repeat(padding);
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
-
-    const transforms = opts.transforms ?? [];
 
     const allLines = entries.flatMap(([name, items]) => {
         const itemTexts = items.map(it => {
@@ -120,7 +120,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         let gLine = '|';
         for (let c = 0; c < columns; c++) {
             const grp = pair[c];
-            gLine += cell(grp ? grp[0] : '');
+            gLine += cell(encloseColor(grp ? grp[0] : '', findClosestColor('#557C99')));
             gLine += c === columns - 1 ? '' : ' | ';
         }
         gLine += '|';
@@ -224,10 +224,18 @@ const defs = [
     {name: "kamienie", filter: createRegexpFilter(gems)},
 ]
 
+const transforms: TransformDefinition[] = [
+    { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#afeeee"))},
+    { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#FFD700"))},
+    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => encloseColor(item, findClosestColor("#C0C0C0"))},
+    { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#8B4513"))}
+]
+
+
 export default function initContainers(client: Client) {
     defaultContainerPatterns.forEach(pattern => {
         client.Triggers.registerTrigger(pattern, (_, __, matches): undefined => {
-            client.print(prettyPrintContainer(matches, 2, null, 5))
+            client.print(prettyPrintContainer(matches, 2, "POJEMNIK", 5))
         });
     })
 }

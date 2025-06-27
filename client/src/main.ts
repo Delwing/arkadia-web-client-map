@@ -17,7 +17,7 @@ const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
 const originalUnsetPosition = Maps.unset_position
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
-const originalOutputSend = Output.send
+export const rawSend = Output.send
 
 
 export const client = new Client()
@@ -71,7 +71,7 @@ Maps.unset_position = () => {
 
 Output.send = (out, type): any => {
     const bufferSize = Output.buffer.length
-    const result = originalOutputSend(out, type)
+    const result = rawSend(out, type)
     client.sendEvent('output-sent', bufferSize)
     return result;
 }

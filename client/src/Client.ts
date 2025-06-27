@@ -5,6 +5,7 @@ import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
 import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
+import {rawSend} from "./main";
 
 const originalSend = Input.send
 
@@ -64,7 +65,11 @@ export default class Client {
         const buffer: { out: string, type?: string }[] = [];
         const originalOutputSend = Output.send;
         Output.send = (out: string, outputType?: string): any => {
-            buffer.push({out, type: outputType});
+            if (out) {
+                buffer.push({out, type: outputType});
+            } else {
+                rawSend()
+            }
         };
 
         this.addEventListener('output-sent', () => {
