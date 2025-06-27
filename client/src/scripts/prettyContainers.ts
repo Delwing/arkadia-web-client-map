@@ -81,11 +81,13 @@ export type TransformDefinition = {
 export type FormatOptions = {
     columns?: number;
     padding?: number;
+    transforms?: TransformDefinition[];
 };
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     const columns = opts.columns ?? 1;
     const padding = opts.padding ?? 1;
+    const transforms = opts.transforms ?? defaultTransforms;
     const padSpace = ' '.repeat(padding);
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
@@ -224,7 +226,7 @@ const defs = [
     {name: "kamienie", filter: createRegexpFilter(gems)},
 ]
 
-const transforms: TransformDefinition[] = [
+const defaultTransforms: TransformDefinition[] = [
     { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#afeeee"))},
     { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#FFD700"))},
     { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => encloseColor(item, findClosestColor("#C0C0C0"))},
