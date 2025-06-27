@@ -3,10 +3,11 @@ body {
     color: #fff;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     padding: 10px;
+    height: 100vh;
 }
 
 #main-container {
-    height: 600px;
+    height: 100%;
 }
 
 #main_text_output_msg_wrapper {
@@ -30,7 +31,7 @@ textarea, input {
 }
 
 #sandbox-buttons {
-    width: 120px;
+    width: 160px;
 }
 
 iframe {
