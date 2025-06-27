@@ -38,7 +38,6 @@ export default class ClientScript {
         for (const act of this.actions) {
             await act();
         }
-        this.actions = [];
     }
 
     reset() {
