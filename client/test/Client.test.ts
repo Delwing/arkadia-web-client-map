@@ -7,6 +7,7 @@ jest.mock('../src/Triggers', () => ({ __esModule: true, default: jest.fn().mockI
 jest.mock('../src/PackageHelper', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/OutputHandler', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/scripts/functionalBind', () => ({ FunctionalBind: jest.fn() }));
+jest.mock('../src/main', () => ({ __esModule: true, rawSend: jest.fn() }));
 
 
 jest.mock('../src/MapHelper', () => {
