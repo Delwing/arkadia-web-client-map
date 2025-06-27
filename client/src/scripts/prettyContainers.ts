@@ -87,7 +87,7 @@ export type FormatOptions = {
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     const columns = opts.columns ?? 1;
     const padding = opts.padding ?? 1;
-    const transforms = opts.transforms ?? defaultTransforms;
+    const activeTransforms = opts.transforms ?? defaultTransforms;
     const padSpace = ' '.repeat(padding);
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
@@ -95,7 +95,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     const allLines = entries.flatMap(([name, items]) => {
         const itemTexts = items.map(it => {
             let text = `${String(it.count).padStart(3, ' ')} | ${it.name}`;
-            for (const tr of transforms) {
+            for (const tr of activeTransforms) {
                 if (tr.check(it.name, it.count, name)) {
                     text = tr.transform(text);
                     break;
@@ -137,7 +137,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 const item = grp && grp[1][i];
                 let text = item ? `${String(item.count).padStart(3, ' ')} | ${item.name}` : '';
                 if (item && grp) {
-                    for (const tr of transforms) {
+                    for (const tr of activeTransforms) {
                         if (tr.check(item.name, item.count, grp[0])) {
                             text = tr.transform(text);
                             break;

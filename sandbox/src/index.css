@@ -1,12 +1,25 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     background: #000;
     color: #fff;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     padding: 10px;
+    box-sizing: border-box;
+}
+
+.container, .container > div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #main-container {
-    height: 600px;
+    flex: 1;
+    min-height: 0;
 }
 
 #main_text_output_msg_wrapper {
@@ -27,6 +40,10 @@ textarea, input {
 
 #map {
     width: 30%;
+}
+
+#sandbox-buttons {
+    width: 160px;
 }
 
 iframe {
