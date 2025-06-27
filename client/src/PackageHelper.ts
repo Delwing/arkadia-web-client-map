@@ -111,13 +111,8 @@ export default class PackageHelper {
         this.locationListener = ({detail: {id: roomId}}) => {
             if (roomId === location) {
                 this.client.removeEventListener('enterLocation', this.locationListener)
-                const button = this.client.createButton('oddaj paczke', () => {
-                    Input.send("oddaj paczke")
-                    button.remove()
-                })
                 this.client.addEventListener('gmcp.objects.data', () => {
                     this.client.FunctionalBind.set('oddaj paczke', () => {
-                        button?.remove()
                         return Input.send('oddaj paczke');
                     })
                 }, {once: true})

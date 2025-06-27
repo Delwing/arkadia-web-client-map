@@ -2,6 +2,8 @@ import {createPortal} from "react-dom";
 import {Button, Modal} from "react-bootstrap";
 import {useState} from "react";
 import TriggerTester from "./TriggerTester.tsx";
+import packageAssistant from "./scenario/package-assistant.ts";
+
 
 
 export function Controls() {
@@ -12,7 +14,7 @@ export function Controls() {
                 <div className="d-flex flex-column gap-2">
                     <Button size="sm" className="w-100" variant="secondary" onClick={() => window.Output.clear()}>Reset</Button>
                     <Button size="sm" className="w-100" variant="secondary" onClick={() => setShowTester(true)}>Trigger Tester</Button>
-                    <Button size="sm" className="w-100" variant="secondary">Button 2</Button>
+                    <Button size="sm" className="w-100" variant="secondary" onClick={() => packageAssistant.run()}>Asystent paczek</Button>
                     <Button size="sm" className="w-100" variant="secondary">Button 3</Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,
