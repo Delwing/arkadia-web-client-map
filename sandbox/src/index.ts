@@ -6,8 +6,12 @@ import mapData from "../../data/mapExport.json"
 import colors from "../../data/colors.json"
 import {client} from "@client/src/main.ts";
 import {FakeClient} from "./types/globals";
+import ClientScript from "./ClientScript";
 
 let fakeClient = client as FakeClient
+
+export const script = new ClientScript(fakeClient)
+(window as any).script = script
 
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
