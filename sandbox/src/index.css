@@ -11,7 +11,12 @@ body {
     box-sizing: border-box;
 }
 
-.container, .container > div {
+.container {
+    height: 100%;
+    display: flex;
+}
+
+.container > div {
     height: 100%;
     display: flex;
     flex-direction: column;
