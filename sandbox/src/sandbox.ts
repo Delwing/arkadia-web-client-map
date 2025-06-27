@@ -1,4 +1,5 @@
 import Convert from "ansi-to-html";
+import {fakeClient} from "./index.ts";
 
 const converter = new Convert({})
 
@@ -295,8 +296,10 @@ window.Output = {
         div.appendChild(contentDiv)
 
         output.appendChild(div)
-        output.scrollTop = output.scrollHeight
 
+        fakeClient.sendEvent('output-sent', 1)
+
+        output.scrollTop = output.scrollHeight
     },
     flush_buffer() {
     },

@@ -204,23 +204,14 @@ export default class MapHelper {
 
     handleNewLocation({room: room}) {
         this.client.FunctionalBind.clear();
-        if (this.drinkableButton) {
-            this.drinkableButton.remove()
-            delete this.drinkableButton
-        }
-        if (room.userData.drinkable) {
+
+        if (room.userData?.bind) {
+            this.client.FunctionalBind.set(room.userData?.bind, () => Input.send(room.userData?.bind))
+        } else if (room.userData?.drinkable) {
             this.client.FunctionalBind.set("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
-            this.drinkableButton = this.client.createButton("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
-
         }
 
-        if (room.userData.bind) {
-            this.roomBind = this.client.createButton(room.userData.bind_printable, () => this.client.sendCommand(room.userData.bind))
-        } else {
-            if (this.roomBind) {
-                this.roomBind.remove()
-            }
-        }
+
     }
 
 }
