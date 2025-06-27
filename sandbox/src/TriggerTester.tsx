@@ -55,7 +55,7 @@ function matches(trigger: any, rawLine: string, type = "") {
     return result;
 }
 
-function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: string; type: string; parentMatched: boolean}) {
+function TriggerNode({trigger, line, type, parentMatched, showOnlyMatches}: {trigger: any; line: string; type: string; parentMatched: boolean; showOnlyMatches: boolean}) {
     const [expanded, setExpanded] = useState(false);
     const matched = parentMatched && !!matches(trigger, line, type);
     let patternStr: string;
@@ -65,6 +65,9 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
         patternStr = trigger.pattern;
     } else {
         patternStr = "function";
+    }
+    if (showOnlyMatches && !matched) {
+        return null;
     }
     return (
         <li>
@@ -79,7 +82,7 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
             {expanded && trigger.children.size > 0 && (
                 <ul style={{paddingLeft: "1rem", listStyleType: "none"}}>
                     {Array.from(trigger.children.values()).map((child: any) => (
-                        <TriggerNode key={child.id} trigger={child} line={line} type={type} parentMatched={matched} />
+                        <TriggerNode key={child.id} trigger={child} line={line} type={type} parentMatched={matched} showOnlyMatches={showOnlyMatches} />
                     ))}
                 </ul>
             )}
@@ -90,10 +93,11 @@ function TriggerNode({trigger, line, type, parentMatched}: {trigger: any; line: 
 export default function TriggerTester() {
     const [line, setLine] = useState("");
     const [type, setType] = useState("");
+    const [showOnlyMatches, setShowOnlyMatches] = useState(false);
     const triggers = Array.from(window.clientExtension.Triggers.triggers.values());
     return (
         <div className="mt-3">
-            <div className="d-flex gap-2 mb-2">
+            <div className="d-flex gap-2 mb-2 align-items-center">
                 <input className="form-control" placeholder="Test line" value={line} onChange={e => setLine(e.currentTarget.value)} />
                 <select className="form-select w-auto" value={type} onChange={e => setType(e.currentTarget.value)}>
                     <option value="">(none)</option>
@@ -101,10 +105,22 @@ export default function TriggerTester() {
                         <option key={opt} value={opt}>{opt}</option>
                     ))}
                 </select>
+                <div className="form-check ms-2">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="show-only-matches"
+                        checked={showOnlyMatches}
+                        onChange={e => setShowOnlyMatches(e.currentTarget.checked)}
+                    />
+                    <label className="form-check-label" htmlFor="show-only-matches">
+                        Show only matching triggers
+                    </label>
+                </div>
             </div>
             <ul style={{listStyleType: "none", paddingLeft: 0}}>
                 {triggers.map(trigger => (
-                    <TriggerNode key={trigger.id} trigger={trigger} line={line} type={type} parentMatched={true} />
+                    <TriggerNode key={trigger.id} trigger={trigger} line={line} type={type} parentMatched={true} showOnlyMatches={showOnlyMatches} />
                 ))}
             </ul>
         </div>
