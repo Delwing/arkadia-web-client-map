@@ -5,7 +5,7 @@ export default class ClientScript {
     constructor(private client: FakeClient) {}
 
     fake(text: string, type?: string) {
-        this.actions.push(() => (this.client as any).fake(text, type));
+        this.actions.push(() => this.client.fake(text, type));
         return this;
     }
 
@@ -18,6 +18,14 @@ export default class ClientScript {
 
     send(command: string) {
         this.actions.push(() => window.Input.send(command));
+        return this;
+    }
+
+    setMapPosition(position: number) {
+        this.actions.push(() => {
+            this.event("enterLocation", {room: {id: position}});
+            this.client.Map.setMapRoomById(position);
+        })
         return this;
     }
 
@@ -34,7 +42,7 @@ export default class ClientScript {
     }
 
     reset() {
-        window.Output.clear();
+        this.actions.push(() => window.Output.clear())
         return this;
     }
 }
