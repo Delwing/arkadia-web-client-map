@@ -11,7 +11,7 @@ body {
     box-sizing: border-box;
 }
 
-.container, .container > div {
+.wrapper {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -22,6 +22,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    height: 100%;
 }
 
 #main-content {
@@ -29,10 +30,11 @@ body {
     min-height: 0;
     display: flex;
     align-items: stretch;
+    margin-bottom: 5px;
+    overflow: hidden;
 }
 
 #main_text_output_msg_wrapper {
-    border: 1px solid #333;
     font-family: monospace;
     word-wrap: break-word;
     white-space: pre-wrap;
@@ -58,6 +60,6 @@ textarea, input {
 iframe {
     height: 100%;
     width: 100%;
-    padding: 0;
     margin: 0;
+    padding-bottom: 1px;
 }
