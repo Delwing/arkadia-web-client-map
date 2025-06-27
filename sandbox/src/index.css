@@ -29,6 +29,10 @@ textarea, input {
     width: 30%;
 }
 
+#sandbox-buttons {
+    width: 120px;
+}
+
 iframe {
     height: 100%;
     width: 100%;
