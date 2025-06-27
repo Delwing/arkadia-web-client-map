@@ -1,5 +1,16 @@
 (window as any).Input = { send: jest.fn() };
+(window as any).Output = { send: jest.fn(), flush_buffer: jest.fn(), buffer: [] };
+(window as any).Text = { parse_patterns: jest.fn((v: any) => v) };
+(window as any).Maps = {
+  refresh_position: jest.fn(),
+  set_position: jest.fn(),
+  unset_position: jest.fn(),
+  data: undefined,
+};
+(window as any).Gmcp = { parse_option_subnegotiation: jest.fn() };
 const parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
+
+jest.mock('../src/main', () => ({ rawSend: jest.fn() }));
 
 import Client from '../src/Client';
 
