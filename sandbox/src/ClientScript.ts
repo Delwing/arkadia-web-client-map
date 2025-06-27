@@ -1,10 +1,8 @@
-import {FakeClient} from "./types/globals";
+import { FakeClient } from "./types/globals";
 
 export default class ClientScript {
     actions: Array<() => Promise<void> | void> = [];
-
-    constructor(private client: FakeClient) {
-    }
+    constructor(private client: FakeClient) {}
 
     fake(text: string, type?: string) {
         this.actions.push(() => this.client.fake(text, type));
@@ -13,7 +11,7 @@ export default class ClientScript {
 
     event(name: string, detail?: any) {
         this.actions.push(() => {
-            this.client.eventTarget.dispatchEvent(new CustomEvent(name, {detail}));
+            this.client.eventTarget.dispatchEvent(new CustomEvent(name, { detail }));
         });
         return this;
     }
@@ -40,6 +38,7 @@ export default class ClientScript {
         for (const act of this.actions) {
             await act();
         }
+        this.actions = [];
     }
 
     reset() {
