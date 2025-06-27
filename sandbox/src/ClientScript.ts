@@ -30,11 +30,11 @@ export default class ClientScript {
         for (const act of this.actions) {
             await act();
         }
-        this.reset();
+        this.actions = [];
     }
 
     reset() {
-        this.actions = [];
+        window.Output.clear();
         return this;
     }
 }
