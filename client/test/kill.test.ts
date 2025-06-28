@@ -1,5 +1,5 @@
-import initKillTrigger, { parseName, formatTable } from '../src/scripts/kill';
-import Triggers from '../src/Triggers';
+import initKillTrigger, { parseName, formatTable, formatSummary } from '../src/scripts/kill';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 
 class FakeClient {
   eventTarget = new EventTarget();
@@ -70,5 +70,16 @@ describe('parseName and formatTable', () => {
     expect(table).toMatch(/troll/);
     expect(table).toMatch(/1 \/ 1/);
     expect(table).toMatch(/DRUZYNA LACZNIE/);
+  });
+
+  test('formatSummary prints simple kill list', () => {
+    const summary = formatSummary({
+      Aaa: { mySession: 0, myTotal: 2, teamSession: 0 },
+      goblin: { mySession: 0, myTotal: 1, teamSession: 0 },
+    });
+    const stripped = stripAnsiCodes(summary);
+    expect(stripped).toMatch(/WSZYSTKICH DO TEJ PORY/);
+    expect(stripped).toMatch(/Aaa/);
+    expect(stripped).toMatch(/goblin/);
   });
 });

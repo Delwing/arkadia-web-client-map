@@ -46,7 +46,7 @@ function parseName(full: string): string {
     const words = originalWords.map((w) => w.toLowerCase());
     if (
         words.length === 1 &&
-        /^[A-Z\u0104\u0106\u0118\u0141\u0143\u00D3\u015A\u0179\u017B]/.test(
+        /^[A-Z]/.test(
             originalWords[0]
         )
     ) {
@@ -128,7 +128,56 @@ function formatTable(counts: KillCounts): string {
     return lines.join("\n");
 }
 
-export { parseName, formatTable };
+function formatSummary(counts: KillCounts): string {
+    const WIDTH = 59;
+    const INNER = WIDTH - 2;
+
+    const UPPER_COLOR = findClosestColor("#ffa500");
+    const LOWER_COLOR = findClosestColor("#7cfc00");
+    const PINK_COLOR = findClosestColor("#ff69b4");
+
+    const visibleLength = (str: string) => stripAnsiCodes(str).length;
+    const pad = (content = "") =>
+        `|${content}${" ".repeat(Math.max(0, INNER - visibleLength(content)))}|`;
+
+    const entries = Object.entries(counts)
+        .filter(([_, v]) => v.myTotal > 0)
+        .sort(([a], [b]) => a.localeCompare(b));
+
+    const total = Object.values(counts).reduce((s, v) => s + v.myTotal, 0);
+
+    const mobLine = (name: string, count: number) => {
+        const color = /^[A-Z]/.test(name)
+            ? UPPER_COLOR
+            : LOWER_COLOR;
+        const colored = encloseColor(name, color);
+        const start = `  ${colored} `;
+        const dots = INNER - visibleLength(start) - String(count).length;
+        const text = `${start}${".".repeat(Math.max(0, dots))}${count}`;
+        return pad(text);
+    };
+
+    const lines: string[] = [];
+    lines.push(`+${"-".repeat(INNER)}+`);
+    lines.push(pad());
+    entries.forEach(([name, entry]) => {
+        lines.push(mobLine(name, entry.myTotal));
+    });
+    lines.push(pad());
+    lines.push(pad("       ------------------------------------"));
+    lines.push(pad());
+    const summary =
+        "  " +
+        encloseColor("WSZYSTKICH DO TEJ PORY: ", PINK_COLOR) +
+        encloseColor(String(total), LOWER_COLOR) +
+        encloseColor(" zabitych", LOWER_COLOR);
+    lines.push(pad(summary));
+    lines.push(pad());
+    lines.push(`+${"-".repeat(INNER)}+`);
+    return lines.join("\n");
+}
+
+export { parseName, formatTable, formatSummary };
 
 export default function init(
     client: Client,
@@ -226,6 +275,12 @@ export default function init(
             pattern: /\/zabici$/,
             callback: () => {
                 client.print("\n" + formatTable(kills) + "\n");
+            },
+        });
+        aliases.push({
+            pattern: /\/zabici2$/,
+            callback: () => {
+                client.print("\n" + formatSummary(kills) + "\n");
             },
         });
     }
