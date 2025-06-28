@@ -23,6 +23,7 @@ body {
     flex-direction: column;
     min-height: 0;
     height: 100%;
+    gap: 5px;
 }
 
 #main-content {
@@ -30,7 +31,6 @@ body {
     min-height: 0;
     display: flex;
     align-items: stretch;
-    margin-bottom: 5px;
     overflow: hidden;
 }
 
