@@ -11,11 +11,11 @@ export const fakeClient = client as FakeClient
 
 const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.eventTarget)
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
-    if (event.type.startsWith('gmcp')) {
+    if (event.type.startsWith('gmcp\.')) {
         const detail = (event as CustomEvent).detail
         let text = ''
         try {
-            text = detail !== undefined ? JSON.stringify(detail) : ''
+            text = detail !== undefined ? JSON.stringify(detail, null, 2) : ''
         } catch (e) {
             text = String(detail)
         }
