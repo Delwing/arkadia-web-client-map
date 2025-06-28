@@ -185,20 +185,21 @@ export default function init(
 
     client.Triggers.registerTrigger(
         teamKillRegex,
-        (rawLine, _line, matches): string | undefined => {
+        (rawLine, _line, matches): string => {
             const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
-            if (!client.TeamManager.isInTeam(player)) {
-                return;
+
+            let counts = "";
+            if (client.TeamManager.isInTeam(player)) {
+                const mob = parseName(matches.groups?.name ?? "");
+                if (!kills[mob]) {
+                    kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
+                }
+                kills[mob].team_session += 1;
+
+                const combined = kills[mob].my_session + kills[mob].team_session;
+                counts = ` (${kills[mob].my_session} / ${combined})`;
             }
 
-            const mob = parseName(matches.groups?.name ?? "");
-            if (!kills[mob]) {
-                kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
-            }
-            kills[mob].team_session += 1;
-
-            const combined = kills[mob].my_session + kills[mob].team_session;
-            const counts = ` (${kills[mob].my_session} / ${combined})`;
             const modified = rawLine + counts;
             return (
                 "  \n" +

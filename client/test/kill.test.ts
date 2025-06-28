@@ -26,8 +26,13 @@ describe('kill counter team kills', () => {
   test('ignores kills from outside the team', () => {
     client.TeamManager.isInTeam.mockReturnValue(false);
     const line = '> Eamon zabil smoka chaosu.';
-    const result = parse(line);
-    expect(result).toBe(line);
+    let result = parse(line);
+    expect(result).toContain('[   ZABIL   ]');
+    expect(result).not.toContain('(');
+
+    client.TeamManager.isInTeam.mockReturnValue(true);
+    result = parse(line);
+    expect(result).toContain('(0 / 1)');
   });
 
   test('counts kills from team members', () => {
@@ -35,5 +40,6 @@ describe('kill counter team kills', () => {
     const line = '> Eamon zabil smoka chaosu.';
     const result = parse(line);
     expect(result).toContain('[   ZABIL   ]');
+    expect(result).toContain('(0 / 1)');
   });
 });
