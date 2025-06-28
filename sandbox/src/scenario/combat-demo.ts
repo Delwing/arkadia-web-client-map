@@ -1,0 +1,32 @@
+import ClientScript from "../ClientScript.ts";
+import {fakeClient} from "../index.ts";
+
+export default new ClientScript(fakeClient)
+    .reset()
+    .fake(" ")
+    .fake("Ciosem ciezkiego bojowego topora w korpus zadajesz umiesnionemu zgarbionemu goblinowi nieduza rane i uderzeniem okraglej drewnianej tarczy odpychasz w tyl.", "combat.avatar")
+    .fake(" ")
+    .fake("Dlugoreki oglupialy ghoul probuje cie trafic pozolklymi paznokciami, lecz tobie udaje sie uniknac tego ciosu.", "combat.avatar")
+    .fake(" ")
+    .fake("Zatrzymujesz atak brzydkiego zgarbionego goblina pewnym blokiem okraglej drewnianej tarczy i poteznym ciosem ciezkiego bojowego topora powaznie ranisz mu korpus.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin wykonuje zamaszyste ciecie krzywym krotkim nozem mierzac w ciebie, lecz udaje ci sie oslonic okragla drewniana tarcza.", "combat.avatar")
+    .fake("Ranisz brzydkiego zgarbionego goblina ciezkim bojowym toporem,trafiajac go w glowe.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin probuje cie trafic krzywym krotkim nozem, lecz tobie udaje sie uniknac tego ciosu.", "combat.avatar")
+    .fake("Ranisz brzydkiego zgarbionego goblina ciezkim bojowym toporem,trafiajac go w nogi.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin wykonuje zamaszyste ciecie krzywym krotkim nozem mierzac w ciebie, lecz udaje ci sie oslonic okragla drewniana tarcza.", "combat.avatar")
+    .fake("Nurkujac pod atakiem brzydkiego zgarbionego goblina mocno ranisz go ciosem okraglej drewnianej tarczy i zaraz po tym kaleczysz uderzeniem ciezkiego bojowego topora w glowe.", "combat.avatar")
+    .fake("W slepiach brzydkiego zgarbionego goblina pojawia sie nienawistny blysk, gdy zdecydowanym uderzeniem krzywego krotkiego noza przecina powietrze tuz przed twoja glowa.", "combat.avatar")
+    .fake("Ranisz brzydkiego zgarbionego goblina ciezkim bojowym toporem,trafiajac go w glowe.", "combat.avatar")
+    .fake("W slepiach brzydkiego zgarbionego goblina pojawia sie nienawistny blysk, gdy zdecydowanym uderzeniem krzywego krotkiego noza przecina powietrze tuz przed twoja glowa.", "combat.avatar")
+    .fake("Ranisz brzydkiego zgarbionego goblina ciezkim bojowym toporem,trafiajac go w nogi.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin trafia cie krzywym krotkim nozem w korpus, lecz caly impet uderzenia zostaje wyparowany przez wzmocniony pelny pancerz kolczy.", "combat.avatar")
+    .fake("Kilkakrotnie tluczesz w korpus brzydkiego zgarbionego goblina poteznymi ciosami okraglej drewnianej tarczy i krwawo ranisz go ciezkim bojowym toporem.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin probuje cie trafic krzywym krotkim nozem, lecz tobie udaje sie uniknac tego ciosu.", "combat.avatar")
+    .fake("Wykonujesz zamaszyste ciecie ciezkim bojowym toporem mierzac w brzydkiego zgarbionego goblina, lecz ten oslania sie okragla drewniana tarcza.", "combat.avatar")
+    .fake("Powaznie ranisz brzydkiego zgarbionego goblina ciezkim bojowym toporem, trafiajac go w glowe.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin wykonuje zamaszyste ciecie krzywym krotkim nozem mierzac w ciebie, lecz udaje ci sie oslonic okragla drewniana tarcza.", "combat.avatar")
+    .fake("Masakrujesz brzydkiego zgarbionego goblina ciezkim bojowym toporem, trafiajac go w nogi.", "combat.avatar")
+    .fake("Brzydki zgarbiony goblin umarl.", "combat.avatar")
+    .fake("Zabiles zgarbionego brzydkiego goblina.")
+    .fake("Wyszczerzony zielony goblin ledwo muska cie krzywym krotkim nozem, trafiajac cie w korpus.", "combat.avatar");
+
