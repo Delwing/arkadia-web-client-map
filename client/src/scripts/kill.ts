@@ -54,9 +54,13 @@ function parseName(full: string): string {
 
 function formatTable(counts: KillCounts): string {
     const WIDTH = 47;
-    const pad = (content = "") => `| ${content.padEnd(WIDTH - 1)}|`;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
+    const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
+    const pad = (content = "") =>
+        `|${" ".repeat(LEFT_PADDING)}${content.padEnd(CONTENT_WIDTH)}${" ".repeat(
+            RIGHT_PADDING
+        )}|`;
     const header = (title: string) => {
         const dashes = WIDTH - title.length - 2;
         const left = Math.floor(dashes / 2);
@@ -73,7 +77,7 @@ function formatTable(counts: KillCounts): string {
     const mobLine = (name: string, session: number, totalKills: number) => {
         const numbers = `${session} / ${totalKills}`;
         let text = `${name} `;
-        text += ".".repeat(WIDTH - 1 - text.length - numbers.length - 1);
+        text += ".".repeat(CONTENT_WIDTH - text.length - numbers.length - 1);
         text += ` ${numbers}`;
         return pad(text);
     };
@@ -81,7 +85,7 @@ function formatTable(counts: KillCounts): string {
     const summaryLine = (label: string, value: number) => {
         let text = `${label} `;
         const num = String(value);
-        text += ".".repeat(WIDTH - 1 - text.length - num.length);
+        text += ".".repeat(CONTENT_WIDTH - text.length - num.length);
         text += num;
         return pad(text);
     };
@@ -100,9 +104,7 @@ function formatTable(counts: KillCounts): string {
     lines.push(summaryLine("DRUZYNA LACZNIE:", total));
     lines.push(pad());
     lines.push(`+${"-".repeat(WIDTH)}+`);
-    const left = " ".repeat(LEFT_PADDING);
-    const right = " ".repeat(RIGHT_PADDING);
-    return lines.map((l) => left + l + right).join("\n");
+    return lines.join("\n");
 }
 
 export default function init(
