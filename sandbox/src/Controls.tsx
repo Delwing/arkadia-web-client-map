@@ -4,6 +4,7 @@ import {useState} from "react";
 import TriggerTester from "./TriggerTester.tsx";
 import packageAssistant from "./scenario/package-assistant.ts";
 import killCounterDemo from "./scenario/kill-counter-demo.ts";
+import teamEventsDemo from "./scenario/team-events-demo.ts";
 
 
 
@@ -23,6 +24,14 @@ export function Controls() {
                         onClick={() => killCounterDemo.run()}
                     >
                         Kill Counter Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        className="w-100"
+                        variant="secondary"
+                        onClick={() => teamEventsDemo.run()}
+                    >
+                        Team Events Demo
                     </Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,
