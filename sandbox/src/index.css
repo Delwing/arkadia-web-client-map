@@ -63,3 +63,9 @@ iframe {
     margin: 0;
     padding-bottom: 1px;
 }
+
+.gmcp-event {
+    border: 1px dashed #555;
+    padding: 2px;
+    margin: 2px 0;
+}
