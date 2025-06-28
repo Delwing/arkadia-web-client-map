@@ -46,6 +46,7 @@ Input.send = (command: string) => {
         const matches = command.match(alias.pattern)
         if (matches) {
             alias.callback(matches);
+            Output.send("→ " + command, "command")
             return true;
         }
         return false
@@ -169,7 +170,7 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
 })
 
 import initKillTrigger from "./scripts/kill"
-initKillTrigger(client)
+initKillTrigger(client, aliases)
 
 import initContainers from "./scripts/prettyContainers"
 initContainers(client)
