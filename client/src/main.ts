@@ -169,7 +169,7 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
 })
 
 import initKillTrigger from "./scripts/kill"
-initKillTrigger(client)
+initKillTrigger(client, aliases)
 
 import initContainers from "./scripts/prettyContainers"
 initContainers(client)
