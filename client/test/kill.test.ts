@@ -1,4 +1,4 @@
-import initKillTrigger from '../src/scripts/kill';
+import initKillTrigger, { parseName, formatTable } from '../src/scripts/kill';
 import Triggers from '../src/Triggers';
 
 class FakeClient {
@@ -41,5 +41,24 @@ describe('kill counter team kills', () => {
     const result = parse(line);
     expect(result).toContain('[   ZABIL   ]');
     expect(result).toContain('(0 / 1)');
+  });
+});
+
+describe('parseName and formatTable', () => {
+  test('parseName returns expected values', () => {
+    expect(parseName('Troll')).toBe('Troll');
+    expect(parseName('smoka chaosu')).toBe('smoka chaosu');
+    expect(parseName('Wielki Troll')).toBe('troll');
+  });
+
+  test('formatTable prints table with totals', () => {
+    const table = formatTable({
+      troll: { mySession: 1, myTotal: 1, teamSession: 0 },
+      smok: { mySession: 0, myTotal: 0, teamSession: 2 },
+    });
+    expect(table).toMatch(/Licznik zabitych/);
+    expect(table).toMatch(/troll/);
+    expect(table).toMatch(/1 \/ 1/);
+    expect(table).toMatch(/DRUZYNA LACZNIE/);
   });
 });
