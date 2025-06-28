@@ -171,7 +171,7 @@ export default function init(
 
             const combined = kills[mob].my_session + kills[mob].team_session;
             const counts = ` (${kills[mob].my_session} / ${combined})`;
-            const modified = rawLine.replace(/\.$/, `${counts}.`);
+            const modified = rawLine + counts;
             return (
                 "  \n" +
                 client.prefix(
@@ -194,7 +194,7 @@ export default function init(
 
             const combined = kills[mob].my_session + kills[mob].team_session;
             const counts = ` (${kills[mob].my_session} / ${combined})`;
-            const modified = rawLine.replace(/\.$/, `${counts}.`);
+            const modified = rawLine + counts;
             return (
                 "  \n" +
                 client.prefix(
