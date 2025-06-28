@@ -2,21 +2,31 @@ import initKillTrigger, { parseName, formatTable } from '../src/scripts/kill';
 import Triggers from '../src/Triggers';
 
 class FakeClient {
+  eventTarget = new EventTarget();
   Triggers = new Triggers(({} as unknown) as any);
   TeamManager = { isInTeam: jest.fn() };
   prefix = (line: string, prefix: string) => prefix + line;
   print = jest.fn();
+  port = { postMessage: jest.fn() } as any;
+
+  addEventListener(event: string, cb: any) {
+    this.eventTarget.addEventListener(event, cb);
+  }
+  removeEventListener(event: string, cb: any) {
+    this.eventTarget.removeEventListener(event, cb);
+  }
+  dispatch(event: string, detail: any) {
+    this.eventTarget.dispatchEvent(new CustomEvent(event, { detail }));
+  }
 }
 
 describe('kill counter team kills', () => {
   let client: FakeClient;
 
   beforeEach(() => {
-    (global as any).chrome = {
-      storage: { local: { get: jest.fn(() => Promise.resolve({})), set: jest.fn() } },
-    };
     client = new FakeClient();
     initKillTrigger((client as unknown) as any, []);
+    client.dispatch('storage', { key: 'kill_counter', value: {} });
   });
 
   const parse = (line: string) => {
