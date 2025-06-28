@@ -1,5 +1,6 @@
 import Client from "../Client";
 import { encloseColor, findClosestColor } from "../Colors";
+import { stripAnsiCodes } from "../Triggers";
 
 type KillEntry = {
     my_session: number;
@@ -68,15 +69,17 @@ function formatTable(counts: KillCounts): string {
     const MY_COLOR = findClosestColor("#ffff00");
     const TOTAL_COLOR = findClosestColor("#778899");
 
+    const visibleLength = (str: string) => stripAnsiCodes(str).length;
     const pad = (content = "") =>
-        `|${" ".repeat(LEFT_PADDING)}${content.padEnd(CONTENT_WIDTH)}${" ".repeat(
-            RIGHT_PADDING
-        )}|`;
+        `|${" ".repeat(LEFT_PADDING)}${content}${" ".repeat(
+            Math.max(0, CONTENT_WIDTH - visibleLength(content))
+        )}${" ".repeat(RIGHT_PADDING)}|`;
     const header = (title: string) => {
-        const dashes = WIDTH - title.length - 2;
+        const colored = encloseColor(title, HEADER_COLOR);
+        const dashes = WIDTH - visibleLength(title) - 2;
         const left = Math.floor(dashes / 2);
         const right = dashes - left;
-        return `+${"-".repeat(left)} ${encloseColor(title, HEADER_COLOR)} ${"-".repeat(right)}+`;
+        return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
     };
 
     const entries = Object.entries(counts)
@@ -89,18 +92,21 @@ function formatTable(counts: KillCounts): string {
     const mobLine = (name: string, myTotal: number, combined: number) => {
         const numbers = `${myTotal} / ${combined}`;
         let text = `${name} `;
-        text += ".".repeat(CONTENT_WIDTH - text.length - numbers.length - 1);
+        const dots = CONTENT_WIDTH - text.length - numbers.length - 1;
+        text += ".".repeat(Math.max(0, dots));
         text += ` ${numbers}`;
         return pad(text);
     };
 
     const summaryLine = (label: string, value: number, color?: number) => {
+        const visibleLabel = label;
         if (color !== undefined) {
             label = encloseColor(label, color);
         }
         let text = `${label} `;
         const num = String(value);
-        text += ".".repeat(CONTENT_WIDTH - text.length - num.length);
+        const dots = CONTENT_WIDTH - visibleLength(visibleLabel + " ") - num.length;
+        text += ".".repeat(Math.max(0, dots));
         text += num;
         return pad(text);
     };
