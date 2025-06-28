@@ -63,6 +63,11 @@ function formatTable(counts: KillCounts): string {
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
     const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
+
+    const HEADER_COLOR = findClosestColor("#7cfc00");
+    const MY_COLOR = findClosestColor("#ffff00");
+    const TOTAL_COLOR = findClosestColor("#778899");
+
     const pad = (content = "") =>
         `|${" ".repeat(LEFT_PADDING)}${content.padEnd(CONTENT_WIDTH)}${" ".repeat(
             RIGHT_PADDING
@@ -71,7 +76,7 @@ function formatTable(counts: KillCounts): string {
         const dashes = WIDTH - title.length - 2;
         const left = Math.floor(dashes / 2);
         const right = dashes - left;
-        return `+${"-".repeat(left)} ${title} ${"-".repeat(right)}+`;
+        return `+${"-".repeat(left)} ${encloseColor(title, HEADER_COLOR)} ${"-".repeat(right)}+`;
     };
 
     const entries = Object.entries(counts)
@@ -89,7 +94,10 @@ function formatTable(counts: KillCounts): string {
         return pad(text);
     };
 
-    const summaryLine = (label: string, value: number) => {
+    const summaryLine = (label: string, value: number, color?: number) => {
+        if (color !== undefined) {
+            label = encloseColor(label, color);
+        }
         let text = `${label} `;
         const num = String(value);
         text += ".".repeat(CONTENT_WIDTH - text.length - num.length);
@@ -100,15 +108,15 @@ function formatTable(counts: KillCounts): string {
     const lines: string[] = [];
     lines.push(header("Licznik zabitych"));
     lines.push(pad());
-    lines.push(pad("JA"));
+    lines.push(pad(encloseColor("JA", MY_COLOR)));
     entries.forEach(([name, { my_total, team_session }]) => {
         lines.push(mobLine(name, my_total, my_total + team_session));
     });
     lines.push(pad());
-    lines.push(summaryLine("LACZNIE:", totalMy));
+    lines.push(summaryLine("LACZNIE:", totalMy, TOTAL_COLOR));
     lines.push(pad());
     lines.push(pad());
-    lines.push(summaryLine("DRUZYNA LACZNIE:", totalCombined));
+    lines.push(summaryLine("DRUZYNA LACZNIE:", totalCombined, TOTAL_COLOR));
     lines.push(pad());
     lines.push(`+${"-".repeat(WIDTH)}+`);
     return lines.join("\n");
