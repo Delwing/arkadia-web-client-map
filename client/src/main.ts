@@ -45,8 +45,8 @@ Input.send = (command: string) => {
     const isAlias = aliases.find(alias => {
         const matches = command.match(alias.pattern)
         if (matches) {
-            alias.callback(matches);
             Output.send("→ " + command, "command")
+            alias.callback(matches);
             return true;
         }
         return false
