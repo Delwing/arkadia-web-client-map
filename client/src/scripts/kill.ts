@@ -1,7 +1,13 @@
 import Client from "../Client";
 import { encloseColor, findClosestColor } from "../Colors";
 
-type KillCounts = Record<string, { session: number; total: number }>;
+type KillEntry = {
+    my_session: number;
+    my_total: number;
+    team_session: number;
+};
+
+type KillCounts = Record<string, KillEntry>;
 
 const STORAGE_KEY = "kill_counter";
 
@@ -69,13 +75,14 @@ function formatTable(counts: KillCounts): string {
     };
 
     const entries = Object.entries(counts)
-        .filter(([_, v]) => v.session > 0 || v.total > 0)
+        .filter(([_, v]) => v.my_total > 0 || v.team_session > 0)
         .sort(([a], [b]) => a.localeCompare(b));
 
-    const total = Object.values(counts).reduce((s, v) => s + v.total, 0);
+    const totalMy = Object.values(counts).reduce((s, v) => s + v.my_total, 0);
+    const totalCombined = totalMy + Object.values(counts).reduce((s, v) => s + v.team_session, 0);
 
-    const mobLine = (name: string, session: number, totalKills: number) => {
-        const numbers = `${session} / ${totalKills}`;
+    const mobLine = (name: string, myTotal: number, combined: number) => {
+        const numbers = `${myTotal} / ${combined}`;
         let text = `${name} `;
         text += ".".repeat(CONTENT_WIDTH - text.length - numbers.length - 1);
         text += ` ${numbers}`;
@@ -94,14 +101,14 @@ function formatTable(counts: KillCounts): string {
     lines.push(header("Licznik zabitych"));
     lines.push(pad());
     lines.push(pad("JA"));
-    entries.forEach(([name, { session, total }]) => {
-        lines.push(mobLine(name, session, total));
+    entries.forEach(([name, { my_total, team_session }]) => {
+        lines.push(mobLine(name, my_total, my_total + team_session));
     });
     lines.push(pad());
-    lines.push(summaryLine("LACZNIE:", total));
+    lines.push(summaryLine("LACZNIE:", totalMy));
     lines.push(pad());
     lines.push(pad());
-    lines.push(summaryLine("DRUZYNA LACZNIE:", total));
+    lines.push(summaryLine("DRUZYNA LACZNIE:", totalCombined));
     lines.push(pad());
     lines.push(`+${"-".repeat(WIDTH)}+`);
     return lines.join("\n");
@@ -114,28 +121,42 @@ export default function init(
     let kills: KillCounts = {};
     if (chrome.storage) {
         chrome.storage.local.get(STORAGE_KEY).then((data) => {
-            kills = data[STORAGE_KEY] ?? {};
+            const totals: Record<string, number> = data[STORAGE_KEY] ?? {};
+            kills = Object.fromEntries(
+                Object.entries(totals).map(([name, total]) => [
+                    name,
+                    { my_session: 0, my_total: total as number, team_session: 0 },
+                ])
+            );
         });
     }
 
-    window.addEventListener("beforeunload", () => {
-        chrome.storage?.local.set({ [STORAGE_KEY]: kills });
-    });
+    const persistTotals = () => {
+        const totals: Record<string, number> = {};
+        Object.entries(kills).forEach(([name, entry]) => {
+            totals[name] = entry.my_total;
+        });
+        chrome.storage?.local.set({ [STORAGE_KEY]: totals });
+    };
 
-    const killRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ]+))\.$/
+    window.addEventListener("beforeunload", persistTotals);
+
+    const myKillRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ()!,]+))\.$/;
+    const teamKillRegex = /^[ >]*(?<player>[a-zA-Z (),!]+) zabil(?:a)? (?<name>[a-zA-Z (),!]+)\.$/;
 
     client.Triggers.registerTrigger(
-        killRegex,
+        myKillRegex,
         (rawLine, _line, matches): string => {
             const mob = parseName(matches.groups?.name ?? "");
             if (!kills[mob]) {
-                kills[mob] = { session: 0, total: 0 };
+                kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
             }
-            kills[mob].session += 1;
-            kills[mob].total += 1;
-            chrome.storage?.local.set({ [STORAGE_KEY]: kills });
+            kills[mob].my_session += 1;
+            kills[mob].my_total += 1;
+            persistTotals();
 
-            const counts = ` (${kills[mob].session} / ${kills[mob].total})`;
+            const combined = kills[mob].my_session + kills[mob].team_session;
+            const counts = ` (${kills[mob].my_session} / ${combined})`;
             const modified = rawLine.replace(/\.$/, `${counts}.`);
             return (
                 "  \n" +
@@ -145,6 +166,18 @@ export default function init(
                 ) +
                 "\n  "
             );
+        }
+    );
+
+    client.Triggers.registerTrigger(
+        teamKillRegex,
+        (_raw, _line, matches): string | undefined => {
+            const mob = parseName(matches.groups?.name ?? "");
+            if (!kills[mob]) {
+                kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
+            }
+            kills[mob].team_session += 1;
+            return undefined;
         }
     );
 
