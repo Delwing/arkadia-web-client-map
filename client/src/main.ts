@@ -1,7 +1,7 @@
 import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
-import { gmcp, setGmcp } from "./gmcp";
+import { setGmcp } from "./gmcp";
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
