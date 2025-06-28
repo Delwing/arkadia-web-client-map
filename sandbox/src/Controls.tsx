@@ -5,6 +5,9 @@ import TriggerTester from "./TriggerTester.tsx";
 import packageAssistant from "./scenario/package-assistant.ts";
 import killCounterDemo from "./scenario/kill-counter-demo.ts";
 import teamEventsDemo from "./scenario/team-events-demo.ts";
+import combatDemo from "./scenario/combat-demo.ts";
+import compassDemo from "./scenario/compass-demo.ts";
+import containersDemo from "./scenario/containers-demo.ts";
 
 
 export function Controls() {
@@ -23,6 +26,27 @@ export function Controls() {
                         onClick={() => killCounterDemo.run()}
                     >
                         Kill Counter Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => combatDemo.run()}
+                    >
+                        Combat Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => compassDemo.run()}
+                    >
+                        Compass Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => containersDemo.run()}
+                    >
+                        Containers Demo
                     </Button>
                     <Button
                         size="sm"
