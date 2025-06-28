@@ -29,7 +29,7 @@ describe('TeamManager', () => {
     client.sendEvent('gmcp.objects.data', {
       '1': { desc: 'Pablo', living: true, team: true },
     });
-    expect(manager.is_in_team('Pablo')).toBe(true);
+    expect(manager.isInTeam('Pablo')).toBe(true);
   });
 
   test('removes member on leave message', () => {
@@ -37,7 +37,7 @@ describe('TeamManager', () => {
       '1': { desc: 'Vesper', living: true, team: true },
     });
     client.Triggers.parseLine('Vesper porzuca twoja druzyne.', '');
-    expect(manager.is_in_team('Vesper')).toBe(false);
+    expect(manager.isInTeam('Vesper')).toBe(false);
   });
 
   test('clears team on clear message', () => {
@@ -45,14 +45,14 @@ describe('TeamManager', () => {
       '1': { desc: 'Bob', living: true, team: true },
     });
     client.Triggers.parseLine('Nie jestes w zadnej druzynie.', '');
-    expect(manager.get_team_members()).toEqual([]);
+    expect(manager.getTeamMembers()).toEqual([]);
   });
 
   test('full sync message sets leader and members', () => {
     client.Triggers.parseLine('Druzyne prowadzi Vesper i oprocz ciebie sa w niej jeszcze: Pablo i Opeteh.', '');
-    expect(manager.get_leader()).toBe('Vesper');
-    const members = manager.get_team_members();
+    expect(manager.getLeader()).toBe('Vesper');
+    const members = manager.getTeamMembers();
     expect(members).toEqual(expect.arrayContaining(['Vesper', 'Pablo', 'Opeteh']));
-    expect(manager.is_in_team('Pablo')).toBe(true);
+    expect(manager.isInTeam('Pablo')).toBe(true);
   });
 });
