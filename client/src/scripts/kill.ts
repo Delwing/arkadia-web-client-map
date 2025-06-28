@@ -186,6 +186,11 @@ export default function init(
     client.Triggers.registerTrigger(
         teamKillRegex,
         (rawLine, _line, matches): string | undefined => {
+            const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
+            if (!client.TeamManager.isInTeam(player)) {
+                return;
+            }
+
             const mob = parseName(matches.groups?.name ?? "");
             if (!kills[mob]) {
                 kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
