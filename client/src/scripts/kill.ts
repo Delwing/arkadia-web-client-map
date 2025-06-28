@@ -128,6 +128,8 @@ function formatTable(counts: KillCounts): string {
     return lines.join("\n");
 }
 
+export { parseName, formatTable };
+
 export default function init(
     client: Client,
     aliases?: { pattern: RegExp; callback: Function }[]
