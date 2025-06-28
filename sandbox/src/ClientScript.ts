@@ -21,6 +21,19 @@ export default class ClientScript {
         return this;
     }
 
+    debug(expression: string) {
+        this.actions.push(() => {
+            try {
+                // eslint-disable-next-line no-new-func
+                const value = new Function('return (' + expression + ')')();
+                this.client.print(value as any);
+            } catch (err) {
+                this.client.println(String(err));
+            }
+        });
+        return this;
+    }
+
     setMapPosition(position: number) {
         this.actions.push(() => {
             this.event("enterLocation", {room: {id: position}});

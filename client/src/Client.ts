@@ -6,6 +6,7 @@ import {Howl} from "howler"
 import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 import {rawSend} from "./main";
+import TeamManager from "./TeamManager";
 
 const originalSend = Input.send
 
@@ -18,6 +19,7 @@ export default class Client {
     packageHelper = new PackageHelper(this)
     Map = new MapHelper(this)
     OutputHandler = new OutputHandler(this)
+    TeamManager = new TeamManager(this)
     inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
