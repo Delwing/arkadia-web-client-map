@@ -133,24 +133,31 @@ export default function init(
     aliases?: { pattern: RegExp; callback: Function }[]
 ) {
     let kills: KillCounts = {};
-    if (chrome.storage) {
-        chrome.storage.local.get(STORAGE_KEY).then((data) => {
-            const totals: Record<string, number> = data[STORAGE_KEY] ?? {};
-            kills = Object.fromEntries(
-                Object.entries(totals).map(([name, total]) => [
-                    name,
-                    { mySession: 0, myTotal: total as number, teamSession: 0 },
-                ])
-            );
-        });
-    }
+    const loadTotals = (totals: Record<string, number> = {}) => {
+        kills = Object.fromEntries(
+            Object.entries(totals).map(([name, total]) => [
+                name,
+                { mySession: 0, myTotal: total as number, teamSession: 0 },
+            ])
+        );
+    };
+
+    client.addEventListener("storage", (event: CustomEvent) => {
+        if (event.detail.key === STORAGE_KEY) {
+            loadTotals(event.detail.value ?? {});
+        }
+    });
 
     const persistTotals = () => {
         const totals: Record<string, number> = {};
         Object.entries(kills).forEach(([name, entry]) => {
             totals[name] = entry.myTotal;
         });
-        chrome.storage?.local.set({ [STORAGE_KEY]: totals });
+        client.port?.postMessage({
+            type: "SET_STORAGE",
+            key: STORAGE_KEY,
+            value: totals,
+        });
     };
 
     window.addEventListener("beforeunload", persistTotals);

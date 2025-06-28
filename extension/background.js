@@ -6,18 +6,21 @@ chrome.commands.onCommand.addListener(shortcut => {
 
 chrome.runtime.onConnectExternal.addListener(function (port) {
     chrome.storage.local.onChanged.addListener(msg => {
-        if (msg.settings) {
-            port.postMessage({settings: msg.settings.newValue})
-        }
-        if (msg.npc) {
-            port.postMessage({npc: msg.npc.newValue})
-        }
+        Object.entries(msg).forEach(([key, value]) => {
+            if (key === 'settings' || key === 'npc') {
+                port.postMessage({ [key]: value.newValue })
+            }
+            port.postMessage({ storage: { key, value: value.newValue } })
+        })
     })
-    chrome.storage.local.get('settings').then(settings => {
-        port.postMessage(settings)
-    })
-    chrome.storage.local.get('npc').then(npc => {
-        port.postMessage(npc)
+
+    chrome.storage.local.get(null).then(items => {
+        Object.entries(items).forEach(([key, value]) => {
+            if (key === 'settings' || key === 'npc') {
+                port.postMessage({ [key]: value })
+            }
+            port.postMessage({ storage: { key, value } })
+        })
     })
 
     port.onMessage.addListener(msg => {
@@ -27,6 +30,11 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
                 npc.push({name: msg.name, loc: msg.loc})
                 chrome.storage.local.set({ npc: npc })
             })
+        }
+        if (msg.type === 'SET_STORAGE') {
+            const entry = {}
+            entry[msg.key] = msg.value
+            chrome.storage.local.set(entry)
         }
     })
 });
