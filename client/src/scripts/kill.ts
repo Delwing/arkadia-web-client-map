@@ -171,13 +171,24 @@ export default function init(
 
     client.Triggers.registerTrigger(
         teamKillRegex,
-        (_raw, _line, matches): string | undefined => {
+        (rawLine, _line, matches): string | undefined => {
             const mob = parseName(matches.groups?.name ?? "");
             if (!kills[mob]) {
                 kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
             }
             kills[mob].team_session += 1;
-            return undefined;
+
+            const combined = kills[mob].my_session + kills[mob].team_session;
+            const counts = ` (${kills[mob].my_session} / ${combined})`;
+            const modified = rawLine.replace(/\.$/, `${counts}.`);
+            return (
+                "  \n" +
+                client.prefix(
+                    modified,
+                    encloseColor("[   ZABIL   ] ", findClosestColor("#ff6347"))
+                ) +
+                "\n  "
+            );
         }
     );
 

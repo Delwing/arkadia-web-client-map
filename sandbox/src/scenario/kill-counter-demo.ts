@@ -15,5 +15,6 @@ export default new ClientScript(fakeClient)
     .fake("> Beata zabila smoka chaosu.")
     .fake("> Eamon zabil poteznego kamiennego trolla.")
     .fake("> Beata zabila wscieklego krasnoluda chaosu.")
+    .fake("> Sindarion zabil barczystego jasnowlosego bykocentaura.")
     .send("/zabici");
 
