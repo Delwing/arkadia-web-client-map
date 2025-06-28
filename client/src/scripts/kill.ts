@@ -130,19 +130,40 @@ function formatTable(counts: KillCounts): string {
 
 function formatSummary(counts: KillCounts): string {
     const WIDTH = 59;
+    const LEFT_PADDING = 2;
+    const RIGHT_PADDING = 5;
     const INNER = WIDTH - 2;
+    const CONTENT_WIDTH = INNER - LEFT_PADDING - RIGHT_PADDING;
 
+    const HEADER_COLOR = findClosestColor("#7cfc00");
     const UPPER_COLOR = findClosestColor("#ffa500");
     const LOWER_COLOR = findClosestColor("#7cfc00");
-    const PINK_COLOR = findClosestColor("#ff69b4");
+    const PINK_COLOR = findClosestColor("#ffc0cb");
 
     const visibleLength = (str: string) => stripAnsiCodes(str).length;
     const pad = (content = "") =>
-        `|${content}${" ".repeat(Math.max(0, INNER - visibleLength(content)))}|`;
+        `|${" ".repeat(LEFT_PADDING)}${content}${" ".repeat(
+            Math.max(0, CONTENT_WIDTH - visibleLength(content))
+        )}${" ".repeat(RIGHT_PADDING)}|`;
+
+    const header = (title: string) => {
+        const colored = encloseColor(title, HEADER_COLOR);
+        const dashes = WIDTH - visibleLength(title) - 2;
+        const left = Math.floor(dashes / 2);
+        const right = dashes - left;
+        return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
+    };
 
     const entries = Object.entries(counts)
         .filter(([_, v]) => v.myTotal > 0)
-        .sort(([a], [b]) => a.localeCompare(b));
+        .sort(([a], [b]) => {
+            const aUpper = /^[A-Z]/.test(a);
+            const bUpper = /^[A-Z]/.test(b);
+            if (aUpper !== bUpper) {
+                return aUpper ? -1 : 1;
+            }
+            return a.localeCompare(b);
+        });
 
     const total = Object.values(counts).reduce((s, v) => s + v.myTotal, 0);
 
@@ -152,13 +173,13 @@ function formatSummary(counts: KillCounts): string {
             : LOWER_COLOR;
         const colored = encloseColor(name, color);
         const start = `  ${colored} `;
-        const dots = INNER - visibleLength(start) - String(count).length;
+        const dots = CONTENT_WIDTH - visibleLength(start) - String(count).length;
         const text = `${start}${".".repeat(Math.max(0, dots))}${count}`;
         return pad(text);
     };
 
     const lines: string[] = [];
-    lines.push(`+${"-".repeat(INNER)}+`);
+    lines.push(header("Licznik zabitych"));
     lines.push(pad());
     entries.forEach(([name, entry]) => {
         lines.push(mobLine(name, entry.myTotal));

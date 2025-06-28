@@ -72,14 +72,16 @@ describe('parseName and formatTable', () => {
     expect(table).toMatch(/DRUZYNA LACZNIE/);
   });
 
-  test('formatSummary prints simple kill list', () => {
+  test('formatSummary prints header and sorts names', () => {
     const summary = formatSummary({
+      Bbb: { mySession: 0, myTotal: 1, teamSession: 0 },
       Aaa: { mySession: 0, myTotal: 2, teamSession: 0 },
       goblin: { mySession: 0, myTotal: 1, teamSession: 0 },
     });
     const stripped = stripAnsiCodes(summary);
-    expect(stripped).toMatch(/WSZYSTKICH DO TEJ PORY/);
-    expect(stripped).toMatch(/Aaa/);
-    expect(stripped).toMatch(/goblin/);
+    expect(stripped).toMatch(/Licznik zabitych/);
+    const indexAaa = stripped.indexOf('Aaa');
+    const indexGoblin = stripped.indexOf('goblin');
+    expect(indexAaa).toBeLessThan(indexGoblin);
   });
 });
