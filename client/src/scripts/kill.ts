@@ -35,7 +35,16 @@ const twoWordNames = [
 ];
 
 function parseName(full: string): string {
-    const words = full.trim().toLowerCase().split(/\s+/);
+    const originalWords = full.trim().split(/\s+/);
+    const words = originalWords.map((w) => w.toLowerCase());
+    if (
+        words.length === 1 &&
+        /^[A-Z\u0104\u0106\u0118\u0141\u0143\u00D3\u015A\u0179\u017B]/.test(
+            originalWords[0]
+        )
+    ) {
+        return originalWords[0];
+    }
     const lastTwo = words.slice(-2).join(" ");
     if (twoWordNames.includes(lastTwo)) {
         return lastTwo;
@@ -46,6 +55,8 @@ function parseName(full: string): string {
 function formatTable(counts: KillCounts): string {
     const WIDTH = 47;
     const pad = (content = "") => `| ${content.padEnd(WIDTH - 1)}|`;
+    const LEFT_PADDING = 2;
+    const RIGHT_PADDING = 5;
     const header = (title: string) => {
         const dashes = WIDTH - title.length - 2;
         const left = Math.floor(dashes / 2);
@@ -89,7 +100,9 @@ function formatTable(counts: KillCounts): string {
     lines.push(summaryLine("DRUZYNA LACZNIE:", total));
     lines.push(pad());
     lines.push(`+${"-".repeat(WIDTH)}+`);
-    return lines.join("\n");
+    const left = " ".repeat(LEFT_PADDING);
+    const right = " ".repeat(RIGHT_PADDING);
+    return lines.map((l) => left + l + right).join("\n");
 }
 
 export default function init(
