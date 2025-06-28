@@ -1,17 +1,7 @@
 import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
-
-export const gmcp: Record<string, any> = (window as any).gmcp || ((window as any).gmcp = {});
-
-function setGmcp(path: string, value: any) {
-    const parts = path.split('.');
-    let obj = gmcp;
-    for (let i = 0; i < parts.length - 1; i++) {
-        obj = obj[parts[i]] = obj[parts[i]] || {};
-    }
-    obj[parts[parts.length - 1]] = value;
-}
+import { gmcp, setGmcp } from "./gmcp";
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
