@@ -3,6 +3,10 @@ import { fakeClient } from "../index.ts";
 
 export default new ClientScript(fakeClient)
     .reset()
+    .event("gmcp.objects.data", {
+        "1": { desc: "Eamon", living: true, team: true, team_leader: true },
+        "2": { desc: "Beata", living: true, team: true },
+    })
     .fake("Zabiles poteznego smoka chaosu.")
     .fake("Zabiles malego smoka chaosu.")
     .fake("Zabiles silnego kamiennego trolla.")
