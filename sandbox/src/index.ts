@@ -9,6 +9,26 @@ import {FakeClient} from "./types/globals";
 
 export const fakeClient = client as FakeClient
 
+const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.eventTarget)
+fakeClient.eventTarget.dispatchEvent = (event: Event) => {
+    if (event.type.startsWith('gmcp')) {
+        const detail = (event as CustomEvent).detail
+        let text = ''
+        try {
+            text = detail !== undefined ? JSON.stringify(detail) : ''
+        } catch (e) {
+            text = String(detail)
+        }
+        fakeClient.print(`${event.type}${text ? ' ' + text : ''}`)
+        const wrapper = document.getElementById('main_text_output_msg_wrapper')!
+        const last = wrapper.lastElementChild as HTMLElement | null
+        if (last) {
+            last.classList.add('gmcp-event')
+        }
+    }
+    return originalDispatch(event)
+}
+
 
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
