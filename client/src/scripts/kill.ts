@@ -3,9 +3,9 @@ import { encloseColor, findClosestColor } from "../Colors";
 import { stripAnsiCodes } from "../Triggers";
 
 type KillEntry = {
-    my_session: number;
-    my_total: number;
-    team_session: number;
+    mySession: number;
+    myTotal: number;
+    teamSession: number;
 };
 
 type KillCounts = Record<string, KillEntry>;
@@ -83,11 +83,11 @@ function formatTable(counts: KillCounts): string {
     };
 
     const entries = Object.entries(counts)
-        .filter(([_, v]) => v.my_total > 0 || v.team_session > 0)
+        .filter(([_, v]) => v.myTotal > 0 || v.teamSession > 0)
         .sort(([a], [b]) => a.localeCompare(b));
 
-    const totalMy = Object.values(counts).reduce((s, v) => s + v.my_total, 0);
-    const totalCombined = totalMy + Object.values(counts).reduce((s, v) => s + v.team_session, 0);
+    const totalMy = Object.values(counts).reduce((s, v) => s + v.myTotal, 0);
+    const totalCombined = totalMy + Object.values(counts).reduce((s, v) => s + v.teamSession, 0);
 
     const mobLine = (name: string, myTotal: number, combined: number) => {
         const numbers = `${myTotal} / ${combined}`;
@@ -115,8 +115,8 @@ function formatTable(counts: KillCounts): string {
     lines.push(header("Licznik zabitych"));
     lines.push(pad());
     lines.push(pad(encloseColor("JA", MY_COLOR)));
-    entries.forEach(([name, { my_total, team_session }]) => {
-        lines.push(mobLine(name, my_total, my_total + team_session));
+    entries.forEach(([name, { myTotal, teamSession }]) => {
+        lines.push(mobLine(name, myTotal, myTotal + teamSession));
     });
     lines.push(pad());
     lines.push(summaryLine("LACZNIE:", totalMy, TOTAL_COLOR));
@@ -139,7 +139,7 @@ export default function init(
             kills = Object.fromEntries(
                 Object.entries(totals).map(([name, total]) => [
                     name,
-                    { my_session: 0, my_total: total as number, team_session: 0 },
+                    { mySession: 0, myTotal: total as number, teamSession: 0 },
                 ])
             );
         });
@@ -148,7 +148,7 @@ export default function init(
     const persistTotals = () => {
         const totals: Record<string, number> = {};
         Object.entries(kills).forEach(([name, entry]) => {
-            totals[name] = entry.my_total;
+            totals[name] = entry.myTotal;
         });
         chrome.storage?.local.set({ [STORAGE_KEY]: totals });
     };
@@ -163,14 +163,14 @@ export default function init(
         (rawLine, _line, matches): string => {
             const mob = parseName(matches.groups?.name ?? "");
             if (!kills[mob]) {
-                kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
+                kills[mob] = { mySession: 0, myTotal: 0, teamSession: 0 };
             }
-            kills[mob].my_session += 1;
-            kills[mob].my_total += 1;
+            kills[mob].mySession += 1;
+            kills[mob].myTotal += 1;
             persistTotals();
 
-            const combined = kills[mob].my_session + kills[mob].team_session;
-            const counts = ` (${kills[mob].my_session} / ${combined})`;
+            const combined = kills[mob].mySession + kills[mob].teamSession;
+            const counts = ` (${kills[mob].mySession} / ${combined})`;
             const modified = rawLine + counts;
             return (
                 "  \n" +
@@ -185,15 +185,21 @@ export default function init(
 
     client.Triggers.registerTrigger(
         teamKillRegex,
-        (rawLine, _line, matches): string | undefined => {
-            const mob = parseName(matches.groups?.name ?? "");
-            if (!kills[mob]) {
-                kills[mob] = { my_session: 0, my_total: 0, team_session: 0 };
-            }
-            kills[mob].team_session += 1;
+        (rawLine, _line, matches): string => {
+            const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
 
-            const combined = kills[mob].my_session + kills[mob].team_session;
-            const counts = ` (${kills[mob].my_session} / ${combined})`;
+            let counts = "";
+            if (client.TeamManager.isInTeam(player)) {
+                const mob = parseName(matches.groups?.name ?? "");
+                if (!kills[mob]) {
+                    kills[mob] = { mySession: 0, myTotal: 0, teamSession: 0 };
+                }
+                kills[mob].teamSession += 1;
+
+                const combined = kills[mob].mySession + kills[mob].teamSession;
+                counts = ` (${kills[mob].mySession} / ${combined})`;
+            }
+
             const modified = rawLine + counts;
             return (
                 "  \n" +

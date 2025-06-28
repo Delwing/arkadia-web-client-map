@@ -57,19 +57,19 @@ export default class TeamManager {
             this.removeMember(m[1]);
         }, tag);
         const clear = (): undefined => {
-            this.clear_team();
+            this.clearTeam();
         };
         t.registerTrigger(/^\[?([A-Z][a-z ]+?)\]? zmusza cie do opuszczenia druzyny\.$/, clear, tag);
         t.registerTrigger(/Nie jestes w zadnej druzynie\./, clear, tag);
         t.registerTrigger(/^\[?([A-Z][a-z ]+?)\]? rozwiazuje druzyne\.$/, clear, tag);
         t.registerTrigger(/^Porzucasz (?:swoja druzyne|druzyne, ktorej przewodzil[ea]s)\.$/, clear, tag);
         t.registerTrigger(/^Przewodzisz druzynie, w ktorej oprocz ciebie (?:jest|sa) jeszcze(?:\:|) (?<team>.*)\.$/, (_r, _l, m): undefined => {
-            this.clear_team();
+            this.clearTeam();
             const list = m.groups?.team ?? '';
             this.parseNames(list).forEach(n => this.addMember(n));
         }, tag);
         t.registerTrigger(/^Druzyne prowadzi (?<leader>.+?)(?:, zas ty jestes jej jedynym czlonkiem| i oprocz ciebie (?:jest|sa) w niej jeszcze:? (?<team>.*))\.$/, (_r, _l, m): undefined => {
-            this.clear_team();
+            this.clearTeam();
             const leader = m.groups?.leader?.trim();
             if (leader) {
                 this.leader = leader;
@@ -97,19 +97,19 @@ export default class TeamManager {
         }
     }
 
-    get_team_members(): string[] {
+    getTeamMembers(): string[] {
         return Array.from(this.members);
     }
 
-    is_in_team(name: string): boolean {
+    isInTeam(name: string): boolean {
         return this.members.has(name);
     }
 
-    get_leader(): string | undefined {
+    getLeader(): string | undefined {
         return this.leader;
     }
 
-    clear_team() {
+    clearTeam() {
         this.members.clear();
         this.leader = undefined;
     }
