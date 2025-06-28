@@ -7,19 +7,18 @@ import killCounterDemo from "./scenario/kill-counter-demo.ts";
 import teamEventsDemo from "./scenario/team-events-demo.ts";
 
 
-
 export function Controls() {
     const [showTester, setShowTester] = useState(false);
     return (
         <>
             {createPortal(
-                <div className="d-flex flex-column gap-2">
-                    <Button size="sm" className="w-100" variant="secondary" onClick={() => window.Output.clear()}>Reset</Button>
-                    <Button size="sm" className="w-100" variant="secondary" onClick={() => setShowTester(true)}>Trigger Tester</Button>
-                    <Button size="sm" className="w-100" variant="secondary" onClick={() => packageAssistant.run()}>Asystent paczek</Button>
+                <div className="d-flex flex-row flex-wrap gap-2 p-2">
+                    <Button size="sm" variant="secondary" onClick={() => window.Output.clear()}>Reset</Button>
+                    <Button size="sm" variant="secondary" onClick={() => setShowTester(true)}>Trigger Tester</Button>
+                    <Button size="sm" variant="secondary" onClick={() => packageAssistant.run()}>Asystent
+                        paczek</Button>
                     <Button
                         size="sm"
-                        className="w-100"
                         variant="secondary"
                         onClick={() => killCounterDemo.run()}
                     >
@@ -27,7 +26,6 @@ export function Controls() {
                     </Button>
                     <Button
                         size="sm"
-                        className="w-100"
                         variant="secondary"
                         onClick={() => teamEventsDemo.run()}
                     >
@@ -41,7 +39,7 @@ export function Controls() {
                     <Modal.Title>Trigger Tester</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <TriggerTester />
+                    <TriggerTester/>
                 </Modal.Body>
             </Modal>
         </>
