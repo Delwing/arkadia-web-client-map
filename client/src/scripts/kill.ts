@@ -122,8 +122,7 @@ export default function init(
         chrome.storage?.local.set({ [STORAGE_KEY]: kills });
     });
 
-    const killRegex =
-        /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017c\u017a\u017b\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b ]+))\.$/;
+    const killRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ]+))\.$/
 
     client.Triggers.registerTrigger(
         killRegex,
