@@ -65,6 +65,37 @@ describe('kill counter team kills', () => {
   });
 });
 
+describe('kill counter scenario', () => {
+  let client: FakeClient;
+  let parse: (line: string) => string;
+  let printTable: () => void;
+
+  beforeEach(() => {
+    const aliases: { pattern: RegExp; callback: () => void }[] = [];
+    client = new FakeClient();
+    initKillTrigger((client as unknown) as any, aliases);
+    client.dispatch('storage', { key: 'kill_counter', value: {} });
+    parse = (line: string) =>
+      Triggers.prototype.parseLine.call(client.Triggers, line, '');
+    printTable = aliases[0].callback;
+  });
+
+  test('player and team kills accumulate and print correctly', () => {
+    parse('Zabiles smoka chaosu.');
+    parse('Zabilas smoka chaosu.');
+    client.TeamManager.isInTeam.mockReturnValue(true);
+    parse('Eamon zabil smoka chaosu.');
+
+    printTable();
+
+    const printed = stripAnsiCodes(client.print.mock.calls[0][0]);
+    expect(printed).toMatch(/smoka chaosu/);
+    expect(printed).toMatch(/2 \/ 3/);
+    expect(printed).toMatch(/LACZNIE:.*2/);
+    expect(printed).toMatch(/DRUZYNA LACZNIE:.*3/);
+  });
+});
+
 describe('parseName and formatTable', () => {
   test('parseName returns expected values', () => {
     expect(parseName('Troll')).toBe('Troll');
