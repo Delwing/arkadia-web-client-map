@@ -97,6 +97,28 @@ iframe {
     line-height: 1;
 }
 
+/* GMCP type labels in a left column */
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg {
+    display: flex;
+    align-items: flex-start;
+    padding-left: 0;
+}
+
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::before {
+    content: attr(data-gmcp-type);
+    color: #aaa;
+    font-size: 10px;
+    padding: 0 4px;
+    border-right: 1px solid #555;
+    min-width: 80px;
+    text-align: right;
+    margin-right: 6px;
+}
+
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::after {
+    display: none;
+}
+
 #panel_buttons_bottom {
     height: 25px;
     margin-top: 5px;
