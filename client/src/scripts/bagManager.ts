@@ -122,20 +122,21 @@ function showConfig(client: Client) {
         return " ".repeat(left) + str + " ".repeat(len - l - left);
     };
 
-    const width = col1Width + col2Width + 7;
-    const horiz1 = "-".repeat(col1Width + 2);
-    const horiz2 = "-".repeat(col2Width + 2);
+    const padSize = 3;
+    const width = col1Width + col2Width + (padSize * 4) + 3;
+    const horiz1 = "-".repeat(col1Width + padSize * 2);
+    const horiz2 = "-".repeat(col2Width + padSize * 2);
 
     const lines: string[] = [];
     lines.push(`/${"-".repeat(width - 2)}\\`);
     lines.push(`|${center(encloseColor("POJEMNIKI", headerColor), width - 2)}|`);
     lines.push(`+${horiz1}+${horiz2}+`);
-    lines.push(`| ${pad(headers[0], col1Width)} | ${pad(headers[1], col2Width)} |`);
+    lines.push(`|${" ".repeat(padSize)}${pad(headers[0], col1Width)}${" ".repeat(padSize)}|${" ".repeat(padSize)}${pad(headers[1], col2Width)}${" ".repeat(padSize)}|`);
     lines.push(`+${horiz1}+${horiz2}+`);
     pairs.forEach(([t, b]) => {
         const type = encloseColor(t, typeColor);
         const bag = encloseColor(b, bagColor);
-        lines.push(`| ${pad(type, col1Width)} | ${pad(bag, col2Width)} |`);
+        lines.push(`|${" ".repeat(padSize)}${pad(type, col1Width)}${" ".repeat(padSize)}|${" ".repeat(padSize)}${pad(bag, col2Width)}${" ".repeat(padSize)}|`);
     });
     lines.push(`\\${"-".repeat(width - 2)}/`);
     client.println(lines.join("\n"));
