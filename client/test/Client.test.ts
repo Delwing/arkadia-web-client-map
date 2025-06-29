@@ -100,3 +100,58 @@ test('onLine sends printed messages after line and restores Output.send', () => 
   expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
 });
 
+test('onLine replaces reset sequences with preceding ANSI code', () => {
+  const client = new Client();
+  const line = '\x1b[22;38;5;1mRED\x1b[0m text \x1b[22;38;5;2mGREEN\x1b[0m';
+
+  const result = client.onLine(line, '');
+
+  const expected =
+    '\x1b[22;38;5;1mRED\x1b[22;38;5;1m text \x1b[22;38;5;2mGREEN\x1b[22;38;5;2m';
+  expect(result).toBe(expected);
+});
+
+test('onLine keeps trailing resets without preceding color', () => {
+  const client = new Client();
+  const line = '\x1b[22;38;5;1mred\x1b[0m\x1b[0m';
+
+  const result = client.onLine(line, '');
+
+  const expected = '\x1b[22;38;5;1mred\x1b[22;38;5;1m\x1b[0m';
+  expect(result).toBe(expected);
+});
+
+test('onLine restores color after inserting enclosed color', () => {
+  const client = new Client();
+  const gray = '\x1b[22;38;5;8m';
+  const yellow = '\x1b[22;38;5;11m';
+  const orange = '\x1b[22;38;5;215m';
+
+  const line =
+    gray +
+    'one two three four ' +
+    yellow +
+    'five ' +
+    orange +
+    'orange' +
+    '\x1b[0m' +
+    ' six' +
+    gray +
+    ' seven eight nine ten';
+
+  const result = client.onLine(line, '');
+
+  const expected =
+    gray +
+    'one two three four ' +
+    yellow +
+    'five ' +
+    orange +
+    'orange' +
+    yellow +
+    ' six' +
+    gray +
+    ' seven eight nine ten';
+  expect(result).toBe(expected);
+});
+
