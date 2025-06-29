@@ -161,11 +161,21 @@ client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
     client.sendEvent('refreshPositionWhenAble')
 })
 
-client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, (): undefined => {
-    client.playSound("beep")
-    client.FunctionalBind.set("zejdz ze statku", () => {
-        Input.send("zejdz ze statku")
-        client.sendEvent('refreshPositionWhenAble')
+
+const shipBeeps = [
+    /.*(rypa|ratwa|rom|arka) przybija do brzegu\.$/,
+    /^Tratwa(\.|,| i)/,
+    /^Rzeczna tratwa(\.|,| i)/,
+    /^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/
+]
+
+shipBeeps.forEach(pattern => {
+    client.Triggers.registerTrigger(pattern, (): undefined => {
+        client.playSound("beep")
+        client.FunctionalBind.set("zejdz ze statku", () => {
+            Input.send("zejdz ze statku")
+            client.sendEvent('refreshPositionWhenAble')
+        })
     })
 })
 
