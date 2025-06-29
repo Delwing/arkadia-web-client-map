@@ -19,7 +19,8 @@ export default class OutputHandler {
                 }
                 const msg = element.querySelector(".output_msg_text")
                 if (msg) {
-                    Array.from(msg.querySelectorAll("span")).filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
+                    const elements: HTMLElement[] = Array.from(msg.querySelectorAll("span")) as HTMLElement[]
+                    elements.filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
                         el.style.cursor = "pointer"
                         el.style.textDecoration = " underline"
                         el.style.textDecorationStyle = "dotted"
