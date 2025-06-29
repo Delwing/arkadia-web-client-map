@@ -59,6 +59,36 @@ function parseName(full: string): string {
     return words[words.length - 1];
 }
 
+function visibleLength(str: string): number {
+    return stripAnsiCodes(str).length;
+}
+
+function createPad(
+    width: number,
+    left: number,
+    right: number
+): (content?: string) => string {
+    const contentWidth = width - left - right;
+    return (content = "") =>
+        `|${" ".repeat(left)}${content}${" ".repeat(
+            Math.max(0, contentWidth - visibleLength(content))
+        )}${" ".repeat(right)}|`;
+}
+
+function createHeader(
+    width: number,
+    offset: number,
+    color: number
+): (title: string) => string {
+    return (title: string) => {
+        const colored = encloseColor(title, color);
+        const dashes = width - visibleLength(title) - offset;
+        const left = Math.floor(dashes / 2);
+        const right = dashes - left;
+        return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
+    };
+}
+
 function formatTable(counts: KillCounts): string {
     const WIDTH = 47;
     const LEFT_PADDING = 2;
@@ -69,18 +99,8 @@ function formatTable(counts: KillCounts): string {
     const MY_COLOR = findClosestColor("#ffff00");
     const TOTAL_COLOR = findClosestColor("#778899");
 
-    const visibleLength = (str: string) => stripAnsiCodes(str).length;
-    const pad = (content = "") =>
-        `|${" ".repeat(LEFT_PADDING)}${content}${" ".repeat(
-            Math.max(0, CONTENT_WIDTH - visibleLength(content))
-        )}${" ".repeat(RIGHT_PADDING)}|`;
-    const header = (title: string) => {
-        const colored = encloseColor(title, HEADER_COLOR);
-        const dashes = WIDTH - visibleLength(title) - 2;
-        const left = Math.floor(dashes / 2);
-        const right = dashes - left;
-        return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
-    };
+    const pad = createPad(WIDTH, LEFT_PADDING, RIGHT_PADDING);
+    const header = createHeader(WIDTH, 2, HEADER_COLOR);
 
     const entries = Object.entries(counts)
         .filter(([_, v]) => v.myTotal > 0 || v.teamSession > 0)
@@ -140,19 +160,8 @@ function formatSummary(counts: KillCounts): string {
     const LOWER_COLOR = findClosestColor("#7cfc00");
     const PINK_COLOR = findClosestColor("#ffc0cb");
 
-    const visibleLength = (str: string) => stripAnsiCodes(str).length;
-    const pad = (content = "") =>
-        `|${" ".repeat(LEFT_PADDING)}${content}${" ".repeat(
-            Math.max(0, CONTENT_WIDTH - visibleLength(content))
-        )}${" ".repeat(RIGHT_PADDING)}|`;
-
-    const header = (title: string) => {
-        const colored = encloseColor(title, HEADER_COLOR);
-        const dashes = WIDTH - visibleLength(title) - 4;
-        const left = Math.floor(dashes / 2);
-        const right = dashes - left;
-        return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
-    };
+    const pad = createPad(INNER, LEFT_PADDING, RIGHT_PADDING);
+    const header = createHeader(WIDTH, 4, HEADER_COLOR);
 
     const entries = Object.entries(counts)
         .filter(([_, v]) => v.myTotal > 0)
@@ -234,6 +243,38 @@ export default function init(
 
     window.addEventListener("beforeunload", persistTotals);
 
+    const ensureEntry = (name: string): KillEntry => {
+        if (!kills[name]) {
+            kills[name] = { mySession: 0, myTotal: 0, teamSession: 0 };
+        }
+        return kills[name];
+    };
+
+    const recordKill = (mob: string, self: boolean): KillEntry => {
+        const entry = ensureEntry(mob);
+        if (self) {
+            entry.mySession += 1;
+            entry.myTotal += 1;
+            persistTotals();
+        } else {
+            entry.teamSession += 1;
+        }
+        return entry;
+    };
+
+    const formatPrefix = (line: string, entry: KillEntry | null, label: string) => {
+        const color = findClosestColor("#ff6347");
+        const counts = entry
+            ? ` (${entry.mySession} / ${entry.mySession + entry.teamSession})`
+            : "";
+        const modified = line + counts;
+        return (
+            "  \n" +
+            client.prefix(modified, encloseColor(label, color)) +
+            "\n  "
+        );
+    };
+
     const myKillRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ()!,]+))\.$/;
     const teamKillRegex = /^[ >]*(?<player>[a-zA-Z (),!]+) zabil(?:a)? (?<name>[a-zA-Z (),!]+)\.$/;
 
@@ -241,24 +282,8 @@ export default function init(
         myKillRegex,
         (rawLine, _line, matches): string => {
             const mob = parseName(matches.groups?.name ?? "");
-            if (!kills[mob]) {
-                kills[mob] = { mySession: 0, myTotal: 0, teamSession: 0 };
-            }
-            kills[mob].mySession += 1;
-            kills[mob].myTotal += 1;
-            persistTotals();
-
-            const combined = kills[mob].mySession + kills[mob].teamSession;
-            const counts = ` (${kills[mob].mySession} / ${combined})`;
-            const modified = rawLine + counts;
-            return (
-                "  \n" +
-                client.prefix(
-                    modified,
-                    encloseColor("[  ZABILES  ] ", findClosestColor("#ff6347"))
-                ) +
-                "\n  "
-            );
+            const entry = recordKill(mob, true);
+            return formatPrefix(rawLine, entry, "[  ZABILES  ] ");
         }
     );
 
@@ -266,28 +291,10 @@ export default function init(
         teamKillRegex,
         (rawLine, _line, matches): string => {
             const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
-
-            let counts = "";
-            if (client.TeamManager.isInTeam(player)) {
-                const mob = parseName(matches.groups?.name ?? "");
-                if (!kills[mob]) {
-                    kills[mob] = { mySession: 0, myTotal: 0, teamSession: 0 };
-                }
-                kills[mob].teamSession += 1;
-
-                const combined = kills[mob].mySession + kills[mob].teamSession;
-                counts = ` (${kills[mob].mySession} / ${combined})`;
-            }
-
-            const modified = rawLine + counts;
-            return (
-                "  \n" +
-                client.prefix(
-                    modified,
-                    encloseColor("[   ZABIL   ] ", findClosestColor("#ff6347"))
-                ) +
-                "\n  "
-            );
+            const entry = client.TeamManager.isInTeam(player)
+                ? recordKill(parseName(matches.groups?.name ?? ""), false)
+                : null;
+            return formatPrefix(rawLine, entry, "[   ZABIL   ] ");
         }
     );
 
