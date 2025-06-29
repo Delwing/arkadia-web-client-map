@@ -2,6 +2,7 @@ import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
 import { setGmcp } from "./gmcp";
+import Port = chrome.runtime.Port;
 
 const originalRefreshPosition = Maps.refresh_position
 const originalSetPosition = Maps.set_position
@@ -107,16 +108,20 @@ const aliases = [
     }
 ]
 
-window.addEventListener('extension-loaded', event => {
-    const port: Port = chrome.runtime.connect((<CustomEvent>event).detail)
+function connectToBackground() {
+    const port: Port = chrome.runtime.connect(chrome.runtime.id)
     client.connect(port)
+    port.onDisconnect.addListener(connectToBackground)
+}
+
+window.addEventListener('extension-loaded', () => {
+    connectToBackground()
 })
 
 /*
     Blockers
  */
 import blockers from './blockers.json'
-import Port = chrome.runtime.Port;
 
 blockers.forEach(blocker => {
     let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
