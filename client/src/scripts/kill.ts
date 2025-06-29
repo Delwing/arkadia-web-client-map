@@ -76,7 +76,7 @@ function formatTable(counts: KillCounts): string {
         )}${" ".repeat(RIGHT_PADDING)}|`;
     const header = (title: string) => {
         const colored = encloseColor(title, HEADER_COLOR);
-        const dashes = WIDTH - visibleLength(title) - 2;
+        const dashes = WIDTH - visibleLength(title) - 4;
         const left = Math.floor(dashes / 2);
         const right = dashes - left;
         return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
@@ -148,7 +148,7 @@ function formatSummary(counts: KillCounts): string {
 
     const header = (title: string) => {
         const colored = encloseColor(title, HEADER_COLOR);
-        const dashes = WIDTH - visibleLength(title) - 2;
+        const dashes = WIDTH - visibleLength(title) - 4;
         const left = Math.floor(dashes / 2);
         const right = dashes - left;
         return `+${"-".repeat(left)} ${colored} ${"-".repeat(right)}+`;
