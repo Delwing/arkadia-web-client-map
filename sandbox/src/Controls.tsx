@@ -8,6 +8,7 @@ import teamEventsDemo from "./scenario/team-events-demo.ts";
 import combatDemo from "./scenario/combat-demo.ts";
 import compassDemo from "./scenario/compass-demo.ts";
 import containersDemo from "./scenario/containers-demo.ts";
+import inventoryDemo from "./scenario/inventory-demo.ts";
 
 
 export function Controls() {
@@ -47,6 +48,13 @@ export function Controls() {
                         onClick={() => containersDemo.run()}
                     >
                         Containers Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => inventoryDemo.run()}
+                    >
+                        Inventory Demo
                     </Button>
                     <Button
                         size="sm"

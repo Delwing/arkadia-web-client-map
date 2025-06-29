@@ -62,7 +62,7 @@ Maps.unset_position = () => {
 };
 
 Output.send = (out, type): any => {
-    const bufferSize = Output.buffer.length
+    const bufferSize = Output.buffer.length + 1
     const result = rawSend(out, type)
     client.sendEvent('output-sent', bufferSize)
     return result;
@@ -113,6 +113,7 @@ function connectToBackground(extensionId: string) {
     client.connect(port)
     port.postMessage({type: 'GET_STORAGE', key: 'settings'})
     port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
+    port.postMessage({type: 'GET_STORAGE', key: 'containers'})
     port.onDisconnect.addListener(() => {
         connectToBackground(extensionId)
     })
@@ -175,5 +176,9 @@ initKillTrigger(client, aliases)
 import initContainers from "./scripts/prettyContainers"
 
 initContainers(client)
+
+import initBagManager from "./scripts/bagManager"
+
+initBagManager(client, aliases)
 
 window["clientExtension"] = client
