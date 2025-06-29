@@ -83,20 +83,28 @@ export default class Client {
         const ansiRegex = /\x1b\[[0-9;]*m/g
         const restore: string[] = []
         const stack: string[] = []
-        for (const match of line.matchAll(ansiRegex)) {
+        const matches = Array.from(line.matchAll(ansiRegex))
+        const resetMatches = Array.from(line.matchAll(/\x1b\[0m/g))
+        const trailingCount = resetMatches.length === 1 && line.trimEnd().endsWith('\x1b[0m') ? 1 : 0
+        matches.forEach((match, i) => {
             const seq = match[0]
+            const isTrailing = seq === '\x1b[0m' && i >= matches.length - trailingCount
             if (seq === '\x1b[0m') {
-                const current = stack.pop()
-                const prev = stack[stack.length - 1]
-                if (prev) {
-                    restore.push(prev)
+                if (isTrailing) {
+                    restore.push('\x1b[0m')
                 } else {
-                    restore.push(current || '\x1b[0m')
+                    const current = stack.pop()
+                    const prev = stack[stack.length - 1]
+                    if (prev) {
+                        restore.push(prev)
+                    } else {
+                        restore.push(current || '\x1b[0m')
+                    }
                 }
             } else {
                 stack.push(seq)
             }
-        }
+        })
         let index = 0
         result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
         Output.send = originalOutputSend;

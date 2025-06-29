@@ -155,3 +155,13 @@ test('onLine restores color after inserting enclosed color', () => {
   expect(result).toBe(expected);
 });
 
+test('onLine preserves final reset at line end', () => {
+  const client = new Client();
+  const gray = '\x1b[22;38;5;8m';
+  const line = gray + 'gray text' + '\x1b[0m';
+
+  const result = client.onLine(line, '');
+
+  expect(result).toBe(line);
+});
+
