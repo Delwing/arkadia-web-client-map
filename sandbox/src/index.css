@@ -58,7 +58,6 @@ iframe {
 }
 
 .gmcp-event {
-    border: 1px dashed #555;
     padding: 5px;
     margin: 2px 0;
     position: relative;
@@ -66,6 +65,25 @@ iframe {
 
 .gmcp-event::after {
     content: "GMCP";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #555;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-bottom-left-radius: 3px;
+    line-height: 1;
+}
+
+.gmcp-msg {
+    padding: 5px;
+    margin: 2px 0;
+    position: relative;
+}
+
+.gmcp-msg::after {
+    content: attr(data-gmcp-type);
     position: absolute;
     top: 0;
     right: 0;
