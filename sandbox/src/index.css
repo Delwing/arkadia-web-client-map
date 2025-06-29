@@ -105,11 +105,10 @@ iframe {
 }
 
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::before {
-    content: attr(data-gmcp-type);
+    content: attr(data-gmcp-type) " |";
     color: #aaa;
     font-size: 10px;
-    padding: 0 4px;
-    border-right: 1px solid #555;
+    padding-right: 4px;
     min-width: 80px;
     text-align: right;
     margin-right: 6px;
