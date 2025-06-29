@@ -7,11 +7,18 @@ import type {KeyboardEvent} from 'react';
 export default function App() {
 
     const [text, setText] = useState('')
+    const [history, setHistory] = useState<string[]>([])
+    const [historyPos, setHistoryPos] = useState(-1)
     const input = createRef<HTMLInputElement>();
 
     function send() {
+        const command = text.trim()
         //window.clientExtension.fake(text)
-        window.Input.send(text.trim())
+        if (command) {
+            setHistory(h => [...h, command])
+            setHistoryPos(-1)
+        }
+        window.Input.send(command)
         input?.current?.select()
     }
 
@@ -27,6 +34,27 @@ export default function App() {
     function handleKeyDown(ev: KeyboardEvent) {
         if (ev.code === '13' && !ev.shiftKey) {
             ev.preventDefault()
+        } else if (ev.code === 'ArrowUp') {
+            ev.preventDefault()
+            setHistoryPos(pos => {
+                const newPos = pos === -1 ? history.length - 1 : Math.max(pos - 1, 0)
+                if (history[newPos] !== undefined) {
+                    setText(history[newPos])
+                }
+                return newPos
+            })
+        } else if (ev.code === 'ArrowDown') {
+            ev.preventDefault()
+            setHistoryPos(pos => {
+                if (pos === -1) return -1
+                const newPos = pos + 1
+                if (newPos >= history.length) {
+                    setText('')
+                    return -1
+                }
+                setText(history[newPos])
+                return newPos
+            })
         }
     }
 
