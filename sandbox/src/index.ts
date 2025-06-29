@@ -13,17 +13,15 @@ export const fakeClient = client as FakeClient
 const port = new MockPort()
 fakeClient.connect(port as any)
 
-if (!localStorage.getItem('npc')) {
-    localStorage.setItem('npc', JSON.stringify(npc))
-}
 const defaultSettings = {
     guilds: [],
     packageHelper: true,
     inlineCompassRose: true
 }
-if (!localStorage.getItem('settings')) {
-    localStorage.setItem('settings', JSON.stringify(defaultSettings))
-}
+
+localStorage.setItem('npc', JSON.stringify(npc))
+localStorage.setItem('settings', JSON.stringify(defaultSettings))
+
 if (!localStorage.getItem('kill_counter')) {
     localStorage.setItem('kill_counter', JSON.stringify({}))
 }
@@ -53,9 +51,7 @@ fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
 frame.contentWindow?.postMessage({mapData, colors}, '*')
 
-window.dispatchEvent(new CustomEvent("ready"));
-
-
+window.dispatchEvent(new CustomEvent("extension-ready"));
 window.dispatchEvent(new CustomEvent("map-ready", {
     detail: {
         mapData, colors
