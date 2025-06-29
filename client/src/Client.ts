@@ -23,10 +23,10 @@ export default class Client {
     inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
-        // beep: new Howl({
-        //     src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
-        //     preload: true,
-        // })
+        beep: new Howl({
+            src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
+            preload: true,
+        })
     }
 
     constructor() {
@@ -128,7 +128,16 @@ export default class Client {
     }
 
     playSound(key: string) {
-        this.sounds[key].play()
+        const sound = this.sounds[key]
+        if (!sound) {
+            return
+        }
+        if (sound.state() === 'loaded') {
+            sound.play()
+        } else {
+            sound.once('load', () => sound.play())
+            sound.load()
+        }
     }
 
     prefix(rawLine: string, prefix: string) {
