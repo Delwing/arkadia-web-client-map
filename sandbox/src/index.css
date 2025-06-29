@@ -100,18 +100,22 @@ iframe {
 /* GMCP type labels in a left column */
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     padding-left: 0;
 }
 
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::before {
-    content: attr(data-gmcp-type) " |";
+    content: attr(data-gmcp-type);
     color: #aaa;
     font-size: 10px;
-    padding-right: 4px;
+    padding-right: 6px;
     min-width: 80px;
     text-align: right;
     margin-right: 6px;
+    border-right: 1px solid #444;
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::after {

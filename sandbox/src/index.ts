@@ -59,8 +59,8 @@ wrapper.addEventListener('contextmenu', (ev) => {
     menu.style.border = '1px solid #555';
     menu.style.cursor = 'pointer';
     menu.textContent = wrapper.classList.contains('show-gmcp-column')
-        ? 'Hide GMCP type column'
-        : 'Show GMCP type column';
+        ? 'Hide GMCP column'
+        : 'Show GMCP column';
     document.body.appendChild(menu);
 
     const removeMenu = () => {
