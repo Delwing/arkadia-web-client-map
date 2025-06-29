@@ -111,6 +111,8 @@ const aliases = [
 function connectToBackground(extensionId: string) {
     const port: Port = chrome.runtime.connect(extensionId)
     client.connect(port)
+    port.postMessage({type: 'GET_STORAGE', key: 'settings'})
+    port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
     port.onDisconnect.addListener(() => {
         connectToBackground(extensionId)
     })

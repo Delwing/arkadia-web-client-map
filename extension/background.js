@@ -16,10 +16,12 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
 
     chrome.storage.local.get(null).then(items => {
         Object.entries(items).forEach(([key, value]) => {
-            if (key === 'settings' || key === 'npc') {
+            if (key === 'npc') {
                 port.postMessage({ [key]: value })
             }
-            port.postMessage({ storage: { key, value } })
+            if (key !== 'settings' && key !== 'kill_counter') {
+                port.postMessage({ storage: { key, value } })
+            }
         })
     })
 
@@ -29,6 +31,15 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
                 const npc = data.npc ?? []
                 npc.push({name: msg.name, loc: msg.loc})
                 chrome.storage.local.set({ npc: npc })
+            })
+        }
+        if (msg.type === 'GET_STORAGE') {
+            chrome.storage.local.get(msg.key).then(data => {
+                const value = data[msg.key]
+                if (msg.key === 'settings' || msg.key === 'npc') {
+                    port.postMessage({ [msg.key]: value })
+                }
+                port.postMessage({ storage: { key: msg.key, value } })
             })
         }
         if (msg.type === 'SET_STORAGE') {
