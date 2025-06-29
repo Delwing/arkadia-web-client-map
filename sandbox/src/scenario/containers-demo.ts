@@ -1,5 +1,5 @@
 import ClientScript from "../ClientScript.ts";
-import {fakeClient} from "../index.ts";
+import {fakeClient} from "../fakeClient.ts";
 
 export default new ClientScript(fakeClient)
     .reset()

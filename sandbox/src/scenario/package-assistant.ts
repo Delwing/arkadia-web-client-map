@@ -1,5 +1,5 @@
 import ClientScript from "../ClientScript.ts";
-import {fakeClient} from "../index.ts";
+import {fakeClient} from "../fakeClient.ts";
 
 const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
     " o============================================================================o\n" +
