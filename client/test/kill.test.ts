@@ -1,4 +1,4 @@
-import initKillTrigger, { parseName, formatTable, formatSummary } from '../src/scripts/kill';
+import initKillTrigger, { parseName, formatSessionTable, formatLifetimeTable } from '../src/scripts/kill';
 import Triggers, { stripAnsiCodes } from '../src/Triggers';
 
 class FakeClient {
@@ -68,7 +68,7 @@ describe('kill counter team kills', () => {
 describe('kill counter scenario', () => {
   let client: FakeClient;
   let parse: (line: string) => string;
-  let printTable: () => void;
+  let printSessionTable: () => void;
 
   beforeEach(() => {
     const aliases: { pattern: RegExp; callback: () => void }[] = [];
@@ -77,20 +77,22 @@ describe('kill counter scenario', () => {
     client.dispatch('storage', { key: 'kill_counter', value: {} });
     parse = (line: string) =>
       Triggers.prototype.parseLine.call(client.Triggers, line, '');
-    printTable = aliases[0].callback;
+    // alias[0] corresponds to the /zabici command which prints
+    // the per-session kill table
+    printSessionTable = aliases[0].callback;
   });
 
-  test('player and team kills accumulate and print correctly', () => {
+  test('player and team kills accumulate and print session table correctly', () => {
     parse('Zabiles smoka chaosu.');
     parse('Zabilas smoka chaosu.');
     client.TeamManager.isInTeam.mockReturnValue(true);
     parse('Eamon zabil smoka chaosu.');
 
-    printTable();
+    printSessionTable();
 
     const printed = stripAnsiCodes(client.print.mock.calls[0][0]);
     expect(printed).toMatch(/smoka chaosu/);
-    expect(printed).toMatch(/2 \/ 3/);
+    expect(printed).toMatch(/smoka chaosu .* 2/);
     expect(printed).toMatch(/LACZNIE:.*2/);
     expect(printed).toMatch(/DRUZYNA LACZNIE:.*3/);
   });
@@ -103,8 +105,8 @@ describe('parseName and formatTable', () => {
     expect(parseName('Wielki Troll')).toBe('troll');
   });
 
-  test('formatTable prints table with totals', () => {
-    const table = formatTable({
+  test('formatSessionTable prints table with totals', () => {
+    const table = formatSessionTable({
       troll: { mySession: 1, myTotal: 1, teamSession: 0 },
       smok: { mySession: 0, myTotal: 0, teamSession: 2 },
     });
@@ -114,8 +116,8 @@ describe('parseName and formatTable', () => {
     expect(table).toMatch(/DRUZYNA LACZNIE/);
   });
 
-  test('formatSummary prints header and sorts names', () => {
-    const summary = formatSummary({
+  test('formatLifetimeTable prints header and sorts names', () => {
+    const summary = formatLifetimeTable({
       Bbb: { mySession: 0, myTotal: 1, teamSession: 0 },
       Aaa: { mySession: 0, myTotal: 2, teamSession: 0 },
       goblin: { mySession: 0, myTotal: 1, teamSession: 0 },
