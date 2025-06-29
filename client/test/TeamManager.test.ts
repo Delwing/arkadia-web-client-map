@@ -1,18 +1,20 @@
 import TeamManager from '../src/TeamManager';
 import Triggers from '../src/Triggers';
 
+import { EventEmitter } from 'events';
+
 class FakeClient {
-  eventTarget = new EventTarget();
+  private emitter = new EventEmitter();
   Triggers = new Triggers({} as any);
-  addEventListener(event: string, cb: any, options?: any) {
-    this.eventTarget.addEventListener(event, cb, options);
-    return () => this.eventTarget.removeEventListener(event, cb, options);
+  addEventListener(event: string, cb: any, _options?: any) {
+    this.emitter.on(event, cb);
+    return () => this.emitter.off(event, cb);
   }
   removeEventListener(event: string, cb: any) {
-    this.eventTarget.removeEventListener(event, cb);
+    this.emitter.off(event, cb);
   }
   sendEvent(type: string, detail?: any) {
-    this.eventTarget.dispatchEvent(new CustomEvent(type, { detail }));
+    this.emitter.emit(type, { detail });
   }
 }
 
