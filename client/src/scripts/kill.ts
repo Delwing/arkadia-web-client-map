@@ -103,14 +103,15 @@ function formatTable(counts: KillCounts): string {
     const header = createHeader(WIDTH, 2, HEADER_COLOR);
 
     const entries = Object.entries(counts)
-        .filter(([_, v]) => v.mySession > 0 || v.teamSession > 0)
+        .filter(([_, v]) => v.mySession > 0)
         .sort(([a], [b]) => a.localeCompare(b));
 
     const totalMy = Object.values(counts).reduce((s, v) => s + v.mySession, 0);
-    const totalCombined = totalMy + Object.values(counts).reduce((s, v) => s + v.teamSession, 0);
+    const totalCombined = totalMy +
+        Object.values(counts).reduce((s, v) => s + v.teamSession, 0);
 
-    const mobLine = (name: string, my: number, combined: number) => {
-        const numbers = `${my} / ${combined}`;
+    const mobLine = (name: string, my: number) => {
+        const numbers = `${my}`;
         let text = `${name} `;
         const dots = CONTENT_WIDTH - text.length - numbers.length - 1;
         text += ".".repeat(Math.max(0, dots));
@@ -135,8 +136,8 @@ function formatTable(counts: KillCounts): string {
     lines.push(header("Licznik zabitych"));
     lines.push(pad());
     lines.push(pad(encloseColor("JA", MY_COLOR)));
-    entries.forEach(([name, { mySession, teamSession }]) => {
-        lines.push(mobLine(name, mySession, mySession + teamSession));
+    entries.forEach(([name, { mySession }]) => {
+        lines.push(mobLine(name, mySession));
     });
     lines.push(pad());
     lines.push(summaryLine("LACZNIE:", totalMy, TOTAL_COLOR));

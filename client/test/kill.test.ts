@@ -68,7 +68,7 @@ describe('parseName and formatTable', () => {
     });
     expect(table).toMatch(/Licznik zabitych/);
     expect(table).toMatch(/troll/);
-    expect(table).toMatch(/1 \/ 1/);
+    expect(table).toMatch(/troll .* 1/);
     expect(table).toMatch(/DRUZYNA LACZNIE/);
   });
 
