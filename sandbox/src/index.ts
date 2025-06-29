@@ -2,12 +2,31 @@ import "./sandbox.ts"
 import "@client/src/main.ts"
 
 import npc from "./npc.json";
-import mapData from "../../data/mapExport.json"
-import colors from "../../data/colors.json"
-import {client} from "@client/src/main.ts";
-import {FakeClient} from "./types/globals";
+import mapData from "../../data/mapExport.json";
+import colors from "../../data/colors.json";
+import { client } from "@client/src/main.ts";
+import { FakeClient } from "./types/globals";
+import MockPort from "./MockPort.ts";
 
 export const fakeClient = client as FakeClient
+
+const port = new MockPort()
+fakeClient.connect(port as any)
+
+if (!localStorage.getItem('npc')) {
+    localStorage.setItem('npc', JSON.stringify(npc))
+}
+const defaultSettings = {
+    guilds: [],
+    packageHelper: true,
+    inlineCompassRose: true
+}
+if (!localStorage.getItem('settings')) {
+    localStorage.setItem('settings', JSON.stringify(defaultSettings))
+}
+if (!localStorage.getItem('kill_counter')) {
+    localStorage.setItem('kill_counter', JSON.stringify({}))
+}
 
 const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.eventTarget)
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
@@ -35,13 +54,6 @@ const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFr
 frame.contentWindow?.postMessage({mapData, colors}, '*')
 
 window.dispatchEvent(new CustomEvent("ready"));
-fakeClient.eventTarget.dispatchEvent(new CustomEvent("settings", {
-    detail: {
-        guilds: [],
-        packageHelper: true,
-        inlineCompassRose: true
-    }
-}))
 
 
 window.dispatchEvent(new CustomEvent("map-ready", {
