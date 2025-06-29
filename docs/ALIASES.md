@@ -11,3 +11,11 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/zlok** - wymusza odświeżenie bieżącej pozycji na mapie.
 - **/zabici** - pokazuje tabelę z liczbą twoich zabitych istot w bieżącej sesji.
 - **/zabici2** - wyświetla podsumowanie liczby zabitych istot.
+- **/pojemnik** - uruchamia konfigurację menedżera pojemników.
+- **/pojemniki** - wyświetla bieżące ustawienia menedżera pojemników.
+- **/wdp _przedmioty_** - wkłada podane przedmioty do ustawionego pojemnika.
+- **/wzp _przedmioty_** - wyjmuje podane przedmioty z ustawionego pojemnika.
+- **/wem** - wyjmuje monety z pojemnika na pieniądze.
+- **/wlm** - wkłada monety do pojemnika na pieniądze.
+- **/wlp** - wkłada pocztową paczkę do ustawionego pojemnika.
+- **/wep** - wyjmuje pocztową paczkę z ustawionego pojemnika.
