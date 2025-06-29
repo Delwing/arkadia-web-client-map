@@ -58,9 +58,11 @@ iframe {
 }
 
 .gmcp-event {
-    padding: 5px;
+    padding: 10px 15px;
     margin: 2px 0;
     position: relative;
+    border: 1px dashed #666;
+    font-size: 12px;
 }
 
 .gmcp-event::after {
