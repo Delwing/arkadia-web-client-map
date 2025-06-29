@@ -39,11 +39,19 @@ fakeClient.eventTarget.dispatchEvent = (event: Event) => {
             text = String(detail)
         }
         fakeClient.print(`${event.type}${text ? ' ' + text : ''}`)
-        const wrapper = document.getElementById('main_text_output_msg_wrapper')!
-        const last = wrapper.lastElementChild as HTMLElement | null
+        const wrapper = document.getElementById('main_text_output_msg_wrapper')!;
+        const last = wrapper.lastElementChild as HTMLElement | null;
         if (last) {
             last.classList.add('gmcp-event')
         }
+    } else if (event.type.startsWith("gmcp_msg.")) {
+        const wrapper = document.getElementById("main_text_output_msg_wrapper")!;
+        const last = wrapper.lastElementChild as HTMLElement | null;
+        if (last) {
+            last.classList.add("gmcp-msg");
+            last.setAttribute("data-gmcp-type", event.type.replace(/^gmcp_msg\./, ""));
+        }
+    
     }
     return originalDispatch(event)
 }
