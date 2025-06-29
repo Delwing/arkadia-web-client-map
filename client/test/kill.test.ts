@@ -1,8 +1,10 @@
 import initKillTrigger, { parseName, formatSessionTable, formatLifetimeTable } from '../src/scripts/kill';
 import Triggers, { stripAnsiCodes } from '../src/Triggers';
 
+import { EventEmitter } from 'events';
+
 class FakeClient {
-  eventTarget = new EventTarget();
+  private emitter = new EventEmitter();
   Triggers = new Triggers(({} as unknown) as any);
   TeamManager = { isInTeam: jest.fn() };
   prefix = (line: string, prefix: string) => prefix + line;
@@ -10,13 +12,13 @@ class FakeClient {
   port = { postMessage: jest.fn() } as any;
 
   addEventListener(event: string, cb: any) {
-    this.eventTarget.addEventListener(event, cb);
+    this.emitter.on(event, cb);
   }
   removeEventListener(event: string, cb: any) {
-    this.eventTarget.removeEventListener(event, cb);
+    this.emitter.off(event, cb);
   }
   dispatch(event: string, detail: any) {
-    this.eventTarget.dispatchEvent(new CustomEvent(event, { detail }));
+    this.emitter.emit(event, { detail });
   }
 }
 
