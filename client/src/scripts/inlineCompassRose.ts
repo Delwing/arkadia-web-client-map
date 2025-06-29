@@ -1,5 +1,6 @@
 import Client from "../Client";
 import { color, findClosestColor } from "../Colors";
+import {gmcp} from "../gmcp";
 
 const SPRING_GREEN = findClosestColor("#00ff7f");
 const DIM_GRAY = findClosestColor("#696969");
@@ -37,7 +38,7 @@ export default class InlineCompassRose {
     private exits = new Set<string>();
     private enabled = false;
     private listener = () => {
-        const data = (window as any).gmcp?.room?.info;
+        const data = gmcp?.room?.info;
         this.exits = new Set(this.parseExits(data));
         this.showCompassRose();
     };

@@ -7,6 +7,7 @@ import colors from "../../data/colors.json";
 import { client } from "@client/src/main.ts";
 import { FakeClient } from "./types/globals";
 import MockPort from "./MockPort.ts";
+import {setGmcp} from "@client/src/gmcp.ts";
 
 export const fakeClient = client as FakeClient
 
@@ -30,6 +31,7 @@ const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.ev
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     if (event.type.startsWith('gmcp\.')) {
         const detail = (event as CustomEvent).detail
+        setGmcp(event.type.replace(/^gmcp\./, ""), detail)
         let text = ''
         try {
             text = detail !== undefined ? JSON.stringify(detail, null, 2) : ''
@@ -63,7 +65,7 @@ fakeClient.eventTarget.dispatchEvent(new CustomEvent("gmcp.room.info", {
 }));
 
 fakeClient.fake = (text: string, type?: string) => {
-    client.sendEvent("gmcp_msg." + type, {})
     window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type)
+    client.sendEvent("gmcp_msg." + type, text)
 }
 
