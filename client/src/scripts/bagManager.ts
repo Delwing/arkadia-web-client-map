@@ -88,14 +88,24 @@ function containerAction(
         return;
     }
     const forms = getBagForms(bag);
-    const cmds = [
-        `otworz ${forms.pronoun_b} ${forms.biernik}`,
-        action === "put"
-            ? `wloz ${item} do ${forms.pronoun_d} ${forms.dopelniacz}`
-            : `wez ${item} ze ${forms.pronoun_d} ${forms.dopelniacz}`,
-        `zamknij ${forms.pronoun_b} ${forms.biernik}`,
-    ];
-    cmds.forEach((c) => Input.send(c));
+    const items = item
+        .split(",")
+        .map((i) => i.trim())
+        .filter((i) => i.length);
+    Input.send(`otworz ${forms.pronoun_b} ${forms.biernik}`);
+    items.forEach((it) =>
+        Input.send(
+            action === "put"
+                ? `wloz ${it} do ${forms.pronoun_d} ${forms.dopelniacz}`
+                : `wez ${it} ze ${forms.pronoun_d} ${forms.dopelniacz}`
+        )
+    );
+    Input.send(`zamknij ${forms.pronoun_b} ${forms.biernik}`);
+}
+
+function showConfig(client: Client) {
+    const lines = availableTypes.map((t) => `${t}: ${containerConfig[t]}`);
+    client.println(lines.join("\n"));
 }
 
 function showInterface(client: Client, bags: string[]) {
@@ -147,8 +157,11 @@ export default function initBagManager(
 
     if (aliases) {
         aliases.push({ pattern: /\/pojemnik$/, callback: () => configure(client) });
+        aliases.push({ pattern: /\/pojemniki$/, callback: () => showConfig(client) });
         aliases.push({ pattern: /\/wdp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "put", m[1]) });
         aliases.push({ pattern: /\/wzp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "take", m[1]) });
+        aliases.push({ pattern: /\/wlp$/, callback: () => containerAction(client, "other", "put", "pocztowa paczke") });
+        aliases.push({ pattern: /\/wep$/, callback: () => containerAction(client, "other", "take", "pocztowa paczke") });
         aliases.push({ pattern: /\/wem$/, callback: () => containerAction(client, "money", "take", "monety") });
         aliases.push({ pattern: /\/wlm$/, callback: () => containerAction(client, "money", "put", "monety") });
     }
