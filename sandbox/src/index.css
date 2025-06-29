@@ -65,37 +65,48 @@ iframe {
     font-size: 12px;
 }
 
-.gmcp-event::after {
-    content: "GMCP";
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: #555;
-    color: #fff;
-    font-size: 10px;
-    padding: 2px 4px;
-    border-bottom-left-radius: 3px;
-    line-height: 1;
-}
 
 .gmcp-msg {
-    padding: 5px;
-    margin: 2px 0;
+    padding: 0px;
+    margin: 0px 0;
     position: relative;
 }
 
-.gmcp-msg::after {
+
+/* GMCP type labels in a left column */
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg {
+    padding-left: 92px;
+}
+
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::before {
     content: attr(data-gmcp-type);
     position: absolute;
-    top: 0;
-    right: 0;
-    background-color: #555;
-    color: #fff;
+    top: 7px;
+    left: 0;
+    width: 80px;
+    height: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
     font-size: 10px;
-    padding: 2px 4px;
-    border-bottom-left-radius: 3px;
-    line-height: 1;
+    color: #ccc;
 }
+
+#main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 86px;
+    border-right: 1px solid #444;
+}
+
+.output_msg {
+    padding-bottom: 2px;
+    padding-top: 2px;
+}
+
 
 #panel_buttons_bottom {
     height: 25px;
