@@ -62,7 +62,7 @@ Maps.unset_position = () => {
 };
 
 Output.send = (out, type): any => {
-    const bufferSize = Output.buffer.length
+    const bufferSize = Output.buffer.length + 1
     const result = rawSend(out, type)
     client.sendEvent('output-sent', bufferSize)
     return result;

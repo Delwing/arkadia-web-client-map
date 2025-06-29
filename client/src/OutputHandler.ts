@@ -20,9 +20,6 @@ export default class OutputHandler {
                 const msg = element.querySelector(".output_msg_text")
                 if (msg) {
                     const elements: HTMLElement[] = Array.from(msg.querySelectorAll("span")) as HTMLElement[]
-                    if (msg.textContent && msg.textContent.indexOf("click:") > -1) {
-                        elements.push(msg as HTMLElement)
-                    }
                     elements.filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
                         el.style.cursor = "pointer"
                         el.style.textDecoration = " underline"

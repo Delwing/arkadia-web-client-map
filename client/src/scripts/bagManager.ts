@@ -1,5 +1,6 @@
 import Client from "../Client";
 import {stripAnsiCodes} from "../Triggers";
+import {encloseColor, findClosestColor} from "../Colors";
 
 const STORAGE_KEY = "containers";
 
@@ -102,11 +103,11 @@ function showInterface(client: Client, bags: string[]) {
     bags.forEach((bag) => {
         let line = `Ustaw ${bag} jako:`;
         availableTypes.forEach((type) => {
-            const text = `[ ${type} ]`;
-            line += " " + client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client));
+            const text = `${type}`;
+            line += " [ " + encloseColor(client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client)), findClosestColor("#cfb530")) + " ]";
         });
-        const allText = `[ wszystkie ]`;
-        line += " " + client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client));
+        const allText = `wszystkie`;
+        line += " [ " + encloseColor(client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client)), findClosestColor("#cfb530")) + " ]";
         lines.push(line);
     });
     client.println(lines.join("\n"));
