@@ -17,8 +17,23 @@ export default class OutputHandler {
                 if (!element) {
                     return;
                 }
-                const msg = element.querySelector(".output_msg_text")
+                const msg = element.querySelector(".output_msg_text") as HTMLElement | null
                 if (msg) {
+                    const plainMatch = msg.textContent?.match(/\{click:(\d+)(?::([^}]+))?}/)
+                    if (plainMatch) {
+                        msg.textContent = msg.textContent?.replace(plainMatch[0], "") || ""
+                        msg.style.cursor = "pointer"
+                        msg.style.textDecoration = " underline"
+                        msg.style.textDecorationStyle = "dotted"
+                        msg.style.textDecorationSkipInk = "auto"
+                        if (plainMatch[2]) {
+                            msg.title = plainMatch[2]
+                        }
+                        const index = parseInt(plainMatch[1])
+                        msg.onclick = () => {
+                            this.clickerCallbacks[index]?.apply(null)
+                        }
+                    }
                     const elements: HTMLElement[] = Array.from(msg.querySelectorAll("span")) as HTMLElement[]
                     elements.filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
                         el.style.cursor = "pointer"
@@ -35,7 +50,7 @@ export default class OutputHandler {
                         const callbackIndex = el.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex)
                         el.textContent = el.textContent.substring(0, clickIndex) + el.textContent.substring(closerIndex + 1)
                         el.onclick = () => {
-                            this.clickerCallbacks[callbackIndex]?.apply()
+                            this.clickerCallbacks[callbackIndex]?.apply(null)
                         }
                     })
                 }
