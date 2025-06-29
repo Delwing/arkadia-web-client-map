@@ -89,7 +89,7 @@ function createHeader(
     };
 }
 
-function formatTable(counts: KillCounts): string {
+function formatSessionTable(counts: KillCounts): string {
     const WIDTH = 47;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
@@ -149,7 +149,7 @@ function formatTable(counts: KillCounts): string {
     return lines.join("\n");
 }
 
-function formatSummary(counts: KillCounts): string {
+function formatLifetimeTable(counts: KillCounts): string {
     const WIDTH = 59;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
@@ -208,7 +208,7 @@ function formatSummary(counts: KillCounts): string {
     return lines.join("\n");
 }
 
-export { parseName, formatTable, formatSummary };
+export { parseName, formatSessionTable, formatLifetimeTable };
 
 export default function init(
     client: Client,
@@ -306,13 +306,13 @@ export default function init(
         aliases.push({
             pattern: /\/zabici$/,
             callback: () => {
-                client.print("\n" + formatTable(kills) + "\n");
+                client.print("\n" + formatSessionTable(kills) + "\n");
             },
         });
         aliases.push({
             pattern: /\/zabici2$/,
             callback: () => {
-                client.print("\n" + formatSummary(kills) + "\n");
+                client.print("\n" + formatLifetimeTable(kills) + "\n");
             },
         });
     }
