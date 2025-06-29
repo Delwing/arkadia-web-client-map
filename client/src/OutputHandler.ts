@@ -19,21 +19,6 @@ export default class OutputHandler {
                 }
                 const msg = element.querySelector(".output_msg_text") as HTMLElement | null
                 if (msg) {
-                    const plainMatch = msg.textContent?.match(/\{click:(\d+)(?::([^}]+))?}/)
-                    if (plainMatch) {
-                        msg.textContent = msg.textContent?.replace(plainMatch[0], "") || ""
-                        msg.style.cursor = "pointer"
-                        msg.style.textDecoration = " underline"
-                        msg.style.textDecorationStyle = "dotted"
-                        msg.style.textDecorationSkipInk = "auto"
-                        if (plainMatch[2]) {
-                            msg.title = plainMatch[2]
-                        }
-                        const index = parseInt(plainMatch[1])
-                        msg.onclick = () => {
-                            this.clickerCallbacks[index]?.apply(null)
-                        }
-                    }
                     const elements: HTMLElement[] = Array.from(msg.querySelectorAll("span")) as HTMLElement[]
                     elements.filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
                         el.style.cursor = "pointer"
