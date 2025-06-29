@@ -7,6 +7,7 @@ import {FunctionalBind} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 import {rawSend} from "./main";
 import TeamManager from "./TeamManager";
+import {beepSound} from "./sounds";
 
 const originalSend = Input.send
 
@@ -24,7 +25,7 @@ export default class Client {
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
         beep: new Howl({
-            src: 'https://github.com/tjurczyk/arkadia-data/raw/refs/heads/master/sounds/beep.wav',
+            src: beepSound,
             preload: true,
         })
     }
