@@ -17,7 +17,7 @@ export default class OutputHandler {
                 if (!element) {
                     return;
                 }
-                const msg = element.querySelector(".output_msg_text")
+                const msg = element.querySelector(".output_msg_text") as HTMLElement | null
                 if (msg) {
                     const elements: HTMLElement[] = Array.from(msg.querySelectorAll("span")) as HTMLElement[]
                     elements.filter(el => el.textContent.indexOf("click:") > -1).forEach(el => {
@@ -35,7 +35,7 @@ export default class OutputHandler {
                         const callbackIndex = el.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex)
                         el.textContent = el.textContent.substring(0, clickIndex) + el.textContent.substring(closerIndex + 1)
                         el.onclick = () => {
-                            this.clickerCallbacks[callbackIndex]?.apply()
+                            this.clickerCallbacks[callbackIndex]?.apply(null)
                         }
                     })
                 }
