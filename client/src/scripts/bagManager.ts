@@ -104,7 +104,41 @@ function containerAction(
 }
 
 function showConfig(client: Client) {
-    const lines = availableTypes.map((t) => `${t}: ${containerConfig[t]}`);
+    const pairs = availableTypes.map((t) => [t, containerConfig[t]]);
+
+    const headerColor = findClosestColor("#7cfc00");
+    const typeColor = findClosestColor("#cfb530");
+    const bagColor = findClosestColor("#87ceeb");
+
+    const headers = ["typ", "pojemnik"];
+    const col1Width = Math.max(...pairs.map(([t]) => t.length), headers[0].length);
+    const col2Width = Math.max(...pairs.map(([, b]) => b.length), headers[1].length);
+
+    const visible = (str: string) => stripAnsiCodes(str).length;
+    const pad = (str: string, len: number) => str + " ".repeat(Math.max(0, len - visible(str)));
+    const center = (str: string, len: number) => {
+        const l = visible(str);
+        const left = Math.floor((len - l) / 2);
+        return " ".repeat(left) + str + " ".repeat(len - l - left);
+    };
+
+    const padSize = 3;
+    const width = col1Width + col2Width + (padSize * 4) + 3;
+    const horiz1 = "-".repeat(col1Width + padSize * 2);
+    const horiz2 = "-".repeat(col2Width + padSize * 2);
+
+    const lines: string[] = [];
+    lines.push(`/${"-".repeat(width - 2)}\\`);
+    lines.push(`|${center(encloseColor("POJEMNIKI", headerColor), width - 2)}|`);
+    lines.push(`+${horiz1}+${horiz2}+`);
+    lines.push(`|${" ".repeat(padSize)}${pad(headers[0], col1Width)}${" ".repeat(padSize)}|${" ".repeat(padSize)}${pad(headers[1], col2Width)}${" ".repeat(padSize)}|`);
+    lines.push(`+${horiz1}+${horiz2}+`);
+    pairs.forEach(([t, b]) => {
+        const type = encloseColor(t, typeColor);
+        const bag = encloseColor(b, bagColor);
+        lines.push(`|${" ".repeat(padSize)}${pad(type, col1Width)}${" ".repeat(padSize)}|${" ".repeat(padSize)}${pad(bag, col2Width)}${" ".repeat(padSize)}|`);
+    });
+    lines.push(`\\${"-".repeat(width - 2)}/`);
     client.println(lines.join("\n"));
 }
 

@@ -31,8 +31,10 @@ describe('OutputHandler clickable text', () => {
 
     client.dispatch('output-sent', 1);
 
+    const span = msg.querySelector('span') as HTMLSpanElement | null;
+    expect(span).not.toBeNull();
     expect(msg.textContent).toBe('Click');
-    (msg as any).onclick();
+    span!.onclick!(new MouseEvent('click'));
     expect(cb).toHaveBeenCalledTimes(1);
   });
 });

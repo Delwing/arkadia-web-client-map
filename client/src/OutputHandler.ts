@@ -38,6 +38,50 @@ export default class OutputHandler {
                             this.clickerCallbacks[callbackIndex]?.apply(null)
                         }
                     })
+                    if (msg.textContent && msg.textContent.indexOf("{click:") > -1) {
+                        const clickReg = /\{click:(\d+)(?::([^}]+))?\}/
+                        Array.from(msg.childNodes).forEach((node) => {
+                            if (node.nodeType !== Node.TEXT_NODE) {
+                                return
+                            }
+                            let text = node.textContent || ""
+                            let match = clickReg.exec(text)
+                            if (!match) {
+                                return
+                            }
+                            const frag = document.createDocumentFragment()
+                            while (match) {
+                                const before = text.substring(0, match.index)
+                                if (before) {
+                                    frag.appendChild(document.createTextNode(before))
+                                }
+                                text = text.substring(match.index + match[0].length)
+                                const nextMatch = clickReg.exec(text)
+                                const nextIndex = nextMatch ? nextMatch.index : text.length
+                                const clickableText = text.substring(0, nextIndex)
+                                const span = document.createElement("span")
+                                span.textContent = clickableText
+                                span.style.cursor = "pointer"
+                                span.style.textDecoration = " underline"
+                                span.style.textDecorationStyle = "dotted"
+                                span.style.textDecorationSkipInk = "auto"
+                                if (match[2]) {
+                                    span.title = match[2]
+                                }
+                                const cbIndex = parseInt(match[1])
+                                span.onclick = () => {
+                                    this.clickerCallbacks[cbIndex]?.apply(null)
+                                }
+                                frag.appendChild(span)
+                                text = text.substring(nextIndex)
+                                match = nextMatch
+                            }
+                            if (text) {
+                                frag.appendChild(document.createTextNode(text))
+                            }
+                            node.replaceWith(frag)
+                        })
+                    }
                 }
             }
         })
