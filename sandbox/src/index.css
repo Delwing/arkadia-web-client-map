@@ -67,8 +67,8 @@ iframe {
 
 
 .gmcp-msg {
-    padding: 5px;
-    margin: 2px 0;
+    padding: 0px;
+    margin: 0px 0;
     position: relative;
 }
 
@@ -81,7 +81,7 @@ iframe {
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::before {
     content: attr(data-gmcp-type);
     position: absolute;
-    top: 0;
+    top: 7px;
     left: 0;
     width: 80px;
     height: 1.2em;
@@ -90,7 +90,7 @@ iframe {
     justify-content: flex-end;
     padding-right: 6px;
     font-size: 10px;
-    color: #aaa;
+    color: #ccc;
 }
 
 #main_text_output_msg_wrapper.show-gmcp-column .gmcp-msg::after {
@@ -100,6 +100,11 @@ iframe {
     bottom: 0;
     left: 86px;
     border-right: 1px solid #444;
+}
+
+.output_msg {
+    padding-bottom: 2px;
+    padding-top: 2px;
 }
 
 
