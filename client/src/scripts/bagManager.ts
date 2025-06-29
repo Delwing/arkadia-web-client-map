@@ -1,5 +1,6 @@
 import Client from "../Client";
 import {stripAnsiCodes} from "../Triggers";
+import {encloseColor, findClosestColor} from "../Colors";
 
 const STORAGE_KEY = "containers";
 
@@ -102,11 +103,11 @@ function showInterface(client: Client, bags: string[]) {
     bags.forEach((bag) => {
         let line = `Ustaw ${bag} jako:`;
         availableTypes.forEach((type) => {
-            const text = `[ ${type} ]`;
-            line += " " + client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client));
+            const text = `${type}`;
+            line += " [ " + encloseColor(client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client)), findClosestColor("#cfb530")) + " ]";
         });
-        const allText = `[ wszystkie ]`;
-        line += " " + client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client));
+        const allText = `wszystkie`;
+        line += " [ " + encloseColor(client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client)), findClosestColor("#cfb530")) + " ]";
         lines.push(line);
     });
     client.println(lines.join("\n"));
@@ -115,7 +116,7 @@ function showInterface(client: Client, bags: string[]) {
 function configure(client: Client) {
     const found: string[] = [];
     const tag = "bag-config";
-    const trigger = client.Triggers.registerTrigger(/.*/, (raw, line) => {
+    client.Triggers.registerTrigger(/.*/, (raw, line) => {
         const l = stripAnsiCodes(line).toLowerCase();
         if (l.startsWith("masz przy sobie")) {
             client.Triggers.removeByTag(tag);
@@ -146,8 +147,8 @@ export default function initBagManager(
 
     if (aliases) {
         aliases.push({ pattern: /\/pojemnik$/, callback: () => configure(client) });
-        aliases.push({ pattern: /\.\/wdp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "put", m[1]) });
-        aliases.push({ pattern: /\.\/wzp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "take", m[1]) });
+        aliases.push({ pattern: /\/wdp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "put", m[1]) });
+        aliases.push({ pattern: /\/wzp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "take", m[1]) });
         aliases.push({ pattern: /\/wem$/, callback: () => containerAction(client, "money", "take", "monety") });
         aliases.push({ pattern: /\/wlm$/, callback: () => containerAction(client, "money", "put", "monety") });
     }
