@@ -1,5 +1,5 @@
 import Convert from "ansi-to-html";
-import {fakeClient} from "./index.ts";
+import {fakeClient} from "./fakeClient.ts";
 
 const converter = new Convert({})
 
