@@ -13,6 +13,8 @@ export const rawSend = Output.send
 
 export const client = new Client()
 
+let isInitialConnection = true
+
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)
     const postfix = match.substring(match.length - 2)
@@ -111,9 +113,12 @@ const aliases = [
 function connectToBackground(extensionId: string) {
     const port: Port = chrome.runtime.connect(extensionId)
     client.connect(port)
-    port.postMessage({type: 'GET_STORAGE', key: 'settings'})
-    port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
-    port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+    if (isInitialConnection) {
+        port.postMessage({type: 'GET_STORAGE', key: 'settings'})
+        port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
+        port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+        isInitialConnection = false
+    }
     port.onDisconnect.addListener(() => {
         connectToBackground(extensionId)
     })
