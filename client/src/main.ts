@@ -1,7 +1,7 @@
 import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
-import { setGmcp } from "./gmcp";
+import {setGmcp} from "./gmcp";
 import Port = chrome.runtime.Port;
 
 const originalRefreshPosition = Maps.refresh_position
@@ -108,14 +108,16 @@ const aliases = [
     }
 ]
 
-function connectToBackground() {
-    const port: Port = chrome.runtime.connect(chrome.runtime.id)
+function connectToBackground(extensionId: string) {
+    const port: Port = chrome.runtime.connect(extensionId)
     client.connect(port)
-    port.onDisconnect.addListener(connectToBackground)
+    port.onDisconnect.addListener(() => {
+        connectToBackground(extensionId)
+    })
 }
 
-window.addEventListener('extension-loaded', () => {
-    connectToBackground()
+window.addEventListener('extension-loaded', (event) => {
+    connectToBackground((<CustomEvent>event).detail)
 })
 
 /*
@@ -165,9 +167,11 @@ client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w 
 })
 
 import initKillTrigger from "./scripts/kill"
+
 initKillTrigger(client, aliases)
 
 import initContainers from "./scripts/prettyContainers"
+
 initContainers(client)
 
 window["clientExtension"] = client
