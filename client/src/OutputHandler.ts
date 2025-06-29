@@ -38,6 +38,24 @@ export default class OutputHandler {
                             this.clickerCallbacks[callbackIndex]?.apply(null)
                         }
                     })
+                    if (msg.textContent && msg.textContent.indexOf("{click:") > -1) {
+                        msg.style.cursor = "pointer"
+                        msg.style.textDecoration = " underline"
+                        msg.style.textDecorationStyle = "dotted"
+                        msg.style.textDecorationSkipInk = "auto"
+                        const clickIndex = msg.textContent.indexOf("{click:")
+                        const clickTitleSeparator = msg.textContent.indexOf(":", clickIndex + 7)
+                        const closerIndex = msg.textContent.indexOf("}", clickIndex)
+                        const hasTitle = clickTitleSeparator > clickIndex && clickTitleSeparator < closerIndex
+                        if (hasTitle) {
+                            msg.title = msg.textContent.substring(clickTitleSeparator + 1, closerIndex)
+                        }
+                        const callbackIndex = msg.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex)
+                        msg.textContent = msg.textContent.substring(0, clickIndex) + msg.textContent.substring(closerIndex + 1)
+                        msg.onclick = () => {
+                            this.clickerCallbacks[callbackIndex]?.apply(null)
+                        }
+                    }
                 }
             }
         })
