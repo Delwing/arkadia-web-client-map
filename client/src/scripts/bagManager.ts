@@ -115,7 +115,7 @@ function showInterface(client: Client, bags: string[]) {
 function configure(client: Client) {
     const found: string[] = [];
     const tag = "bag-config";
-    const trigger = client.Triggers.registerTrigger(/.*/, (raw, line) => {
+    client.Triggers.registerTrigger(/.*/, (raw, line) => {
         const l = stripAnsiCodes(line).toLowerCase();
         if (l.startsWith("masz przy sobie")) {
             client.Triggers.removeByTag(tag);
