@@ -1,7 +1,8 @@
 import ClientScript from "../ClientScript.ts";
 import {fakeClient} from "../fakeClient.ts";
+import {color, findClosestColor} from "@client/src/Colors.ts";
 
-const table = " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
+const table = color(findClosestColor("#949494")) + " Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:\n" +
     " o============================================================================o\n" +
     " |                Adresat badz                     Cena          Czas na      |\n" +
     " |               urzad pocztowy                  zl/sr/md      dostarczenie   |\n" +
