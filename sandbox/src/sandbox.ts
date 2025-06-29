@@ -288,17 +288,12 @@ window.Output = {
         const div = document.createElement("div");
         div.className = "output_msg"
         window.Output.buffer = [content]
-
         const contentDiv = document.createElement("div");
         contentDiv.className = "output_msg_text"
         contentDiv.innerHTML = converter.toHtml(content)
-
         div.appendChild(contentDiv)
 
         output.appendChild(div)
-
-        fakeClient.sendEvent('output-sent', 1)
-
         output.scrollTop = output.scrollHeight
     },
     flush_buffer() {
