@@ -216,12 +216,15 @@ export default function init(
 ) {
     let kills: KillCounts = {};
     const loadTotals = (totals: Record<string, number> = {}) => {
-        kills = Object.fromEntries(
-            Object.entries(totals).map(([name, total]) => [
-                name,
-                { mySession: 0, myTotal: total as number, teamSession: 0 },
-            ])
-        );
+        Object.entries(totals).forEach(([name, total]) => {
+            const entry = kills[name] ?? {
+                mySession: 0,
+                myTotal: 0,
+                teamSession: 0,
+            };
+            entry.myTotal = total as number;
+            kills[name] = entry;
+        });
     };
 
     client.addEventListener("storage", (event: CustomEvent) => {

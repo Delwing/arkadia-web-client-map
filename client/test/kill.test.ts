@@ -52,6 +52,17 @@ describe('kill counter team kills', () => {
     expect(result).toContain('[   ZABIL   ]');
     expect(result).toContain('(0 / 1)');
   });
+
+  test('session count persists after storage update', () => {
+    client.TeamManager.isInTeam.mockReturnValue(true);
+    let result = parse('> Eamon zabil smoka chaosu.');
+    expect(result).toContain('(0 / 1)');
+
+    client.dispatch('storage', { key: 'kill_counter', value: { 'smoka chaosu': 1 } });
+
+    result = parse('> Eamon zabil smoka chaosu.');
+    expect(result).toContain('(0 / 2)');
+  });
 });
 
 describe('parseName and formatTable', () => {
