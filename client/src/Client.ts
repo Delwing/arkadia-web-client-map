@@ -78,12 +78,26 @@ export default class Client {
             buffer.forEach(item => Output.send(item.out, item.type));
         }, {once: true});
 
-        //TODO might better to find previous valid ANSI sequence in unmodified line, that way we might be able to restore original color, not default one
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
-        if (line.substring(0, 1) === '') {
-            const resetSequence = line.substring(0, 14)
-            result = result.replace(/\[0m/g, resetSequence)
+        const ansiRegex = /\x1b\[[0-9;]*m/g
+        const restore: string[] = []
+        const stack: string[] = []
+        for (const match of line.matchAll(ansiRegex)) {
+            const seq = match[0]
+            if (seq === '\x1b[0m') {
+                const current = stack.pop()
+                const prev = stack[stack.length - 1]
+                if (prev) {
+                    restore.push(prev)
+                } else {
+                    restore.push(current || '\x1b[0m')
+                }
+            } else {
+                stack.push(seq)
+            }
         }
+        let index = 0
+        result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
         Output.send = originalOutputSend;
         return result
     }
