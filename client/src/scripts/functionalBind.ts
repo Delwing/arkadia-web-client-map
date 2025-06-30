@@ -20,7 +20,7 @@ export class FunctionalBind {
     set(printable, callback) {
         this.functionalBind = callback
         this.client.println(`\t${color(49)}bind ${color(222)}]${color(49)}: ${printable}`)
-        this.button = this.client.createButton("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
+        this.button = this.client.createButton(printable, callback)
     }
 
     clear() {
