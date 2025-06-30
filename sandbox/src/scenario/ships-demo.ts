@@ -26,4 +26,4 @@ function pick() {
 export default new ClientScript(fakeClient)
     .reset()
     .call(() => fakeClient.FunctionalBind.clear())
-    .fake(pick());
+    .call(() => fakeClient.fake(pick()));
