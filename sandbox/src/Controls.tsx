@@ -5,6 +5,7 @@ import TriggerTester from "./TriggerTester.tsx";
 import packageAssistant from "./scenario/package-assistant.ts";
 import killCounterDemo from "./scenario/kill-counter-demo.ts";
 import teamEventsDemo from "./scenario/team-events-demo.ts";
+import shipsDemo from "./scenario/ships-demo.ts";
 import combatDemo from "./scenario/combat-demo.ts";
 import compassDemo from "./scenario/compass-demo.ts";
 import containersDemo from "./scenario/containers-demo.ts";
@@ -70,6 +71,13 @@ export function Controls() {
                         onClick={() => teamEventsDemo.run()}
                     >
                         Team Events Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => shipsDemo.run()}
+                    >
+                        Ships Demo
                     </Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,
