@@ -1,8 +1,9 @@
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useRef, useState} from "react";
 import storage from "./storage";
 
 function SettingsFile() {
     const [message, setMessage] = useState<string>('');
+    const fileInput = useRef<HTMLInputElement>(null);
 
     async function downloadSettings() {
         const data = await storage.getItem('settings');
@@ -34,7 +35,17 @@ function SettingsFile() {
             <button className="btn btn-primary btn-sm w-40" onClick={downloadSettings}>
                 Pobierz ustawienia
             </button>
-            <input type="file" accept="application/json" onChange={uploadSettings} />
+            <label className="btn btn-primary btn-sm w-40" htmlFor="settingsFile">
+                Wczytaj ustawienia
+            </label>
+            <input
+                id="settingsFile"
+                ref={fileInput}
+                type="file"
+                accept="application/json"
+                className="hidden"
+                onChange={uploadSettings}
+            />
             {message && <div>{message}</div>}
         </div>
     );
