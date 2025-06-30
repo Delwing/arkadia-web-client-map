@@ -1,6 +1,8 @@
 {
+  "name": "arkadia-web-client-extension",
+  "version": "0.0.0",
+  "private": true,
   "license": "MIT",
-  "private": "true",
   "workspaces": [
     "client",
     "map",
@@ -14,5 +16,6 @@
   "devDependencies": {
     "lerna": "^8.2.1",
     "zip-build": "^1.8.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }
