@@ -47,6 +47,11 @@ export default class ClientScript {
         return this;
     }
 
+    call(fn: () => void) {
+        this.actions.push(fn);
+        return this;
+    }
+
     async run() {
         for (const act of this.actions) {
             await act();
