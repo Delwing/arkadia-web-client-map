@@ -3,6 +3,7 @@ import storage from "./storage";
 
 function SettingsFile() {
     const [message, setMessage] = useState<string>('');
+    const [details, setDetails] = useState<string[]>([]);
     const fileInput = useRef<HTMLInputElement>(null);
 
     async function downloadSettings() {
@@ -24,8 +25,12 @@ function SettingsFile() {
             const text = await file.text();
             const data = JSON.parse(text);
             await storage.setItem('settings', data);
+            const entries = Object.entries(data).map(([k, v]) => `${k}: ${v}`);
+            entries.forEach(line => console.log(line));
+            setDetails(entries);
             setMessage('Ustawienia wczytane');
         } catch (e) {
+            setDetails([]);
             setMessage('Błędny plik');
         }
     }
@@ -46,7 +51,16 @@ function SettingsFile() {
                 className="hidden"
                 onChange={uploadSettings}
             />
-            {message && <div>{message}</div>}
+            {message && (
+                <div>
+                    <div>{message}</div>
+                    {details.length > 0 && (
+                        <ul className="list-disc pl-4 text-sm">
+                            {details.map(line => <li key={line}>{line}</li>)}
+                        </ul>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
