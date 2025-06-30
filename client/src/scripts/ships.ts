@@ -1,0 +1,70 @@
+import Client from "../Client";
+
+const BOARD_CMD = "wem;kup bilet;wsiadz na statek;wlm";
+
+function bindShip(client: Client, command: string, beep: boolean) {
+    if (beep) {
+        client.playSound("beep");
+    }
+    client.FunctionalBind.set(command, () => {
+        Input.send(command);
+        if (command === "zejdz ze statku") {
+            client.sendEvent("refreshPositionWhenAble");
+        }
+    });
+}
+
+export default function initShips(client: Client) {
+    const board = (beep: boolean) => (
+        _raw: string,
+        _line: string,
+        _matches: RegExpMatchArray,
+        _type: string
+    ) => {
+        bindShip(client, BOARD_CMD, beep);
+        return undefined;
+    };
+    const disembark = () => {
+        bindShip(client, "zejdz ze statku", true);
+        return undefined;
+    };
+
+    client.Triggers.registerTrigger(/.*(Wszyscy na poklad!.*|przybija wielki trojmasztowy galeon\.)$/, board(true), "ships");
+
+    [
+        /.*(rypa|ratwa|rom|arka) przybija do brzegu\.$/,
+        /^Tratwa(\.|,| i)/,
+        /^Rzeczna tratwa(\.|,| i)/,
+    ].forEach(p => client.Triggers.registerTrigger(p, board(true), "ships"));
+
+    client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, disembark, "ships");
+
+    [
+        /^[a-zA-Z]+ [a-z]+ prom[^a-z]$/,
+        /^Prom(\.|,| i)/,
+        /^Barka(\.|,| i)/,
+    ].forEach(p => client.Triggers.registerTrigger(p, board(true), "ships"));
+
+    const statki = [
+        /^([A-Za-z]+) (statek|knara)(\.|,| i)/,
+        /^([A-Za-z]+) ([a-z]+) statek(\.|,| i)/,
+        /Tajemniczy okret/,
+        /Wielki trojmasztowy galeon(\.|,| i)/,
+        /Stara niewielka szkuta/,
+        /Smukly drakkar/,
+        /Szeroka knara/,
+        /Mala feluka/,
+        /Stara szkuta/,
+        /Stara niewielka szkuta/,
+        /Stary buzar/,
+        /Smukly bryg/,
+        /Smukly majestatyczny bryg/,
+        /Nieduzy barkas/,
+        /Nieduza rzeczna barka/,
+        /Wielka galera/,
+        /Niewielki dwumasztowy statek/,
+        /Dluga niezgrabna barka/,
+        /Plaskodenny skeid/,
+    ];
+    statki.forEach(p => client.Triggers.registerTrigger(p, board(false), "ships"));
+}
