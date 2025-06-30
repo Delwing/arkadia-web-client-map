@@ -241,7 +241,7 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
         client.Triggers.registerTrigger(/^Twoja \w+? osiagnela (nadludzki poziom)\.$/, (raw, _l, m) => {
             return formatLine(raw, m[1]);
         }, tag);
-        client.Triggers.registerOneTimeTrigger(/^Obecnie do waznych cech zaliczasz/, () => {
+        client.Triggers.registerOneTimeTrigger(/^Obecnie do waznych cech zaliczasz/, (): undefined => {
             calculateLvl();
             client.Triggers.removeByTag(tag);
             isRunning = false;
