@@ -9,7 +9,9 @@ import { fakeClient } from "./fakeClient.ts";
 const defaultSettings = {
     guilds: [],
     packageHelper: true,
-    inlineCompassRose: true
+    inlineCompassRose: true,
+    prettyContainers: true,
+    containerColumns: 2
 }
 
 localStorage.setItem('npc', JSON.stringify(npc))
