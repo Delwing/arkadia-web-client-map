@@ -14,7 +14,7 @@ Ustawienia są zapisywane w pamięci przeglądarki i wczytywane po ponownym uruc
 
 - `/wdp przedmiot[, ...]` – wkłada podane przedmioty do pojemnika typu **other**.
 - `/wzp przedmiot[, ...]` – wyjmuje podane przedmioty z pojemnika typu **other**.
-- `/wem` – wyjmuje monety z pojemnika typu **money**.
-- `/wlm` – wkłada monety do pojemnika typu **money**.
+- `/wem` (lub `wem`) – wyjmuje monety z pojemnika typu **money**.
+- `/wlm` (lub `wlm`) – wkłada monety do pojemnika typu **money**.
 - `/wlp` – wkłada pocztową paczkę do ustawionego pojemnika.
 - `/wep` – wyjmuje pocztową paczkę z ustawionego pojemnika.
