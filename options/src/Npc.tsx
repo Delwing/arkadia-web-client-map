@@ -1,5 +1,5 @@
 import './App.css'
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import storage from "./storage.ts";
 
 interface NpcProps {
@@ -10,6 +10,7 @@ interface NpcProps {
 function Npc() {
 
     const [npcs, setNpcs] = useState<NpcProps[]>([])
+    const [filter, setFilter] = useState<string>('')
 
     useEffect(() => {
         storage.getItem('npc').then((value: { npc: NpcProps[] }) => {
@@ -31,18 +32,42 @@ function Npc() {
         storage.setItem('npc', [])
     }
 
+    function deleteNpc(npc: NpcProps) {
+        const updated = npcs.filter(n => !(n.name === npc.name && n.loc === npc.loc))
+        setNpcs(updated)
+        storage.setItem('npc', updated)
+    }
+
     return (
         <>
             <div className={'m-2'}>
-                <button className={'btn btn-primary btn-sm mb-2 mr-2'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
-                <button className={'btn btn-error btn-sm mb-2'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
+                <div className="mb-2 flex items-center gap-2">
+                    <button className={'btn btn-primary btn-sm'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
+                    <button className={'btn btn-error btn-sm'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
+                    <input
+                        type="text"
+                        placeholder="Filtruj"
+                        className="input input-sm input-bordered"
+                        value={filter}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
+                    />
+                </div>
                 <table className="min-w-full border border-gray-700 text-sm table-zebra">
                     <tbody>
-                    {npcs.sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
-                        <tr key={item.name + '-' + item.loc}>
-                            <td className="px-2 py-1 border border-gray-700">{item.name}</td>
-                            <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
-                        </tr>))}
+                    {npcs
+                        .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((item) => (
+                            <tr key={item.name + '-' + item.loc}>
+                                <td className="px-2 py-1 border border-gray-700">{item.name}</td>
+                                <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
+                                <td className="px-2 py-1 border border-gray-700">
+                                    <button className="btn btn-error btn-xs" onClick={() => deleteNpc(item)}>
+                                        usuń
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
