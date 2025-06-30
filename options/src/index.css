@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./sandstone.css";
+@import "./sandstone-dark.css";
 @plugin "daisyui" {
     themes: all;
 }
