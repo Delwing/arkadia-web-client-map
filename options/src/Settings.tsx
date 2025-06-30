@@ -14,6 +14,8 @@ interface Settings {
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
+    prettyContainers: boolean;
+    containerColumns: number;
 }
 
 function SettingsForm() {
@@ -23,6 +25,8 @@ function SettingsForm() {
         packageHelper: false,
         replaceMap: false,
         inlineCompassRose: false,
+        prettyContainers: true,
+        containerColumns: 2,
     })
 
     function onChangeSetting(modifier: (settings: Settings) => void) {
@@ -110,6 +114,30 @@ function SettingsForm() {
                                 checked={settings.inlineCompassRose}
                             />
                             Róża wiatrów
+                        </label>
+                        <label className="flex items-center gap-1">
+                            <input
+                                type="checkbox"
+                                id="prettyContainers"
+                                name="prettyContainers"
+                                onChange={event => onChangeSetting((s) => s.prettyContainers = event.target.checked)}
+                                className="mx-1 checkbox checkbox-sm"
+                                checked={settings.prettyContainers}
+                            />
+                            Formatuj pojemniki
+                        </label>
+                        <label className="flex items-center gap-1">
+                            <span className="mr-1">Kolumny:</span>
+                            <input
+                                type="number"
+                                min="1"
+                                max="4"
+                                id="containerColumns"
+                                name="containerColumns"
+                                onChange={event => onChangeSetting((s) => s.containerColumns = parseInt(event.target.value) || 1)}
+                                className="mx-1 input input-bordered input-sm w-16"
+                                value={settings.containerColumns}
+                            />
                         </label>
                     </div>
                 </div>

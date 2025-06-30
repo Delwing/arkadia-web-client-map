@@ -235,10 +235,29 @@ const defaultTransforms: TransformDefinition[] = [
 
 
 export default function initContainers(client: Client) {
-    defaultContainerPatterns.forEach(pattern => {
-        client.Triggers.registerTrigger(pattern, (_, __, matches): undefined => {
-            client.print(prettyPrintContainer(matches, 2, "POJEMNIK", 5))
+    const tag = 'prettyContainers';
+    let enabled = false;
+    let columns = 2;
+
+    const register = () => {
+        client.Triggers.removeByTag(tag);
+        defaultContainerPatterns.forEach(pattern => {
+            client.Triggers.registerTrigger(pattern, (_, __, matches): undefined => {
+                client.print(prettyPrintContainer(matches, columns, 'POJEMNIK', 5));
+            }, tag);
         });
-    })
+    };
+
+    client.addEventListener('settings', (ev: CustomEvent) => {
+        columns = ev.detail.containerColumns ?? columns;
+        const shouldEnable = !!ev.detail.prettyContainers;
+        if (shouldEnable && !enabled) {
+            enabled = true;
+            register();
+        } else if (!shouldEnable && enabled) {
+            client.Triggers.removeByTag(tag);
+            enabled = false;
+        }
+    });
 }
 
