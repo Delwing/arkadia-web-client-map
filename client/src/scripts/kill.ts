@@ -12,6 +12,14 @@ type KillCounts = Record<string, KillEntry>;
 
 const STORAGE_KEY = "kill_counter";
 
+const KILL_HEADER_COLOR = findClosestColor("#7cfc00");
+const KILL_MY_COLOR = findClosestColor("#ffff00");
+const KILL_TOTAL_COLOR = findClosestColor("#778899");
+const KILL_UPPER_COLOR = findClosestColor("#ffa500");
+const KILL_LOWER_COLOR = findClosestColor("#7cfc00");
+const KILL_PINK_COLOR = findClosestColor("#ffc0cb");
+const KILL_PREFIX_COLOR = findClosestColor("#ff6347");
+
 const twoWordNames = [
     "czarnego orka",
     "dzikiego orka",
@@ -95,9 +103,9 @@ function formatSessionTable(counts: KillCounts): string {
     const RIGHT_PADDING = 5;
     const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
 
-    const HEADER_COLOR = findClosestColor("#7cfc00");
-    const MY_COLOR = findClosestColor("#ffff00");
-    const TOTAL_COLOR = findClosestColor("#778899");
+    const HEADER_COLOR = KILL_HEADER_COLOR;
+    const MY_COLOR = KILL_MY_COLOR;
+    const TOTAL_COLOR = KILL_TOTAL_COLOR;
 
     const pad = createPad(WIDTH, LEFT_PADDING, RIGHT_PADDING);
     const header = createHeader(WIDTH, 2, HEADER_COLOR);
@@ -156,10 +164,10 @@ function formatLifetimeTable(counts: KillCounts): string {
     const INNER = WIDTH - 2;
     const CONTENT_WIDTH = INNER - LEFT_PADDING - RIGHT_PADDING;
 
-    const HEADER_COLOR = findClosestColor("#7cfc00");
-    const UPPER_COLOR = findClosestColor("#ffa500");
-    const LOWER_COLOR = findClosestColor("#7cfc00");
-    const PINK_COLOR = findClosestColor("#ffc0cb");
+    const HEADER_COLOR = KILL_HEADER_COLOR;
+    const UPPER_COLOR = KILL_UPPER_COLOR;
+    const LOWER_COLOR = KILL_LOWER_COLOR;
+    const PINK_COLOR = KILL_PINK_COLOR;
 
     const pad = createPad(INNER, LEFT_PADDING, RIGHT_PADDING);
     const header = createHeader(WIDTH, 4, HEADER_COLOR);
@@ -267,7 +275,7 @@ export default function init(
     };
 
     const formatPrefix = (line: string, entry: KillEntry | null, label: string) => {
-        const color = findClosestColor("#ff6347");
+        const color = KILL_PREFIX_COLOR;
         const counts = entry
             ? ` (${entry.mySession} / ${entry.mySession + entry.teamSession})`
             : "";

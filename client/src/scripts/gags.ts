@@ -19,6 +19,11 @@ const gagColors = {
     "npc": "#fffaf0",
     "npc_spece": "#fffaf0"
 };
+const gagColorCodes: Record<string, number> = Object.fromEntries(
+    Object.entries(gagColors).map(([k, v]) => [k, findClosestColor(v)])
+) as Record<string, number>;
+const OWN_HIT_COLOR = findClosestColor('#2db92d');
+const DAMAGE_COLOR = findClosestColor('#ff9933');
 const combatTypes = ["combat.avatar", "combat.team", "combat.others"]
 
 class EmptyMatches extends Array<string> implements RegExpMatchArray {
@@ -59,7 +64,7 @@ function gagOwnSpec(rawLine: string, power: string, totalPower: string) {
 }
 
 function gagPrefix(rawLine: string, prefix: string, type: string) {
-    return client.prefix(rawLine, encloseColor(`[${prefix}] `, findClosestColor(gagColors[type])));
+    return client.prefix(rawLine, encloseColor(`[${prefix}] `, gagColorCodes[type]));
 }
 
 function gagSpec(rawLine: string, prefix: string, power: string, totalPower: string, kind: string) {
@@ -181,7 +186,7 @@ function gagOwnRegularHits(rawLine: string, matches: RegExpMatchArray | { index:
         return rawLine
     }
 
-    rawLine = colorString(rawLine, matches[0], findClosestColor('#2db92d'))
+    rawLine = colorString(rawLine, matches[0], OWN_HIT_COLOR)
 
 
     return gag(rawLine, power, "6", "moje_ciosy")
@@ -195,7 +200,7 @@ function color_hit(rawLine: string, matches: RegExpMatchArray, value: string, ty
 
 
     if (matches.groups.target) {
-        rawLine = colorString(rawLine, matches.groups.damage + " cie", findClosestColor('#ff9933'))
+        rawLine = colorString(rawLine, matches.groups.damage + " cie", DAMAGE_COLOR)
     } else {
         target = "innych_ciosy"
     }

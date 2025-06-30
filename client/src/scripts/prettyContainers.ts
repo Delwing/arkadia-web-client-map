@@ -2,6 +2,12 @@ import Client from "../Client";
 import {encloseColor, findClosestColor} from "../Colors";
 import {stripAnsiCodes} from "../Triggers";
 
+const GROUP_NAME_COLOR = findClosestColor('#557C99');
+const MITHRIL_COLOR = findClosestColor('#afeeee');
+const GOLD_COLOR = findClosestColor('#FFD700');
+const SILVER_COLOR = findClosestColor('#C0C0C0');
+const COPPER_COLOR = findClosestColor('#8B4513');
+
 export type GroupDefinition = {
     name: string;
     filter: (item: string) => boolean;
@@ -122,7 +128,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         let gLine = '|';
         for (let c = 0; c < columns; c++) {
             const grp = pair[c];
-            gLine += cell(encloseColor(grp ? grp[0] : '', findClosestColor('#557C99')));
+            gLine += cell(encloseColor(grp ? grp[0] : '', GROUP_NAME_COLOR));
             gLine += c === columns - 1 ? '' : ' | ';
         }
         gLine += '|';
@@ -227,10 +233,10 @@ const defs = [
 ]
 
 const defaultTransforms: TransformDefinition[] = [
-    { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#afeeee"))},
-    { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#FFD700"))},
-    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => encloseColor(item, findClosestColor("#C0C0C0"))},
-    { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => encloseColor(item, findClosestColor("#8B4513"))}
+    { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => encloseColor(item, MITHRIL_COLOR)},
+    { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => encloseColor(item, GOLD_COLOR)},
+    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => encloseColor(item, SILVER_COLOR)},
+    { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => encloseColor(item, COPPER_COLOR)}
 ]
 
 

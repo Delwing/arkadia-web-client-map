@@ -4,6 +4,10 @@ import {encloseColor, findClosestColor} from "../Colors";
 
 const STORAGE_KEY = "containers";
 
+const HEADER_COLOR = findClosestColor("#7cfc00");
+const TYPE_COLOR = findClosestColor("#cfb530");
+const BAG_COLOR = findClosestColor("#87ceeb");
+
 const availableTypes = ["money", "gems", "food", "other"] as const;
 
 const bagInBiernik: Record<string, string> = {
@@ -106,9 +110,9 @@ function containerAction(
 function showConfig(client: Client) {
     const pairs = availableTypes.map((t) => [t, containerConfig[t]]);
 
-    const headerColor = findClosestColor("#7cfc00");
-    const typeColor = findClosestColor("#cfb530");
-    const bagColor = findClosestColor("#87ceeb");
+    const headerColor = HEADER_COLOR;
+    const typeColor = TYPE_COLOR;
+    const bagColor = BAG_COLOR;
 
     const headers = ["typ", "pojemnik"];
     const col1Width = Math.max(...pairs.map(([t]) => t.length), headers[0].length);
@@ -148,10 +152,10 @@ function showInterface(client: Client, bags: string[]) {
         let line = `Ustaw ${bag} jako:`;
         availableTypes.forEach((type) => {
             const text = `${type}`;
-            line += " [ " + encloseColor(client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client)), findClosestColor("#cfb530")) + " ]";
+            line += " [ " + encloseColor(client.OutputHandler.makeClickable(text, text, () => setContainer(type, bag, client)), TYPE_COLOR) + " ]";
         });
         const allText = `wszystkie`;
-        line += " [ " + encloseColor(client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client)), findClosestColor("#cfb530")) + " ]";
+        line += " [ " + encloseColor(client.OutputHandler.makeClickable(allText, allText, () => setAll(bag, client)), TYPE_COLOR) + " ]";
         lines.push(line);
     });
     client.println(lines.join("\n"));
