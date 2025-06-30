@@ -1,0 +1,31 @@
+:root:has(input.theme-controller[value=sandstone-dark]:checked),[data-theme="sandstone-dark"] {
+  color-scheme: dark;
+  --color-base-100: #212529;
+  --color-base-200: #303232;
+  --color-base-300: #3e3f3a;
+  --color-base-content: #dfd7ca;
+  --color-primary: #325d88;
+  --color-primary-content: #ffffff;
+  --color-secondary: #8e8c84;
+  --color-secondary-content: #dfd7ca;
+  --color-accent: #f47c3c;
+  --color-accent-content: #ffffff;
+  --color-neutral: #3e3f3a;
+  --color-neutral-content: #dfd7ca;
+  --color-info: #29abe0;
+  --color-info-content: #dfd7ca;
+  --color-success: #93c54b;
+  --color-success-content: #212529;
+  --color-warning: #ffc107;
+  --color-warning-content: #212529;
+  --color-error: #d9534f;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

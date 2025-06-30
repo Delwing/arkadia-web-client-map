@@ -60,7 +60,7 @@ function SettingsForm() {
     return (
         <>
             <div className="my-4 p-2">
-                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
+                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Ładowanie triggerów dla gildii</h5>
                     <div className="flex flex-wrap gap-2">
                         {guilds.map(guild => (
@@ -79,7 +79,7 @@ function SettingsForm() {
                         ))}
                     </div>
                 </div>
-                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
+                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Pozostałe opcje</h5>
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-1">
@@ -117,7 +117,7 @@ function SettingsForm() {
                         </label>
                     </div>
                 </div>
-                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
+                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Pojemniki</h5>
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-1">
@@ -146,7 +146,7 @@ function SettingsForm() {
                         </label>
                     </div>
                 </div>
-                <button className="btn btn-soft btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
+                <button className="btn btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
             </div>
         </>
     )
