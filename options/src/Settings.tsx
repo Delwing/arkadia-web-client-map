@@ -73,9 +73,9 @@ function SettingsForm() {
         <>
             <div className="my-4 p-2">
                 <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <h5 className="font-bold mb-2">Ładowanie triggerów dla gildii</h5>
-                    <div className="flex flex-wrap gap-2">
-                        <label className="flex items-center gap-1 w-20" key="all-guilds">
+                    <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-bold">Ładowanie triggerów dla gildii</h5>
+                        <label className="flex items-center gap-1" key="all-guilds">
                             <input
                                 type="checkbox"
                                 id="guild-all"
@@ -86,6 +86,8 @@ function SettingsForm() {
                             />
                             Wszystkie
                         </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                         {guilds.map(guild => (
                             <label className="flex items-center gap-1 w-20" key={guild}>
                                 <input
