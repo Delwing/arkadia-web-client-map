@@ -1,3 +1,5 @@
+const defaultSettings = { prettyContainers: true }
+
 chrome.commands.onCommand.addListener(shortcut => {
     if (shortcut === 'reload') {
         chrome.runtime.reload()
@@ -35,7 +37,10 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
         }
         if (msg.type === 'GET_STORAGE') {
             chrome.storage.local.get(msg.key).then(data => {
-                const value = data[msg.key]
+                let value = data[msg.key]
+                if (msg.key === 'settings') {
+                    value = { ...defaultSettings, ...value }
+                }
                 if (msg.key === 'settings' || msg.key === 'npc') {
                     port.postMessage({ [msg.key]: value })
                 }
@@ -112,12 +117,12 @@ function loadIframe(tabId) {
             }
 
             chrome.storage.local.get('settings').then(value => {
-                init(value.settings);
+                init({ ...defaultSettings, ...value.settings });
                 window.dispatchEvent(new CustomEvent('ready'))
             })
             chrome.storage.local.onChanged.addListener(ev => {
                 if (ev.settings) {
-                    init(ev.settings.newValue)
+                    init({ ...defaultSettings, ...ev.settings.newValue })
                 }
             })
 
