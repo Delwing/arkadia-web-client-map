@@ -1,14 +1,20 @@
 import Client from "../Client";
 
-const BOARD_CMD = "wem;kup bilet;wsiadz na statek;wlm";
+const BOARD_CMDS = [
+    "wem",
+    "kup bilet",
+    "wsiadz na statek",
+    "wlm",
+];
+const BOARD_LABEL = BOARD_CMDS.join(";");
 
-function bindShip(client: Client, command: string, beep: boolean) {
+function bindShip(client: Client, commands: string[], label: string, beep: boolean) {
     if (beep) {
         client.playSound("beep");
     }
-    client.FunctionalBind.set(command, () => {
-        Input.send(command);
-        if (command === "zejdz ze statku") {
+    client.FunctionalBind.set(label, () => {
+        commands.forEach(cmd => Input.send(cmd));
+        if (commands.length === 1 && commands[0] === "zejdz ze statku") {
             client.sendEvent("refreshPositionWhenAble");
         }
     });
@@ -21,11 +27,11 @@ export default function initShips(client: Client) {
         _matches: RegExpMatchArray,
         _type: string
     ) => {
-        bindShip(client, BOARD_CMD, beep);
+        bindShip(client, BOARD_CMDS, BOARD_LABEL, beep);
         return undefined;
     };
     const disembark = () => {
-        bindShip(client, "zejdz ze statku", true);
+        bindShip(client, ["zejdz ze statku"], "zejdz ze statku", true);
         return undefined;
     };
 
