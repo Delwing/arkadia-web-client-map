@@ -74,8 +74,8 @@ export default function initBuses(client: Client) {
 
     client.Triggers.registerTrigger(/.*i wsiada do.*powozu/, boardPowoz, "buses");
 
-    client.Triggers.registerTrigger(/^.* siada w .*bryczce\.$/, boardBryczka, "buses");
-    client.Triggers.registerTrigger(/^.* zsiada z .*bryczki\.$/, exitBryczka, "buses");
-    client.Triggers.registerTrigger(/^.* siada na .*wozie\.$/, boardBryczka, "buses");
-    client.Triggers.registerTrigger(/^.* zsiada z .*wozu\.$/, exitBryczka, "buses");
+    client.Triggers.registerTrigger(/^.*siada w .*bryczce\.$/, boardBryczka, "buses");
+    client.Triggers.registerTrigger(/^.*zsiada z .*bryczki\.$/, exitBryczka, "buses");
+    client.Triggers.registerTrigger(/^.*siada na .*wozie\.$/, boardBryczka, "buses");
+    client.Triggers.registerTrigger(/^.*zsiada z .*wozu\.$/, exitBryczka, "buses");
 }

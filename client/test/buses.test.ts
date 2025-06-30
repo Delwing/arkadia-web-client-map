@@ -45,4 +45,11 @@ describe('buses triggers', () => {
     parse('Kupiecki stojacy woz z plandeka');
     expect(client.FunctionalBind.set).toHaveBeenCalledTimes(1);
   });
+
+  test('bryczka boarding triggers', () => {
+    parse('siada w malej bryczce.');
+    expect(client.FunctionalBind.set).toHaveBeenCalledTimes(1);
+    const [label] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
+    expect(label).toBe('wem;usiadz na bryczce;wlm');
+  });
 });
