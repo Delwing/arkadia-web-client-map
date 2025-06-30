@@ -13,6 +13,18 @@ const parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
 jest.mock('../src/main', () => ({ rawSend: jest.fn() }));
 
 import Client from '../src/Client';
+import { Howl } from 'howler';
+
+jest.mock('howler', () => {
+  const instance = {
+    state: jest.fn(() => 'loaded'),
+    play: jest.fn(),
+    stop: jest.fn(),
+    once: jest.fn(),
+    load: jest.fn(),
+  };
+  return { Howl: jest.fn(() => instance) };
+});
 
 jest.mock('../src/Triggers', () => ({ __esModule: true, default: jest.fn().mockImplementation(() => ({ parseLine: jest.fn((l: string) => l) })) }));
 jest.mock('../src/PackageHelper', () => ({ __esModule: true, default: jest.fn() }));
@@ -163,5 +175,16 @@ test('onLine preserves final reset at line end', () => {
   const result = client.onLine(line, '');
 
   expect(result).toBe(line);
+});
+
+test('playSound restarts sound when called twice', () => {
+  const client = new Client();
+  const sound = (Howl as jest.Mock).mock.results[0].value;
+
+  client.playSound('beep');
+  client.playSound('beep');
+
+  expect(sound.stop).toHaveBeenCalledTimes(2);
+  expect(sound.play).toHaveBeenCalledTimes(2);
 });
 

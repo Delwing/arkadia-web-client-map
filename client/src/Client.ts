@@ -155,10 +155,14 @@ export default class Client {
         if (!sound) {
             return
         }
-        if (sound.state() === 'loaded') {
+        const play = () => {
+            sound.stop()
             sound.play()
+        }
+        if (sound.state() === 'loaded') {
+            play()
         } else {
-            sound.once('load', () => sound.play())
+            sound.once('load', play)
             sound.load()
         }
     }
