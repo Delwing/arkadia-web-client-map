@@ -272,25 +272,9 @@ export function encloseColor(string: string, colorCode: number) {
     return color(colorCode) + string + RESET;
 }
 
-export function colorString(
-    rawLine: string,
-    string: string,
-    colorCode: number,
-    restoreColorCode?: number,
-) {
+export function colorString(rawLine: string, string: string, colorCode: number) {
     const matchIndex = rawLine.indexOf(string)
-    const prefix = rawLine.substring(0, matchIndex)
-    const suffix = rawLine.substring(matchIndex + string.length)
-    const ansiReg = /\x1B\[[0-9;]*m/g
-    let lastColor = ''
-    let match
-    while ((match = ansiReg.exec(prefix)) !== null) {
-        lastColor = match[0]
-    }
-    if (!lastColor && restoreColorCode !== undefined) {
-        lastColor = color(restoreColorCode)
-    }
-    return prefix + color(colorCode) + string + (lastColor || RESET) + suffix
+    return rawLine.substring(0, matchIndex) + color(colorCode) + string + RESET + rawLine.substring(matchIndex + string.length)
 }
 
 export function findClosestColor(hex: string): number {

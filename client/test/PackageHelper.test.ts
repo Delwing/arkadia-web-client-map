@@ -45,8 +45,7 @@ describe('PackageHelper', () => {
     const expectedColor = colorString(
       rawLine,
       'Bob',
-      findClosestColor('#aaaaaa'),
-      findClosestColor('#949494')
+      findClosestColor('#aaaaaa')
     );
     expect(call[0]).toBe(expectedColor);
     expect(call[1]).toBe('Bob');
