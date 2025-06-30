@@ -42,11 +42,7 @@ describe('PackageHelper', () => {
     expect(helper['packages']).toEqual([{ name: 'Bob', time: '5' }]);
     expect(client.OutputHandler.makeClickable).toHaveBeenCalledTimes(1);
     const call = client.OutputHandler.makeClickable.mock.calls[0];
-    const expectedColor = colorString(
-      rawLine,
-      'Bob',
-      findClosestColor('#aaaaaa')
-    );
+    const expectedColor = colorString(rawLine, 'Bob', findClosestColor('#aaaaaa'));
     expect(call[0]).toBe(expectedColor);
     expect(call[1]).toBe('Bob');
     expect(call[3]).toBe('wybierz paczke 1');
