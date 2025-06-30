@@ -200,7 +200,7 @@ export default function initBagManager(
         aliases.push({ pattern: /\/wzp (.*)/, callback: (m: RegExpMatchArray) => containerAction(client, "other", "take", m[1]) });
         aliases.push({ pattern: /\/wlp$/, callback: () => containerAction(client, "other", "put", "pocztowa paczke") });
         aliases.push({ pattern: /\/wep$/, callback: () => containerAction(client, "other", "take", "pocztowa paczke") });
-        aliases.push({ pattern: /\/wem$/, callback: () => containerAction(client, "money", "take", "monety") });
-        aliases.push({ pattern: /\/wlm$/, callback: () => containerAction(client, "money", "put", "monety") });
+        aliases.push({ pattern: /\/?wem$/, callback: () => containerAction(client, "money", "take", "monety") });
+        aliases.push({ pattern: /\/?wlm$/, callback: () => containerAction(client, "money", "put", "monety") });
     }
 }

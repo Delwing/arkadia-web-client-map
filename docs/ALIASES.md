@@ -15,7 +15,7 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/pojemniki** - wyświetla bieżące ustawienia menedżera pojemników.
 - **/wdp _przedmioty_** - wkłada podane przedmioty do ustawionego pojemnika.
 - **/wzp _przedmioty_** - wyjmuje podane przedmioty z ustawionego pojemnika.
-- **/wem** - wyjmuje monety z pojemnika na pieniądze.
-- **/wlm** - wkłada monety do pojemnika na pieniądze.
+- **/wem** (lub **wem**) - wyjmuje monety z pojemnika na pieniądze.
+- **/wlm** (lub **wlm**) - wkłada monety do pojemnika na pieniądze.
 - **/wlp** - wkłada pocztową paczkę do ustawionego pojemnika.
 - **/wep** - wyjmuje pocztową paczkę z ustawionego pojemnika.
