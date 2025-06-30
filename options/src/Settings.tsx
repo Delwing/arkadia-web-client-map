@@ -16,6 +16,9 @@ interface Settings {
     inlineCompassRose: boolean;
     prettyContainers: boolean;
     containerColumns: number;
+    collectMode: number;
+    collectMoneyType: number;
+    collectExtra: string[];
 }
 
 function SettingsForm() {
@@ -27,6 +30,9 @@ function SettingsForm() {
         inlineCompassRose: false,
         prettyContainers: true,
         containerColumns: 2,
+        collectMode: 3,
+        collectMoneyType: 1,
+        collectExtra: [],
     })
 
     const allSelected = settings.guilds.length === guilds.length
@@ -169,6 +175,57 @@ function SettingsForm() {
                                 value={settings.containerColumns}
                             />
                         </label>
+                    </div>
+                </div>
+                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
+                    <h5 className="font-bold mb-2">Zbieranie przedmiotów</h5>
+                    <div className="flex flex-col gap-2">
+                        <label className="flex items-center gap-1">
+                            <span className="mr-1">Tryb zbierania:</span>
+                            <select
+                                className="select select-sm"
+                                value={settings.collectMode}
+                                onChange={e => onChangeSetting(s => s.collectMode = parseInt(e.target.value))}
+                            >
+                                {Array.from({length: 7}, (_, i) => i + 1).map(i => (
+                                    <option value={i} key={i}>{i}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex items-center gap-1">
+                            <span className="mr-1">Rodzaj monet:</span>
+                            <select
+                                className="select select-sm"
+                                value={settings.collectMoneyType}
+                                onChange={e => onChangeSetting(s => s.collectMoneyType = parseInt(e.target.value))}
+                            >
+                                {Array.from({length: 3}, (_, i) => i + 1).map(i => (
+                                    <option value={i} key={i}>{i}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <div>
+                            <span className="mr-1">Dodatkowe przedmioty:</span>
+                            <input id="extraItem" type="text" className="input input-bordered input-sm mr-1 w-40" />
+                            <button className="btn btn-sm" onClick={() => {
+                                const input = document.getElementById('extraItem') as HTMLInputElement;
+                                if (input.value) {
+                                    onChangeSetting(s => s.collectExtra = [...s.collectExtra, input.value]);
+                                    input.value = '';
+                                }
+                            }}>Dodaj</button>
+                        </div>
+                        <ul className="list-disc pl-5">
+                            {settings.collectExtra.map(item => (
+                                <li key={item} className="flex items-center gap-2">
+                                    <span>{item}</span>
+                                    <button className="btn btn-xs" onClick={() => onChangeSetting(s => s.collectExtra = s.collectExtra.filter(i => i !== item))}>Usuń</button>
+                                </li>
+                            ))}
+                        </ul>
+                        {settings.collectExtra.length > 0 && (
+                            <button className="btn btn-xs mt-1" onClick={() => onChangeSetting(s => s.collectExtra = [])}>Wyczyść wszystko</button>
+                        )}
                     </div>
                 </div>
                 <button className="btn btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
