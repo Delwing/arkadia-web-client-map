@@ -13,6 +13,9 @@ const tag = "packageHelper";
 const pickCommand = "wybierz paczke"
 const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr|(?<time>\d+))/
 
+const KNOWN_NPC_COLOR = findClosestColor('#63ba41');
+const UNKNOWN_NPC_COLOR = findClosestColor('#aaaaaa');
+
 export default class PackageHelper {
 
     private client: Client
@@ -94,7 +97,8 @@ export default class PackageHelper {
             const index = matches.groups.number
             const name = matches.groups.name
             this.packages.push({name: name, time: matches.groups.time})
-            return this.client.OutputHandler.makeClickable(colorString(rawLine, name, this.npc[name] ? findClosestColor('#63ba41') : findClosestColor("#aaaaaa")), name, () => {
+            const colorCode = this.npc[name] ? KNOWN_NPC_COLOR : UNKNOWN_NPC_COLOR;
+            return this.client.OutputHandler.makeClickable(colorString(rawLine, name, colorCode), name, () => {
                 Input.send("wybierz paczke " + index)
             }, "wybierz paczke " + index)
         };
