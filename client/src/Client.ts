@@ -83,9 +83,9 @@ export default class Client {
         const ansiRegex = /\x1b\[[0-9;]*m/g
         const restore: string[] = []
         const stack: string[] = []
-        const matches = Array.from(line.matchAll(ansiRegex))
-        const resetMatches = Array.from(line.matchAll(/\x1b\[0m/g))
-        const trailingCount = resetMatches.length === 1 && line.trimEnd().endsWith('\x1b[0m') ? 1 : 0
+        const matches = Array.from(result.matchAll(ansiRegex))
+        const resetMatches = Array.from(result.matchAll(/\x1b\[0m/g))
+        const trailingCount = resetMatches.length === 1 && result.trimEnd().endsWith('\x1b[0m') ? 1 : 0
         matches.forEach((match, i) => {
             const seq = match[0]
             const isTrailing = seq === '\x1b[0m' && i >= matches.length - trailingCount
