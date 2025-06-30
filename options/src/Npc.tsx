@@ -61,7 +61,7 @@ function Npc() {
                             <tr key={item.name + '-' + item.loc}>
                                 <td className="px-2 py-1 border border-gray-700">{item.name}</td>
                                 <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
-                                <td className="px-2 py-1 border border-gray-700">
+                                <td className="px-2 py-1 border border-gray-700 text-center">
                                     <button className="btn btn-error btn-xs" onClick={() => deleteNpc(item)}>
                                         usuń
                                     </button>
