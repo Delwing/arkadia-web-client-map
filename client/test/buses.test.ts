@@ -40,4 +40,9 @@ describe('buses triggers', () => {
     expect((global as any).Input.send).toHaveBeenNthCalledWith(2, 'wsiadz do dylizansu');
     expect((global as any).Input.send).toHaveBeenNthCalledWith(3, 'wlm');
   });
+
+  test('woz z plandeka triggers once', () => {
+    parse('Kupiecki stojacy woz z plandeka');
+    expect(client.FunctionalBind.set).toHaveBeenCalledTimes(1);
+  });
 });

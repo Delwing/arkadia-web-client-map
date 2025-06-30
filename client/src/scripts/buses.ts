@@ -59,7 +59,7 @@ export default function initBuses(client: Client) {
 
     const boardPowozPatterns: Array<RegExp | string> = [
         /.*(?:po)?woz.*powoli zatrzymuje sie\./,
-        /Kupiecki stojacy (po|)woz/,
+        /^Kupiecki stojacy (po|)woz$/,
         "Drewniany stojacy woz",
         "Otwarty stojacy powoz",
         "Kupiecki stojacy woz z plandeka",
