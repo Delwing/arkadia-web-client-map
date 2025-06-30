@@ -196,12 +196,16 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
                 color(TOMATO) +
                 `Twoj aktualny poziom to ` +
                 encloseColor(realLvlString[lvl], GREEN) +
+                color(TOMATO) +
                 ` (` +
                 encloseColor(String(full), GREEN) +
+                color(TOMATO) +
                 `) i brakuje ci do nastepnego ` +
                 encloseColor(String(missing), GREEN) +
+                color(TOMATO) +
                 ` podcech (` +
                 encloseColor(realLvlString[lvl + 1], GREEN) +
+                color(TOMATO) +
                 `)` +
                 RESET;
         } else {
@@ -210,10 +214,13 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
                 color(TOMATO) +
                 `Twoj aktualny poziom to ` +
                 encloseColor(realLvlString[lvl + 1], GREEN) +
+                color(TOMATO) +
                 ` (` +
                 encloseColor(String(full), GREEN) +
+                color(TOMATO) +
                 `) i masz + ` +
                 encloseColor(String(extra), GREEN) +
+                color(TOMATO) +
                 ` podcech` +
                 RESET;
         }
