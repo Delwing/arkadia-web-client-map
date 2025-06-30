@@ -272,7 +272,12 @@ export function encloseColor(string: string, colorCode: number) {
     return color(colorCode) + string + RESET;
 }
 
-export function colorString(rawLine: string, string: string, colorCode: number) {
+export function colorString(
+    rawLine: string,
+    string: string,
+    colorCode: number,
+    restoreColorCode?: number,
+) {
     const matchIndex = rawLine.indexOf(string)
     const prefix = rawLine.substring(0, matchIndex)
     const suffix = rawLine.substring(matchIndex + string.length)
@@ -281,6 +286,9 @@ export function colorString(rawLine: string, string: string, colorCode: number) 
     let match
     while ((match = ansiReg.exec(prefix)) !== null) {
         lastColor = match[0]
+    }
+    if (!lastColor && restoreColorCode !== undefined) {
+        lastColor = color(restoreColorCode)
     }
     return prefix + color(colorCode) + string + (lastColor || RESET) + suffix
 }

@@ -94,7 +94,7 @@ export default class PackageHelper {
             const index = matches.groups.number
             const name = matches.groups.name
             this.packages.push({name: name, time: matches.groups.time})
-            return this.client.OutputHandler.makeClickable(colorString(rawLine, name, this.npc[name] ? findClosestColor('#63ba41') : findClosestColor("#aaaaaa")), name, () => {
+            return this.client.OutputHandler.makeClickable(colorString(rawLine, name, this.npc[name] ? findClosestColor('#63ba41') : findClosestColor("#aaaaaa"), findClosestColor('#949494')), name, () => {
                 Input.send("wybierz paczke " + index)
             }, "wybierz paczke " + index)
         };
