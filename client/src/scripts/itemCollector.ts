@@ -1,8 +1,10 @@
 import Client from "../Client";
+import { FunctionalBind } from "./functionalBind";
 
 export default class ItemCollector {
     private client: Client;
     private checkBody = false;
+    private bind: FunctionalBind;
 
     modes = [
         "monety",
@@ -22,12 +24,8 @@ export default class ItemCollector {
 
     constructor(client: Client) {
         this.client = client;
-        window.addEventListener("keydown", (ev) => {
-            if (ev.ctrlKey && ev.code === "Digit3") {
-                this.keyPressed(true);
-                ev.preventDefault();
-            }
-        });
+        this.bind = new FunctionalBind(client, { key: "Digit3", ctrl: true, label: "CTRL+3" });
+        this.bind.set(null, () => this.keyPressed(true));
         this.client.addEventListener("settings", (ev: CustomEvent) => {
             const s = ev.detail || {};
             if (typeof s.collectMode === "number") {
@@ -78,10 +76,7 @@ export default class ItemCollector {
 
     killedAction() {
         if (this.currentMode !== 7 || this.extra.length > 0) {
-            const text = "wez z ciala";
-            this.client.println(
-                this.client.OutputHandler.makeClickable(text, text, () => this.keyPressed(false))
-            );
+            this.bind.set("wez z ciala", () => this.keyPressed(true));
             this.checkBody = true;
         }
     }
@@ -91,10 +86,7 @@ export default class ItemCollector {
             (this.currentMode === 4 || this.currentMode === 5 || this.currentMode === 6 || this.extra.length > 0) &&
             this.client.TeamManager.isInTeam(name)
         ) {
-            const text = "wez z ciala";
-            this.client.println(
-                this.client.OutputHandler.makeClickable(text, text, () => this.keyPressed(false))
-            );
+            this.bind.set("wez z ciala", () => this.keyPressed(true));
             this.checkBody = true;
         }
     }
