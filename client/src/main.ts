@@ -196,4 +196,8 @@ import initBagManager from "./scripts/bagManager"
 
 initBagManager(client, aliases)
 
+import initLvlCalc from "./scripts/lvlCalc"
+
+initLvlCalc(client, aliases)
+
 window["clientExtension"] = client
