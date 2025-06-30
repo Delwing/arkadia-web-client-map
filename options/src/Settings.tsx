@@ -29,18 +29,30 @@ function SettingsForm() {
         containerColumns: 2,
     })
 
+    const allSelected = settings.guilds.length === guilds.length
+
     function onChangeSetting(modifier: (settings: Settings) => void) {
-        modifier(settings)
-        setSettings(Object.assign({}, settings))
+        setSettings(prev => {
+            const updated = {...prev}
+            modifier(updated)
+            return updated
+        })
     }
 
     function onChange(event: ChangeEvent<HTMLInputElement>, guild: string) {
-        if (event.target.checked) {
-            settings.guilds.push(guild)
-        } else {
-            settings.guilds.splice(settings.guilds.indexOf(guild), 1)
-        }
-        setSettings(Object.assign({}, settings))
+        setSettings(prev => {
+            const guilds = event.target.checked
+                ? [...prev.guilds, guild]
+                : prev.guilds.filter(g => g !== guild)
+            return {...prev, guilds}
+        })
+    }
+
+    function onChangeAll(event: ChangeEvent<HTMLInputElement>) {
+        setSettings(prev => ({
+            ...prev,
+            guilds: event.target.checked ? [...guilds] : []
+        }))
     }
 
     function handleSubmission() {
@@ -63,6 +75,17 @@ function SettingsForm() {
                 <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
                     <h5 className="font-bold mb-2">Ładowanie triggerów dla gildii</h5>
                     <div className="flex flex-wrap gap-2">
+                        <label className="flex items-center gap-1 w-20" key="all-guilds">
+                            <input
+                                type="checkbox"
+                                id="guild-all"
+                                name="guild-all"
+                                onChange={event => onChangeAll(event)}
+                                className="checkbox checkbox-sm mx-1"
+                                checked={allSelected}
+                            />
+                            Wszystkie
+                        </label>
                         {guilds.map(guild => (
                             <label className="flex items-center gap-1 w-20" key={guild}>
                                 <input
