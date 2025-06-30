@@ -1,5 +1,9 @@
 # AGENTS
 
-Use `yarn --cwd client test` to run tests. Always run them after changes and ensure they pass.
+## Testing
 
-In Regexps don't add polish letters.
+Use `yarn --cwd client test` to run tests.
+
+## Coding guidelines
+
+In Regexps don't add ever polish letters.
