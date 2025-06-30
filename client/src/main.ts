@@ -168,8 +168,10 @@ client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
 
 
 import initShips from "./scripts/ships"
+import initBuses from "./scripts/buses"
 
 initShips(client)
+initBuses(client)
 
 import initKillTrigger from "./scripts/kill"
 
