@@ -1,9 +1,11 @@
 import Client from "../Client";
-import { encloseColor, findClosestColor } from "../Colors";
+import { color, encloseColor, findClosestColor } from "../Colors";
 
 const GREEN = findClosestColor("#00ff00");
 const RED = findClosestColor("#ff0000");
 const YELLOW = findClosestColor("#ffff00");
+const TOMATO = findClosestColor("#ff6347");
+const RESET = "\x1B[0m";
 
 const statToNumber: Record<string, number> = {
     "slabiutki": 1,
@@ -190,12 +192,32 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
         let msg: string;
         if (full < 190) {
             const missing = statToRealLvl[lvl - 1] - full;
-            msg = `Twoj aktualny poziom to ${realLvlString[lvl]} (${full}) i brakuje ci do nastepnego ${missing} podcech (${realLvlString[lvl + 1]})`;
+            msg =
+                color(TOMATO) +
+                `Twoj aktualny poziom to ` +
+                encloseColor(realLvlString[lvl], GREEN) +
+                ` (` +
+                encloseColor(String(full), GREEN) +
+                `) i brakuje ci do nastepnego ` +
+                encloseColor(String(missing), GREEN) +
+                ` podcech (` +
+                encloseColor(realLvlString[lvl + 1], GREEN) +
+                `)` +
+                RESET;
         } else {
             const extra = full - statToRealLvl[lvl - 1];
-            msg = `Twoj aktualny poziom to ${realLvlString[lvl + 1]} (${full}) i masz + ${extra} podcech`;
+            msg =
+                color(TOMATO) +
+                `Twoj aktualny poziom to ` +
+                encloseColor(realLvlString[lvl + 1], GREEN) +
+                ` (` +
+                encloseColor(String(full), GREEN) +
+                `) i masz + ` +
+                encloseColor(String(extra), GREEN) +
+                ` podcech` +
+                RESET;
         }
-        client.println(`(skrypty): ${msg}`);
+        client.println(msg);
         prevStats = currentStats;
         prevSteps = currentSteps;
     }
