@@ -9,6 +9,7 @@ import combatDemo from "./scenario/combat-demo.ts";
 import compassDemo from "./scenario/compass-demo.ts";
 import containersDemo from "./scenario/containers-demo.ts";
 import inventoryDemo from "./scenario/inventory-demo.ts";
+import lvlCalcDemo from "./scenario/lvl-calc-demo.ts";
 
 
 export function Controls() {
@@ -55,6 +56,13 @@ export function Controls() {
                         onClick={() => inventoryDemo.run()}
                     >
                         Inventory Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => lvlCalcDemo.run()}
+                    >
+                        Lvl Calc Demo
                     </Button>
                     <Button
                         size="sm"

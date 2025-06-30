@@ -247,6 +247,6 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
     }
 
     if (aliases) {
-        aliases.push({ pattern: /\/cechy$/, callback: run });
+        aliases.push({ pattern: /^cechy$/, callback: run });
     }
 }
