@@ -115,6 +115,11 @@ function SettingsForm() {
                             />
                             Róża wiatrów
                         </label>
+                    </div>
+                </div>
+                <div className="mb-4 border border-info/40 rounded-box p-3 bg-neutral/10">
+                    <h5 className="font-bold mb-2">Pojemniki</h5>
+                    <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-1">
                             <input
                                 type="checkbox"
