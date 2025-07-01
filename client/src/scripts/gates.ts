@@ -2,7 +2,7 @@ import Client from "../Client";
 import { FunctionalBind } from "./functionalBind";
 
 export default function initGates(client: Client) {
-    const bind = new FunctionalBind(client, { key: "F2", ctrl: true, label: "CTRL+F2" });
+    const bind = new FunctionalBind(client, { key: "Digit2", ctrl: true, label: "CTRL+2" });
     const knock = () => {
         Input.send("zastukaj we wrota");
     };
