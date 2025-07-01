@@ -3,7 +3,7 @@ import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
-import {FunctionalBind} from "./scripts/functionalBind";
+import {FunctionalBind, LINE_START_EVENT} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 import {rawSend} from "./main";
 import TeamManager from "./TeamManager";
@@ -65,6 +65,7 @@ export default class Client {
     }
 
     onLine(line: string, type: string) {
+        this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT));
         const buffer: { out: string, type?: string }[] = [];
         const originalOutputSend = Output.send;
         Output.send = (out: string, outputType?: string): any => {
