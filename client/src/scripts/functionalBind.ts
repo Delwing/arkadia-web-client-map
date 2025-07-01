@@ -42,6 +42,7 @@ export class FunctionalBind {
 
     set(printable: string | null, callback: () => void) {
         this.functionalBind = callback;
+        this.button?.remove();
         if (printable) {
             this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
             this.button = this.client.createButton(printable, callback);
