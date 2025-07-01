@@ -3,7 +3,7 @@ import Triggers from '../src/Triggers';
 
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
-  FunctionalBind = { set: jest.fn(), clear: jest.fn() };
+  FunctionalBind = { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() };
   playSound = jest.fn();
   sendEvent = jest.fn();
 }
