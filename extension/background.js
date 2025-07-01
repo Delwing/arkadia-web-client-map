@@ -97,8 +97,16 @@ function loadIframe(tabId) {
             const rightPanel = document.body.querySelector("#panel_elems_right")
 
             const div = document.createElement('div')
-            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px; resize: both; overflow: hidden;`);
+            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px; overflow: hidden;`);
             div.setAttribute('id', 'map-placeholder')
+
+            const dragHandle = document.createElement('div')
+            dragHandle.setAttribute('style', 'position:absolute;top:0;left:0;right:0;height:16px;cursor:move;background:rgba(50,50,50,0.3);z-index:10;')
+            div.appendChild(dragHandle)
+
+            const resizeHandle = document.createElement('div')
+            resizeHandle.setAttribute('style', 'position:absolute;width:16px;height:16px;right:0;bottom:0;cursor:se-resize;background:rgba(50,50,50,0.3);z-index:10;')
+            div.appendChild(resizeHandle)
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('id', 'cm-frame');
@@ -106,9 +114,52 @@ function loadIframe(tabId) {
             iframe.setAttribute('allow', '');
             iframe.src = chrome.runtime.getURL('embedded.html');
 
+            const enableDragResize = (container, drag, resize) => {
+                let startX, startY, startWidth, startHeight, offsetX, offsetY
+
+                drag.addEventListener('mousedown', e => {
+                    e.preventDefault()
+                    const rect = container.getBoundingClientRect()
+                    offsetX = e.clientX - rect.left
+                    offsetY = e.clientY - rect.top
+                    container.style.left = rect.left + 'px'
+                    container.style.top = rect.top + 'px'
+                    container.style.right = 'auto'
+                    const onMove = ev => {
+                        container.style.left = ev.clientX - offsetX + 'px'
+                        container.style.top = ev.clientY - offsetY + 'px'
+                    }
+                    const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                    }
+                    document.addEventListener('mousemove', onMove)
+                    document.addEventListener('mouseup', onUp)
+                })
+
+                resize.addEventListener('mousedown', e => {
+                    e.preventDefault()
+                    startX = e.clientX
+                    startY = e.clientY
+                    startWidth = container.offsetWidth
+                    startHeight = container.offsetHeight
+                    const onMove = ev => {
+                        container.style.width = startWidth + (ev.clientX - startX) + 'px'
+                        container.style.height = startHeight + (ev.clientY - startY) + 'px'
+                    }
+                    const onUp = () => {
+                        document.removeEventListener('mousemove', onMove)
+                        document.removeEventListener('mouseup', onUp)
+                    }
+                    document.addEventListener('mousemove', onMove)
+                    document.addEventListener('mouseup', onUp)
+                })
+            }
+
             div.appendChild(iframe)
 
             rightPanel.prepend(div);
+            enableDragResize(div, dragHandle, resizeHandle)
 
             Promise.all([
                 download('https://delwing.github.io/arkadia-mapa/data/mapExport.json', 60 * 60 * 24),
@@ -122,7 +173,7 @@ function loadIframe(tabId) {
                 const replaceMap = settings?.replaceMap
                 const size = replaceMap ? 215 : 355;
                 document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
-                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''} resize: both; overflow: hidden;`);
+                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''} overflow: hidden;`);
             }
 
             chrome.storage.local.get('settings').then(value => {
