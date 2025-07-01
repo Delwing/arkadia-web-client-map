@@ -1,5 +1,7 @@
 import Client from "../Client";
 
+let onShip = false;
+
 const BOARD_CMDS = [
     "wem",
     "kup bilet",
@@ -13,21 +15,27 @@ function bindShip(client: Client, commands: string[], label: string, beep: boole
         client.playSound("beep");
     }
     client.FunctionalBind.set(label, () => {
-        commands.forEach(cmd => Input.send(cmd));
         if (commands.length === 1 && commands[0] === "zejdz ze statku") {
             client.sendEvent("refreshPositionWhenAble");
+            onShip = false;
+        } else {
+            onShip = true;
         }
+        commands.forEach(cmd => Input.send(cmd));
     });
 }
 
 export default function initShips(client: Client) {
+    onShip = false;
     const board = (beep: boolean) => (
         _raw: string,
         _line: string,
         _matches: RegExpMatchArray,
         _type: string
     ) => {
-        bindShip(client, BOARD_CMDS, BOARD_LABEL, beep);
+        if (!onShip) {
+            bindShip(client, BOARD_CMDS, BOARD_LABEL, beep);
+        }
         return undefined;
     };
     const disembark = () => {
