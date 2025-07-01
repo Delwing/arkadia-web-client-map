@@ -1,5 +1,5 @@
 import initDeposits, { deposits } from '../src/scripts/deposits';
-import Triggers from '../src/Triggers';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -68,6 +68,7 @@ describe('deposits', () => {
   test('prints deposits', () => {
     parse('Twoj depozyt zawiera miecz.');
     show();
-    expect(client.println).toHaveBeenCalledWith(expect.stringContaining('\n  miecz'));
+    const printed = stripAnsiCodes(client.println.mock.calls[0][0]);
+    expect(printed).toContain('\n  miecz');
   });
 });
