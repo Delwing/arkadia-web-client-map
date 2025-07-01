@@ -65,6 +65,12 @@ function loadIframe(tabId) {
     chrome.scripting.executeScript({
         target: {tabId: tabId},
         func: async () => {
+            const defaultSettings = {
+                prettyContainers: true,
+                collectMode: 3,
+                collectMoneyType: 1,
+                collectExtra: []
+            }
 
             let download = async (url, ttl) => {
                 return chrome.storage.local.get(url).then(item => {
