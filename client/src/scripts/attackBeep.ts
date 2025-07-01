@@ -4,11 +4,10 @@ import {colorString, encloseColor, findClosestColor} from "../Colors";
 const RED = findClosestColor("#ff0000");
 
 function highlightAttack(line: string, upper?: string) {
-    let colored = encloseColor(line, RED);
-    if (upper && colored.includes(upper)) {
-        colored = colored.replace(upper, upper.toUpperCase());
+    if (upper && line.includes(upper)) {
+        line = line.replace(upper, upper.toUpperCase());
     }
-    return colored;
+    return encloseColor(line, RED);
 }
 
 function highlightPhrase(line: string) {
