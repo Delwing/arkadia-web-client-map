@@ -1,13 +1,14 @@
 import Triggers from '../src/Triggers';
 
 const set = jest.fn();
-const FunctionalBind = jest.fn().mockImplementation(() => ({ set }));
+const FunctionalBind = jest.fn().mockImplementation(() => ({ set, newMessage: jest.fn() }));
 jest.mock('../src/scripts/functionalBind', () => ({ FunctionalBind }));
 
 import initGates from '../src/scripts/gates';
 
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
+  addEventListener = jest.fn();
 }
 
 describe('gates triggers', () => {

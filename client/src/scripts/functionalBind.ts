@@ -1,6 +1,8 @@
 import {color} from "../Colors";
 import Client from "../Client";
 
+export const LINE_START_EVENT = 'line-start';
+
 export interface FunctionalBindOptions {
     key?: string;
     label?: string;
@@ -9,12 +11,32 @@ export interface FunctionalBindOptions {
     shift?: boolean;
 }
 
+export function formatLabel(options: FunctionalBindOptions) {
+    let key = options.key ?? '';
+    if (key.startsWith('Digit')) {
+        key = key.substring(5);
+    } else if (key.startsWith('Key')) {
+        key = key.substring(3);
+    } else if (key === 'BracketRight') {
+        key = ']';
+    } else if (key === 'BracketLeft') {
+        key = '[';
+    }
+    const parts = [] as string[];
+    if (options.ctrl) parts.push('CTRL');
+    if (options.alt) parts.push('ALT');
+    if (options.shift) parts.push('SHIFT');
+    parts.push(key);
+    return parts.join('+');
+}
+
 export class FunctionalBind {
 
     private client: Client;
     private functionalBind = () => {};
     private button?: HTMLInputElement;
     private currentPrintable: string | null = null;
+    private printedInMessage = false;
     private key: string;
     private label: string;
     private ctrl: boolean;
@@ -39,14 +61,25 @@ export class FunctionalBind {
                 ev.preventDefault();
             }
         })
+
+        this.client.addEventListener(LINE_START_EVENT, () => this.newMessage());
+    }
+
+    newMessage() {
+        this.printedInMessage = false;
     }
 
     set(printable: string | null, callback: () => void) {
         this.functionalBind = callback;
         if (this.currentPrintable === printable) {
+            if (printable && !this.printedInMessage) {
+                this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
+                this.printedInMessage = true;
+            }
             return;
         }
         this.currentPrintable = printable;
+        this.printedInMessage = true;
         this.button?.remove();
         if (printable) {
             this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
@@ -57,7 +90,22 @@ export class FunctionalBind {
     clear() {
         this.functionalBind = () => {};
         this.currentPrintable = null;
+        this.printedInMessage = false;
         this?.button?.remove();
+    }
+
+    updateOptions(options: FunctionalBindOptions = {}) {
+        if (options.key) {
+            this.key = options.key;
+        }
+        if (options.label) {
+            this.label = options.label;
+        } else if (options.key) {
+            this.label = options.key === 'BracketRight' ? ']' : options.key;
+        }
+        if (options.ctrl !== undefined) this.ctrl = !!options.ctrl;
+        if (options.alt !== undefined) this.alt = !!options.alt;
+        if (options.shift !== undefined) this.shift = !!options.shift;
     }
 
 }

@@ -1,5 +1,7 @@
 import Client from "../Client";
 import { stripAnsiCodes } from "../Triggers";
+import { prettyPrintContainer } from "./prettyContainers";
+import { encloseColor, findClosestColor } from "../Colors";
 
 interface DepositInfo {
     name: string;
@@ -9,6 +11,10 @@ interface DepositInfo {
 const STORAGE_KEY = "deposits";
 
 const deposits: Record<number, DepositInfo> = {};
+
+const BANK_LABEL_COLOR = findClosestColor('#6a5acd');
+const BANK_NAME_COLOR = findClosestColor('#ff6347');
+const ITEM_NAME_COLOR = findClosestColor('#00ff7f');
 
 function isBankRoom(room: any): boolean {
     return !!room?.userData?.bind && room.userData.bind.includes("depozyt");
@@ -40,7 +46,11 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     }
 
     const matchContents = (_raw: string, line: string) => {
-        return stripAnsiCodes(line).match(/^Twoj depozyt zawiera (.+)\.$/);
+        const match = stripAnsiCodes(line).match(/^Twoj depozyt zawiera (?<content>.+)\.$/);
+        if (match) {
+            match.groups = Object.assign({ container: 'depozyt' }, match.groups);
+        }
+        return match;
     };
     const matchEmpty = (_raw: string, line: string) => {
         return stripAnsiCodes(line).match(/^Twoj depozyt jest pusty\./);
@@ -50,9 +60,10 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     };
 
     client.Triggers.registerTrigger(matchContents, (_r, _l, m) => {
-        const text = m[1].replace(/\.$/, "");
+        const text = (m.groups?.content || m[1]).replace(/\.$/, "");
         const items = text.split(/,\s*/).map(i => i.trim()).filter(Boolean);
         update(items);
+        client.print(prettyPrintContainer(m as RegExpMatchArray, 2, 'DEPOZYT', 5));
         return undefined;
     });
     client.Triggers.registerTrigger(matchEmpty, () => { update([]); return undefined; });
@@ -61,16 +72,30 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     function printDeposits() {
         const lines: string[] = [];
         Object.values(deposits).forEach(({ name, items }) => {
-            let line: string;
+            const bankLabel = encloseColor('bank:', BANK_LABEL_COLOR);
+            const bankName = encloseColor(name, BANK_NAME_COLOR);
+
             if (items === null) {
-                line = `${name}: brak depozytu`;
-            } else if (items.length === 0) {
-                line = `${name}: (pusty)`;
-            } else {
-                line = `${name}: ${items.join(", ")}`;
+                lines.push(`${bankLabel}    ${bankName} brak depozytu`);
+                return;
             }
-            lines.push(line);
+            if (items.length === 0) {
+                lines.push(`${bankLabel}    ${bankName} (pusty)`);
+                return;
+            }
+
+            lines.push(`${bankLabel}    ${bankName}`);
+            items.forEach(it => {
+                const match = it.match(/^(\d+)\s+(.*)/);
+                if (match) {
+                    const [, count, itemName] = match;
+                    lines.push(`    ${count} | ${encloseColor(itemName, ITEM_NAME_COLOR)}`);
+                } else {
+                    lines.push(`  ${encloseColor(it, ITEM_NAME_COLOR)}`);
+                }
+            });
         });
+
         if (lines.length === 0) {
             client.println("Brak zapisanych depozytow.");
         } else {

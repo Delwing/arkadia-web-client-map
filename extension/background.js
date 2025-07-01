@@ -5,6 +5,11 @@ const defaultSettings = {
     collectExtra: [],
     mapLeft: null,
     mapTop: null,
+    binds: {
+        main: { key: 'BracketRight' },
+        gates: { key: 'Digit2', ctrl: true },
+        collector: { key: 'Digit3', ctrl: true }
+    }
 }
 
 chrome.commands.onCommand.addListener(shortcut => {
@@ -74,6 +79,11 @@ function loadIframe(tabId) {
                 collectExtra: [],
                 mapLeft: null,
                 mapTop: null,
+                binds: {
+                    main: { key: 'BracketRight' },
+                    gates: { key: 'Digit2', ctrl: true },
+                    collector: { key: 'Digit3', ctrl: true }
+                }
             }
 
             let download = async (url, ttl) => {
