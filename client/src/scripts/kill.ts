@@ -303,8 +303,9 @@ export default function init(
         teamKillRegex,
         (rawLine, _line, matches): string => {
             const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
+            const mob = parseName(matches.groups?.name ?? "");
             const entry = client.TeamManager.isInTeam(player)
-                ? recordKill(parseName(matches.groups?.name ?? ""), false)
+                ? recordKill(mob, false)
                 : null;
             return formatPrefix(rawLine, entry, "[   ZABIL   ] ");
         }

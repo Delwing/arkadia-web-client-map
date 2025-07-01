@@ -11,7 +11,10 @@ const defaultSettings = {
     packageHelper: true,
     inlineCompassRose: true,
     prettyContainers: true,
-    containerColumns: 2
+    containerColumns: 2,
+    collectMode: 3,
+    collectMoneyType: 1,
+    collectExtra: []
 }
 
 localStorage.setItem('npc', JSON.stringify(npc))

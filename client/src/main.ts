@@ -177,6 +177,11 @@ import initKillTrigger from "./scripts/kill"
 
 initKillTrigger(client, aliases)
 
+import ItemCollector from "./scripts/itemCollector"
+
+const itemCollector = new ItemCollector(client)
+(client as any).ItemCollector = itemCollector
+
 import initContainers from "./scripts/prettyContainers"
 
 initContainers(client)

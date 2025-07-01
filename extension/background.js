@@ -1,4 +1,9 @@
-const defaultSettings = { prettyContainers: true }
+const defaultSettings = {
+    prettyContainers: true,
+    collectMode: 3,
+    collectMoneyType: 1,
+    collectExtra: []
+}
 
 chrome.commands.onCommand.addListener(shortcut => {
     if (shortcut === 'reload') {

@@ -4,6 +4,7 @@ import {useState} from "react";
 import TriggerTester from "./TriggerTester.tsx";
 import packageAssistant from "./scenario/package-assistant.ts";
 import killCounterDemo from "./scenario/kill-counter-demo.ts";
+import itemCollectorDemo from "./scenario/item-collector-demo.ts";
 import teamEventsDemo from "./scenario/team-events-demo.ts";
 import shipsDemo from "./scenario/ships-demo.ts";
 import busesDemo from "./scenario/buses-demo.ts";
@@ -30,6 +31,13 @@ export function Controls() {
                         onClick={() => killCounterDemo.run()}
                     >
                         Kill Counter Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => itemCollectorDemo.run()}
+                    >
+                        Item Collector Demo
                     </Button>
                     <Button
                         size="sm"
