@@ -43,7 +43,7 @@ export default function initShips(client: Client) {
         return undefined;
     };
 
-    client.Triggers.registerTrigger(/.*(Wszyscy na poklad!.*|przybija wielki trojmasztowy galeon\.)$/, board(true), "ships");
+    client.Triggers.registerTrigger(/.*przybija wielki trojmasztowy galeon\.$/, board(true), "ships");
 
     [
         /.*(rypa|ratwa|rom|arka) przybija do brzegu\.$/,
