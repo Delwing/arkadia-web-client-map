@@ -120,6 +120,31 @@ function loadIframe(tabId) {
 
             const enableDragResize = (container, drag, resize) => {
                 let startX, startY, startWidth, startHeight, offsetX, offsetY
+                let mode = null
+
+                const onMove = ev => {
+                    if (mode === 'drag') {
+                        container.style.left = ev.clientX - offsetX + 'px'
+                        container.style.top = ev.clientY - offsetY + 'px'
+                    } else if (mode === 'resize') {
+                        container.style.width = startWidth + (ev.clientX - startX) + 'px'
+                        container.style.height = startHeight + (ev.clientY - startY) + 'px'
+                    }
+                }
+
+                const onUp = () => {
+                    document.removeEventListener('mousemove', onMove)
+                    document.removeEventListener('mouseup', onUp)
+                    if (mode === 'drag') {
+                        const left = parseInt(container.style.left, 10)
+                        const top = parseInt(container.style.top, 10)
+                        chrome.storage.local.get('settings').then(d => {
+                            const current = d.settings || {}
+                            chrome.storage.local.set({ settings: { ...current, mapLeft: left, mapTop: top } })
+                        })
+                    }
+                    mode = null
+                }
 
                 drag.addEventListener('mousedown', e => {
                     e.preventDefault()
@@ -129,20 +154,7 @@ function loadIframe(tabId) {
                     container.style.left = rect.left + 'px'
                     container.style.top = rect.top + 'px'
                     container.style.right = 'auto'
-                    const onMove = ev => {
-                        container.style.left = ev.clientX - offsetX + 'px'
-                        container.style.top = ev.clientY - offsetY + 'px'
-                    }
-                    const onUp = () => {
-                        document.removeEventListener('mousemove', onMove)
-                        document.removeEventListener('mouseup', onUp)
-                        const left = parseInt(container.style.left, 10)
-                        const top = parseInt(container.style.top, 10)
-                        chrome.storage.local.get('settings').then(d => {
-                            const current = d.settings || {}
-                            chrome.storage.local.set({ settings: { ...current, mapLeft: left, mapTop: top } })
-                        })
-                    }
+                    mode = 'drag'
                     document.addEventListener('mousemove', onMove)
                     document.addEventListener('mouseup', onUp)
                 })
@@ -153,14 +165,7 @@ function loadIframe(tabId) {
                     startY = e.clientY
                     startWidth = container.offsetWidth
                     startHeight = container.offsetHeight
-                    const onMove = ev => {
-                        container.style.width = startWidth + (ev.clientX - startX) + 'px'
-                        container.style.height = startHeight + (ev.clientY - startY) + 'px'
-                    }
-                    const onUp = () => {
-                        document.removeEventListener('mousemove', onMove)
-                        document.removeEventListener('mouseup', onUp)
-                    }
+                    mode = 'resize'
                     document.addEventListener('mousemove', onMove)
                     document.addEventListener('mouseup', onUp)
                 })
