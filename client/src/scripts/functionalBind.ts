@@ -14,6 +14,7 @@ export class FunctionalBind {
     private client: Client;
     private functionalBind = () => {};
     private button?: HTMLInputElement;
+    private currentPrintable: string | null = null;
     private key: string;
     private label: string;
     private ctrl: boolean;
@@ -42,6 +43,10 @@ export class FunctionalBind {
 
     set(printable: string | null, callback: () => void) {
         this.functionalBind = callback;
+        if (this.currentPrintable === printable) {
+            return;
+        }
+        this.currentPrintable = printable;
         this.button?.remove();
         if (printable) {
             this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
@@ -51,6 +56,7 @@ export class FunctionalBind {
 
     clear() {
         this.functionalBind = () => {};
+        this.currentPrintable = null;
         this?.button?.remove();
     }
 
