@@ -209,8 +209,10 @@ import initContainers from "./scripts/prettyContainers"
 initContainers(client)
 
 import initBagManager from "./scripts/bagManager"
+import initDeposits from "./scripts/deposits"
 
 initBagManager(client, aliases)
+initDeposits(client, aliases)
 
 import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
