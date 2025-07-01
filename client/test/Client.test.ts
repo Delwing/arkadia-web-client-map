@@ -29,7 +29,13 @@ jest.mock('howler', () => {
 jest.mock('../src/Triggers', () => ({ __esModule: true, default: jest.fn().mockImplementation(() => ({ parseLine: jest.fn((l: string) => l) })) }));
 jest.mock('../src/PackageHelper', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/OutputHandler', () => ({ __esModule: true, default: jest.fn() }));
-jest.mock('../src/scripts/functionalBind', () => ({ FunctionalBind: jest.fn() }));
+jest.mock('../src/scripts/functionalBind', () => ({
+  FunctionalBind: jest.fn().mockImplementation(() => ({
+    set: jest.fn(),
+    clear: jest.fn(),
+    newMessage: jest.fn(),
+  })),
+}));
 jest.mock('../src/main', () => ({ __esModule: true, rawSend: jest.fn() }));
 
 
