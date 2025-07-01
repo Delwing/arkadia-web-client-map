@@ -117,6 +117,7 @@ function connectToBackground(extensionId: string) {
         port.postMessage({type: 'GET_STORAGE', key: 'settings'})
         port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
         port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+        port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
         isInitialConnection = false
     }
     port.onDisconnect.addListener(() => {
@@ -209,8 +210,10 @@ import initContainers from "./scripts/prettyContainers"
 initContainers(client)
 
 import initBagManager from "./scripts/bagManager"
+import initDeposits from "./scripts/deposits"
 
 initBagManager(client, aliases)
+initDeposits(client, aliases)
 
 import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
