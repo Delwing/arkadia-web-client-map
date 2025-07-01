@@ -96,7 +96,7 @@ function loadIframe(tabId) {
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('id', 'cm-frame');
-            iframe.setAttribute('style', `width: ${size};height: ${size}; border: 1px solid #323232;`);
+            iframe.setAttribute('style', `width: 100%;height: 100%; border: 1px solid #323232;`);
             iframe.setAttribute('allow', '');
             iframe.src = chrome.runtime.getURL('embedded.html');
 
@@ -117,8 +117,6 @@ function loadIframe(tabId) {
                 const size = replaceMap ? 215 : 355;
                 document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
                 document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''}`);
-                iframe.setAttribute('style', `width: ${size}px;height: ${size}px; border: 1px solid #323232;`);
-
             }
 
             chrome.storage.local.get('settings').then(value => {
