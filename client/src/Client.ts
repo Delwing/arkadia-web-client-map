@@ -3,7 +3,7 @@ import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
-import {FunctionalBind, LINE_START_EVENT} from "./scripts/functionalBind";
+import {FunctionalBind, LINE_START_EVENT, formatLabel} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
 import {rawSend} from "./main";
 import TeamManager from "./TeamManager";
@@ -37,6 +37,19 @@ export default class Client {
 
 
         Object.values(this.sounds).forEach((sound) => sound.load())
+
+        this.addEventListener('settings', (ev: CustomEvent) => {
+            const bind = ev.detail?.binds?.main
+            if (bind) {
+                this.FunctionalBind.updateOptions({
+                    key: bind.key,
+                    ctrl: bind.ctrl,
+                    alt: bind.alt,
+                    shift: bind.shift,
+                    label: formatLabel(bind)
+                })
+            }
+        })
     }
 
     connect(port: chrome.runtime.Port) {

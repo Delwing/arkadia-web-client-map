@@ -11,6 +11,25 @@ export interface FunctionalBindOptions {
     shift?: boolean;
 }
 
+export function formatLabel(options: FunctionalBindOptions) {
+    let key = options.key ?? '';
+    if (key.startsWith('Digit')) {
+        key = key.substring(5);
+    } else if (key.startsWith('Key')) {
+        key = key.substring(3);
+    } else if (key === 'BracketRight') {
+        key = ']';
+    } else if (key === 'BracketLeft') {
+        key = '[';
+    }
+    const parts = [] as string[];
+    if (options.ctrl) parts.push('CTRL');
+    if (options.alt) parts.push('ALT');
+    if (options.shift) parts.push('SHIFT');
+    parts.push(key);
+    return parts.join('+');
+}
+
 export class FunctionalBind {
 
     private client: Client;
@@ -73,6 +92,20 @@ export class FunctionalBind {
         this.currentPrintable = null;
         this.printedInMessage = false;
         this?.button?.remove();
+    }
+
+    updateOptions(options: FunctionalBindOptions = {}) {
+        if (options.key) {
+            this.key = options.key;
+        }
+        if (options.label) {
+            this.label = options.label;
+        } else if (options.key) {
+            this.label = options.key === 'BracketRight' ? ']' : options.key;
+        }
+        if (options.ctrl !== undefined) this.ctrl = !!options.ctrl;
+        if (options.alt !== undefined) this.alt = !!options.alt;
+        if (options.shift !== undefined) this.shift = !!options.shift;
     }
 
 }
