@@ -92,7 +92,7 @@ function Binds() {
                     onKeyDown={ev => handleCapture('collector', ev)}
                 />
             </label>
-            <button className="btn btn-primary mt-2" onClick={save}>Zapisz</button>
+            <button className="btn btn-primary mt-2 w-auto self-start" onClick={save}>Zapisz</button>
         </div>
     );
 }
