@@ -2,7 +2,6 @@ import ClientScript from "../ClientScript.ts";
 import { fakeClient } from "../fakeClient.ts";
 
 const shipTriggers = [
-    "Wszyscy na poklad!",
     "przybija wielki trojmasztowy galeon.",
     "Tratwa przybija do brzegu.",
     "Tratwa.",
