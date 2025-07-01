@@ -56,4 +56,13 @@ describe('ships triggers', () => {
     expect((global as any).Input.send).toHaveBeenCalledWith('zejdz ze statku');
     expect(client.sendEvent).toHaveBeenCalledWith('refreshPositionWhenAble');
   });
+
+  test('does not bind boarding command when already on ship', () => {
+    parse('Tratwa przybija do brzegu.');
+    const [, boardCallback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
+    boardCallback();
+    client.FunctionalBind.set.mockClear();
+    parse('Tratwa przybija do brzegu.');
+    expect(client.FunctionalBind.set).not.toHaveBeenCalled();
+  });
 });
