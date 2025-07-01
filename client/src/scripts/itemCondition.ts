@@ -33,7 +33,8 @@ export function processItemCondition(rawLine: string, phrase: string): string {
         if (found) {
             const colorCode = COLORS[condition.color] ?? COLORS.red;
             const colored = encloseColor(phrase, colorCode);
-            const replaced = `${colored} ${condition.replacement}`;
+            const coloredValue = encloseColor(condition.replacement, colorCode);
+            const replaced = `${colored} ${coloredValue}`;
             return rawLine.replace(phrase, replaced);
         }
     }
