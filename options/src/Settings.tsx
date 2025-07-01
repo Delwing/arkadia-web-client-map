@@ -36,6 +36,7 @@ function SettingsForm() {
     })
 
     const allSelected = settings.guilds.length === guilds.length
+    const [extraInput, setExtraInput] = useState<string>('')
 
     function onChangeSetting(modifier: (settings: Settings) => void) {
         setSettings(prev => {
@@ -206,14 +207,33 @@ function SettingsForm() {
                         </label>
                         <div>
                             <span className="mr-1">Dodatkowe przedmioty:</span>
-                            <input id="extraItem" type="text" className="input input-bordered input-sm mr-1 w-40" />
-                            <button className="btn btn-sm" onClick={() => {
-                                const input = document.getElementById('extraItem') as HTMLInputElement;
-                                if (input.value) {
-                                    onChangeSetting(s => s.collectExtra = [...s.collectExtra, input.value]);
-                                    input.value = '';
-                                }
-                            }}>Dodaj</button>
+                            <input
+                                id="extraItem"
+                                type="text"
+                                className="input input-bordered input-sm mr-1 w-40"
+                                value={extraInput}
+                                onChange={e => setExtraInput(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        if (extraInput.trim()) {
+                                            onChangeSetting(s => s.collectExtra = [...s.collectExtra, extraInput.trim()]);
+                                            setExtraInput('');
+                                        }
+                                    }
+                                }}
+                            />
+                            <button
+                                className="btn btn-sm"
+                                onClick={() => {
+                                    if (extraInput.trim()) {
+                                        onChangeSetting(s => s.collectExtra = [...s.collectExtra, extraInput.trim()]);
+                                        setExtraInput('');
+                                    }
+                                }}
+                            >
+                                Dodaj
+                            </button>
                         </div>
                         <ul className="list-disc pl-5">
                             {settings.collectExtra.map(item => (
