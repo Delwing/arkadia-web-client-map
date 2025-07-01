@@ -9,6 +9,18 @@ const guilds = [
     "ZS", "ZH", "GP", "NPC"
 ]
 
+const collectModeOptions = [
+    "monety",
+    "kamienie",
+    "monety i kamienie",
+    "druzynowe monety",
+    "druzynowe kamienie",
+    "druzynowe monety i kamienie",
+    "nic",
+]
+
+const collectMoneyOptions = ["wszystkie", "srebrne", "zlote"]
+
 interface Settings {
     guilds: string[];
     packageHelper: boolean;
@@ -187,8 +199,8 @@ function SettingsForm() {
                                 value={settings.collectMode}
                                 onChange={e => onChangeSetting(s => s.collectMode = parseInt(e.target.value))}
                             >
-                                {Array.from({length: 7}, (_, i) => i + 1).map(i => (
-                                    <option value={i} key={i}>{i}</option>
+                                {collectModeOptions.map((label, i) => (
+                                    <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
                                 ))}
                             </select>
                         </label>
@@ -199,8 +211,8 @@ function SettingsForm() {
                                 value={settings.collectMoneyType}
                                 onChange={e => onChangeSetting(s => s.collectMoneyType = parseInt(e.target.value))}
                             >
-                                {Array.from({length: 3}, (_, i) => i + 1).map(i => (
-                                    <option value={i} key={i}>{i}</option>
+                                {collectMoneyOptions.map((label, i) => (
+                                    <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
                                 ))}
                             </select>
                         </label>
