@@ -1,17 +1,7 @@
 import Client from "../Client";
-import { encloseColor, findClosestColor } from "../Colors";
 
 export default function initStun(client: Client) {
     const tag = "stun";
-    const STUN_COLOR = findClosestColor("#ff0000");
-    const NPC_COLOR = findClosestColor("#fffaf0");
-
-    const stunPrefix = (raw: string) =>
-        client.prefix(raw, encloseColor("[OGLUCH] ", STUN_COLOR)) +
-        "\n\n[   OGLUCH   ] ----- JESTES OGLUSZONY -----\n\n";
-    const endLine = "\n\n[   OGLUCH   ] ----- KONIEC OGLUCHA -----\n\n";
-    const golemPrefix = (raw: string) =>
-        client.prefix(raw, encloseColor("[OGLUCH] ", NPC_COLOR));
 
     const startPatterns = [
         /Powoli osuwasz sie na ziemie/,
@@ -37,26 +27,17 @@ export default function initStun(client: Client) {
         /Powoli odzyskujesz swobode ruchow/,
     ];
 
-    const golemPatterns = [
-        /golem w mgnieniu oka uderza w [A-Za-z]+, a on.? wyrwan. z oslupienia, probuje ratowac sie krokiem w tyl\. Jednak wiele to nie pomaga i sila uderzenia odrzuca/,
-        /^Niespodziewanie kamienny golem wyciaga reke i uderza w glowe .*$/,
-    ];
-
     startPatterns.forEach(p =>
-        client.Triggers.registerTrigger(p, (raw) => {
+        client.Triggers.registerTrigger(p, () => {
             client.sendEvent("stunStart");
-            return stunPrefix(raw);
+            return undefined;
         }, tag)
     );
 
     endPatterns.forEach(p =>
         client.Triggers.registerTrigger(p, () => {
             client.sendEvent("stunEnd");
-            return endLine;
+            return undefined;
         }, tag)
-    );
-
-    golemPatterns.forEach(p =>
-        client.Triggers.registerTrigger(p, raw => golemPrefix(raw), tag)
     );
 }

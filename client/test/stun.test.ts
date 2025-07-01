@@ -3,7 +3,6 @@ import Triggers from '../src/Triggers';
 
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
-  prefix = jest.fn((line: string, prefix: string) => prefix + line);
   sendEvent = jest.fn();
 }
 
@@ -18,22 +17,22 @@ describe('stun triggers', () => {
     jest.clearAllMocks();
   });
 
-  test('stun start sends event and formats line', () => {
+  test('stun start sends event', () => {
     const result = parse('Powoli osuwasz sie na ziemie');
     expect(client.sendEvent).toHaveBeenCalledWith('stunStart');
-    expect(result).toContain('[   OGLUCH   ] ----- JESTES OGLUSZONY -----');
+    expect(result).toBe('Powoli osuwasz sie na ziemie');
   });
 
   test('stun end sends event', () => {
     const result = parse('Powoli dochodzisz do siebie');
     expect(client.sendEvent).toHaveBeenCalledWith('stunEnd');
-    expect(result).toContain('KONIEC OGLUCHA');
+    expect(result).toBe('Powoli dochodzisz do siebie');
   });
 
-  test('golem stun prefixes line without events', () => {
+  test('golem stun does nothing', () => {
     const line = 'golem w mgnieniu oka uderza w Bob, a on wyrwany z oslupienia, probuje ratowac sie krokiem w tyl. Jednak wiele to nie pomaga i sila uderzenia odrzuca';
     const result = parse(line);
-    expect(result).toContain('[OGLUCH]');
+    expect(result).toBe(line);
     expect(client.sendEvent).not.toHaveBeenCalled();
   });
 });
