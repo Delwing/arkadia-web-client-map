@@ -8,6 +8,7 @@ import initGates from '../src/scripts/gates';
 
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
+  addEventListener = jest.fn();
 }
 
 describe('gates triggers', () => {

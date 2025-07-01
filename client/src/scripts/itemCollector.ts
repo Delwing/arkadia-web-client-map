@@ -1,5 +1,5 @@
 import Client from "../Client";
-import { FunctionalBind } from "./functionalBind";
+import { FunctionalBind, formatLabel } from "./functionalBind";
 
 export default class ItemCollector {
     private client: Client;
@@ -25,6 +25,18 @@ export default class ItemCollector {
     constructor(client: Client) {
         this.client = client;
         this.bind = new FunctionalBind(client, { key: "Digit3", ctrl: true, label: "CTRL+3" });
+        this.client.addEventListener('settings', (ev: CustomEvent) => {
+            const o = ev.detail?.binds?.collector;
+            if (o) {
+                this.bind.updateOptions({
+                    key: o.key,
+                    ctrl: o.ctrl,
+                    alt: o.alt,
+                    shift: o.shift,
+                    label: formatLabel(o)
+                });
+            }
+        });
         this.bind.set(null, () => this.keyPressed(true));
         this.client.addEventListener("settings", (ev: CustomEvent) => {
             const s = ev.detail || {};
