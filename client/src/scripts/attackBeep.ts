@@ -1,5 +1,6 @@
 import Client from "../Client";
 import {colorString, encloseColor, findClosestColor} from "../Colors";
+import people from '../people.json';
 
 const RED = findClosestColor("#ff0000");
 
@@ -18,11 +19,44 @@ function highlightPhrase(line: string) {
 
 export default function initAttackBeep(client: Client) {
     const tag = "attackBeep";
+    let enemyGuilds: string[] = [];
+
+    // Function to find a person's guild by their name
+    function findPersonGuild(name: string): string | null {
+        const person = people.find(p => p.name === name);
+        return person ? person.guild : null;
+    }
+
+    // Function to check if an attacker should trigger the beep
+    function shouldBeep(attackerName: string): boolean {
+        if (enemyGuilds.length === 0) {
+            return false; // If no enemy guilds selected no beep needed
+        }
+        const guild = findPersonGuild(attackerName);
+        return guild ? enemyGuilds.includes(guild) : true; // If guild not found, beep anyway
+    }
+
     const beep = (raw: string, _line: string, matches: RegExpMatchArray): string => {
+        const attackerName = (matches.groups && (matches.groups as any).name) as string | undefined;
+
+        if (attackerName && !shouldBeep(attackerName)) {
+            // Don't beep, but still highlight the attack
+            const upper = (matches.groups && (matches.groups as any).upper) as string | undefined;
+            return highlightAttack(raw, upper);
+        }
+
         client.playSound("beep");
         const upper = (matches.groups && (matches.groups as any).upper) as string | undefined;
         return highlightAttack(raw, upper);
     };
+
+    // Listen for settings changes
+    client.addEventListener('settings', (event: CustomEvent) => {
+        const settings = event.detail || {};
+        if (Array.isArray(settings.enemyGuilds)) {
+            enemyGuilds = [...settings.enemyGuilds];
+        }
+    });
 
     [
         /(?<name>.*) atakuje cie!/,

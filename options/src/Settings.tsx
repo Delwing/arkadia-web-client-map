@@ -23,6 +23,7 @@ const collectMoneyOptions = ["wszystkie", "srebrne", "zlote"]
 
 interface Settings {
     guilds: string[];
+    enemyGuilds: string[];
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
@@ -37,6 +38,7 @@ function SettingsForm() {
 
     const [settings, setSettings] = useState<Settings>({
         guilds: [],
+        enemyGuilds: [],
         packageHelper: false,
         replaceMap: false,
         inlineCompassRose: false,
@@ -48,6 +50,7 @@ function SettingsForm() {
     })
 
     const allSelected = settings.guilds.length === guilds.length
+    const allEnemySelected = settings.enemyGuilds.length === guilds.length
     const [extraInput, setExtraInput] = useState<string>('')
 
     function onChangeSetting(modifier: (settings: Settings) => void) {
@@ -71,6 +74,22 @@ function SettingsForm() {
         setSettings(prev => ({
             ...prev,
             guilds: event.target.checked ? [...guilds] : []
+        }))
+    }
+
+    function onChangeEnemy(event: ChangeEvent<HTMLInputElement>, guild: string) {
+        setSettings(prev => {
+            const enemyGuilds = event.target.checked
+                ? [...prev.enemyGuilds, guild]
+                : prev.enemyGuilds.filter(g => g !== guild)
+            return {...prev, enemyGuilds}
+        })
+    }
+
+    function onChangeAllEnemy(event: ChangeEvent<HTMLInputElement>) {
+        setSettings(prev => ({
+            ...prev,
+            enemyGuilds: event.target.checked ? [...guilds] : []
         }))
     }
 
@@ -117,6 +136,38 @@ function SettingsForm() {
                                     onChange={event => onChange(event, guild)}
                                     className="checkbox checkbox-sm mx-1"
                                     checked={settings.guilds.indexOf(guild) != -1}
+                                />
+                                {guild}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
+                    <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-bold">Gildie wrogów (alarm ataku)</h5>
+                        <label className="flex items-center gap-1" key="all-enemy-guilds">
+                            <input
+                                type="checkbox"
+                                id="enemy-guild-all"
+                                name="enemy-guild-all"
+                                onChange={event => onChangeAllEnemy(event)}
+                                className="checkbox checkbox-sm mx-1"
+                                checked={allEnemySelected}
+                            />
+                            Wszystkie
+                        </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {guilds.map(guild => (
+                            <label className="flex items-center gap-1 w-20" key={`enemy-${guild}`}>
+                                <input
+                                    type="checkbox"
+                                    id={`enemy-guild-${guild}`}
+                                    name="enemy-guild"
+                                    value={guild}
+                                    onChange={event => onChangeEnemy(event, guild)}
+                                    className="checkbox checkbox-sm mx-1"
+                                    checked={settings.enemyGuilds.indexOf(guild) != -1}
                                 />
                                 {guild}
                             </label>
