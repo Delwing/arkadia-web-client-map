@@ -182,6 +182,26 @@ import ItemCollector from "./scripts/itemCollector"
 const itemCollector = new ItemCollector(client);
 (client as any).ItemCollector = itemCollector;
 
+aliases.push({
+    pattern: /\/zbieraj_extra(.*)/,
+    callback: (matches: RegExpMatchArray) => {
+        const strTrim = (matches[1] || "").trim();
+        itemCollector.addExtra(strTrim);
+    },
+});
+
+aliases.push({
+    pattern: /\/nie_zbieraj_extra(.*)/,
+    callback: (matches: RegExpMatchArray) => {
+        const strTrim = (matches[1] || "").trim();
+        if (strTrim !== "") {
+            itemCollector.removeExtra(strTrim, false);
+        } else {
+            itemCollector.removeExtra("", true);
+        }
+    },
+});
+
 import initContainers from "./scripts/prettyContainers"
 
 initContainers(client)
