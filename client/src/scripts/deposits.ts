@@ -1,5 +1,6 @@
 import Client from "../Client";
 import { stripAnsiCodes } from "../Triggers";
+import { prettyPrintContainer } from "./prettyContainers";
 
 interface DepositInfo {
     name: string;
@@ -40,7 +41,11 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     }
 
     const matchContents = (_raw: string, line: string) => {
-        return stripAnsiCodes(line).match(/^Twoj depozyt zawiera (.+)\.$/);
+        const match = stripAnsiCodes(line).match(/^Twoj depozyt zawiera (?<content>.+)\.$/);
+        if (match) {
+            match.groups = Object.assign({ container: 'depozyt' }, match.groups);
+        }
+        return match;
     };
     const matchEmpty = (_raw: string, line: string) => {
         return stripAnsiCodes(line).match(/^Twoj depozyt jest pusty\./);
@@ -50,9 +55,10 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     };
 
     client.Triggers.registerTrigger(matchContents, (_r, _l, m) => {
-        const text = m[1].replace(/\.$/, "");
+        const text = (m.groups?.content || m[1]).replace(/\.$/, "");
         const items = text.split(/,\s*/).map(i => i.trim()).filter(Boolean);
         update(items);
+        client.print(prettyPrintContainer(m as RegExpMatchArray, 2, 'DEPOZYT', 5));
         return undefined;
     });
     client.Triggers.registerTrigger(matchEmpty, () => { update([]); return undefined; });
@@ -61,16 +67,19 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     function printDeposits() {
         const lines: string[] = [];
         Object.values(deposits).forEach(({ name, items }) => {
-            let line: string;
             if (items === null) {
-                line = `${name}: brak depozytu`;
-            } else if (items.length === 0) {
-                line = `${name}: (pusty)`;
-            } else {
-                line = `${name}: ${items.join(", ")}`;
+                lines.push(`${name}: brak depozytu`);
+                return;
             }
-            lines.push(line);
+            if (items.length === 0) {
+                lines.push(`${name}: (pusty)`);
+                return;
+            }
+
+            lines.push(`${name}:`);
+            items.forEach(it => lines.push(`  ${it}`));
         });
+
         if (lines.length === 0) {
             client.println("Brak zapisanych depozytow.");
         } else {

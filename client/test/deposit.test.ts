@@ -7,6 +7,7 @@ class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   Map = { currentRoom: { id: 1, name: 'Bank', userData: { bind: '/depozyt' } } } as any;
   println = jest.fn();
+  print = jest.fn();
   port = { postMessage: jest.fn() } as any;
 
   addEventListener(event: string, cb: any) {
@@ -67,6 +68,6 @@ describe('deposits', () => {
   test('prints deposits', () => {
     parse('Twoj depozyt zawiera miecz.');
     show();
-    expect(client.println).toHaveBeenCalledWith(expect.stringContaining('miecz'));
+    expect(client.println).toHaveBeenCalledWith(expect.stringContaining('\n  miecz'));
   });
 });
