@@ -24,7 +24,7 @@ describe('gates triggers', () => {
   });
 
   test('binding is set and callback sends command', () => {
-    expect(FunctionalBind).toHaveBeenCalledWith(client, { key: 'F2', ctrl: true, label: 'CTRL+F2' });
+    expect(FunctionalBind).toHaveBeenCalledWith(client, { key: 'Digit2', ctrl: true, label: 'CTRL+2' });
     expect(set).toHaveBeenCalledTimes(1);
     const initCb = set.mock.calls[0][1];
     initCb();
