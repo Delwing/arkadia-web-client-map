@@ -117,6 +117,7 @@ function connectToBackground(extensionId: string) {
         port.postMessage({type: 'GET_STORAGE', key: 'settings'})
         port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
         port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+        port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
         isInitialConnection = false
     }
     port.onDisconnect.addListener(() => {

@@ -6,6 +6,8 @@ interface DepositInfo {
     items: string[] | null;
 }
 
+const STORAGE_KEY = "deposits";
+
 const deposits: Record<number, DepositInfo> = {};
 
 function isBankRoom(room: any): boolean {
@@ -13,6 +15,18 @@ function isBankRoom(room: any): boolean {
 }
 
 export default function initDeposits(client: Client, aliases?: { pattern: RegExp; callback: Function }[]) {
+    client.addEventListener("storage", (event: CustomEvent) => {
+        if (event.detail.key === STORAGE_KEY && event.detail.value) {
+            Object.assign(deposits, event.detail.value);
+        }
+    });
+
+    client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
+
+    const persist = () => {
+        client.port?.postMessage({ type: "SET_STORAGE", key: STORAGE_KEY, value: deposits });
+    };
+
     function update(items: string[] | null) {
         const room = client.Map.currentRoom as any;
         if (!isBankRoom(room)) {
@@ -22,6 +36,7 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
             name: room.name || `Bank ${room.id}`,
             items,
         };
+        persist();
     }
 
     const matchContents = (_raw: string, line: string) => {
@@ -67,6 +82,8 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         aliases.push({ pattern: /\/depozyt$/, callback: () => Input.send("przejrzyj depozyt") });
         aliases.push({ pattern: /\/depozyty$/, callback: printDeposits });
     }
+
+    window.addEventListener("beforeunload", persist);
 }
 
 export { deposits };

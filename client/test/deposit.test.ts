@@ -1,10 +1,23 @@
 import initDeposits, { deposits } from '../src/scripts/deposits';
 import Triggers from '../src/Triggers';
+import { EventEmitter } from 'events';
 
 class FakeClient {
+  private emitter = new EventEmitter();
   Triggers = new Triggers(({} as unknown) as any);
   Map = { currentRoom: { id: 1, name: 'Bank', userData: { bind: '/depozyt' } } } as any;
   println = jest.fn();
+  port = { postMessage: jest.fn() } as any;
+
+  addEventListener(event: string, cb: any) {
+    this.emitter.on(event, cb);
+  }
+  removeEventListener(event: string, cb: any) {
+    this.emitter.off(event, cb);
+  }
+  dispatch(event: string, detail: any) {
+    this.emitter.emit(event, { detail });
+  }
 }
 
 describe('deposits', () => {
@@ -18,6 +31,7 @@ describe('deposits', () => {
     client = new FakeClient();
     const aliases: { pattern: RegExp; callback: () => void }[] = [];
     initDeposits((client as unknown) as any, aliases);
+    client.dispatch('storage', { key: 'deposits', value: {} });
     parse = (line: string) => Triggers.prototype.parseLine.call(client.Triggers, line, '');
     refresh = aliases[0].callback;
     show = aliases[1].callback;
@@ -33,6 +47,11 @@ describe('deposits', () => {
   test('parses deposit contents', () => {
     parse('Twoj depozyt zawiera miecz, tarcza.');
     expect(deposits[1].items).toEqual(['miecz', 'tarcza']);
+    expect(client.port.postMessage).toHaveBeenCalledWith({
+      type: 'SET_STORAGE',
+      key: 'deposits',
+      value: deposits,
+    });
   });
 
   test('handles empty deposit', () => {
