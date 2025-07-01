@@ -97,7 +97,7 @@ function loadIframe(tabId) {
             const rightPanel = document.body.querySelector("#panel_elems_right")
 
             const div = document.createElement('div')
-            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px;`);
+            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px; resize: both; overflow: hidden;`);
             div.setAttribute('id', 'map-placeholder')
 
             const iframe = document.createElement('iframe');
@@ -122,7 +122,7 @@ function loadIframe(tabId) {
                 const replaceMap = settings?.replaceMap
                 const size = replaceMap ? 215 : 355;
                 document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
-                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''}`);
+                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''} resize: both; overflow: hidden;`);
             }
 
             chrome.storage.local.get('settings').then(value => {
