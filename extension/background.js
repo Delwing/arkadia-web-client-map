@@ -2,7 +2,12 @@ const defaultSettings = {
     prettyContainers: true,
     collectMode: 3,
     collectMoneyType: 1,
-    collectExtra: []
+    collectExtra: [],
+    binds: {
+        main: { key: 'BracketRight' },
+        gates: { key: 'Digit2', ctrl: true },
+        collector: { key: 'Digit3', ctrl: true }
+    }
 }
 
 chrome.commands.onCommand.addListener(shortcut => {
@@ -69,7 +74,12 @@ function loadIframe(tabId) {
                 prettyContainers: true,
                 collectMode: 3,
                 collectMoneyType: 1,
-                collectExtra: []
+                collectExtra: [],
+                binds: {
+                    main: { key: 'BracketRight' },
+                    gates: { key: 'Digit2', ctrl: true },
+                    collector: { key: 'Digit3', ctrl: true }
+                }
             }
 
             let download = async (url, ttl) => {
