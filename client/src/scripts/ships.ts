@@ -54,7 +54,7 @@ export default function initShips(client: Client) {
     client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, disembark, "ships");
 
     [
-        /^[a-zA-Z]+ [a-z]+ prom[^a-z]$/,
+        /^[a-zA-Z]+ [a-z]+ prom(?:$|[^a-z])/,
         /^Prom(\.|,| i)/,
         /^Barka(\.|,| i)/,
     ].forEach(p => client.Triggers.registerTrigger(p, board(true), "ships"));

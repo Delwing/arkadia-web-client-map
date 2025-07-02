@@ -5,6 +5,7 @@ import {findClosestColor} from '../src/Colors';
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   playSound = jest.fn();
+  addEventListener = jest.fn();
 }
 
 describe('attack beep triggers', () => {
@@ -15,6 +16,11 @@ describe('attack beep triggers', () => {
     client = new FakeClient();
     initAttackBeep((client as unknown) as any);
     parse = (line: string) => Triggers.prototype.parseLine.call(client.Triggers, line, '');
+    // initialize with some enemy guilds so beeping is enabled
+    const handler = client.addEventListener.mock.calls[0]?.[1];
+    if (handler) {
+      handler({ detail: { enemyGuilds: ['foo'] } } as any);
+    }
     jest.clearAllMocks();
   });
 
