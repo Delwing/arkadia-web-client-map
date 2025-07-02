@@ -15,6 +15,7 @@ import inventoryDemo from "./scenario/inventory-demo.ts";
 import lvlCalcDemo from "./scenario/lvl-calc-demo.ts";
 import attackBeepDemo from "./scenario/attack-beep-demo.ts";
 import depositDemo from "./scenario/deposit-demo.ts";
+import stunDemo from "./scenario/stun-demo.ts";
 
 
 export function Controls() {
@@ -110,6 +111,13 @@ export function Controls() {
                         onClick={() => busesDemo.run()}
                     >
                         Buses Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => stunDemo.run()}
+                    >
+                        Stun Demo
                     </Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,
