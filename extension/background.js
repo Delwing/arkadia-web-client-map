@@ -5,6 +5,8 @@ const defaultSettings = {
     collectExtra: [],
     mapLeft: null,
     mapTop: null,
+    mapWidth: null,
+    mapHeight: null,
     binds: {
         main: { key: 'BracketRight' },
         gates: { key: 'Digit2', ctrl: true },
@@ -79,6 +81,8 @@ function loadIframe(tabId) {
                 collectExtra: [],
                 mapLeft: null,
                 mapTop: null,
+                mapWidth: null,
+                mapHeight: null,
                 binds: {
                     main: { key: 'BracketRight' },
                     gates: { key: 'Digit2', ctrl: true },
@@ -145,12 +149,14 @@ function loadIframe(tabId) {
                 const onUp = () => {
                     document.removeEventListener('mousemove', onMove)
                     document.removeEventListener('mouseup', onUp)
-                    if (mode === 'drag') {
+                    if (mode === 'drag' || mode === 'resize') {
                         const left = parseInt(container.style.left, 10)
                         const top = parseInt(container.style.top, 10)
+                        const width = container.offsetWidth
+                        const height = container.offsetHeight
                         chrome.storage.local.get('settings').then(d => {
                             const current = d.settings || {}
-                            chrome.storage.local.set({ settings: { ...current, mapLeft: left, mapTop: top } })
+                            chrome.storage.local.set({ settings: { ...current, mapLeft: left, mapTop: top, mapWidth: width, mapHeight: height } })
                         })
                     }
                     mode = null
@@ -196,7 +202,7 @@ function loadIframe(tabId) {
 
             let init = (settings) => {
                 const replaceMap = settings?.replaceMap
-                const size = replaceMap ? 215 : 355;
+                const baseSize = replaceMap ? 215 : 355;
                 const map = document.getElementById('map-placeholder')
                 document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
                 let positionPart = ''
@@ -207,7 +213,9 @@ function loadIframe(tabId) {
                         positionPart = ' position: fixed; right: 255px; top: 60px;'
                     }
                 }
-                map.setAttribute('style', `width: ${size}px;height: ${size}px;${positionPart} overflow: visible;`)
+                const width = settings.mapWidth ?? baseSize
+                const height = settings.mapHeight ?? baseSize
+                map.setAttribute('style', `width: ${width}px;height: ${height}px;${positionPart} overflow: visible;`)
             }
 
             chrome.storage.local.get('settings').then(value => {
