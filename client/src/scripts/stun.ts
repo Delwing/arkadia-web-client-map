@@ -1,5 +1,5 @@
 import Client from "../Client";
-import { encloseColor, findClosestColor } from "../Colors";
+import { colorString, findClosestColor } from "../Colors";
 
 export default function initStun(client: Client) {
     const tag = "stun";
@@ -7,7 +7,7 @@ export default function initStun(client: Client) {
     const NPC_COLOR = findClosestColor("#fffaf0");
 
     const stunPrefix = (raw: string) =>
-        client.prefix(raw, encloseColor("[OGLUCH] ", STUN_COLOR)) +
+        client.prefix(raw, colorString("[OGLUCH] ", STUN_COLOR)) +
         "\n\n[   OGLUCH   ] ----- JESTES OGLUSZONY -----\n\n";
     const endLine = "\n\n[   OGLUCH   ] ----- KONIEC OGLUCHA -----\n\n";
     const golemPrefix = (raw: string) => {
@@ -15,7 +15,7 @@ export default function initStun(client: Client) {
         if (raw.includes("[OGLUCH]")) {
             return raw;
         }
-        return client.prefix(raw, encloseColor("[OGLUCH] ", NPC_COLOR));
+        return client.prefix(raw, colorString("[OGLUCH] ", NPC_COLOR));
     };
 
     const startPatterns = [

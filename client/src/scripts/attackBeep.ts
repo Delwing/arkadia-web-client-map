@@ -1,5 +1,5 @@
 import Client from "../Client";
-import {colorString, encloseColor, findClosestColor} from "../Colors";
+import {colorStringInLine, colorString, findClosestColor} from "../Colors";
 import people from '../people.json';
 
 const RED = findClosestColor("#ff0000");
@@ -8,12 +8,12 @@ function highlightAttack(line: string, upper?: string) {
     if (upper && line.includes(upper)) {
         line = line.replace(upper, upper.toUpperCase());
     }
-    return encloseColor(line, RED);
+    return colorString(line, RED);
 }
 
 function highlightPhrase(line: string) {
     const phrase = "atakuje cie";
-    const colored = colorString(line, phrase, RED);
+    const colored = colorStringInLine(line, phrase, RED);
     return colored.replace(phrase, phrase.toUpperCase());
 }
 

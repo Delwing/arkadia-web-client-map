@@ -1,5 +1,5 @@
 import Client from "../Client";
-import { color, encloseColor, findClosestColor } from "../Colors";
+import { color, colorString, findClosestColor } from "../Colors";
 
 const GREEN = findClosestColor("#00ff00");
 const RED = findClosestColor("#ff0000");
@@ -162,20 +162,20 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
 
     function formatLine(raw: string, desc: string, next?: string) {
         const { value, step } = collectStat(desc, next);
-        let line = raw.replace(desc, `${desc} ${encloseColor(`[${value}/10]`, GREEN)}`);
+        let line = raw.replace(desc, `${desc} ${colorString(`[${value}/10]`, GREEN)}`);
         if (next) {
-            line = line.replace(next, `${next} ${encloseColor(`[${step}/5]`, GREEN)}`);
+            line = line.replace(next, `${next} ${colorString(`[${step}/5]`, GREEN)}`);
         }
         const index = currentStats.length - 1;
         const sum = calcStatSum(value, step);
-        let prefix = encloseColor(`[${sum}]`, GREEN);
+        let prefix = colorString(`[${sum}]`, GREEN);
         if (typeof prevStats[index] === "number") {
             const oldSum = calcStatSum(prevStats[index], prevSteps[index]);
             const diff = sum - oldSum;
             if (diff > 0) {
-                prefix += encloseColor(` (+${diff})`, YELLOW);
+                prefix += colorString(` (+${diff})`, YELLOW);
             } else if (diff < 0) {
-                prefix += encloseColor(` (-${-diff})`, RED);
+                prefix += colorString(` (-${-diff})`, RED);
             }
         }
         return client.prefix(line, prefix + " ");
@@ -195,16 +195,16 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
             msg =
                 color(TOMATO) +
                 `Twoj aktualny poziom to ` +
-                encloseColor(realLvlString[lvl], GREEN) +
+                colorString(realLvlString[lvl], GREEN) +
                 color(TOMATO) +
                 ` (` +
-                encloseColor(String(full), GREEN) +
+                colorString(String(full), GREEN) +
                 color(TOMATO) +
                 `) i brakuje ci do nastepnego ` +
-                encloseColor(String(missing), GREEN) +
+                colorString(String(missing), GREEN) +
                 color(TOMATO) +
                 ` podcech (` +
-                encloseColor(realLvlString[lvl + 1], GREEN) +
+                colorString(realLvlString[lvl + 1], GREEN) +
                 color(TOMATO) +
                 `)` +
                 RESET;
@@ -213,13 +213,13 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
             msg =
                 color(TOMATO) +
                 `Twoj aktualny poziom to ` +
-                encloseColor(realLvlString[lvl + 1], GREEN) +
+                colorString(realLvlString[lvl + 1], GREEN) +
                 color(TOMATO) +
                 ` (` +
-                encloseColor(String(full), GREEN) +
+                colorString(String(full), GREEN) +
                 color(TOMATO) +
                 `) i masz + ` +
-                encloseColor(String(extra), GREEN) +
+                colorString(String(extra), GREEN) +
                 color(TOMATO) +
                 ` podcech` +
                 RESET;
