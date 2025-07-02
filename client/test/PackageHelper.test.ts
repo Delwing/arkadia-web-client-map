@@ -1,5 +1,5 @@
 import PackageHelper from '../src/PackageHelper';
-import { colorString, findClosestColor } from '../src/Colors';
+import { colorStringInLine, findClosestColor } from '../src/Colors';
 
 describe('PackageHelper', () => {
   let helper: any;
@@ -24,7 +24,7 @@ describe('PackageHelper', () => {
       println: jest.fn(),
       Map: { currentRoom: { id: 123 } },
       port: { postMessage: jest.fn() },
-      FunctionalBind: { set: jest.fn(), clear: jest.fn() },
+      FunctionalBind: { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() },
     };
     helper = new PackageHelper(client);
   });
@@ -42,7 +42,7 @@ describe('PackageHelper', () => {
     expect(helper['packages']).toEqual([{ name: 'Bob', time: '5' }]);
     expect(client.OutputHandler.makeClickable).toHaveBeenCalledTimes(1);
     const call = client.OutputHandler.makeClickable.mock.calls[0];
-    const expectedColor = colorString(rawLine, 'Bob', findClosestColor('#aaaaaa'));
+    const expectedColor = colorStringInLine(rawLine, 'Bob', findClosestColor('#aaaaaa'));
     expect(call[0]).toBe(expectedColor);
     expect(call[1]).toBe('Bob');
     expect(call[3]).toBe('wybierz paczke 1');

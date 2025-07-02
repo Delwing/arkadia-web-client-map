@@ -268,12 +268,15 @@ export function color(colorCode:number) {
     return `\x1B[22;38;5;${colorCode+1}m`
 }
 
-export function encloseColor(string: string, colorCode: number) {
+export function colorString(string: string, colorCode: number) {
     return color(colorCode) + string + RESET;
 }
 
-export function colorString(rawLine: string, string: string, colorCode: number) {
+export function colorStringInLine(rawLine: string, string: string, colorCode: number) {
     const matchIndex = rawLine.indexOf(string)
+    if (matchIndex === -1) {
+        return rawLine
+    }
     return rawLine.substring(0, matchIndex) + color(colorCode) + string + RESET + rawLine.substring(matchIndex + string.length)
 }
 

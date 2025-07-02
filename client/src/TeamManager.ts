@@ -1,10 +1,23 @@
 import Client from "./Client";
 
+interface ObjectData {
+    attack_num: boolean | number
+    attack_target: boolean
+    defense_target: boolean
+    desc: string
+    hp: number
+    hidden: false
+    living: boolean
+    team: boolean
+    team_leader: boolean
+}
+
 export default class TeamManager {
     private client: Client;
     private members: Set<string> = new Set();
     private leader?: string;
     private tag = 'teamManager';
+    private accumulatedObjectsData = {}
 
     constructor(client: Client) {
         this.client = client;
@@ -16,25 +29,10 @@ export default class TeamManager {
         }
     }
 
-    private handleObjectsData(data: any) {
-        let objects: any[] = [];
-        if (Array.isArray(data)) {
-            objects = data;
-        } else if (Array.isArray(data?.objects)) {
-            objects = data.objects;
-        } else if (data && typeof data === 'object') {
-            if (data.data && typeof data.data === 'object') {
-                objects = Object.values(data.data);
-            } else {
-                objects = Object.values(data);
-            }
-        }
+    private handleObjectsData(data: Record<number,ObjectData>) {
+        Object.assign(this.accumulatedObjectsData, data)
 
-        if (!Array.isArray(objects)) {
-            return;
-        }
-
-        objects.forEach(obj => {
+        Object.values(data).forEach(obj => {
             if (obj && obj.living && obj.team) {
                 const name = obj.desc;
                 if (name) {
@@ -113,4 +111,10 @@ export default class TeamManager {
         this.members.clear();
         this.leader = undefined;
     }
+
+    getAccumulatedObjectsData() {
+        return this.accumulatedObjectsData
+    }
+
+
 }

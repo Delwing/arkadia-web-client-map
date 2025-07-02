@@ -171,14 +171,18 @@ client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
 import initShips from "./scripts/ships"
 import initBuses from "./scripts/buses"
 import initGates from "./scripts/gates"
+import initAttackBeep from "./scripts/attackBeep"
 
 initShips(client)
 initBuses(client)
 initGates(client)
+initAttackBeep(client)
 
 import initKillTrigger from "./scripts/kill"
+import initStun from "./scripts/stun"
 
 initKillTrigger(client, aliases)
+initStun(client)
 
 import ItemCollector from "./scripts/itemCollector"
 
@@ -217,8 +221,10 @@ initDeposits(client, aliases)
 
 import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
+import initInvite from "./scripts/invite"
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
+initInvite(client)
 
 window["clientExtension"] = client

@@ -1,5 +1,5 @@
 import Client from "../Client";
-import {encloseColor, findClosestColor} from "../Colors";
+import {colorString, findClosestColor} from "../Colors";
 
 export type ItemCondition = {
     patterns: string[];
@@ -32,8 +32,8 @@ export function processItemCondition(rawLine: string, phrase: string): string {
         const found = condition.patterns.every(p => new RegExp(p).test(phrase));
         if (found) {
             const colorCode = COLORS[condition.color] ?? COLORS.red;
-            const colored = encloseColor(phrase, colorCode);
-            const coloredValue = encloseColor(condition.replacement, colorCode);
+            const colored = colorString(phrase, colorCode);
+            const coloredValue = colorString(condition.replacement, colorCode);
             const replaced = `${colored} ${coloredValue}`;
             return rawLine.replace(phrase, replaced);
         }

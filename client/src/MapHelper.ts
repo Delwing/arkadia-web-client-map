@@ -101,9 +101,13 @@ export default class MapHelper {
                     return direction
                 }
             }
-            const allExits = Object.assign({}, this.currentRoom.exits, this.currentRoom.specialExits);
+            const allExits = Object.assign(
+                {},
+                this.currentRoom.exits ?? {},
+                this.currentRoom.specialExits ?? {}
+            );
             const potentialExit = getLongDir(direction);
-            if (!this.currentRoom.exits[potentialExit]) {
+            if (!this.currentRoom.exits || !this.currentRoom.exits[potentialExit]) {
                 const exits = Object.entries(allExits).filter(([_, id]) => {
                     const target = this.mapReader.getRoomById(id);
                     return this.findRoomByExit(this.currentRoom, target, getLongDir(direction));

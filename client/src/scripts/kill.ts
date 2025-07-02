@@ -1,5 +1,5 @@
 import Client from "../Client";
-import { encloseColor, findClosestColor } from "../Colors";
+import { colorString, findClosestColor } from "../Colors";
 import { stripAnsiCodes } from "../Triggers";
 
 type KillEntry = {
@@ -89,7 +89,7 @@ function createHeader(
     color: number
 ): (title: string) => string {
     return (title: string) => {
-        const colored = encloseColor(title, color);
+        const colored = colorString(title, color);
         const dashes = width - visibleLength(title) - offset;
         const left = Math.floor(dashes / 2);
         const right = dashes - left;
@@ -98,7 +98,7 @@ function createHeader(
 }
 
 function formatSessionTable(counts: KillCounts): string {
-    const WIDTH = 47;
+    const WIDTH = 57;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
     const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
@@ -130,7 +130,7 @@ function formatSessionTable(counts: KillCounts): string {
     const summaryLine = (label: string, value: number, color?: number) => {
         const visibleLabel = label;
         if (color !== undefined) {
-            label = encloseColor(label, color);
+            label = colorString(label, color);
         }
         let text = `${label} `;
         const num = String(value);
@@ -143,7 +143,7 @@ function formatSessionTable(counts: KillCounts): string {
     const lines: string[] = [];
     lines.push(header("Licznik zabitych"));
     lines.push(pad());
-    lines.push(pad(encloseColor("JA", MY_COLOR)));
+    lines.push(pad(colorString("JA", MY_COLOR)));
     entries.forEach(([name, { mySession }]) => {
         lines.push(mobLine(name, mySession));
     });
@@ -189,7 +189,7 @@ function formatLifetimeTable(counts: KillCounts): string {
         const color = /^[A-Z]/.test(name)
             ? UPPER_COLOR
             : LOWER_COLOR;
-        const colored = encloseColor(name, color);
+        const colored = colorString(name, color);
         const start = `  ${colored} `;
         const dots = CONTENT_WIDTH - visibleLength(start) - String(count).length;
         const text = `${start}${".".repeat(Math.max(0, dots))}${count}`;
@@ -207,9 +207,9 @@ function formatLifetimeTable(counts: KillCounts): string {
     lines.push(pad());
     const summary =
         "  " +
-        encloseColor("WSZYSTKICH DO TEJ PORY: ", PINK_COLOR) +
-        encloseColor(String(total), LOWER_COLOR) +
-        encloseColor(" zabitych", LOWER_COLOR);
+        colorString("WSZYSTKICH DO TEJ PORY: ", PINK_COLOR) +
+        colorString(String(total), LOWER_COLOR) +
+        colorString(" zabitych", LOWER_COLOR);
     lines.push(pad(summary));
     lines.push(pad());
     lines.push(`+${"-".repeat(INNER)}+`);
@@ -282,7 +282,7 @@ export default function init(
         const modified = line + counts;
         return (
             "  \n" +
-            client.prefix(modified, encloseColor(label, color)) +
+            client.prefix(modified, colorString(label, color)) +
             "\n  "
         );
     };
@@ -330,4 +330,3 @@ export default function init(
         });
     }
 }
-

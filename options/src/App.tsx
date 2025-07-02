@@ -3,10 +3,11 @@ import {useState} from "react";
 import SettingsForm from "./Settings.tsx";
 import Npc from "./Npc.tsx";
 import SettingsFile from "./SettingsFile";
+import Binds from "./Binds";
 
 
 function App() {
-    const [tab, setTab] = useState<'settings' | 'npc' | 'file'>('settings')
+    const [tab, setTab] = useState<'settings' | 'npc' | 'file' | 'binds'>('settings')
 
     return (
         <div className="p-2">
@@ -29,10 +30,17 @@ function App() {
                 >
                     Plik ustawień
                 </button>
+                <button
+                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'binds' ? 'border-b-2 border-blue-500' : ''}`}
+                    onClick={() => setTab('binds')}
+                >
+                    Bindowanie
+                </button>
             </div>
             {tab === 'settings' && <SettingsForm />}
             {tab === 'npc' && <Npc />}
             {tab === 'file' && <SettingsFile />}
+            {tab === 'binds' && <Binds />}
         </div>
     )
 }

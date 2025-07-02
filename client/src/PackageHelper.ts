@@ -1,4 +1,4 @@
-import {colorString, findClosestColor} from "./Colors";
+import {colorStringInLine, findClosestColor} from "./Colors";
 import Client from "./Client";
 import { Trigger } from "./Triggers";
 
@@ -55,7 +55,6 @@ export default class PackageHelper {
         this.client.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
             this.onPackageList();
         })
-        this.client.println(`Asystent paczek włączony.`)
     }
 
     private onPackageList() {
@@ -98,7 +97,7 @@ export default class PackageHelper {
             const name = matches.groups.name
             this.packages.push({name: name, time: matches.groups.time})
             const colorCode = this.npc[name] ? KNOWN_NPC_COLOR : UNKNOWN_NPC_COLOR;
-            return this.client.OutputHandler.makeClickable(colorString(rawLine, name, colorCode), name, () => {
+            return this.client.OutputHandler.makeClickable(colorStringInLine(rawLine, name, colorCode), name, () => {
                 Input.send("wybierz paczke " + index)
             }, "wybierz paczke " + index)
         };

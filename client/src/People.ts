@@ -10,7 +10,7 @@ export default class People {
     constructor(clientExtension: Client) {
         this.client = clientExtension
         this.client.addEventListener('settings', (event: CustomEvent) => {
-            this.guildFilter = event.detail.guilds
+            this.guildFilter = event.detail.guilds || []
             this.registerPeopleTriggers()
         })
     }
@@ -19,7 +19,7 @@ export default class People {
         this.client.Triggers.removeByTag(this.tag)
         let count = 0
         people.forEach(replacement => {
-            if (this.guildFilter.indexOf(replacement.guild) === -1) {
+            if (!Array.isArray(this.guildFilter) || this.guildFilter.indexOf(replacement.guild) === -1) {
                 return
             }
             count++
@@ -28,7 +28,6 @@ export default class People {
                 return rawLine.substring(0, index + replacement.description.length) + ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)` + rawLine.substring(index + replacement.description.length)
             }, this.tag)
         })
-        this.client.println(`Przeladowano triggery bazy postaci [${count}].`)
     }
 
 }

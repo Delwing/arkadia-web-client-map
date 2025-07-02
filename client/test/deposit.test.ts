@@ -1,5 +1,5 @@
 import initDeposits, { deposits } from '../src/scripts/deposits';
-import Triggers from '../src/Triggers';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -7,6 +7,7 @@ class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   Map = { currentRoom: { id: 1, name: 'Bank', userData: { bind: '/depozyt' } } } as any;
   println = jest.fn();
+  print = jest.fn();
   port = { postMessage: jest.fn() } as any;
 
   addEventListener(event: string, cb: any) {
@@ -46,7 +47,10 @@ describe('deposits', () => {
 
   test('parses deposit contents', () => {
     parse('Twoj depozyt zawiera miecz, tarcza.');
-    expect(deposits[1].items).toEqual(['miecz', 'tarcza']);
+    expect(deposits[1].items).toEqual([
+      { count: 1, name: 'miecz' },
+      { count: 1, name: 'tarcza' }
+    ]);
     expect(client.port.postMessage).toHaveBeenCalledWith({
       type: 'SET_STORAGE',
       key: 'deposits',
@@ -67,6 +71,49 @@ describe('deposits', () => {
   test('prints deposits', () => {
     parse('Twoj depozyt zawiera miecz.');
     show();
-    expect(client.println).toHaveBeenCalledWith(expect.stringContaining('miecz'));
+    const printed = stripAnsiCodes(client.println.mock.calls[0][0]);
+    expect(printed).toContain('  1 | miecz');
+  });
+
+  test('parses Polish numbers in deposits', () => {
+    parse('Twoj depozyt zawiera dwa miecze, piec tarcz, dziesiec monet.');
+    expect(deposits[1].items).toEqual([
+      { count: 2, name: 'miecze' },
+      { count: 5, name: 'tarcz' },
+      { count: 10, name: 'monet' }
+    ]);
+  });
+
+  test('parses Polish compound numbers in deposits', () => {
+    parse('Twoj depozyt zawiera dwadziescia jeden miecz, trzydziesci dwa topory, piecdziesiat tarcz.');
+    expect(deposits[1].items).toEqual([
+      { count: 21, name: 'miecz' },
+      { count: 32, name: 'topory' },
+      { count: 50, name: 'tarcz' }
+    ]);
+  });
+
+  test('parses "wiele" as special case in deposits', () => {
+    parse('Twoj depozyt zawiera wiele monet, trzy klejnoty.');
+    expect(deposits[1].items).toEqual([
+      { count: 'wie', name: 'monet' },
+      { count: 3, name: 'klejnoty' }
+    ]);
+  });
+
+  test('parses numeric digits in deposits', () => {
+    parse('Twoj depozyt zawiera 25 monet, 100 klejnotow.');
+    expect(deposits[1].items).toEqual([
+      { count: 25, name: 'monet' },
+      { count: 100, name: 'klejnotow' }
+    ]);
+  });
+
+  test('prints deposits with Polish number counts', () => {
+    parse('Twoj depozyt zawiera piec mieczy, wiele monet.');
+    show();
+    const printed = stripAnsiCodes(client.println.mock.calls[0][0]);
+    expect(printed).toContain('  5 | mieczy');
+    expect(printed).toContain('wie | monet');
   });
 });
