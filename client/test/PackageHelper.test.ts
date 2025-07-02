@@ -24,7 +24,7 @@ describe('PackageHelper', () => {
       println: jest.fn(),
       Map: { currentRoom: { id: 123 } },
       port: { postMessage: jest.fn() },
-      FunctionalBind: { set: jest.fn(), clear: jest.fn() },
+      FunctionalBind: { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() },
     };
     helper = new PackageHelper(client);
   });

@@ -2,7 +2,14 @@ const defaultSettings = {
     prettyContainers: true,
     collectMode: 3,
     collectMoneyType: 1,
-    collectExtra: []
+    collectExtra: [],
+    mapLeft: null,
+    mapTop: null,
+    binds: {
+        main: { key: 'BracketRight' },
+        gates: { key: 'Digit2', ctrl: true },
+        collector: { key: 'Digit3', ctrl: true }
+    }
 }
 
 chrome.commands.onCommand.addListener(shortcut => {
@@ -69,7 +76,14 @@ function loadIframe(tabId) {
                 prettyContainers: true,
                 collectMode: 3,
                 collectMoneyType: 1,
-                collectExtra: []
+                collectExtra: [],
+                mapLeft: null,
+                mapTop: null,
+                binds: {
+                    main: { key: 'BracketRight' },
+                    gates: { key: 'Digit2', ctrl: true },
+                    collector: { key: 'Digit3', ctrl: true }
+                }
             }
 
             let download = async (url, ttl) => {
@@ -97,8 +111,16 @@ function loadIframe(tabId) {
             const rightPanel = document.body.querySelector("#panel_elems_right")
 
             const div = document.createElement('div')
-            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px;`);
+            div.setAttribute('style', `width: ${size}px;height: ${size}px; position: fixed; right: 255px; top: 60px; overflow: visible;`);
             div.setAttribute('id', 'map-placeholder')
+
+            const dragHandle = document.createElement('div')
+            dragHandle.setAttribute('style', 'position:absolute;top:-16px;left:0;right:0;height:16px;cursor:move;background:rgba(50,50,50,0.3);z-index:10;')
+            div.appendChild(dragHandle)
+
+            const resizeHandle = document.createElement('div')
+            resizeHandle.setAttribute('style', 'position:absolute;width:16px;height:16px;right:-16px;bottom:-16px;cursor:se-resize;background:rgba(50,50,50,0.3);z-index:10;')
+            div.appendChild(resizeHandle)
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('id', 'cm-frame');
@@ -106,9 +128,63 @@ function loadIframe(tabId) {
             iframe.setAttribute('allow', '');
             iframe.src = chrome.runtime.getURL('embedded.html');
 
+            const enableDragResize = (container, drag, resize) => {
+                let startX, startY, startWidth, startHeight, offsetX, offsetY
+                let mode = null
+
+                const onMove = ev => {
+                    if (mode === 'drag') {
+                        container.style.left = ev.clientX - offsetX + 'px'
+                        container.style.top = ev.clientY - offsetY + 'px'
+                    } else if (mode === 'resize') {
+                        container.style.width = startWidth + (ev.clientX - startX) + 'px'
+                        container.style.height = startHeight + (ev.clientY - startY) + 'px'
+                    }
+                }
+
+                const onUp = () => {
+                    document.removeEventListener('mousemove', onMove)
+                    document.removeEventListener('mouseup', onUp)
+                    if (mode === 'drag') {
+                        const left = parseInt(container.style.left, 10)
+                        const top = parseInt(container.style.top, 10)
+                        chrome.storage.local.get('settings').then(d => {
+                            const current = d.settings || {}
+                            chrome.storage.local.set({ settings: { ...current, mapLeft: left, mapTop: top } })
+                        })
+                    }
+                    mode = null
+                }
+
+                drag.addEventListener('mousedown', e => {
+                    e.preventDefault()
+                    const rect = container.getBoundingClientRect()
+                    offsetX = e.clientX - rect.left
+                    offsetY = e.clientY - rect.top
+                    container.style.left = rect.left + 'px'
+                    container.style.top = rect.top + 'px'
+                    container.style.right = 'auto'
+                    mode = 'drag'
+                    document.addEventListener('mousemove', onMove)
+                    document.addEventListener('mouseup', onUp)
+                })
+
+                resize.addEventListener('mousedown', e => {
+                    e.preventDefault()
+                    startX = e.clientX
+                    startY = e.clientY
+                    startWidth = container.offsetWidth
+                    startHeight = container.offsetHeight
+                    mode = 'resize'
+                    document.addEventListener('mousemove', onMove)
+                    document.addEventListener('mouseup', onUp)
+                })
+            }
+
             div.appendChild(iframe)
 
             rightPanel.prepend(div);
+            enableDragResize(div, dragHandle, resizeHandle)
 
             Promise.all([
                 download('https://delwing.github.io/arkadia-mapa/data/mapExport.json', 60 * 60 * 24),
@@ -121,8 +197,17 @@ function loadIframe(tabId) {
             let init = (settings) => {
                 const replaceMap = settings?.replaceMap
                 const size = replaceMap ? 215 : 355;
+                const map = document.getElementById('map-placeholder')
                 document.getElementById('minimap_output').style.display = replaceMap ? 'none' : 'block';
-                document.getElementById('map-placeholder').setAttribute('style', `width: ${size}px;height: ${size}px;${!replaceMap ? ' position: fixed; right: 255px; top: 60px;' : ''}`);
+                let positionPart = ''
+                if (!replaceMap) {
+                    if (settings.mapLeft !== null && settings.mapTop !== null) {
+                        positionPart = ` position: fixed; left: ${settings.mapLeft}px; top: ${settings.mapTop}px;`
+                    } else {
+                        positionPart = ' position: fixed; right: 255px; top: 60px;'
+                    }
+                }
+                map.setAttribute('style', `width: ${size}px;height: ${size}px;${positionPart} overflow: visible;`)
             }
 
             chrome.storage.local.get('settings').then(value => {

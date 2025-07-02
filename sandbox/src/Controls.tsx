@@ -14,6 +14,7 @@ import containersDemo from "./scenario/containers-demo.ts";
 import inventoryDemo from "./scenario/inventory-demo.ts";
 import lvlCalcDemo from "./scenario/lvl-calc-demo.ts";
 import attackBeepDemo from "./scenario/attack-beep-demo.ts";
+import depositDemo from "./scenario/deposit-demo.ts";
 
 
 export function Controls() {
@@ -67,6 +68,13 @@ export function Controls() {
                         onClick={() => inventoryDemo.run()}
                     >
                         Inventory Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => depositDemo.run()}
+                    >
+                        Deposit Demo
                     </Button>
                     <Button
                         size="sm"

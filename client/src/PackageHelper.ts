@@ -55,7 +55,6 @@ export default class PackageHelper {
         this.client.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
             this.onPackageList();
         })
-        this.client.println(`Asystent paczek włączony.`)
     }
 
     private onPackageList() {

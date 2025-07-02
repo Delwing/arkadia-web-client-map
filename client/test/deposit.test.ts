@@ -1,5 +1,5 @@
 import initDeposits, { deposits } from '../src/scripts/deposits';
-import Triggers from '../src/Triggers';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -7,6 +7,7 @@ class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   Map = { currentRoom: { id: 1, name: 'Bank', userData: { bind: '/depozyt' } } } as any;
   println = jest.fn();
+  print = jest.fn();
   port = { postMessage: jest.fn() } as any;
 
   addEventListener(event: string, cb: any) {
@@ -67,6 +68,7 @@ describe('deposits', () => {
   test('prints deposits', () => {
     parse('Twoj depozyt zawiera miecz.');
     show();
-    expect(client.println).toHaveBeenCalledWith(expect.stringContaining('miecz'));
+    const printed = stripAnsiCodes(client.println.mock.calls[0][0]);
+    expect(printed).toContain('\n  miecz');
   });
 });

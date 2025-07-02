@@ -28,7 +28,6 @@ export default class People {
                 return rawLine.substring(0, index + replacement.description.length) + ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)` + rawLine.substring(index + replacement.description.length)
             }, this.tag)
         })
-        this.client.println(`Przeladowano triggery bazy postaci [${count}].`)
     }
 
 }
