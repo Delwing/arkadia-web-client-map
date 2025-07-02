@@ -119,12 +119,22 @@ function loadIframe(tabId) {
             div.setAttribute('id', 'map-placeholder')
 
             const dragHandle = document.createElement('div')
-            dragHandle.setAttribute('style', 'position:absolute;top:-16px;left:0;right:0;height:16px;cursor:move;background:rgba(50,50,50,0.3);z-index:10;')
+            dragHandle.textContent = 'Drag'
+            dragHandle.setAttribute('style', 'position:absolute;top:0;left:0;right:0;height:16px;cursor:move;background:rgba(50,50,50,0.5);border-bottom:1px solid #888;color:#fff;font-size:10px;line-height:16px;text-align:center;z-index:10;display:none;')
             div.appendChild(dragHandle)
 
             const resizeHandle = document.createElement('div')
-            resizeHandle.setAttribute('style', 'position:absolute;width:16px;height:16px;right:-16px;bottom:-16px;cursor:se-resize;background:rgba(50,50,50,0.3);z-index:10;')
+            resizeHandle.setAttribute('style', 'position:absolute;width:16px;height:16px;right:0;bottom:0;cursor:se-resize;background:rgba(50,50,50,0.5);border-left:1px solid #888;border-top:1px solid #888;z-index:10;display:none;')
             div.appendChild(resizeHandle)
+
+            div.addEventListener('mouseenter', () => {
+                dragHandle.style.display = 'block'
+                resizeHandle.style.display = 'block'
+            })
+            div.addEventListener('mouseleave', () => {
+                dragHandle.style.display = 'none'
+                resizeHandle.style.display = 'none'
+            })
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('id', 'cm-frame');
