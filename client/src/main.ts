@@ -179,8 +179,10 @@ initGates(client)
 initAttackBeep(client)
 
 import initKillTrigger from "./scripts/kill"
+import initStun from "./scripts/stun"
 
 initKillTrigger(client, aliases)
+initStun(client)
 
 import ItemCollector from "./scripts/itemCollector"
 
