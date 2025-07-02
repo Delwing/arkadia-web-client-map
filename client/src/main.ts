@@ -221,8 +221,10 @@ initDeposits(client, aliases)
 
 import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
+import initInvite from "./scripts/invite"
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
+initInvite(client)
 
 window["clientExtension"] = client

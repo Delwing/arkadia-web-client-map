@@ -5,6 +5,7 @@ import npc from "./npc.json";
 import mapData from "../../data/mapExport.json";
 import colors from "../../data/colors.json";
 import { fakeClient } from "./fakeClient.ts";
+import { demoMap } from "./Controls.tsx";
 
 const defaultSettings = {
     guilds: [],
@@ -84,3 +85,9 @@ wrapper.addEventListener('contextmenu', (ev) => {
 
     document.addEventListener('click', removeMenu);
 });
+
+// Auto-run last demo on startup
+const lastDemo = localStorage.getItem('lastDemo');
+if (lastDemo && demoMap[lastDemo as keyof typeof demoMap]) {
+    demoMap[lastDemo as keyof typeof demoMap].run();
+}

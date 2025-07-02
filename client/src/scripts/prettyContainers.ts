@@ -29,15 +29,89 @@ export function createRegexpFilter(patterns: string[], isEndOfLine: boolean = fa
     return (item: string) => regex.test(item);
 }
 
-function parseItems(content: string): ContainerItem[] {
+// Polish number words mapping to numeric values
+const polishNumbers: Record<string, number> = {
+    'jeden': 1, 'jedna': 1, 'jedno': 1,
+    'dwa': 2, 'dwie': 2,
+    'trzy': 3,
+    'cztery': 4,
+    'piec': 5,
+    'szesc': 6,
+    'siedem': 7,
+    'osiem': 8,
+    'dziewiec': 9,
+    'dziesiec': 10,
+    'jedenascie': 11,
+    'dwanascie': 12,
+    'trzynascie': 13,
+    'czternascie': 14,
+    'pietnascie': 15,
+    'szesnascie': 16,
+    'siedemnascie': 17,
+    'osiemnascie': 18,
+    'dziewietnascie': 19,
+    'dwadziescia': 20,
+    'dwadziescia jeden': 21, 'dwadziescia jedna': 21,
+    'dwadziescia dwa': 22, 'dwadziescia dwie': 22,
+    'dwadziescia trzy': 23,
+    'dwadziescia cztery': 24,
+    'dwadziescia piec': 25,
+    'dwadziescia szesc': 26,
+    'dwadziescia siedem': 27,
+    'dwadziescia osiem': 28,
+    'dwadziescia dziewiec': 29,
+    'trzydziesci': 30,
+    'trzydziesci jeden': 31, 'trzydziesci jedna': 31,
+    'trzydziesci dwa': 32, 'trzydziesci dwie': 32,
+    'trzydziesci trzy': 33,
+    'trzydziesci cztery': 34,
+    'trzydziesci piec': 35,
+    'trzydziesci szesc': 36,
+    'trzydziesci siedem': 37,
+    'trzydziesci osiem': 38,
+    'trzydziesci dziewiec': 39,
+    'czterdziesci': 40,
+    'czterdziesci jeden': 41, 'czterdziesci jedna': 41,
+    'czterdziesci dwa': 42, 'czterdziesci dwie': 42,
+    'czterdziesci trzy': 43,
+    'czterdziesci cztery': 44,
+    'czterdziesci piec': 45,
+    'czterdziesci szesc': 46,
+    'czterdziesci siedem': 47,
+    'czterdziesci osiem': 48,
+    'czterdziesci dziewiec': 49,
+    'piecdziesiat': 50
+};
+
+// Create regex pattern for all Polish numbers
+const polishNumberPattern = Object.keys(polishNumbers)
+    .sort((a, b) => b.length - a.length) // Sort by length descending to match longer phrases first
+    .map(num => num.replace(/\s+/g, '\\s+')) // Allow flexible whitespace
+    .join('|');
+
+export function parseItems(content: string): ContainerItem[] {
     let rest = content.trim();
     rest = rest.replace(/\s+i\s+([^,]+)(\.)?$/, ', $1');
     rest = rest.replace(/\.$/, '');
     const parts = rest.split(/,\s*/).map(p => p.trim()).filter(p => p.length > 0);
     return parts.map(p => {
-        const mm = p.match(/^(wiele|\d+)\s+(.*)/i);
-        if (mm) {
-            return {count: mm[1] === 'wiele' ? 'wie' : mm[1], name: mm[2]};
+        // Try to match Polish numbers first (including compound numbers)
+        const polishMatch = p.match(new RegExp(`^(wiele|${polishNumberPattern}|\\d+)\\s+(.*)`, 'i'));
+        if (polishMatch) {
+            const countStr = polishMatch[1].toLowerCase();
+            let count: string | number;
+
+            if (countStr === 'wiele') {
+                count = 'wie';
+            } else if (/^\d+$/.test(countStr)) {
+                count = parseInt(countStr, 10);
+            } else {
+                // Convert Polish number to numeric value
+                const normalizedCount = countStr.replace(/\s+/g, ' ');
+                count = polishNumbers[normalizedCount] || countStr;
+            }
+
+            return {count, name: polishMatch[2]};
         }
         return {count: 1, name: p};
     });
@@ -180,6 +254,7 @@ export function prettyPrintContainer(
 const defaultContainerPatterns: RegExp[] = [
     /^Otwart(?:y|a|e) (?<container>.+? (?:plecak|torba|sakwa|sakiewka|szkatulka|wor|worek))(?: z .*?)? zawiera (?<content>.*)\.$/i,
     /^Otwarty .+? (?<container>kosz(?:|yk)) zawiera (?<content>.*)\.$/i,
+    /^Otwierasz na chwile (?<container>.+? (?:plecak|torba|sakwa|sakiewka|szkatulka|wor|worek)), sprawdzajac zawartosc\. W srodku dostrzegasz (?<content>.*)\.$/i,
 ];
 
 const weapons = ["darda", "dardy", "multon", "kord", "puginal", "gladius", "topor", "berdysz", "siekier", "czekan",
@@ -266,4 +341,3 @@ export default function initContainers(client: Client) {
         }
     });
 }
-

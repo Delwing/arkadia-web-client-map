@@ -21,11 +21,11 @@ export default class ClientScript {
         return this;
     }
 
-    debug(expression: string) {
+    eval(expression: string) {
         this.actions.push(() => {
             try {
                 // eslint-disable-next-line no-new-func
-                const value = new Function('return (' + expression + ')')();
+                const value = new Function('return (' + expression + ')').call(window);
                 this.client.print(value as any);
             } catch (err) {
                 this.client.println(String(err));
