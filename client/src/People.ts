@@ -10,7 +10,7 @@ export default class People {
     constructor(clientExtension: Client) {
         this.client = clientExtension
         this.client.addEventListener('settings', (event: CustomEvent) => {
-            this.guildFilter = event.detail.guilds
+            this.guildFilter = event.detail.guilds || []
             this.registerPeopleTriggers()
         })
     }
@@ -19,7 +19,7 @@ export default class People {
         this.client.Triggers.removeByTag(this.tag)
         let count = 0
         people.forEach(replacement => {
-            if (this.guildFilter.indexOf(replacement.guild) === -1) {
+            if (!Array.isArray(this.guildFilter) || this.guildFilter.indexOf(replacement.guild) === -1) {
                 return
             }
             count++

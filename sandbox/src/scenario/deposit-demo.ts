@@ -7,5 +7,5 @@ export default new ClientScript(fakeClient)
         fakeClient.Map.currentRoom = { id: 1, name: 'Bank', userData: { bind: '/depozyt' } } as any;
     })
     .send('/depozyt')
-    .fake('Twoj depozyt zawiera miecz, tarcza.')
+    .fake('Twoj depozyt zawiera dwa miecze, tarcze.')
     .send('/depozyty');

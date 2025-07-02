@@ -7,9 +7,9 @@ export default new ClientScript(fakeClient)
         "1": { desc: "Vesper", living: true, team: true, team_leader: true },
         "2": { desc: "Pablo", living: true, team: true },
     })
-    .debug("window.clientExtension.TeamManager.getTeamMembers()")
+    .eval("window.clientExtension.TeamManager.getTeamMembers()")
     .fake("Pablo porzuca twoja druzyne.")
-    .debug("window.clientExtension.TeamManager.getTeamMembers()")
+    .eval("window.clientExtension.TeamManager.getTeamMembers()")
     .fake("Nie jestes w zadnej druzynie.")
-    .debug("window.clientExtension.TeamManager.getTeamMembers()");
+    .eval("window.clientExtension.TeamManager.getTeamMembers()");
 

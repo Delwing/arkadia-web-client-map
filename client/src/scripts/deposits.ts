@@ -1,11 +1,11 @@
 import Client from "../Client";
 import { stripAnsiCodes } from "../Triggers";
-import { prettyPrintContainer } from "./prettyContainers";
+import { prettyPrintContainer, parseItems, ContainerItem } from "./prettyContainers";
 import { colorString, findClosestColor } from "../Colors";
 
 interface DepositInfo {
     name: string;
-    items: string[] | null;
+    items: ContainerItem[] | null;
 }
 
 const STORAGE_KEY = "deposits";
@@ -33,7 +33,7 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         client.port?.postMessage({ type: "SET_STORAGE", key: STORAGE_KEY, value: deposits });
     };
 
-    function update(items: string[] | null) {
+    function update(items: ContainerItem[] | null) {
         const room = client.Map.currentRoom as any;
         if (!isBankRoom(room)) {
             return;
@@ -61,12 +61,12 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
 
     client.Triggers.registerTrigger(matchContents, (_r, _l, m) => {
         const text = (m.groups?.content || m[1]).replace(/\.$/, "");
-        const items = text.split(/,\s*/).map(i => i.trim()).filter(Boolean);
+        const items = parseItems(text);
         update(items);
         client.print(prettyPrintContainer(m as RegExpMatchArray, 2, 'DEPOZYT', 5));
         return undefined;
     });
-    client.Triggers.registerTrigger(matchEmpty, () => { update([]); return undefined; });
+    client.Triggers.registerTrigger(matchEmpty, () => { update([] as ContainerItem[]); return undefined; });
     client.Triggers.registerTrigger(matchNone, () => { update(null); return undefined; });
 
     function printDeposits() {
@@ -86,13 +86,8 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
 
             lines.push(`${bankLabel}    ${bankName}`);
             items.forEach(it => {
-                const match = it.match(/^(\d+)\s+(.*)/);
-                if (match) {
-                    const [, count, itemName] = match;
-                    lines.push(`    ${count} | ${colorString(itemName, ITEM_NAME_COLOR)}`);
-                } else {
-                    lines.push(`  ${colorString(it, ITEM_NAME_COLOR)}`);
-                }
+                const count = String(it.count).padStart(3, ' ');
+                lines.push(`    ${count} | ${colorString(it.name, ITEM_NAME_COLOR)}`);
             });
         });
 

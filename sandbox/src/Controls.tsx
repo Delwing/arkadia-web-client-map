@@ -16,6 +16,31 @@ import lvlCalcDemo from "./scenario/lvl-calc-demo.ts";
 import attackBeepDemo from "./scenario/attack-beep-demo.ts";
 import depositDemo from "./scenario/deposit-demo.ts";
 import stunDemo from "./scenario/stun-demo.ts";
+import inviteDemo from "./scenario/invite-demo.ts";
+
+// Demo mapping for localStorage persistence
+export const demoMap = {
+    'packageAssistant': packageAssistant,
+    'killCounterDemo': killCounterDemo,
+    'itemCollectorDemo': itemCollectorDemo,
+    'teamEventsDemo': teamEventsDemo,
+    'shipsDemo': shipsDemo,
+    'busesDemo': busesDemo,
+    'combatDemo': combatDemo,
+    'compassDemo': compassDemo,
+    'containersDemo': containersDemo,
+    'inventoryDemo': inventoryDemo,
+    'lvlCalcDemo': lvlCalcDemo,
+    'attackBeepDemo': attackBeepDemo,
+    'depositDemo': depositDemo,
+    'stunDemo': stunDemo,
+    'inviteDemo': inviteDemo
+};
+
+function runDemo(demoName: string) {
+    localStorage.setItem('lastDemo', demoName);
+    demoMap[demoName as keyof typeof demoMap].run();
+}
 
 
 export function Controls() {
@@ -26,98 +51,105 @@ export function Controls() {
                 <div className="d-flex flex-row flex-wrap gap-2 p-2">
                     <Button size="sm" variant="secondary" onClick={() => window.Output.clear()}>Reset</Button>
                     <Button size="sm" variant="secondary" onClick={() => setShowTester(true)}>Trigger Tester</Button>
-                    <Button size="sm" variant="secondary" onClick={() => packageAssistant.run()}>Asystent
+                    <Button size="sm" variant="secondary" onClick={() => runDemo('packageAssistant')}>Asystent
                         paczek</Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => killCounterDemo.run()}
+                        onClick={() => runDemo('killCounterDemo')}
                     >
                         Kill Counter Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => itemCollectorDemo.run()}
+                        onClick={() => runDemo('itemCollectorDemo')}
                     >
                         Item Collector Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => combatDemo.run()}
+                        onClick={() => runDemo('combatDemo')}
                     >
                         Combat Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => compassDemo.run()}
+                        onClick={() => runDemo('compassDemo')}
                     >
                         Compass Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => containersDemo.run()}
+                        onClick={() => runDemo('containersDemo')}
                     >
                         Containers Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => inventoryDemo.run()}
+                        onClick={() => runDemo('inventoryDemo')}
                     >
                         Inventory Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => depositDemo.run()}
+                        onClick={() => runDemo('depositDemo')}
                     >
                         Deposit Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => lvlCalcDemo.run()}
+                        onClick={() => runDemo('lvlCalcDemo')}
                     >
                         Lvl Calc Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => teamEventsDemo.run()}
+                        onClick={() => runDemo('teamEventsDemo')}
                     >
                         Team Events Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => shipsDemo.run()}
+                        onClick={() => runDemo('shipsDemo')}
                     >
                         Ships Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => attackBeepDemo.run()}
+                        onClick={() => runDemo('attackBeepDemo')}
                     >
                         Attack Beep Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => busesDemo.run()}
+                        onClick={() => runDemo('busesDemo')}
                     >
                         Buses Demo
                     </Button>
                     <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => stunDemo.run()}
+                        onClick={() => runDemo('stunDemo')}
                     >
                         Stun Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => runDemo('inviteDemo')}
+                    >
+                        Invite Demo
                     </Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,

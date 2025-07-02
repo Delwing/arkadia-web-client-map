@@ -98,7 +98,7 @@ function createHeader(
 }
 
 function formatSessionTable(counts: KillCounts): string {
-    const WIDTH = 47;
+    const WIDTH = 57;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
     const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
@@ -330,4 +330,3 @@ export default function init(
         });
     }
 }
-
