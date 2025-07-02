@@ -1,5 +1,5 @@
 import Client from "../Client";
-import {encloseColor, findClosestColor} from "../Colors";
+import {colorString, findClosestColor} from "../Colors";
 import {stripAnsiCodes} from "../Triggers";
 
 const GROUP_NAME_COLOR = findClosestColor('#557C99');
@@ -128,7 +128,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         let gLine = '|';
         for (let c = 0; c < columns; c++) {
             const grp = pair[c];
-            gLine += cell(encloseColor(grp ? grp[0] : '', GROUP_NAME_COLOR));
+            gLine += cell(colorString(grp ? grp[0] : '', GROUP_NAME_COLOR));
             gLine += c === columns - 1 ? '' : ' | ';
         }
         gLine += '|';
@@ -233,10 +233,10 @@ const defs = [
 ]
 
 const defaultTransforms: TransformDefinition[] = [
-    { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => encloseColor(item, MITHRIL_COLOR)},
-    { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => encloseColor(item, GOLD_COLOR)},
-    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => encloseColor(item, SILVER_COLOR)},
-    { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => encloseColor(item, COPPER_COLOR)}
+    { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => colorString(item, MITHRIL_COLOR)},
+    { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => colorString(item, GOLD_COLOR)},
+    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => colorString(item, SILVER_COLOR)},
+    { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => colorString(item, COPPER_COLOR)}
 ]
 
 

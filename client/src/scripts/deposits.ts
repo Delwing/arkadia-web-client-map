@@ -1,7 +1,7 @@
 import Client from "../Client";
 import { stripAnsiCodes } from "../Triggers";
 import { prettyPrintContainer } from "./prettyContainers";
-import { encloseColor, findClosestColor } from "../Colors";
+import { colorString, findClosestColor } from "../Colors";
 
 interface DepositInfo {
     name: string;
@@ -72,8 +72,8 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     function printDeposits() {
         const lines: string[] = [];
         Object.values(deposits).forEach(({ name, items }) => {
-            const bankLabel = encloseColor('bank:', BANK_LABEL_COLOR);
-            const bankName = encloseColor(name, BANK_NAME_COLOR);
+            const bankLabel = colorString('bank:', BANK_LABEL_COLOR);
+            const bankName = colorString(name, BANK_NAME_COLOR);
 
             if (items === null) {
                 lines.push(`${bankLabel}    ${bankName} brak depozytu`);
@@ -89,9 +89,9 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
                 const match = it.match(/^(\d+)\s+(.*)/);
                 if (match) {
                     const [, count, itemName] = match;
-                    lines.push(`    ${count} | ${encloseColor(itemName, ITEM_NAME_COLOR)}`);
+                    lines.push(`    ${count} | ${colorString(itemName, ITEM_NAME_COLOR)}`);
                 } else {
-                    lines.push(`  ${encloseColor(it, ITEM_NAME_COLOR)}`);
+                    lines.push(`  ${colorString(it, ITEM_NAME_COLOR)}`);
                 }
             });
         });

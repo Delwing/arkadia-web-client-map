@@ -1,7 +1,7 @@
 import Triggers, {Trigger} from "../Triggers";
 import gagsData from "./gags.json";
 import {client} from "../main";
-import {colorString, encloseColor, findClosestColor} from "../Colors";
+import {colorStringInLine, colorString, findClosestColor} from "../Colors";
 
 const gagColors = {
     "moje_ciosy": "#f0f8ff",
@@ -64,7 +64,7 @@ function gagOwnSpec(rawLine: string, power: string, totalPower: string) {
 }
 
 function gagPrefix(rawLine: string, prefix: string, type: string) {
-    return client.prefix(rawLine, encloseColor(`[${prefix}] `, gagColorCodes[type]));
+    return client.prefix(rawLine, colorString(`[${prefix}] `, gagColorCodes[type]));
 }
 
 function gagSpec(rawLine: string, prefix: string, power: string, totalPower: string, kind: string) {
@@ -186,7 +186,7 @@ function gagOwnRegularHits(rawLine: string, matches: RegExpMatchArray | { index:
         return rawLine
     }
 
-    rawLine = colorString(rawLine, matches[0], OWN_HIT_COLOR)
+    rawLine = colorStringInLine(rawLine, matches[0], OWN_HIT_COLOR)
 
 
     return gag(rawLine, power, "6", "moje_ciosy")
@@ -200,7 +200,7 @@ function color_hit(rawLine: string, matches: RegExpMatchArray, value: string, ty
 
 
     if (matches.groups.target) {
-        rawLine = colorString(rawLine, matches.groups.damage + " cie", DAMAGE_COLOR)
+        rawLine = colorStringInLine(rawLine, matches.groups.damage + " cie", DAMAGE_COLOR)
     } else {
         target = "innych_ciosy"
     }
