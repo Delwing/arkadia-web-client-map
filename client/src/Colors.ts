@@ -274,6 +274,9 @@ export function encloseColor(string: string, colorCode: number) {
 
 export function colorString(rawLine: string, string: string, colorCode: number) {
     const matchIndex = rawLine.indexOf(string)
+    if (matchIndex === -1) {
+        return rawLine
+    }
     return rawLine.substring(0, matchIndex) + color(colorCode) + string + RESET + rawLine.substring(matchIndex + string.length)
 }
 
