@@ -19,6 +19,8 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/wlm** (lub **wlm**) - wkłada monety do pojemnika na pieniądze.
 - **/wlp** - wkłada pocztową paczkę do ustawionego pojemnika.
 - **/wep** - wyjmuje pocztową paczkę z ustawionego pojemnika.
+- **/depozyt** - sprawdza zawartość depozytu w aktualnym banku.
+- **/depozyty** - wyświetla listę zapisanych depozytów.
 - **/zbieraj_extra _przedmiot_** - dodaje przedmiot do listy ekstra rzeczy zbieranych z ciał.
 - **/nie_zbieraj_extra [_przedmiot_]** - usuwa wskazany przedmiot z listy ekstra lub bez parametru czyści całą listę.
 - **/cechy** - uruchamia licznik poziomowania i wyświetla postępy.
