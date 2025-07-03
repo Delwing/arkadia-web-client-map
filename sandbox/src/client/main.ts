@@ -57,6 +57,40 @@ client.on('client.connect', () => {
 })
 client.connect()
 
+const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
+frame.contentWindow?.postMessage({mapData, colors}, '*')
+
+
+// Numpad key mapping for directions
+// Numpad key mapping for directions
+const numpadDirections: { [key: string]: string } = {
+    'Numpad8': 'n',      // North
+    'Numpad2': 's',      // South
+    'Numpad4': 'w',      // West
+    'Numpad6': 'e',      // East
+    'Numpad7': 'nw',     // Northwest
+    'Numpad9': 'ne',     // Northeast
+    'Numpad1': 'sw',     // Southwest
+    'Numpad3': 'se',     // Southeast
+    'NumpadMultiply': 'u',   // Up (+ key)
+    'NumpadSubtract': '',
+    'Numpad5': 'zerknij'
+};
+
+// Add global keydown event listener for numpad directions
+document.addEventListener('keydown', (e) => {
+    // Check if the pressed key is a numpad direction key
+    if (numpadDirections[e.code]) {
+        // Prevent default behavior
+        e.preventDefault();
+
+        // Send the direction command
+        const direction = numpadDirections[e.code];
+        Input.send(direction);
+
+        console.log(`Numpad direction sent: ${direction}`);
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;

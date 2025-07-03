@@ -67,7 +67,6 @@ Output.send = (out, type): any => {
     const bufferSize = Output.buffer.length + 1
     const result = rawSend(out, type)
     client.sendEvent('output-sent', bufferSize)
-    console.log("OUTPUT SENT", bufferSize)
     return result;
 }
 

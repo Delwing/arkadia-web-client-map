@@ -49,7 +49,6 @@ class ArkadiaClient {
     emit(event: string, ...args: any[]): void {
         if (!this.events[event]) return;
         this.events[event].forEach(listener => listener(...args));
-        const ev = new CustomEvent(event, {detail: args[0]  })
     }
 
     /**
@@ -154,16 +153,13 @@ class ArkadiaClient {
                     text = window.clientExtension.onLine(text, gmcp.type)
                     gmcp.text = btoa(text)
                     window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${gmcp.type}`, gmcp), {once: true})
-                    this.emit('message', parseAnsiPatterns(text));
+                    Output.send(parseAnsiPatterns(text), gmcp.type);
                 }
-
             } catch (error) {
                 console.error('Error parsing GMCP JSON:', error);
             }
         }
     }
-
-
 
 }
 
