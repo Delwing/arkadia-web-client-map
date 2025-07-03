@@ -50,20 +50,14 @@ export default function initInvite(client: Client) {
             // If inviter is in enemy guild, block the invite
             return ""; // Return empty string to hide the original message
         } else {
-            // If inviter is not in enemy guild, set functional bind to accept invite
-            client.FunctionalBind.set(`Przyjmij zaproszenie od ${inviterName}`, () => {
-                // First command: leave current team
-                client.sendCommand("porzuc druzyne");
-
-                // Second command: join using object ID
-                const objId = findObjectIdByName(inviterName);
-                if (objId) {
-                    client.sendCommand(`dolacz do ${objId}`);
-                } else {
-                    // Fallback to old method if object ID not found
-                    client.sendCommand(`przyjmij zaproszenie od ${inviterName}`);
-                }
-            });
+            const objId = findObjectIdByName(inviterName);
+            if (objId) {
+                client.FunctionalBind.set(`Przyjmij zaproszenie od ${inviterName}`, () => {
+                    // First command: leave current team
+                    client.sendCommand("porzuc druzyne");
+                    client.sendCommand(`dolacz do ob_${objId}`);
+                });
+            }
 
             // Show the original message
             return rawLine;
