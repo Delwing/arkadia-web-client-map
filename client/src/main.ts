@@ -67,8 +67,29 @@ Output.send = (out, type): any => {
     const bufferSize = Output.buffer.length + 1
     const result = rawSend(out, type)
     client.sendEvent('output-sent', bufferSize)
+    console.log("OUTPUT SENT", bufferSize)
     return result;
 }
+
+
+function connectToBackground(extensionId: string) {
+    const port: Port = chrome.runtime.connect(extensionId)
+    client.connect(port)
+    if (isInitialConnection) {
+        port.postMessage({type: 'GET_STORAGE', key: 'settings'})
+        port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
+        port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+        port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
+        isInitialConnection = false
+    }
+    port.onDisconnect.addListener(() => {
+        connectToBackground(extensionId)
+    })
+}
+
+window.addEventListener('extension-loaded', (event) => {
+    connectToBackground((<CustomEvent>event).detail)
+})
 
 
 const aliases = [
@@ -109,25 +130,6 @@ const aliases = [
         }
     }
 ]
-
-function connectToBackground(extensionId: string) {
-    const port: Port = chrome.runtime.connect(extensionId)
-    client.connect(port)
-    if (isInitialConnection) {
-        port.postMessage({type: 'GET_STORAGE', key: 'settings'})
-        port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
-        port.postMessage({type: 'GET_STORAGE', key: 'containers'})
-        port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
-        isInitialConnection = false
-    }
-    port.onDisconnect.addListener(() => {
-        connectToBackground(extensionId)
-    })
-}
-
-window.addEventListener('extension-loaded', (event) => {
-    connectToBackground((<CustomEvent>event).detail)
-})
 
 /*
     Blockers

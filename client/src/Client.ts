@@ -160,7 +160,7 @@ export default class Client {
         button.type = 'button'
         button.className = 'panel_button button k-button'
         button.onclick = callback
-        this.panel.appendChild(button)
+        this.panel?.appendChild(button)
         return button
     }
 
