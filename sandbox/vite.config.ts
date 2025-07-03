@@ -10,7 +10,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve('index.html'),
-                embedded: resolve('embedded.html')
+                embedded: resolve('embedded.html'),
+                client: resolve('client.html')
             }
         }
     }
