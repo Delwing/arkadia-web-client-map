@@ -2,11 +2,12 @@ import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 import "@client/src/main.ts"
+import MockPort from "../MockPort.ts";
 
 import npc from "../npc.json";
 import mapData from "../../../data/mapExport.json";
 import colors from "../../../data/colors.json";
-import MockPort from "../MockPort.ts";
+
 
 const client = ArkadiaClient
 
