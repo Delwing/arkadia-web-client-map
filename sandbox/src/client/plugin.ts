@@ -4,10 +4,12 @@ import {parseAnsiPatterns} from "./ansiParser.ts";
 window.Input = {
     send: ArkadiaClient.send.bind(ArkadiaClient),
 }
+// @ts-ignore
 window.Maps = {}
 window.Gmcp = {
     parse_option_subnegotiation: (data) => data
 }
+// @ts-ignore
 window.Output = {
     send(text: string) {
         ArkadiaClient.emit("message", text)
@@ -20,6 +22,7 @@ window.Output = {
         window.Output.buffer = [];
     }
 }
+// @ts-ignore
 window.Text = {
     parse_patterns: parseAnsiPatterns
 }
