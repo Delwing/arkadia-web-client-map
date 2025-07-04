@@ -14,7 +14,7 @@ const client = ArkadiaClient
 const defaultSettings = {
     guilds: [],
     packageHelper: true,
-    inlineCompassRose: true,
+    inlineCompassRose: false,
     prettyContainers: true,
     containerColumns: 2,
     collectMode: 3,
