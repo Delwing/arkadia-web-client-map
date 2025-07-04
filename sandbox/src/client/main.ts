@@ -101,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = messageInput.value.trim();
         if (message) {
             Input.send(message);
-            messageInput.value = '';
+            // Keep the text in the input field and select it
+            messageInput.select();
         }
     }
 
@@ -110,6 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             sendMessage();
+        }
+    });
+
+    // Scroll to bottom when input field is focused
+    messageInput.addEventListener('focus', () => {
+        const contentArea = document.getElementById('main_text_output_msg_wrapper');
+        if (contentArea) {
+            contentArea.scrollTop = contentArea.scrollHeight;
         }
     });
 });

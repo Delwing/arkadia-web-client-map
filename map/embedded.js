@@ -10,7 +10,7 @@ class EmbeddedMap {
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
-        this.settings.mapBackground = [0,0,0,0]
+        this.settings.mapBackground = [0,0,0,0.5]
         this.settings.scale = 90
         this.settings.borders = true
 
