@@ -27,6 +27,10 @@ body {
   min-width: 320px;
   height: 100vh;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 h1 {
@@ -72,6 +76,9 @@ h1 {
   color: inherit;
   font-family: inherit;
   font-size: 1rem;
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: manipulation;
 }
 
 #message-input:focus {
@@ -137,7 +144,65 @@ button:focus-visible {
   }
 }
 
+#iframe-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  max-height: 30vh;
+  overflow: hidden;
+}
+
 iframe {
   width: 100%;
   height: 100%;
+  border: none;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  body {
+    min-width: unset;
+    width: 100%;
+  }
+
+  #iframe-container {
+    height: 250px;
+    max-height: 25vh;
+  }
+
+  #main_text_output_msg_wrapper {
+    padding: 0.75rem;
+    font-size: 14px;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  #input-area {
+    padding: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+
+  #message-input {
+    padding: 0.5rem;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+
+  #send-button {
+    padding: 0.5rem 1rem;
+    min-height: 44px; /* Minimum touch target size */
+    min-width: 44px;
+  }
+
+  button {
+    min-height: 44px; /* Minimum touch target size */
+    min-width: 44px;
+  }
+
+  /* Fix for virtual keyboard pushing content */
+  @supports (-webkit-touch-callout: none) {
+    #main-container {
+      height: -webkit-fill-available;
+    }
+  }
 }
