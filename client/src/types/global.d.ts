@@ -5,10 +5,8 @@ interface ClientInput {
 declare var Input: ClientInput;
 
 interface ClientOutput {
-    buffer: string[];
+    buffer: { text: string, type: string }[];
     send(out?: string, type?: string): any;
-
-    flush_buffer(): void;
 }
 
 declare var Output: ClientOutput;
@@ -21,17 +19,6 @@ interface Position {
     name: string;
 }
 
-interface ClientMap {
-    refresh_position(): void
-
-    set_position(position: Position): void
-
-    unset_position(): void
-
-    data?: Position
-}
-
-declare var Maps: ClientMap;
 
 interface ClientText {
     parse_patterns(text: string): string

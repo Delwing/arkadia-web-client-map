@@ -6,14 +6,14 @@ import { setGmcp } from "@client/src/gmcp.ts";
 export const fakeClient = client as FakeClient;
 
 const port = new MockPort();
-fakeClient.connect(port as any);
+fakeClient.connect(port as any, true);
 
 const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.eventTarget);
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     if (event.type.startsWith('gmcp.')) {
         const detail = (event as CustomEvent).detail;
         setGmcp(event.type.replace(/^gmcp\./, ''), detail);
-        let text = '';
+        let text: string;
         try {
             text = detail !== undefined ? JSON.stringify(detail, null, 2) : '';
         } catch (e) {
@@ -36,7 +36,6 @@ fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     }
     return originalDispatch(event);
 };
-
 fakeClient.fake = (text: string, type?: string) => {
     window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type);
     client.sendEvent('gmcp_msg.' + type, text);

@@ -6,12 +6,8 @@ interface ClientInput {
 
 interface ClientOutput {
     buffer: string[];
-
     send(out?: string, type?: string): any;
-
     clear(): void
-
-    flush_buffer(): void;
 }
 
 
