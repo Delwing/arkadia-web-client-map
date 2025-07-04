@@ -10,7 +10,6 @@ class EmbeddedMap {
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
-        this.settings.mapBackground = [0,0,0,0.5]
         this.settings.scale = 90
         this.settings.borders = true
 
@@ -45,6 +44,7 @@ class EmbeddedMap {
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
             this.renderer.controls.centerRoom(room.id);
             this.renderer.controls.view.zoom = 0.30;
+            this.renderer.backgroundLayer.remove()
 
             this.currentRoom = room;
 

@@ -16,7 +16,7 @@ const defaultSettings = {
     packageHelper: true,
     inlineCompassRose: false,
     prettyContainers: true,
-    containerColumns: 2,
+    containerColumns: 1,
     collectMode: 3,
     collectMoneyType: 1,
     collectExtra: []

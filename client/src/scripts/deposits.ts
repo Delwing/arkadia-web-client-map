@@ -63,7 +63,8 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         const text = (m.groups?.content || m[1]).replace(/\.$/, "");
         const items = parseItems(text);
         update(items);
-        client.print(prettyPrintContainer(m as RegExpMatchArray, 2, 'DEPOZYT', 5));
+        //todo should follow pretty containers settings
+        client.print(prettyPrintContainer(m as RegExpMatchArray, 1, 'DEPOZYT', 5));
         return undefined;
     });
     client.Triggers.registerTrigger(matchEmpty, () => { update([] as ContainerItem[]); return undefined; });
