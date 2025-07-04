@@ -53,8 +53,7 @@ client.on('message', (message: string) => {
 });
 
 client.on('client.connect', () => {
-    client.send("delwing")
-    client.send("come2papa")
+
 })
 client.connect()
 
