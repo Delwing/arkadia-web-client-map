@@ -107,7 +107,7 @@ describe('Invite functionality', () => {
         functionalBindCallback();
 
         expect(mockSendCommand).toHaveBeenCalledWith('porzuc druzyne');
-        expect(mockSendCommand).toHaveBeenCalledWith('dolacz do 1');
+        expect(mockSendCommand).toHaveBeenCalledWith('dolacz do ob_1');
         expect(mockSendCommand).toHaveBeenCalledTimes(2);
     });
 
@@ -128,19 +128,9 @@ describe('Invite functionality', () => {
             ['[UnknownPlayer] zaprasza cie do swojej druzyny.', 'UnknownPlayer']
         );
 
-        expect(mockFunctionalBind.set).toHaveBeenCalledWith(
-            'Przyjmij zaproszenie od UnknownPlayer',
-            expect.any(Function)
-        );
+        expect(mockFunctionalBind.set).not.toHaveBeenCalled();
         expect(result).toBe('[UnknownPlayer] zaprasza cie do swojej druzyny.');
-
-        // Test that the functional bind falls back to old command when object ID not found
-        const functionalBindCallback = mockFunctionalBind.set.mock.calls[0][1];
-        functionalBindCallback();
-
-        expect(mockSendCommand).toHaveBeenCalledWith('porzuc druzyne');
-        expect(mockSendCommand).toHaveBeenCalledWith('przyjmij zaproszenie od UnknownPlayer');
-        expect(mockSendCommand).toHaveBeenCalledTimes(2);
+        expect(mockSendCommand).not.toHaveBeenCalled();
     });
 
     test('should allow all invites when no enemy guilds are set and fallback to old command', () => {
@@ -160,19 +150,9 @@ describe('Invite functionality', () => {
             ['[Mordimer] zaprasza cie do swojej druzyny.', 'Mordimer']
         );
 
-        expect(mockFunctionalBind.set).toHaveBeenCalledWith(
-            'Przyjmij zaproszenie od Mordimer',
-            expect.any(Function)
-        );
+        expect(mockFunctionalBind.set).not.toHaveBeenCalled();
         expect(result).toBe('[Mordimer] zaprasza cie do swojej druzyny.');
-
-        // Test that the functional bind falls back to old command when object ID not found
-        const functionalBindCallback = mockFunctionalBind.set.mock.calls[0][1];
-        functionalBindCallback();
-
-        expect(mockSendCommand).toHaveBeenCalledWith('porzuc druzyne');
-        expect(mockSendCommand).toHaveBeenCalledWith('przyjmij zaproszenie od Mordimer');
-        expect(mockSendCommand).toHaveBeenCalledTimes(2);
+        expect(mockSendCommand).not.toHaveBeenCalled();
     });
 
     test('should handle invite pattern without brackets', () => {
