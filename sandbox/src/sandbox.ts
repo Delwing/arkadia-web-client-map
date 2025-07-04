@@ -269,15 +269,6 @@ window.Input = {
         window.Output.send("→ " + command);
     }
 }
-window.Maps = {
-    data: undefined,
-    refresh_position() {
-    },
-    set_position() {
-    },
-    unset_position() {
-    }
-}
 window.Gmcp = {
     parse_option_subnegotiation() {
     }
@@ -295,8 +286,7 @@ window.Output = {
         output.appendChild(div)
         output.scrollTop = output.scrollHeight
     },
-    flush_buffer() {
-    },
+
     clear() {
         output.innerHTML = ''
     },
@@ -314,7 +304,7 @@ window.Text = {
 
         const ansiRegex = /\x1b\[([0-9]+(?:;[0-9]+)*)m/g;
 
-        for (let match; match = ansiRegex.exec(input);) {
+        for (const match of input.matchAll(ansiRegex)) {
             const ansiSequence = match[1];
             const currentSpanCount: number = spanEndIndices.length;
             const matchPos = match.index + offset;
