@@ -24,7 +24,7 @@ a:hover {
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 100vw;
   height: 100vh;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -34,7 +34,7 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 1.5rem;
   line-height: 1.1;
 }
 
@@ -48,31 +48,31 @@ h1 {
 #main_text_output_msg_wrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 1rem 5rem;
+  padding: 2vh 2vw 10vh;
   font-family: monospace;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 #app {
-  max-width: 1280px;
+  max-width: 90vw;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3vh;
   text-align: center;
 }
 
 #input-area {
   display: flex;
-  padding: 1rem;
+  padding: 2vh;
   background-color: rgba(0, 0, 0, 0.1);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 0.5rem;
+  border-top: 0.1vh solid rgba(255, 255, 255, 0.1);
+  gap: 1vw;
 }
 
 #message-input {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  padding: 1.5vh;
+  border: 0.1vh solid rgba(255, 255, 255, 0.2);
+  border-radius: 1vmin;
   background-color: rgba(255, 255, 255, 0.05);
   color: inherit;
   font-family: inherit;
@@ -88,7 +88,7 @@ h1 {
 }
 
 #send-button {
-  padding: 0.75rem 1.5rem;
+  padding: 1.5vh 3vw;
   white-space: nowrap;
 }
 
@@ -114,10 +114,10 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  border-radius: 1vmin;
+  border: 0.1vh solid transparent;
+  padding: 1vh 2vw;
+  font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
@@ -129,7 +129,7 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 0.5vmin auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {
@@ -149,7 +149,7 @@ button:focus-visible {
   position: absolute;
   top: 0;
   width: 100%;
-  height: 300px;
+  height: 30vh;
   max-height: 30vh;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.50);
@@ -170,38 +170,38 @@ iframe {
   }
 
   #iframe-container {
-    height: 250px;
+    height: 25vh;
     max-height: 25vh;
   }
 
   #main_text_output_msg_wrapper {
-    padding: 0.75rem;
-    font-size: 14px;
-    padding-bottom: 5rem;
+    padding: 1.5vh 2vw;
+    font-size: 0.8rem;
+    padding-bottom: 10vh;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 
   #input-area {
-    padding: 0.5rem;
+    padding: 1vh 2vw;
     position: sticky;
     bottom: 0;
     z-index: 10;
   }
 
   #message-input {
-    padding: 0.5rem;
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    padding: 1vh;
+    font-size: 1rem; /* Prevents iOS zoom on focus */
   }
 
   #send-button {
-    padding: 0.5rem 1rem;
-    min-height: 44px; /* Minimum touch target size */
-    min-width: 44px;
+    padding: 1vh 2vw;
+    min-height: 8vmin; /* Minimum touch target size */
+    min-width: 8vmin;
   }
 
   button {
-    min-height: 44px; /* Minimum touch target size */
-    min-width: 44px;
+    min-height: 8vmin; /* Minimum touch target size */
+    min-width: 8vmin;
   }
 
   /* Fix for virtual keyboard pushing content */
