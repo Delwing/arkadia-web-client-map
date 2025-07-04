@@ -26,7 +26,7 @@ localStorage.setItem('npc', JSON.stringify(npc))
 localStorage.setItem('settings', JSON.stringify(defaultSettings))
 
 const port = new MockPort();
-window.clientExtension.connect(port as any);
+window.clientExtension.connect(port as any, true);
 
 window.dispatchEvent(new CustomEvent("map-ready", {
     detail: {

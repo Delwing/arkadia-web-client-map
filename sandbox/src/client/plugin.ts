@@ -20,13 +20,7 @@ window.Output = {
     send(text: string) {
         ArkadiaClient.emit("message", text)
     },
-    buffer: [],
-    flush_buffer: () => {
-        if (window.Output.buffer.length > 0) {
-            console.log("BUFFER NOT EMPTY", window.Output.buffer)
-        }
-        window.Output.buffer = [];
-    }
+    buffer: []
 }
 // @ts-ignore
 window.Text = {
