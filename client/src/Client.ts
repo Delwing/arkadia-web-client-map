@@ -50,12 +50,18 @@ export default class Client {
         })
     }
 
-    connect(port: chrome.runtime.Port) {
+    connect(port: chrome.runtime.Port, initial: boolean) {
         port.onMessage.addListener((message) => {
             Object.entries(message).forEach(([key, value]) => {
                 this.eventTarget.dispatchEvent(new CustomEvent(key, {detail: value}))
             })
         })
+        if (initial) {
+            port.postMessage({type: 'GET_STORAGE', key: 'settings'})
+            port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
+            port.postMessage({type: 'GET_STORAGE', key: 'containers'})
+            port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
+        }
         this.port = port;
         console.log("Client connected to background service.")
     }
@@ -142,7 +148,6 @@ export default class Client {
         }
         // @ts-ignore
         const text = Text.parse_patterns(printable)
-        Output.flush_buffer()
         Output.send(text)
     }
 

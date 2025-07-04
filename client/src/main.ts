@@ -4,17 +4,12 @@ import registerGagTriggers from "./scripts/gags";
 import {setGmcp} from "./gmcp";
 import Port = chrome.runtime.Port;
 
-const originalRefreshPosition = Maps.refresh_position
-const originalSetPosition = Maps.set_position
-const originalUnsetPosition = Maps.unset_position
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
 export const rawOutputSend = Output.send
 export const rawInputSend = Input.send
 
 
 export const client = new Client()
-
-let isInitialConnection = true
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)
@@ -33,7 +28,7 @@ Gmcp.parse_option_subnegotiation = (match) => {
             client.addEventListener('output-sent', () => client.sendEvent(`gmcp_msg.${parsed.type}`, parsed), {once: true})
         }
     }
-    return gmcpParseOption(match)
+    gmcpParseOption(match)
 }
 Input.send = (command: string) => {
     const isAlias = aliases.find(alias => {
@@ -51,45 +46,12 @@ Input.send = (command: string) => {
         })
     }
 }
-Maps.refresh_position = () => {
-    originalRefreshPosition()
-    client.sendEvent('refreshMapPosition')
-};
-Maps.set_position = (e) => {
-    originalSetPosition(e)
-    client.sendEvent('mapPosition', Maps.data)
-};
-Maps.unset_position = () => {
-    originalUnsetPosition()
-    client.sendEvent('mapPosition', {})
-};
-
 Output.send = (out, type): any => {
     const bufferSize = Output.buffer.length + 1
     const result = rawOutputSend(out, type)
     client.sendEvent('output-sent', bufferSize)
     return result;
 }
-
-
-function connectToBackground(extensionId: string) {
-    const port: Port = chrome.runtime.connect(extensionId)
-    client.connect(port)
-    if (isInitialConnection) {
-        port.postMessage({type: 'GET_STORAGE', key: 'settings'})
-        port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
-        port.postMessage({type: 'GET_STORAGE', key: 'containers'})
-        port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
-        isInitialConnection = false
-    }
-    port.onDisconnect.addListener(() => {
-        connectToBackground(extensionId)
-    })
-}
-
-window.addEventListener('extension-loaded', (event) => {
-    connectToBackground((<CustomEvent>event).detail)
-})
 
 
 const aliases = [
@@ -126,10 +88,27 @@ const aliases = [
     },
     {
         pattern: /\/zlok$/, callback: () => {
-            Maps.refresh_position();
+            client.Map.refresh();
         }
     }
 ]
+
+//TODO to be extracted
+function backgroundConnector() {
+    function connectToBackground(extensionId: string, initial: boolean = false) {
+        const port: Port = chrome.runtime.connect(extensionId)
+        client.connect(port, initial)
+        port.onDisconnect.addListener(() => {
+            connectToBackground(extensionId)
+        })
+    }
+
+    window.addEventListener('extension-loaded', (event) => {
+        connectToBackground((<CustomEvent>event).detail, true)
+    })
+}
+
+backgroundConnector();
 
 /*
     Blockers
