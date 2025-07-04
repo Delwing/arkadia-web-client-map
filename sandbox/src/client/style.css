@@ -48,10 +48,9 @@ h1 {
 #main_text_output_msg_wrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
-  padding-bottom: 5rem;
+  padding: 1rem 1rem 5rem;
   font-family: monospace;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
 }
 
 #app {
@@ -147,19 +146,20 @@ button:focus-visible {
 }
 
 #iframe-container {
-  position: sticky;
+  position: absolute;
   top: 0;
   width: 100%;
   height: 300px;
   max-height: 30vh;
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.50);
+  z-index: 5
 }
 
 iframe {
   width: 100%;
   height: 100%;
   border: none;
-  opacity: 0.7;
 }
 
 /* Mobile-specific styles */
