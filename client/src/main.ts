@@ -5,7 +5,8 @@ import {setGmcp} from "./gmcp";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
-export const rawSend = Output.send
+export const rawOutputSend = Output.send
+export const rawInputSend = Input.send
 
 
 export const client = new Client()
@@ -47,7 +48,7 @@ Input.send = (command: string) => {
 }
 Output.send = (out, type): any => {
     const bufferSize = Output.buffer.length + 1
-    const result = rawSend(out, type)
+    const result = rawOutputSend(out, type)
     client.sendEvent('output-sent', bufferSize)
     return result;
 }

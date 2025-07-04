@@ -5,11 +5,9 @@ import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
 import {FunctionalBind, LINE_START_EVENT, formatLabel} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
-import {rawSend} from "./main";
+import {rawInputSend, rawOutputSend} from "./main";
 import TeamManager from "./TeamManager";
 import {beepSound} from "./sounds";
-
-const originalSend = Input.send
 
 export default class Client {
 
@@ -80,7 +78,7 @@ export default class Client {
 
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        originalSend(this.Map.parseCommand(command))
+        rawInputSend(this.Map.parseCommand(command))
     }
 
     onLine(line: string, type: string) {
@@ -91,7 +89,7 @@ export default class Client {
             if (out) {
                 buffer.push({out, type: outputType});
             } else {
-                rawSend()
+                rawOutputSend()
             }
         };
 
@@ -165,7 +163,7 @@ export default class Client {
         button.type = 'button'
         button.className = 'panel_button button k-button'
         button.onclick = callback
-        this.panel.appendChild(button)
+        this.panel?.appendChild(button)
         return button
     }
 

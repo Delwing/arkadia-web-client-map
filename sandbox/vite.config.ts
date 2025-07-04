@@ -7,10 +7,11 @@ export default defineConfig({
     plugins: [react(), tsconfigPaths()],
     base: "./",
     build: {
+        minify: false,
         rollupOptions: {
             input: {
-                main: resolve('index.html'),
-                embedded: resolve('embedded.html')
+                embedded: resolve('embedded.html'),
+                client: resolve('client.html')
             }
         }
     }
