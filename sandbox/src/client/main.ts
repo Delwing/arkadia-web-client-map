@@ -142,10 +142,9 @@ function updateConnectButton() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     if (connectButton) {
         if (isConnected) {
-            connectButton.textContent = 'Disconnect';
-            connectButton.classList.add('connected');
-            connectButton.classList.remove('disconnected');
+            connectButton.style.display = 'none'; // Hide button when connected
         } else {
+            connectButton.style.display = ''; // Show button when disconnected
             connectButton.textContent = 'Connect';
             connectButton.classList.add('disconnected');
             connectButton.classList.remove('connected');

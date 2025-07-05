@@ -228,7 +228,7 @@ button:focus-visible {
   }
 }
 
-/* Mobile Direction Buttons */
+/* Direction Buttons (visible on both mobile and desktop) */
 .mobile-direction-buttons {
   display: none; /* Hidden by default */
   position: fixed;
@@ -240,6 +240,11 @@ button:focus-visible {
   background-color: rgba(135, 206, 235, 0.7); /* Sky blue with transparency */
   padding: 5px;
   border-radius: 5px;
+  transition: opacity 0.2s ease; /* Smooth transition for opacity changes */
+  touch-action: none; /* Prevent scrolling when interacting with the buttons */
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow by default */
 }
 
 .mobile-top-buttons {
@@ -279,4 +284,17 @@ button:focus-visible {
   white-space: normal; /* Allow text to wrap */
   text-align: center; /* Center the text */
   overflow-wrap: break-word; /* Break words if necessary */
+}
+
+/* Dragging state for mobile buttons */
+.mobile-direction-buttons.dragging {
+  cursor: grabbing;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: none; /* Disable transitions during drag for better performance */
+  z-index: 1001; /* Ensure it stays on top while dragging */
+}
+
+/* Disable button clicks during dragging */
+.mobile-button.no-click {
+  pointer-events: none; /* Disable click events */
 }
