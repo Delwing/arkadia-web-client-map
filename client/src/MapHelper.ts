@@ -54,16 +54,16 @@ export default class MapHelper {
     currentRoom: Room;
     locationHistory: number[] = []
     client: Client
-    drinkableButton
     mapReader
     refreshPosition = true;
     hashes = {};
     gmcpPosition: Position;
-    roomBind: HTMLInputElement
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
-        this.client.addEventListener('enterLocation', (event) => this.handleNewLocation(event.detail))
+        this.client.addEventListener('enterLocation', (event) => {
+            this.handleNewLocation(event.detail);
+        })
         window.addEventListener('map-ready', (event: CustomEvent) => {
             this.mapReader = new MapReader(event.detail.mapData, event.detail.colors)
             // @ts-ignore
@@ -127,7 +127,7 @@ export default class MapHelper {
     }
 
     refresh() {
-        this.renderRoom(this.currentRoom)
+        this.setMapPosition(this.gmcpPosition)
     }
 
     setMapPosition(data: Position) {

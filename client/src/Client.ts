@@ -30,7 +30,9 @@ export default class Client {
 
     constructor() {
         window.addEventListener('message', ({data: data}) => {
-            this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+            if (data.payload) { //TODO doubtful!
+                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+            }
         })
 
 
@@ -132,7 +134,11 @@ export default class Client {
     sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
         const frame = document.getElementById('cm-frame') as HTMLIFrameElement;
-        return frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
+        if (frame) {
+            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
+        } else {
+            window.postMessage(this.createEvent(type, payload));
+        }
     }
 
     createEvent(type, payload) {

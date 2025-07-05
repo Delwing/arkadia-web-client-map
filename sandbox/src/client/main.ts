@@ -7,8 +7,7 @@ import MockPort from "../MockPort.ts";
 import npc from "../npc.json";
 import mapData from "../../../data/mapExport.json";
 import colors from "../../../data/colors.json";
-import {fakeClient} from "../fakeClient.ts";
-
+import "@map/embedded.js"
 const client = ArkadiaClient
 
 const defaultSettings = {
@@ -90,8 +89,7 @@ client.on('client.disconnect', () => {
 });
 
 
-const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
-frame.contentWindow?.postMessage({mapData, colors}, '*')
+window.postMessage({mapData, colors}, '*')
 
 
 // Numpad key mapping for directions (reversed)
