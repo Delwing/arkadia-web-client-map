@@ -10,6 +10,85 @@ import colors from "../../../data/colors.json";
 import "@map/embedded.js"
 const client = ArkadiaClient
 
+// Prevent tab sleep on mobile when switching tabs
+let noSleepAudio: HTMLAudioElement | null = null;
+let wakeLock: any = null;
+let tabSleepPreventionActive = false;
+
+// Function to prevent tab sleep
+function preventTabSleep() {
+    // If already active, don't activate again
+    if (tabSleepPreventionActive) return;
+
+    tabSleepPreventionActive = true;
+
+    // Create silent audio element if it doesn't exist
+    if (!noSleepAudio) {
+        noSleepAudio = document.createElement('audio');
+        noSleepAudio.setAttribute('playsinline', '');
+        noSleepAudio.setAttribute('src', 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAA='); // 1ms silent audio
+        noSleepAudio.loop = true;
+        document.body.appendChild(noSleepAudio);
+    }
+
+    // Try to use Wake Lock API if available
+    if ('wakeLock' in navigator) {
+        try {
+            // @ts-ignore - TypeScript might not recognize wakeLock API
+            navigator.wakeLock.request('screen').then((lock: any) => {
+                wakeLock = lock;
+                console.log('Wake Lock activated');
+
+                // Release wake lock when page is hidden
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible' && !wakeLock) {
+                        // @ts-ignore
+                        navigator.wakeLock.request('screen').then((lock: any) => {
+                            wakeLock = lock;
+                            console.log('Wake Lock reactivated');
+                        });
+                    }
+                });
+            }).catch((err: any) => {
+                console.error('Wake Lock error:', err);
+                // Fallback to audio method if Wake Lock fails
+                playNoSleepAudio();
+            });
+        } catch (err) {
+            console.error('Wake Lock error:', err);
+            // Fallback to audio method if Wake Lock fails
+            playNoSleepAudio();
+        }
+    } else {
+        // Fallback to audio method if Wake Lock is not supported
+        playNoSleepAudio();
+    }
+}
+
+// Function to play silent audio to prevent sleep
+function playNoSleepAudio() {
+    if (noSleepAudio) {
+        // Play audio when page becomes visible or hidden
+        document.addEventListener('visibilitychange', () => {
+            if (noSleepAudio) {
+                if (document.visibilityState === 'hidden') {
+                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
+                } else {
+                    // Keep playing even when visible to maintain the audio context
+                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
+                }
+            }
+        });
+
+        // Initial play (requires user interaction)
+        document.addEventListener('touchstart', () => {
+            if (noSleepAudio && noSleepAudio.paused) {
+                noSleepAudio.play().catch(err => console.error('Audio play error:', err));
+            }
+        }, { once: true });
+    }
+}
+
 const defaultSettings = {
     guilds: [],
     packageHelper: true,
@@ -123,6 +202,12 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Activate tab sleep prevention for mobile devices
+    if (window.innerWidth < 768) {
+        preventTabSleep();
+        console.log('Tab sleep prevention activated for mobile device');
+    }
+
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
@@ -210,12 +295,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize button state
     updateConnectButton();
+
+    // Initialize mobile direction buttons
+    new MobileDirectionButtons(window.clientExtension);
+});
+
+// Add resize event listener to check if device becomes mobile-sized
+window.addEventListener('resize', () => {
+    // Check if device is mobile-sized and tab sleep prevention is not active
+    if (window.innerWidth < 768 && !tabSleepPreventionActive) {
+        preventTabSleep();
+        console.log('Tab sleep prevention activated on resize for mobile device');
+    }
 });
 
 // @ts-ignore
 window.client = client
 
-// Import and initialize mobile direction buttons (only in sandbox)
+// Import mobile direction buttons (only in sandbox)
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
-// Initialize mobile direction buttons
-new MobileDirectionButtons(window.clientExtension)

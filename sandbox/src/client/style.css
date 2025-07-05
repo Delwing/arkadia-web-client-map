@@ -227,3 +227,56 @@ button:focus-visible {
     }
   }
 }
+
+/* Mobile Direction Buttons */
+.mobile-direction-buttons {
+  display: none; /* Hidden by default */
+  position: fixed;
+  right: 5px;
+  bottom: 160px; /* Position closer to bottom but leave space for ~7 lines of text */
+  flex-direction: column;
+  z-index: 1000;
+  gap: 3px;
+  background-color: rgba(135, 206, 235, 0.7); /* Sky blue with transparency */
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.mobile-top-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-bottom: 5px;
+}
+
+.mobile-direction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.mobile-button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 14px;
+  border: 1px solid #a0d0e0;
+  border-radius: 4px;
+  background-color: #87CEEB; /* Sky blue */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation; /* Improve touch behavior */
+}
+
+#c-button {
+  background-color: #6CA6CD; /* Slightly darker sky blue */
+  font-size: 9px; /* Smaller font for 'zerknij' text */
+  padding: 1px; /* Minimal padding */
+  line-height: 1; /* Tighter line height */
+  white-space: normal; /* Allow text to wrap */
+  text-align: center; /* Center the text */
+  overflow-wrap: break-word; /* Break words if necessary */
+}

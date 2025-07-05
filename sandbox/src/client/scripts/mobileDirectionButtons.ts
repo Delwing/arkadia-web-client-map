@@ -5,14 +5,29 @@ export default class MobileDirectionButtons {
     private container: HTMLDivElement;
     private enabled = false;
     private isMobile = false;
+    private messageInput: HTMLInputElement | null = null;
+    private contentArea: HTMLElement | null = null;
 
     constructor(client: Client) {
         this.client = client;
-        this.createContainer();
+        this.container = document.getElementById('mobile-direction-buttons') as HTMLDivElement;
+        this.messageInput = document.getElementById('message-input') as HTMLInputElement;
+        this.contentArea = document.getElementById('main_text_output_msg_wrapper');
+
+        if (!this.container) {
+            console.error('Mobile direction buttons container not found');
+            return;
+        }
+
+        this.setupEventHandlers();
         this.checkMobile();
+        this.setupKeyboardHandlers();
 
         // Listen for window resize to check if mobile view
-        window.addEventListener('resize', () => this.checkMobile());
+        window.addEventListener('resize', () => {
+            this.checkMobile();
+            this.scrollToBottom();
+        });
 
         // Listen for settings changes
         this.client.addEventListener("settings", (event: CustomEvent) => {
@@ -42,130 +57,66 @@ export default class MobileDirectionButtons {
         }
     }
 
-    private createContainer() {
-        // Create main container
-        this.container = document.createElement('div');
-        this.container.className = 'mobile-direction-buttons';
-        this.container.style.display = 'none';
-        this.container.style.position = 'fixed';
-        this.container.style.right = '5px';
-        this.container.style.bottom = '120px'; // Position closer to bottom but leave space for ~5 lines of text
-        this.container.style.flexDirection = 'column';
-        this.container.style.zIndex = '1000';
-        this.container.style.gap = '3px';
-        this.container.style.backgroundColor = 'rgba(135, 206, 235, 0.7)'; // Sky blue with transparency
-        this.container.style.padding = '5px';
-        this.container.style.borderRadius = '5px';
-
-        // Create top buttons container (for the 3 additional buttons)
-        const topButtonsContainer = document.createElement('div');
-        topButtonsContainer.className = 'mobile-top-buttons';
-        topButtonsContainer.style.display = 'flex';
-        topButtonsContainer.style.justifyContent = 'center';
-        topButtonsContainer.style.gap = '3px';
-        topButtonsContainer.style.marginBottom = '5px';
-
-        // Create direction buttons container
-        const directionButtonsContainer = document.createElement('div');
-        directionButtonsContainer.className = 'mobile-direction-grid';
-        directionButtonsContainer.style.display = 'grid';
-        directionButtonsContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
-        directionButtonsContainer.style.gridTemplateRows = 'repeat(3, 1fr)';
-        directionButtonsContainer.style.gap = '5px';
-
-        // Add top buttons (] and 2 unassigned)
-        this.createTopButton(topButtonsContainer, ']', () => {
-            // Simulate ] key press
-            const event = new KeyboardEvent('keydown', {
-                key: ']',
-                code: 'BracketRight',
-                bubbles: true,
-                cancelable: true
+    private setupEventHandlers() {
+        // Setup bracket right button
+        const bracketRightButton = document.getElementById('bracket-right-button');
+        if (bracketRightButton) {
+            bracketRightButton.addEventListener('click', () => {
+                // Simulate ] key press
+                const event = new KeyboardEvent('keydown', {
+                    key: ']',
+                    code: 'BracketRight',
+                    keyCode: 221,
+                    which: 221,
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(event);
             });
-            document.dispatchEvent(event);
-        });
+        }
 
-        this.createTopButton(topButtonsContainer, '1', () => {
-            // Unassigned button 1
-        });
+        // Setup button 1 (unassigned)
+        const button1 = document.getElementById('button-1');
+        if (button1) {
+            button1.addEventListener('click', () => {
+                // Unassigned button 1
+            });
+        }
 
-        this.createTopButton(topButtonsContainer, '2', () => {
-            // Unassigned button 2
-        });
+        // Setup button 2 (unassigned)
+        const button2 = document.getElementById('button-2');
+        if (button2) {
+            button2.addEventListener('click', () => {
+                // Unassigned button 2
+            });
+        }
 
-        // Add direction buttons with arrow symbols
-        this.createDirectionButton(directionButtonsContainer, 'nw', 0, 0, '↖');
-        this.createDirectionButton(directionButtonsContainer, 'n', 0, 1, '↑');
-        this.createDirectionButton(directionButtonsContainer, 'ne', 0, 2, '↗');
-        this.createDirectionButton(directionButtonsContainer, 'w', 1, 0, '←');
-        this.createDirectionButton(directionButtonsContainer, 'c', 1, 1, 'zerknij');
-        this.createDirectionButton(directionButtonsContainer, 'e', 1, 2, '→');
-        this.createDirectionButton(directionButtonsContainer, 'sw', 2, 0, '↙');
-        this.createDirectionButton(directionButtonsContainer, 's', 2, 1, '↓');
-        this.createDirectionButton(directionButtonsContainer, 'se', 2, 2, '↘');
+        // Setup direction buttons
+        this.setupDirectionButton('nw-button', 'nw');
+        this.setupDirectionButton('n-button', 'n');
+        this.setupDirectionButton('ne-button', 'ne');
+        this.setupDirectionButton('w-button', 'w');
+        this.setupDirectionButton('e-button', 'e');
+        this.setupDirectionButton('sw-button', 'sw');
+        this.setupDirectionButton('s-button', 's');
+        this.setupDirectionButton('se-button', 'se');
 
-        // Add containers to main container
-        this.container.appendChild(topButtonsContainer);
-        this.container.appendChild(directionButtonsContainer);
-
-        // Add main container to document
-        document.body.appendChild(this.container);
-    }
-
-    private createTopButton(container: HTMLDivElement, label: string, callback: () => void) {
-        const button = document.createElement('button');
-        button.textContent = label;
-        button.style.width = '25px';
-        button.style.height = '25px';
-        button.style.padding = '0';
-        button.style.fontSize = '10px';
-        button.style.border = '1px solid #a0d0e0';
-        button.style.borderRadius = '4px';
-        button.style.backgroundColor = '#87CEEB'; // Sky blue
-        button.style.cursor = 'pointer';
-        button.style.display = 'flex';
-        button.style.justifyContent = 'center';
-        button.style.alignItems = 'center';
-        button.style.touchAction = 'manipulation'; // Improve touch behavior
-
-        button.addEventListener('click', callback);
-        container.appendChild(button);
-        return button;
-    }
-
-    private createDirectionButton(container: HTMLDivElement, direction: string, row: number, col: number, label: string = direction) {
-        const button = document.createElement('button');
-        button.textContent = label;
-        button.style.width = '25px';
-        button.style.height = '25px';
-        button.style.padding = '0';
-        button.style.fontSize = '10px';
-        button.style.border = '1px solid #a0d0e0';
-        button.style.borderRadius = '4px';
-        button.style.backgroundColor = '#87CEEB'; // Sky blue
-        button.style.cursor = 'pointer';
-        button.style.gridRow = `${row + 1}`;
-        button.style.gridColumn = `${col + 1}`;
-        button.style.display = 'flex';
-        button.style.justifyContent = 'center';
-        button.style.alignItems = 'center';
-        button.style.touchAction = 'manipulation'; // Improve touch behavior
-
-        // For center button, use 'zerknij' command
-        if (direction === 'c') {
-            button.style.backgroundColor = '#6CA6CD'; // Slightly darker sky blue
-            button.style.fontSize = '8px'; // Smaller font for 'zerknij' text
-            button.addEventListener('click', () => {
+        // Setup center button (zerknij)
+        const centerButton = document.getElementById('c-button');
+        if (centerButton) {
+            centerButton.addEventListener('click', () => {
                 this.client.sendCommand('zerknij');
             });
-        } else {
+        }
+    }
+
+    private setupDirectionButton(buttonId: string, direction: string) {
+        const button = document.getElementById(buttonId);
+        if (button) {
             button.addEventListener('click', () => {
                 this.client.sendCommand(direction);
             });
         }
-
-        container.appendChild(button);
-        return button;
     }
 
     enable() {
@@ -180,5 +131,40 @@ export default class MobileDirectionButtons {
         if (!this.enabled) return;
         this.enabled = false;
         this.container.style.display = 'none';
+    }
+
+    private setupKeyboardHandlers() {
+        if (!this.messageInput || !this.contentArea) return;
+
+        // Scroll to bottom when input is focused (keyboard appears)
+        this.messageInput.addEventListener('focusin', () => {
+            this.scrollToBottom();
+
+            // Add a small delay to ensure scrolling happens after keyboard appears
+            setTimeout(() => this.scrollToBottom(), 300);
+        });
+
+        // Also listen for input events which can happen when keyboard is already shown
+        this.messageInput.addEventListener('input', () => {
+            this.scrollToBottom();
+        });
+
+        // Use VisualViewport API if available (modern browsers)
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                this.scrollToBottom();
+            });
+        }
+    }
+
+    private scrollToBottom() {
+        if (!this.contentArea || !this.isMobile) return;
+
+        // Scroll to bottom with a small delay to ensure it happens after layout changes
+        setTimeout(() => {
+            if (this.contentArea) {
+                this.contentArea.scrollTop = this.contentArea.scrollHeight;
+            }
+        }, 100);
     }
 }
