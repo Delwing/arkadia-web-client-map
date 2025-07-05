@@ -72,13 +72,24 @@ class ArkadiaClient {
 
             this.socket.onclose = (event: CloseEvent) => {
                 this.emit('close', event);
+                this.emit('client.disconnect');
             };
 
             this.socket.onopen = (event: Event) => {
                 this.emit('open', event);
+                this.emit('client.connect');
             };
         } catch (error) {
             this.emit('error', error);
+        }
+    }
+
+    /**
+     * Disconnect from the WebSocket server
+     */
+    disconnect(): void {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.close();
         }
     }
 
@@ -93,6 +104,7 @@ class ArkadiaClient {
 
         try {
             this.socket.send(btoa(message + "\r\n"));
+            Output.send("-> " + message);
         } catch (error) {
             console.error('Error sending message:', error);
             this.emit('error', error);

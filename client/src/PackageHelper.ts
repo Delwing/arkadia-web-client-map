@@ -38,6 +38,7 @@ export default class PackageHelper {
             event.detail.forEach((item: { name: string | number; loc: number; }) => this.npc[item.name] = item.loc)
         })
 
+
         this.client.addEventListener('settings', (event) => {
             this.enabled = event.detail.packageHelper;
             if (this.enabled) {

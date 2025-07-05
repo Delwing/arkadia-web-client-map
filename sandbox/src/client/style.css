@@ -51,6 +51,7 @@ h1 {
   padding: 2vh 2vw;
   font-family: monospace;
   font-size: 0.775rem;
+  overflow-wrap: break-word;
 }
 
 #app {
@@ -90,6 +91,21 @@ h1 {
 #send-button {
   padding: 1.5vh 3vw;
   white-space: nowrap;
+}
+
+#connect-button {
+  padding: 1.5vh 3vw;
+  white-space: nowrap;
+}
+
+#connect-button.connected {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#connect-button.disconnected {
+  background-color: #f44336;
+  color: white;
 }
 
 .logo {
