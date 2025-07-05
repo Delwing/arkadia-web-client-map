@@ -214,3 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // @ts-ignore
 window.client = client
+
+// Import and initialize mobile direction buttons (only in sandbox)
+import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
+// Initialize mobile direction buttons
+new MobileDirectionButtons(window.clientExtension)
