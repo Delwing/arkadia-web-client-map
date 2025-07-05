@@ -37,17 +37,19 @@ window.dispatchEvent(new CustomEvent("map-ready", {
 
 // Set up message event listener for UI updates
 client.on('message', (message: string) => {
-    // Get the content area element
     const contentArea = document.getElementById('main_text_output_msg_wrapper');
     if (contentArea) {
-        // Create a new div for the message
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('output_msg');
+
         const messageDiv = document.createElement('div');
-        messageDiv.innerHTML = message
+        messageDiv.innerHTML = message;
         messageDiv.classList.add('output_msg_text');
         messageDiv.style.borderRadius = '4px';
         messageDiv.style.whiteSpace = 'pre-wrap';
 
-        contentArea.appendChild(messageDiv);
+        wrapper.appendChild(messageDiv);
+        contentArea.appendChild(wrapper);
         contentArea.scrollTop = contentArea.scrollHeight;
     }
 });
