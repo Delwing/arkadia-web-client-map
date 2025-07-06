@@ -255,6 +255,17 @@ button:focus-visible {
   margin-bottom: 5px;
 }
 
+.mobile-direction-main {
+  display: flex;
+}
+
+.mobile-right-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 5px;
+}
+
 .mobile-direction-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

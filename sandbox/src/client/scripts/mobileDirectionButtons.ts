@@ -103,6 +103,14 @@ export default class MobileDirectionButtons {
             });
         }
 
+        // Setup button 3 (unassigned)
+        const button3 = document.getElementById('button-3');
+        if (button3) {
+            button3.addEventListener('click', () => {
+                // Unassigned button 3
+            });
+        }
+
         // Setup direction buttons
         this.setupDirectionButton('nw-button', 'nw');
         this.setupDirectionButton('n-button', 'n');
@@ -112,6 +120,33 @@ export default class MobileDirectionButtons {
         this.setupDirectionButton('sw-button', 'sw');
         this.setupDirectionButton('s-button', 's');
         this.setupDirectionButton('se-button', 'se');
+        this.setupDirectionButton('u-button', 'u');
+        this.setupDirectionButton('d-button', 'd');
+
+        // Setup special exit button below up/down
+        const specialExitButton = document.getElementById('special-exit-button');
+        if (specialExitButton) {
+            specialExitButton.addEventListener('click', () => {
+                const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
+                const firstExit = Object.keys(specialExits)[0];
+                if (firstExit) {
+                    this.client.sendCommand(firstExit);
+                }
+            });
+
+            const updateLabel = () => {
+                const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
+                const firstExit = Object.keys(specialExits)[0];
+                if (firstExit) {
+                    specialExitButton.textContent = firstExit.length > 5 ? firstExit.slice(0, 4) + '…' : firstExit;
+                } else {
+                    specialExitButton.textContent = '3';
+                }
+            };
+
+            this.client.addEventListener('enterLocation', updateLabel as EventListener);
+            updateLabel();
+        }
 
         // Setup center button (zerknij)
         const centerButton = document.getElementById('c-button');
