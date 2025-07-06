@@ -102,7 +102,7 @@ async function getFromIndexedDB() {
  * Loads the map data asynchronously from a URL, IndexedDB, or local storage
  * @returns Promise that resolves with the map data
  */
-export async function loadMapData(onProgress?: (progress: number) => void) {
+export async function loadMapData(onProgress?: (progress: number, loaded?: number, total?: number) => void) {
   // Try to load from IndexedDB first
   try {
     const indexedDBData = await getFromIndexedDB();
@@ -144,7 +144,7 @@ export async function loadMapData(onProgress?: (progress: number) => void) {
         if (value) {
           chunks.push(value);
           received += value.length;
-          onProgress?.(Math.min(100, (received / total) * 100));
+          onProgress?.(Math.min(100, (received / total) * 100), received, total);
         }
       }
       const all = new Uint8Array(received);
@@ -156,7 +156,7 @@ export async function loadMapData(onProgress?: (progress: number) => void) {
       data = JSON.parse(new TextDecoder().decode(all));
     } else {
       data = await response.json();
-      onProgress?.(100);
+      onProgress?.(100, total || undefined, total || undefined);
     }
 
     // Try to store in IndexedDB first
