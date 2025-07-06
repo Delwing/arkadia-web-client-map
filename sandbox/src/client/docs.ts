@@ -33,10 +33,11 @@ function initDocs() {
     const closeBtn = modal.querySelector('#docs-close') as HTMLButtonElement;
     const navButtons = Array.from(modal.querySelectorAll('.docs-nav button[data-key]')) as HTMLButtonElement[];
 
-    function showDoc(key: string) {
+    async function showDoc(key: string) {
         const doc = docs.find(d => d.key === key);
         if (!doc) return;
-        content.innerHTML = marked.parse(doc.md);
+        const html = await marked.parse(doc.md);
+        content.innerHTML = html as string;
         modal.classList.remove('hidden');
     }
 
