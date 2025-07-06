@@ -1,6 +1,7 @@
 import {createPortal} from "react-dom";
 import {Button, Modal} from "react-bootstrap";
 import {useState} from "react";
+import OptionsApp from "@options/src/App.tsx";
 import TriggerTester from "./TriggerTester.tsx";
 import packageAssistant from "./scenario/package-assistant.ts";
 import killCounterDemo from "./scenario/kill-counter-demo.ts";
@@ -45,6 +46,7 @@ function runDemo(demoName: string) {
 
 export function Controls() {
     const [showTester, setShowTester] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
     return (
         <>
             {createPortal(
@@ -151,6 +153,13 @@ export function Controls() {
                     >
                         Invite Demo
                     </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setShowOptions(true)}
+                    >
+                        Options
+                    </Button>
                 </div>,
                 document.getElementById('sandbox-buttons')!,
             )}
@@ -160,6 +169,14 @@ export function Controls() {
                 </Modal.Header>
                 <Modal.Body>
                     <TriggerTester/>
+                </Modal.Body>
+            </Modal>
+            <Modal show={showOptions} onHide={() => setShowOptions(false)} fullscreen>
+                <Modal.Header closeButton>
+                    <Modal.Title>Options</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <OptionsApp />
                 </Modal.Body>
             </Modal>
         </>

@@ -23,6 +23,9 @@
     ],
     "@map/*": [
       "../map/*"
+    ],
+    "@options/*": [
+      "../options/src/*"
     ]
   },
   "include": [
