@@ -15,8 +15,8 @@
     "noEmit": true,
   },
   "paths": {
-    "@extension/*": [
-      "../extension/*"
+    "@options/*": [
+      "../options/*"
     ],
     "@client/*": [
       "../client/*"

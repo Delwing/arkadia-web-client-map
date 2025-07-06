@@ -18,8 +18,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@extension/*": [
-        "../extension/*"
+      "@options/*": [
+        "../options/*"
       ],
       "@client/*": [
         "../client/*"

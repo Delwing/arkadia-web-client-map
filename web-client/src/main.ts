@@ -5,11 +5,13 @@ import "./plugin.ts"
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
-
-
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
 const client = ArkadiaClient
+
+import { createElement } from 'react'
+import { createRoot} from 'react-dom/client'
+import App from "@options/src/App.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepAudio: HTMLAudioElement | null = null;
@@ -348,6 +350,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
+
+    const rootElement = document.getElementById('options');
+    if (rootElement) {
+        createRoot(rootElement).render(createElement(App));
+    }
 });
 
 // Add resize event listener to check if device becomes mobile-sized
@@ -364,3 +371,4 @@ window.client = client
 
 // Import mobile direction buttons (only in sandbox)
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
+
