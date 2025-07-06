@@ -1,6 +1,1 @@
-@import "tailwindcss";
-@import "./sandstone.css";
-@import "./sandstone-dark.css";
-@plugin "daisyui" {
-    themes: all;
-}
+@import 'bootstrap/dist/css/bootstrap.min.css';

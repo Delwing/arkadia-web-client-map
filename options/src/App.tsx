@@ -1,5 +1,6 @@
 import './App.css'
 import {useState} from "react";
+import {Tabs, Tab} from 'react-bootstrap';
 import SettingsForm from "./Settings.tsx";
 import Npc from "./Npc.tsx";
 import SettingsFile from "./SettingsFile";
@@ -11,36 +12,20 @@ function App() {
 
     return (
         <div className="p-2">
-            <div className="mb-2 border-b flex">
-                <button
-                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'settings' ? 'border-b-2 border-blue-500' : ''}`}
-                    onClick={() => setTab('settings')}
-                >
-                    Ustawienia
-                </button>
-                <button
-                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'npc' ? 'border-b-2 border-blue-500' : ''}`}
-                    onClick={() => setTab('npc')}
-                >
-                    Odbiorcy paczek
-                </button>
-                <button
-                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'file' ? 'border-b-2 border-blue-500' : ''}`}
-                    onClick={() => setTab('file')}
-                >
-                    Plik ustawień
-                </button>
-                <button
-                    className={`cursor-pointer px-4 py-2 font-medium ${tab === 'binds' ? 'border-b-2 border-blue-500' : ''}`}
-                    onClick={() => setTab('binds')}
-                >
-                    Bindowanie
-                </button>
-            </div>
-            {tab === 'settings' && <SettingsForm />}
-            {tab === 'npc' && <Npc />}
-            {tab === 'file' && <SettingsFile />}
-            {tab === 'binds' && <Binds />}
+            <Tabs activeKey={tab} onSelect={(k) => k && setTab(k as any)} className="mb-2">
+                <Tab eventKey="settings" title="Ustawienia">
+                    <SettingsForm />
+                </Tab>
+                <Tab eventKey="npc" title="Odbiorcy paczek">
+                    <Npc />
+                </Tab>
+                <Tab eventKey="file" title="Plik ustawień">
+                    <SettingsFile />
+                </Tab>
+                <Tab eventKey="binds" title="Bindowanie">
+                    <Binds />
+                </Tab>
+            </Tabs>
         </div>
     )
 }

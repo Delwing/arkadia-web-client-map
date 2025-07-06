@@ -13,6 +13,8 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-bootstrap": "^2.10.10",
+    "bootstrap": "^5.3.7",
     "tsc-watch": "^6.2.1"
   },
   "devDependencies": {
@@ -27,8 +29,6 @@
     "globals": "^15.15.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
-    "vite": "^6.3.5",
-    "@tailwindcss/vite" : "^4.1.11",
-    "daisyui": "^5.0.43"
+    "vite": "^6.3.5"
   }
 }

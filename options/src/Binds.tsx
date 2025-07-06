@@ -1,4 +1,5 @@
 import { useEffect, useState, KeyboardEvent } from "react";
+import {Form, Button} from 'react-bootstrap';
 import storage from "./storage";
 
 interface Bind {
@@ -61,38 +62,41 @@ function Binds() {
     }
 
     return (
-        <div className="m-2 flex flex-col gap-3">
-            <label className="flex items-center gap-2">
-                <span className="w-32">Domyślny</span>
-                <input
+        <div className="m-2 d-flex flex-column gap-3">
+            <Form.Group className="d-flex align-items-center gap-2">
+                <Form.Label className="w-32 mb-0">Domyślny</Form.Label>
+                <Form.Control
                     type="text"
                     readOnly
-                    className="input input-bordered input-sm w-40"
+                    size="sm"
+                    className="w-40"
                     value={label(binds.main)}
                     onKeyDown={ev => handleCapture('main', ev)}
                 />
-            </label>
-            <label className="flex items-center gap-2">
-                <span className="w-32">Wrota</span>
-                <input
+            </Form.Group>
+            <Form.Group className="d-flex align-items-center gap-2">
+                <Form.Label className="w-32 mb-0">Wrota</Form.Label>
+                <Form.Control
                     type="text"
                     readOnly
-                    className="input input-bordered input-sm w-40"
+                    size="sm"
+                    className="w-40"
                     value={label(binds.gates)}
                     onKeyDown={ev => handleCapture('gates', ev)}
                 />
-            </label>
-            <label className="flex items-center gap-2">
-                <span className="w-32">Zbieranie</span>
-                <input
+            </Form.Group>
+            <Form.Group className="d-flex align-items-center gap-2">
+                <Form.Label className="w-32 mb-0">Zbieranie</Form.Label>
+                <Form.Control
                     type="text"
                     readOnly
-                    className="input input-bordered input-sm w-40"
+                    size="sm"
+                    className="w-40"
                     value={label(binds.collector)}
                     onKeyDown={ev => handleCapture('collector', ev)}
                 />
-            </label>
-            <button className="btn btn-primary mt-2 w-auto self-start" onClick={save}>Zapisz</button>
+            </Form.Group>
+            <Button className="mt-2 w-auto" onClick={save}>Zapisz</Button>
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import './App.css'
 import {ChangeEvent, useEffect, useState} from "react";
+import {Button, Form, Table} from 'react-bootstrap';
 import storage from "./storage.ts";
 
 interface NpcProps {
@@ -39,39 +40,36 @@ function Npc() {
     }
 
     return (
-        <>
-            <div className={'m-2'}>
-                <div className="mb-2 flex items-center gap-2">
-                    <button className={'btn btn-primary btn-sm'} onClick={() => downloadNpcs()}>Pobierz bazę</button>
-                    <button className={'btn btn-error btn-sm'} onClick={() => clearNpcs()}>Wyczyść bazę</button>
-                    <input
-                        type="text"
-                        placeholder="Filtruj"
-                        className="input input-sm input-bordered"
-                        value={filter}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
-                    />
-                </div>
-                <table className="min-w-full border border-gray-700 text-sm table-zebra">
-                    <tbody>
-                    {npcs
-                        .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
-                        .sort((a, b) => a.name.localeCompare(b.name))
-                        .map((item) => (
-                            <tr key={item.name + '-' + item.loc}>
-                                <td className="px-2 py-1 border border-gray-700">{item.name}</td>
-                                <td className="px-2 py-1 border border-gray-700">{item.loc}</td>
-                                <td className="px-2 py-1 border border-gray-700">
-                                    <button className="btn btn-error btn-xs" onClick={() => deleteNpc(item)}>
-                                        usuń
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+        <div className="m-2">
+            <div className="mb-2 d-flex align-items-center gap-2">
+                <Button variant="primary" size="sm" onClick={downloadNpcs}>Pobierz bazę</Button>
+                <Button variant="danger" size="sm" onClick={clearNpcs}>Wyczyść bazę</Button>
+                <Form.Control
+                    type="text"
+                    placeholder="Filtruj"
+                    size="sm"
+                    value={filter}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
+                    style={{width: '160px'}}
+                />
             </div>
-        </>
+            <Table bordered size="sm" className="table-zebra">
+                <tbody>
+                {npcs
+                    .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((item) => (
+                        <tr key={item.name + '-' + item.loc}>
+                            <td>{item.name}</td>
+                            <td>{item.loc}</td>
+                            <td>
+                                <Button variant="danger" size="sm" onClick={() => deleteNpc(item)}>usuń</Button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </div>
     )
 }
 
