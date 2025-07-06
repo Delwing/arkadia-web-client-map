@@ -1,13 +1,9 @@
 import './style.css'
-import 'bootstrap/dist/css/bootstrap.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 
 import "@client/src/main.ts"
-import { createRoot } from 'react-dom/client';
-import { useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import OptionsApp from '@options/src/App.tsx';
+import { setupOptionsModal, openOptionsModal } from './optionsPortal.tsx';
 import MockPort from "../MockPort.ts";
 import { loadMapData, loadColors } from "../mapDataLoader.ts";
 
@@ -368,29 +364,11 @@ window.addEventListener('resize', () => {
 window.client = client
 
 // Import mobile direction buttons (only in sandbox)
-import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
+import MobileDirectionButtons from "./scripts/mobileDirectionButtons";
 
-// Options modal integration
-let openOptions: () => void = () => {};
-
-function OptionsPortal() {
-    const [show, setShow] = useState(false);
-    openOptions = () => setShow(true);
-    return (
-        <Modal show={show} onHide={() => setShow(false)} fullscreen>
-            <Modal.Header closeButton>
-                <Modal.Title>Options</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <OptionsApp />
-            </Modal.Body>
-        </Modal>
-    );
-}
-
+// Initialize options modal after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    const root = createRoot(document.getElementById('options-root')!);
-    root.render(<OptionsPortal />);
+    setupOptionsModal();
     const optionsButton = document.getElementById('options-button');
-    optionsButton?.addEventListener('click', () => openOptions());
+    optionsButton?.addEventListener('click', () => openOptionsModal());
 });
