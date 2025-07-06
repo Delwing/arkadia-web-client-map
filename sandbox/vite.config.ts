@@ -42,7 +42,7 @@ export default defineConfig({
                 sandbox: resolve('src/sandbox.ts'),
                 plugin: resolve('src/client/plugin.ts'),
                 main: resolve('index.html'),
-                client: resolve('client.html'),
+                client: resolve('index.html'),
                 embedded: resolve('embedded.html')
             }
         }
