@@ -35,11 +35,15 @@ export default defineConfig({
     ],
     base: "./",
     build: {
-        minify: true,
+        minify: false,
+        sourcemap: true,
         rollupOptions: {
             input: {
-                embedded: resolve('embedded.html'),
-                client: resolve('client.html')
+                sandbox: resolve('src/sandbox.ts'),
+                plugin: resolve('src/client/plugin.ts'),
+                main: resolve('index.html'),
+                client: resolve('client.html'),
+                embedded: resolve('embedded.html')
             }
         }
     }

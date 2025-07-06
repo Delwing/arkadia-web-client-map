@@ -1,14 +1,12 @@
 import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
+
 import "@client/src/main.ts"
 import MockPort from "../MockPort.ts";
 import { loadMapData, loadColors } from "../mapDataLoader.ts";
 
 import npc from "../npc.json";
-// Import map data and colors asynchronously instead of bundling them
-// import mapData from "../../../data/mapExport.json";
-// import colors from "../../../data/colors.json";
 import "@map/embedded.js"
 const client = ArkadiaClient
 
