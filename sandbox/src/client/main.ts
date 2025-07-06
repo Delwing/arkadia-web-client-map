@@ -110,14 +110,26 @@ loadNpcData().then(npc => {
 const port = new MockPort();
 window.clientExtension.connect(port as any, true);
 
+const progressContainer = document.getElementById('map-progress-container')!;
+const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
+
+progressContainer.style.display = 'none';
+
+function updateProgress(p: number) {
+    progressContainer.style.display = 'block';
+    progressBar.style.width = `${p}%`;
+}
+
 // Load map data and colors asynchronously
-let mapDataPromise = loadMapData();
+let mapDataPromise = loadMapData(updateProgress);
 let colorsPromise = loadColors();
 
 // When both are loaded, dispatch events
 Promise.all([mapDataPromise, colorsPromise])
     .then(([mapData, colors]) => {
         console.log('Map data and colors loaded successfully');
+
+        progressContainer.style.display = 'none';
 
         // Dispatch map-ready event
         window.dispatchEvent(new CustomEvent("map-ready", {
@@ -130,6 +142,7 @@ Promise.all([mapDataPromise, colorsPromise])
         window.postMessage({mapData, colors}, '*');
     })
     .catch(error => {
+        progressContainer.style.display = 'none';
         console.error('Failed to load map data or colors:', error);
     });
 
