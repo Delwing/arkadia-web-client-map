@@ -2,8 +2,7 @@ import "./sandbox.ts"
 import "@client/src/main.ts"
 
 import npc from "./npc.json";
-import mapData from "../../data/mapExport.json";
-import colors from "../../data/colors.json";
+import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { fakeClient } from "./fakeClient.ts";
 import { demoMap } from "./Controls.tsx";
 
@@ -27,14 +26,26 @@ if (!localStorage.getItem('kill_counter')) {
 
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
-frame.contentWindow?.postMessage({mapData, colors}, '*')
 
-window.dispatchEvent(new CustomEvent("extension-ready"));
-window.dispatchEvent(new CustomEvent("map-ready", {
-    detail: {
-        mapData, colors
-    }
-}));
+// Load map data and colors asynchronously
+Promise.all([loadMapData(), loadColors()])
+    .then(([mapData, colors]) => {
+        console.log('Map data and colors loaded successfully');
+
+        // Send map data to iframe
+        frame.contentWindow?.postMessage({mapData, colors}, '*');
+
+        // Dispatch events
+        window.dispatchEvent(new CustomEvent("extension-ready"));
+        window.dispatchEvent(new CustomEvent("map-ready", {
+            detail: {
+                mapData, colors
+            }
+        }));
+    })
+    .catch(error => {
+        console.error('Failed to load map data or colors:', error);
+    });
 
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("gmcp.room.info", {
     detail: {map: {x: 80, y: 89, z: 0, name: "Wissenland"}}

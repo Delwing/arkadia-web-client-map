@@ -3,10 +3,12 @@ import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 import "@client/src/main.ts"
 import MockPort from "../MockPort.ts";
+import { loadMapData, loadColors } from "../mapDataLoader.ts";
 
 import npc from "../npc.json";
-import mapData from "../../../data/mapExport.json";
-import colors from "../../../data/colors.json";
+// Import map data and colors asynchronously instead of bundling them
+// import mapData from "../../../data/mapExport.json";
+// import colors from "../../../data/colors.json";
 import "@map/embedded.js"
 const client = ArkadiaClient
 
@@ -106,11 +108,28 @@ localStorage.setItem('settings', JSON.stringify(defaultSettings))
 const port = new MockPort();
 window.clientExtension.connect(port as any, true);
 
-window.dispatchEvent(new CustomEvent("map-ready", {
-    detail: {
-        mapData, colors
-    }
-}));
+// Load map data and colors asynchronously
+let mapDataPromise = loadMapData();
+let colorsPromise = loadColors();
+
+// When both are loaded, dispatch events
+Promise.all([mapDataPromise, colorsPromise])
+    .then(([mapData, colors]) => {
+        console.log('Map data and colors loaded successfully');
+
+        // Dispatch map-ready event
+        window.dispatchEvent(new CustomEvent("map-ready", {
+            detail: {
+                mapData, colors
+            }
+        }));
+
+        // Send map data to iframe
+        window.postMessage({mapData, colors}, '*');
+    })
+    .catch(error => {
+        console.error('Failed to load map data or colors:', error);
+    });
 
 window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
 
@@ -165,9 +184,6 @@ client.on('client.disconnect', () => {
     updateConnectButton();
     console.log('Client disconnected from Arkadia server.');
 });
-
-
-window.postMessage({mapData, colors}, '*')
 
 
 // Numpad key mapping for directions (reversed)
