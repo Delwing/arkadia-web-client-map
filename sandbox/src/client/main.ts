@@ -115,9 +115,16 @@ const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 
 progressContainer.style.display = 'none';
 
-function updateProgress(p: number) {
+function updateProgress(p: number, loaded?: number, total?: number) {
     progressContainer.style.display = 'block';
     progressBar.style.width = `${p}%`;
+    if (loaded !== undefined && total !== undefined && total > 0) {
+        const loadedKb = Math.floor(loaded / 1024);
+        const totalKb = Math.ceil(total / 1024);
+        progressBar.textContent = `${loadedKb} / ${totalKb} KB`;
+    } else {
+        progressBar.textContent = `${Math.floor(p)}%`;
+    }
 }
 
 // Load map data and colors asynchronously
