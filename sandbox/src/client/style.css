@@ -299,3 +299,7 @@ button:focus-visible {
 .mobile-button.no-click {
   pointer-events: none; /* Disable click events */
 }
+
+#map-progress-container {
+  pointer-events: none;
+}
