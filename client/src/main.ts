@@ -8,7 +8,6 @@ const gmcpParseOption = Gmcp.parse_option_subnegotiation
 export const rawOutputSend = Output.send
 export const rawInputSend = Input.send
 
-
 export const client = new Client()
 
 Gmcp.parse_option_subnegotiation = (match) => {

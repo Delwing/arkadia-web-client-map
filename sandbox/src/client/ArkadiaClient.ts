@@ -1,5 +1,4 @@
 import { parseAnsiPatterns } from './ansiParser';
-import {setGmcp} from "@client/src/gmcp.ts";
 
 // Event emitter types
 type EventListener = (...args: any[]) => void;
@@ -172,7 +171,6 @@ class ArkadiaClient {
             try {
                 const gmcp = JSON.parse(payload);
                 this.receivedFirstGmcp = this.receivedFirstGmcp  || type === "char.info";
-                setGmcp(type, gmcp)
                 window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
                 if (type === "gmcp_msgs") {
                     let text = atob(gmcp.text)
