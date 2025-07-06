@@ -298,6 +298,15 @@ button:focus-visible {
   overflow-wrap: break-word; /* Break words if necessary */
 }
 
+#special-exit-button {
+  font-size: 9px;
+  padding: 1px;
+  line-height: 1;
+  white-space: normal;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
 /* Dragging state for mobile buttons */
 .mobile-direction-buttons.dragging {
   cursor: grabbing;

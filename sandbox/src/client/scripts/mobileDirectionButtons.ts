@@ -139,8 +139,10 @@ export default class MobileDirectionButtons {
                 const firstExit = Object.keys(specialExits)[0];
                 if (firstExit) {
                     specialExitButton.textContent = firstExit.length > 5 ? firstExit.slice(0, 4) + '…' : firstExit;
+                    specialExitButton.title = firstExit;
                 } else {
                     specialExitButton.textContent = '3';
+                    specialExitButton.title = '';
                 }
             };
 
