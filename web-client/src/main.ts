@@ -3,6 +3,9 @@ import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 
 import "@client/src/main.ts"
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
 import MockPort from "./MockPort.ts";
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 
@@ -242,6 +245,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+        createRoot(rootElement).render(<App />);
+    }
     // Activate tab sleep prevention for mobile devices
     if (window.innerWidth < 768) {
         preventTabSleep();

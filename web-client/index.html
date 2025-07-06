@@ -8,55 +8,7 @@
     <title>Arkadia</title>
 </head>
 <body>
-<div id="main-container">
-    <div id="iframe-container">
-        <canvas id="map" resize="true"></canvas>
-        <div id="map-progress-container" class="position-absolute top-50 start-50 translate-middle w-75">
-            <div class="progress">
-                <div id="map-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0"></div>
-            </div>
-        </div>
-    </div>
-    <div id="main_text_output_msg_wrapper">
-
-    </div>
-    <div id="input-area">
-        <input type="text" id="message-input" autocomplete="off" autocapitalize="off" spellcheck="false" />
-        <button id="send-button">➢</button>
-        <button id="connect-button">Connect</button>
-        <button id="docs-button">Docs</button>
-    </div>
-
-    <!-- Mobile Direction Buttons (hidden by default) -->
-        <div id="mobile-direction-buttons" class="mobile-direction-buttons">
-            <div class="mobile-top-buttons">
-                <button class="mobile-button top-button" id="bracket-right-button">]</button>
-                <button class="mobile-button top-button" id="button-1">1</button>
-                <button class="mobile-button top-button" id="button-2">2</button>
-                <button class="mobile-button top-button" id="button-3">3</button>
-            </div>
-            <div class="mobile-direction-main">
-                <div class="mobile-direction-grid">
-                    <button class="mobile-button direction-button" id="nw-button">↖</button>
-                    <button class="mobile-button direction-button" id="n-button">↑</button>
-                    <button class="mobile-button direction-button" id="ne-button">↗</button>
-                    <button class="mobile-button direction-button" id="w-button">←</button>
-                    <button class="mobile-button direction-button" id="c-button">zerknij</button>
-                    <button class="mobile-button direction-button" id="e-button">→</button>
-                    <button class="mobile-button direction-button" id="sw-button">↙</button>
-                    <button class="mobile-button direction-button" id="s-button">↓</button>
-                    <button class="mobile-button direction-button" id="se-button">↘</button>
-                </div>
-                <div class="mobile-right-buttons">
-                    <button class="mobile-button direction-button" id="u-button">u</button>
-                    <button class="mobile-button direction-button" id="d-button">d</button>
-                    <button class="mobile-button direction-button" id="special-exit-button" title="">3</button>
-                </div>
-            </div>
-        </div>
-
-</div>
-<script type="module" src="/src/plugin.ts"></script>
+<div id="root"></div>
 <script type="module" src="/src/main.ts"></script>
 <script type="module" src="/src/docs.ts"></script>
 </body>
