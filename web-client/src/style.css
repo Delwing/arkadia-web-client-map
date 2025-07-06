@@ -63,7 +63,7 @@ h1 {
 
 #input-area {
   display: flex;
-  padding: 2vh;
+  padding: 1.5vh;
   background-color: rgba(0, 0, 0, 0.1);
   border-top: 0.1vh solid rgba(255, 255, 255, 0.1);
   gap: 1vw;
@@ -71,7 +71,7 @@ h1 {
 
 #message-input {
   flex: 1;
-  padding: 1.5vh;
+  padding: 1.125vh;
   border: 0.1vh solid rgba(255, 255, 255, 0.2);
   border-radius: 1vmin;
   background-color: rgba(255, 255, 255, 0.05);
@@ -89,12 +89,12 @@ h1 {
 }
 
 #send-button {
-  padding: 1.5vh 3vw;
+  padding: 1.125vh 3vw;
   white-space: nowrap;
 }
 
 #connect-button {
-  padding: 1.5vh 3vw;
+  padding: 1.125vh 3vw;
   white-space: nowrap;
 }
 
@@ -132,7 +132,7 @@ h1 {
 button {
   border-radius: 1vmin;
   border: 0.1vh solid transparent;
-  padding: 1vh 2vw;
+  padding: 0.75vh 2vw;
   font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
@@ -199,19 +199,19 @@ button:focus-visible {
   }
 
   #input-area {
-    padding: 1vh 2vw;
+    padding: 0.75vh 2vw;
     position: sticky;
     bottom: 0;
     z-index: 10;
   }
 
   #message-input {
-    padding: 1vh;
+    padding: 0.75vh;
     font-size: 1rem; /* Prevents iOS zoom on focus */
   }
 
   #send-button {
-    padding: 1vh 2vw;
+    padding: 0.75vh 2vw;
     min-height: 8vmin; /* Minimum touch target size */
     min-width: 8vmin;
   }
