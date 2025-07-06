@@ -8,6 +8,7 @@ import OutputHandler from "./OutputHandler";
 import {rawInputSend, rawOutputSend} from "./main";
 import TeamManager from "./TeamManager";
 import {beepSound} from "./sounds";
+import { attachGmcpListener } from "./gmcp";
 
 export default class Client {
 
@@ -29,6 +30,7 @@ export default class Client {
     }
 
     constructor() {
+        attachGmcpListener(this);
         window.addEventListener('message', ({data: data}) => {
             if (data.payload) { //TODO doubtful!
                 this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
