@@ -141,7 +141,7 @@ export default class MobileDirectionButtons {
                     specialExitButton.textContent = firstExit.length > 5 ? firstExit.slice(0, 4) + '…' : firstExit;
                     specialExitButton.title = firstExit;
                 } else {
-                    specialExitButton.textContent = '3';
+                    specialExitButton.textContent = 'sp ex';
                     specialExitButton.title = '';
                 }
             };
