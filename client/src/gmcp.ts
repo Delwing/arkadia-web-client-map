@@ -8,3 +8,12 @@ export function setGmcp(path: string, value: any) {
     }
     obj[parts[parts.length - 1]] = value;
 }
+
+export function attachGmcpListener(target: { addEventListener: Function }) {
+    target.addEventListener('gmcp', (event: CustomEvent<{ path: string; value: any }>) => {
+        const { path, value } = event.detail || {};
+        if (typeof path === 'string') {
+            setGmcp(path, value);
+        }
+    });
+}
