@@ -255,6 +255,17 @@ button:focus-visible {
   margin-bottom: 5px;
 }
 
+.mobile-direction-main {
+  display: flex;
+}
+
+.mobile-right-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 5px;
+}
+
 .mobile-direction-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -285,6 +296,15 @@ button:focus-visible {
   white-space: normal; /* Allow text to wrap */
   text-align: center; /* Center the text */
   overflow-wrap: break-word; /* Break words if necessary */
+}
+
+#special-exit-button {
+  font-size: 9px;
+  padding: 1px;
+  line-height: 1;
+  white-space: normal;
+  text-align: center;
+  overflow-wrap: break-word;
 }
 
 /* Dragging state for mobile buttons */
