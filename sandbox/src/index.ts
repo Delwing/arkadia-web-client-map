@@ -26,11 +26,25 @@ if (!localStorage.getItem('kill_counter')) {
 
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
+const progressContainer = document.getElementById('map-progress-container')!;
+const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
+
+progressContainer.style.display = 'none';
+
+function updateProgress(p: number) {
+    progressContainer.style.display = 'block';
+    progressBar.style.width = `${p}%`;
+}
+
+const mapPromise = loadMapData(updateProgress);
+const colorsPromise = loadColors();
 
 // Load map data and colors asynchronously
-Promise.all([loadMapData(), loadColors()])
+Promise.all([mapPromise, colorsPromise])
     .then(([mapData, colors]) => {
         console.log('Map data and colors loaded successfully');
+
+        progressContainer.style.display = 'none';
 
         // Send map data to iframe
         frame.contentWindow?.postMessage({mapData, colors}, '*');
@@ -44,6 +58,7 @@ Promise.all([loadMapData(), loadColors()])
         }));
     })
     .catch(error => {
+        progressContainer.style.display = 'none';
         console.error('Failed to load map data or colors:', error);
     });
 

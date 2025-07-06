@@ -102,11 +102,12 @@ async function getFromIndexedDB() {
  * Loads the map data asynchronously from a URL, IndexedDB, or local storage
  * @returns Promise that resolves with the map data
  */
-export async function loadMapData() {
+export async function loadMapData(onProgress?: (progress: number) => void) {
   // Try to load from IndexedDB first
   try {
     const indexedDBData = await getFromIndexedDB();
     if (indexedDBData) {
+      onProgress?.(100);
       return indexedDBData;
     }
   } catch (e) {
@@ -117,7 +118,9 @@ export async function loadMapData() {
   const cachedData = localStorage.getItem('cachedMapData');
   if (cachedData) {
     try {
-      return JSON.parse(cachedData);
+      const parsed = JSON.parse(cachedData);
+      onProgress?.(100);
+      return parsed;
     } catch (e) {
       console.error('Failed to parse cached map data:', e);
       // Continue to fetch from file if parsing fails
@@ -127,7 +130,34 @@ export async function loadMapData() {
   // Fetch the map data from the file
   try {
     const response = await fetch('./data/mapExport.json');
-    const data = await response.json();
+
+    let data;
+
+    const total = parseInt(response.headers.get('Content-Length') || '0', 10);
+    if (response.body && total) {
+      const reader = response.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          received += value.length;
+          onProgress?.(Math.min(100, (received / total) * 100));
+        }
+      }
+      const all = new Uint8Array(received);
+      let offset = 0;
+      for (const chunk of chunks) {
+        all.set(chunk, offset);
+        offset += chunk.length;
+      }
+      data = JSON.parse(new TextDecoder().decode(all));
+    } else {
+      data = await response.json();
+      onProgress?.(100);
+    }
 
     // Try to store in IndexedDB first
     try {

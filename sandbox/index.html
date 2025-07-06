@@ -16,8 +16,13 @@
             <div id="root"></div>
         </div>
         <div class="right-column h-100">
-            <div id="map" class="border w-100 h-50 mb-2">
+            <div id="map" class="border w-100 h-50 mb-2 position-relative">
                 <iframe id="cm-frame" src="embedded.html"></iframe>
+                <div id="map-progress-container" class="position-absolute top-50 start-50 translate-middle w-75">
+                    <div class="progress">
+                        <div id="map-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
             <div id="sandbox-buttons"></div>
         </div>
