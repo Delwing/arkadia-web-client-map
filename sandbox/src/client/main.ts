@@ -6,7 +6,8 @@ import "@client/src/main.ts"
 import MockPort from "../MockPort.ts";
 import { loadMapData, loadColors } from "../mapDataLoader.ts";
 
-import npc from "../npc.json";
+
+import { loadNpcData } from "../npcDataLoader.ts";
 import "@map/embedded.js"
 const client = ArkadiaClient
 
@@ -100,8 +101,11 @@ const defaultSettings = {
     collectExtra: []
 }
 
-localStorage.setItem('npc', JSON.stringify(npc))
 localStorage.setItem('settings', JSON.stringify(defaultSettings))
+
+loadNpcData().then(npc => {
+    window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
+})
 
 const port = new MockPort();
 window.clientExtension.connect(port as any, true);
@@ -128,8 +132,6 @@ Promise.all([mapDataPromise, colorsPromise])
     .catch(error => {
         console.error('Failed to load map data or colors:', error);
     });
-
-window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
 
 
 // Set up message event listener for UI updates
