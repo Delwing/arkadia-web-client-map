@@ -135,11 +135,16 @@ window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail:
 
 
 // Set up message event listener for UI updates
-client.on('message', (message: string) => {
+client.on('message', (message: string, type?: string) => {
     const contentArea = document.getElementById('main_text_output_msg_wrapper');
     if (contentArea) {
         const wrapper = document.createElement('div');
         wrapper.classList.add('output_msg');
+
+        // Add GMCP message type as class if provided
+        if (type) {
+            wrapper.classList.add(type);
+        }
 
         const messageDiv = document.createElement('div');
         messageDiv.innerHTML = message;
@@ -235,16 +240,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() {
         const message = messageInput.value.trim();
         if (message) {
-            // Add command to history if it's not the same as the last one
-            if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== message) {
-                commandHistory.push(message);
-            }
-            // Reset history index
-            historyIndex = -1;
-            currentInput = '';
+            // Only add command to history if we've received the first GMCP event
+            if (client.hasReceivedFirstGmcp()) {
+                // Add command to history if it's different from the last one
+                if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== message) {
+                    commandHistory.push(message);
+                }
+                // Reset history index
+                historyIndex = -1;
+                currentInput = '';
 
-            Input.send(message);
-            messageInput.select();
+                Input.send(message);
+                messageInput.select();
+            } else {
+                // If we haven't received the first GMCP event yet, clear the input field
+                Input.send(message);
+                messageInput.value = '';
+            }
         }
     }
 
@@ -260,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault(); // Prevent cursor from moving
+
+            // Only allow command history navigation if we've received the first GMCP event
+            if (!client.hasReceivedFirstGmcp()) return;
 
             if (commandHistory.length === 0) return;
 

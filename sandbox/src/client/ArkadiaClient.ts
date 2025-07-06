@@ -20,6 +20,7 @@ const TELNET_OPTION_REGEX = /\u00FF\u00FA.*?\u00FF\u00F0|\u00FF.[^\u00FF]/g;
 class ArkadiaClient {
     private socket!: WebSocket;
     private events: EventMap = {};
+    private receivedFirstGmcp: boolean = false;
 
 
     /**
@@ -56,6 +57,8 @@ class ArkadiaClient {
      */
     connect(): void {
         try {
+            // Reset the flag when connecting
+            this.receivedFirstGmcp = false;
             this.socket = new WebSocket(WEBSOCKET_URL, []);
             this.socket.onmessage = (event: MessageEvent<string>) => {
                 try {
@@ -94,6 +97,13 @@ class ArkadiaClient {
     }
 
     /**
+     * Check if the first GMCP event has been received
+     */
+    hasReceivedFirstGmcp(): boolean {
+        return this.receivedFirstGmcp;
+    }
+
+    /**
      * Send a message through the WebSocket
      */
     send(message: string): void {
@@ -104,7 +114,10 @@ class ArkadiaClient {
 
         try {
             this.socket.send(btoa(message + "\r\n"));
-            Output.send("-> " + message);
+            // Only echo commands if we've received the first GMCP event
+            if (this.receivedFirstGmcp) {
+                Output.send("-> " + message);
+            }
         } catch (error) {
             console.error('Error sending message:', error);
             this.emit('error', error);
@@ -158,6 +171,7 @@ class ArkadiaClient {
 
             try {
                 const gmcp = JSON.parse(payload);
+                this.receivedFirstGmcp = this.receivedFirstGmcp  || type === "char.info";
                 setGmcp(type, gmcp)
                 window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
                 if (type === "gmcp_msgs") {

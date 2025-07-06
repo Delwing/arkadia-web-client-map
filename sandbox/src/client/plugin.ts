@@ -17,8 +17,8 @@ window.Gmcp = {
 }
 // @ts-ignore
 window.Output = {
-    send(text: string) {
-        ArkadiaClient.emit("message", text)
+    send(text: string, type?: string) {
+        ArkadiaClient.emit("message", text, type)
     },
     buffer: []
 }
