@@ -109,7 +109,7 @@ function SettingsForm() {
 
     return (
         <div className="my-4 p-2">
-            <div className="mb-4 border rounded p-3 bg-light">
+            <div className="mb-4 border rounded p-3">
                 <div className="d-flex justify-content-between mb-2">
                     <h5 className="fw-bold">Ładowanie triggerów dla gildii</h5>
                     <Form.Check
@@ -134,7 +134,7 @@ function SettingsForm() {
                     ))}
                 </div>
             </div>
-            <div className="mb-4 border rounded p-3 bg-light">
+            <div className="mb-4 border rounded p-3">
                 <div className="d-flex justify-content-between mb-2">
                     <h5 className="fw-bold">Gildie wrogów (alarm ataku)</h5>
                     <Form.Check
@@ -159,7 +159,7 @@ function SettingsForm() {
                     ))}
                 </div>
             </div>
-            <div className="mb-4 border rounded p-3 bg-light">
+            <div className="mb-4 border rounded p-3">
                 <h5 className="fw-bold mb-2">Pozostałe opcje</h5>
                 <div className="d-flex flex-wrap gap-3">
                     <Form.Check
@@ -188,7 +188,7 @@ function SettingsForm() {
                     />
                 </div>
             </div>
-            <div className="mb-4 border rounded p-3 bg-light">
+            <div className="mb-4 border rounded p-3">
                 <h5 className="fw-bold mb-2">Pojemniki</h5>
                 <div className="d-flex flex-wrap gap-3">
                     <Form.Check
@@ -213,7 +213,7 @@ function SettingsForm() {
                     </Form.Group>
                 </div>
             </div>
-            <div className="mb-4 border rounded p-3 bg-light">
+            <div className="mb-4 border rounded p-3">
                 <h5 className="fw-bold mb-2">Zbieranie przedmiotów</h5>
                 <div className="d-flex flex-column gap-2">
                     <Form.Group className="d-flex align-items-center">
