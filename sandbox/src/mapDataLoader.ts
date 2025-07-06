@@ -1,10 +1,6 @@
 // This file provides a way to load map data asynchronously instead of bundling it
 // with the client code, which significantly reduces the build size.
 
-
-const mapDataUrl = 'http://delwing.github.io/arkadia-mapa/data/mapData.json'
-const colorsUrl = 'http://delwing.github.io/arkadia-mapa/data/colors.json'
-
 /**
  * Checks if the browser supports IndexedDB
  * @returns boolean indicating if IndexedDB is supported
@@ -133,7 +129,7 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
 
   // Fetch the map data from the file
   try {
-    const response = await fetch(mapDataUrl);
+    const response = await fetch('./data/mapExport.json');
 
     let data;
 
@@ -201,7 +197,7 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
  */
 export async function loadColors() {
   try {
-    const response = await fetch(colorsUrl);
+    const response = await fetch('./data/colors.json');
     return await response.json();
   } catch (e) {
     console.error('Failed to load colors data:', e);

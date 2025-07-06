@@ -1,7 +1,5 @@
 // This file provides a way to load NPC data asynchronously similar to map data loading.
 
-const npcDataUrl = 'http://delwing.github.io/arkadia-mapa/data/npc.json'
-
 function isIndexedDBSupported() {
   return 'indexedDB' in window;
 }
@@ -99,7 +97,7 @@ export async function loadNpcData() {
   }
 
   try {
-    const response = await fetch(npcDataUrl);
+    const response = await fetch('./data/npc.json');
     const data = await response.json();
     try {
       await storeNpcInIndexedDB(data);
