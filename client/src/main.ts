@@ -1,7 +1,6 @@
 import Client from "./Client";
 import People from "./People";
 import registerGagTriggers from "./scripts/gags";
-import {setGmcp} from "./gmcp";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
@@ -17,7 +16,7 @@ Gmcp.parse_option_subnegotiation = (match) => {
     if (message.substring(0, 1) === 'É') {
         const [type, data] = [message.substring(1, message.indexOf(" ")), message.substring(message.indexOf(" "))]
         const parsed = JSON.parse(data)
-        setGmcp(type, parsed)
+        client.sendEvent('gmcp', { path: type, value: parsed })
         client.sendEvent(`gmcp.${type}`, parsed)
         if (type === "gmcp_msgs") {
             let text = atob(parsed.text)

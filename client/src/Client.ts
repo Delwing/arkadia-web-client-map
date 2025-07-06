@@ -8,6 +8,7 @@ import OutputHandler from "./OutputHandler";
 import {rawSend} from "./main";
 import TeamManager from "./TeamManager";
 import {beepSound} from "./sounds";
+import { attachGmcpListener } from "./gmcp";
 
 const originalSend = Input.send
 
@@ -31,6 +32,7 @@ export default class Client {
     }
 
     constructor() {
+        attachGmcpListener(this);
         window.addEventListener('message', ({data: data}) => {
             this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
         })

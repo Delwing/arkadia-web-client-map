@@ -1,7 +1,6 @@
 import { client } from "@client/src/main.ts";
 import { FakeClient } from "./types/globals";
 import MockPort from "./MockPort.ts";
-import { setGmcp } from "@client/src/gmcp.ts";
 
 export const fakeClient = client as FakeClient;
 
@@ -12,7 +11,6 @@ const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.ev
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     if (event.type.startsWith('gmcp.')) {
         const detail = (event as CustomEvent).detail;
-        setGmcp(event.type.replace(/^gmcp\./, ''), detail);
         let text: string;
         try {
             text = detail !== undefined ? JSON.stringify(detail, null, 2) : '';
