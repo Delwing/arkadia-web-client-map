@@ -1,1 +1,5 @@
-@import 'bootswatch/dist/sandstone/bootstrap.min.css';
+@import 'bootswatch/dist/darkly/bootstrap.min.css';
+
+html {
+    font-size: 85%;
+}
