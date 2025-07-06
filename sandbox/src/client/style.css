@@ -309,9 +309,9 @@ button:focus-visible {
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2vh;
+  padding: 8vh 2vh 2vh;
   z-index: 10000;
 }
 #docs-modal.hidden {
@@ -322,15 +322,23 @@ button:focus-visible {
   border: 1px solid #444;
   padding: 2vh;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   width: 90vw;
+  display: flex;
+  gap: 2vw;
 }
 .docs-nav {
   display: flex;
+  flex-direction: column;
   gap: 1vmin;
-  margin-bottom: 1em;
+  min-width: 20vw;
 }
 .docs-nav button {
+  width: 100%;
+}
+
+.docs-content {
   flex: 1;
+  overflow-y: auto;
 }
 
