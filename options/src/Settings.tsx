@@ -1,5 +1,6 @@
 import './App.css'
 import {ChangeEvent, useEffect, useState} from "react";
+import {Form, Button} from 'react-bootstrap';
 import storage from "./storage.ts";
 
 const guilds = [
@@ -106,214 +107,188 @@ function SettingsForm() {
         })
     }, []);
 
-
     return (
-        <>
-            <div className="my-4 p-2">
-                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-bold">Ładowanie triggerów dla gildii</h5>
-                        <label className="flex items-center gap-1" key="all-guilds">
-                            <input
-                                type="checkbox"
-                                id="guild-all"
-                                name="guild-all"
-                                onChange={event => onChangeAll(event)}
-                                className="checkbox checkbox-sm mx-1"
-                                checked={allSelected}
-                            />
-                            Wszystkie
-                        </label>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {guilds.map(guild => (
-                            <label className="flex items-center gap-1 w-20" key={guild}>
-                                <input
-                                    type="checkbox"
-                                    id={`guild-${guild}`}
-                                    name="guild"
-                                    value={guild}
-                                    onChange={event => onChange(event, guild)}
-                                    className="checkbox checkbox-sm mx-1"
-                                    checked={settings.guilds.indexOf(guild) != -1}
-                                />
-                                {guild}
-                            </label>
-                        ))}
-                    </div>
+        <div className="my-4 p-2">
+            <div className="mb-4 border rounded p-3">
+                <div className="d-flex justify-content-between mb-2">
+                    <h5 className="fw-bold">Ładowanie triggerów dla gildii</h5>
+                    <Form.Check
+                        type="checkbox"
+                        id="guild-all"
+                        label="Wszystkie"
+                        checked={allSelected}
+                        onChange={onChangeAll}
+                    />
                 </div>
-                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-bold">Gildie wrogów (alarm ataku)</h5>
-                        <label className="flex items-center gap-1" key="all-enemy-guilds">
-                            <input
-                                type="checkbox"
-                                id="enemy-guild-all"
-                                name="enemy-guild-all"
-                                onChange={event => onChangeAllEnemy(event)}
-                                className="checkbox checkbox-sm mx-1"
-                                checked={allEnemySelected}
-                            />
-                            Wszystkie
-                        </label>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {guilds.map(guild => (
-                            <label className="flex items-center gap-1 w-20" key={`enemy-${guild}`}>
-                                <input
-                                    type="checkbox"
-                                    id={`enemy-guild-${guild}`}
-                                    name="enemy-guild"
-                                    value={guild}
-                                    onChange={event => onChangeEnemy(event, guild)}
-                                    className="checkbox checkbox-sm mx-1"
-                                    checked={settings.enemyGuilds.indexOf(guild) != -1}
-                                />
-                                {guild}
-                            </label>
-                        ))}
-                    </div>
+                <div className="d-flex flex-wrap gap-2">
+                    {guilds.map(guild => (
+                        <Form.Check
+                            type="checkbox"
+                            key={guild}
+                            id={`guild-${guild}`}
+                            label={guild}
+                            checked={settings.guilds.includes(guild)}
+                            onChange={ev => onChange(ev, guild)}
+                            className="me-2"
+                        />
+                    ))}
                 </div>
-                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <h5 className="font-bold mb-2">Pozostałe opcje</h5>
-                    <div className="flex flex-wrap gap-4">
-                        <label className="flex items-center gap-1">
-                            <input
-                                type="checkbox"
-                                id="replaceMap"
-                                name="replaceMap"
-                                onChange={event => onChangeSetting((s) => s.replaceMap = event.target.checked)}
-                                className="mx-1 checkbox checkbox-sm"
-                                checked={settings.replaceMap}
-                            />
-                            Zamień wbudowaną mapę
-                        </label>
-                        <label className="flex items-center gap-1">
-                            <input
-                                type="checkbox"
-                                id="packageHelper"
-                                name="packageHelper"
-                                onChange={event => onChangeSetting((s) => s.packageHelper = event.target.checked)}
-                                className="mx-1 checkbox checkbox-sm"
-                                checked={settings.packageHelper}
-                            />
-                            Asystent paczek
-                        </label>
-                        <label className="flex items-center gap-1">
-                            <input
-                                type="checkbox"
-                                id="inlineCompassRose"
-                                name="inlineCompassRose"
-                                onChange={event => onChangeSetting((s) => s.inlineCompassRose = event.target.checked)}
-                                className="mx-1 checkbox checkbox-sm"
-                                checked={settings.inlineCompassRose}
-                            />
-                            Róża wiatrów
-                        </label>
-                    </div>
+            </div>
+            <div className="mb-4 border rounded p-3">
+                <div className="d-flex justify-content-between mb-2">
+                    <h5 className="fw-bold">Gildie wrogów (alarm ataku)</h5>
+                    <Form.Check
+                        type="checkbox"
+                        id="enemy-guild-all"
+                        label="Wszystkie"
+                        checked={allEnemySelected}
+                        onChange={onChangeAllEnemy}
+                    />
                 </div>
-                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <h5 className="font-bold mb-2">Pojemniki</h5>
-                    <div className="flex flex-wrap gap-4">
-                        <label className="flex items-center gap-1">
-                            <input
-                                type="checkbox"
-                                id="prettyContainers"
-                                name="prettyContainers"
-                                onChange={event => onChangeSetting((s) => s.prettyContainers = event.target.checked)}
-                                className="mx-1 checkbox checkbox-sm"
-                                checked={settings.prettyContainers}
-                            />
-                            Formatuj pojemniki
-                        </label>
-                        <label className="flex items-center gap-1">
-                            <span className="mr-1">Kolumny:</span>
-                            <input
-                                type="number"
-                                min="1"
-                                max="4"
-                                id="containerColumns"
-                                name="containerColumns"
-                                onChange={event => onChangeSetting((s) => s.containerColumns = parseInt(event.target.value) || 1)}
-                                className="mx-1 input input-bordered input-sm w-16"
-                                value={settings.containerColumns}
-                            />
-                        </label>
-                    </div>
+                <div className="d-flex flex-wrap gap-2">
+                    {guilds.map(guild => (
+                        <Form.Check
+                            type="checkbox"
+                            key={`enemy-${guild}`}
+                            id={`enemy-guild-${guild}`}
+                            label={guild}
+                            checked={settings.enemyGuilds.includes(guild)}
+                            onChange={ev => onChangeEnemy(ev, guild)}
+                            className="me-2"
+                        />
+                    ))}
                 </div>
-                <div className="mb-4 border border-secondary rounded-box p-3 bg-neutral/10">
-                    <h5 className="font-bold mb-2">Zbieranie przedmiotów</h5>
-                    <div className="flex flex-col gap-2">
-                        <label className="flex items-center gap-1">
-                            <span className="mr-1">Tryb zbierania:</span>
-                            <select
-                                className="select select-sm"
-                                value={settings.collectMode}
-                                onChange={e => onChangeSetting(s => s.collectMode = parseInt(e.target.value))}
-                            >
-                                {collectModeOptions.map((label, i) => (
-                                    <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label className="flex items-center gap-1">
-                            <span className="mr-1">Rodzaj monet:</span>
-                            <select
-                                className="select select-sm"
-                                value={settings.collectMoneyType}
-                                onChange={e => onChangeSetting(s => s.collectMoneyType = parseInt(e.target.value))}
-                            >
-                                {collectMoneyOptions.map((label, i) => (
-                                    <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <div>
-                            <span className="mr-1">Dodatkowe przedmioty:</span>
-                            <input
-                                id="extraItem"
-                                type="text"
-                                className="input input-bordered input-sm mr-1 w-40"
-                                value={extraInput}
-                                onChange={e => setExtraInput(e.target.value)}
-                                onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        if (extraInput.trim()) {
-                                            onChangeSetting(s => s.collectExtra = [...s.collectExtra, extraInput.trim()]);
-                                            setExtraInput('');
-                                        }
-                                    }
-                                }}
-                            />
-                            <button
-                                className="btn btn-sm"
-                                onClick={() => {
+            </div>
+            <div className="mb-4 border rounded p-3">
+                <h5 className="fw-bold mb-2">Pozostałe opcje</h5>
+                <div className="d-flex flex-wrap gap-3">
+                    <Form.Check
+                        type="checkbox"
+                        id="replaceMap"
+                        label="Zamień wbudowaną mapę"
+                        checked={settings.replaceMap}
+                        onChange={e => onChangeSetting(s => s.replaceMap = e.target.checked)}
+                        className="me-2"
+                    />
+                    <Form.Check
+                        type="checkbox"
+                        id="packageHelper"
+                        label="Asystent paczek"
+                        checked={settings.packageHelper}
+                        onChange={e => onChangeSetting(s => s.packageHelper = e.target.checked)}
+                        className="me-2"
+                    />
+                    <Form.Check
+                        type="checkbox"
+                        id="inlineCompassRose"
+                        label="Róża wiatrów"
+                        checked={settings.inlineCompassRose}
+                        onChange={e => onChangeSetting(s => s.inlineCompassRose = e.target.checked)}
+                        className="me-2"
+                    />
+                </div>
+            </div>
+            <div className="mb-4 border rounded p-3">
+                <h5 className="fw-bold mb-2">Pojemniki</h5>
+                <div className="d-flex flex-wrap gap-3">
+                    <Form.Check
+                        type="checkbox"
+                        id="prettyContainers"
+                        label="Formatuj pojemniki"
+                        checked={settings.prettyContainers}
+                        onChange={e => onChangeSetting(s => s.prettyContainers = e.target.checked)}
+                        className="me-2"
+                    />
+                    <Form.Group className="d-flex align-items-center me-2">
+                        <Form.Label className="me-1 mb-0">Kolumny:</Form.Label>
+                        <Form.Control
+                            type="number"
+                            min={1}
+                            max={4}
+                            id="containerColumns"
+                            value={settings.containerColumns}
+                            onChange={ev => onChangeSetting(s => s.containerColumns = parseInt(ev.target.value) || 1)}
+                            style={{width: '4rem'}}
+                        />
+                    </Form.Group>
+                </div>
+            </div>
+            <div className="mb-4 border rounded p-3">
+                <h5 className="fw-bold mb-2">Zbieranie przedmiotów</h5>
+                <div className="d-flex flex-column gap-2">
+                    <Form.Group className="d-flex align-items-center">
+                        <Form.Label className="me-1 mb-0">Tryb zbierania:</Form.Label>
+                        <Form.Select
+                            size="sm"
+                            value={settings.collectMode}
+                            onChange={e => onChangeSetting(s => s.collectMode = parseInt(e.target.value))}
+                            className="w-auto"
+                        >
+                            {collectModeOptions.map((label, i) => (
+                                <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="d-flex align-items-center">
+                        <Form.Label className="me-1 mb-0">Rodzaj monet:</Form.Label>
+                        <Form.Select
+                            size="sm"
+                            value={settings.collectMoneyType}
+                            onChange={e => onChangeSetting(s => s.collectMoneyType = parseInt(e.target.value))}
+                            className="w-auto"
+                        >
+                            {collectMoneyOptions.map((label, i) => (
+                                <option value={i + 1} key={i + 1}>{`${i + 1} - ${label}`}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label className="me-1">Dodatkowe przedmioty:</Form.Label>
+                        <Form.Control
+                            id="extraItem"
+                            type="text"
+                            size="sm"
+                            value={extraInput}
+                            onChange={e => setExtraInput(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
                                     if (extraInput.trim()) {
                                         onChangeSetting(s => s.collectExtra = [...s.collectExtra, extraInput.trim()]);
                                         setExtraInput('');
                                     }
-                                }}
-                            >
-                                Dodaj
-                            </button>
-                        </div>
-                        <ul className="list-disc pl-5">
-                            {settings.collectExtra.map(item => (
-                                <li key={item} className="flex items-center gap-2">
-                                    <span>{item}</span>
-                                    <button className="btn btn-xs" onClick={() => onChangeSetting(s => s.collectExtra = s.collectExtra.filter(i => i !== item))}>Usuń</button>
-                                </li>
-                            ))}
-                        </ul>
-                        {settings.collectExtra.length > 0 && (
-                            <button className="btn btn-xs mt-1" onClick={() => onChangeSetting(s => s.collectExtra = [])}>Wyczyść wszystko</button>
-                        )}
-                    </div>
+                                }
+                            }}
+                            className="d-inline-block me-1 w-auto"
+                            style={{width: '10rem'}}
+                        />
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                if (extraInput.trim()) {
+                                    onChangeSetting(s => s.collectExtra = [...s.collectExtra, extraInput.trim()]);
+                                    setExtraInput('');
+                                }
+                            }}
+                        >
+                            Dodaj
+                        </Button>
+                    </Form.Group>
+                    <ul className="list-unstyled ms-3">
+                        {settings.collectExtra.map(item => (
+                            <li key={item} className="d-flex align-items-center gap-2">
+                                <span>{item}</span>
+                                <Button size="sm" variant="secondary" onClick={() => onChangeSetting(s => s.collectExtra = s.collectExtra.filter(i => i !== item))}>Usuń</Button>
+                            </li>
+                        ))}
+                    </ul>
+                    {settings.collectExtra.length > 0 && (
+                        <Button size="sm" variant="secondary" className="mt-1" onClick={() => onChangeSetting(s => s.collectExtra = [])}>Wyczyść wszystko</Button>
+                    )}
                 </div>
-                <button className="btn btn-primary mt-2" onClick={() => handleSubmission()}>Zapisz</button>
             </div>
-        </>
+            <Button className="mt-2" onClick={handleSubmission}>Zapisz</Button>
+        </div>
     )
 }
 

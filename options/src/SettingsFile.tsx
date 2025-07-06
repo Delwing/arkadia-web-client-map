@@ -1,4 +1,5 @@
 import {ChangeEvent, useRef, useState} from "react";
+import {Button, Form} from 'react-bootstrap';
 import storage from "./storage";
 
 function SettingsFile() {
@@ -36,26 +37,26 @@ function SettingsFile() {
     }
 
     return (
-        <div className="m-2 flex flex-col gap-2">
-            <button className="btn btn-primary btn-sm w-40" onClick={downloadSettings}>
+        <div className="m-2 d-flex flex-column gap-2">
+            <Button variant="primary" size="sm" className="w-40" onClick={downloadSettings}>
                 Pobierz ustawienia
-            </button>
-            <label className="btn btn-primary btn-sm w-40" htmlFor="settingsFile">
+            </Button>
+            <Form.Label as={Button} variant="primary" size="sm" className="w-40" htmlFor="settingsFile">
                 Wczytaj ustawienia
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
                 id="settingsFile"
                 ref={fileInput}
                 type="file"
                 accept="application/json"
-                className="hidden"
+                className="d-none"
                 onChange={uploadSettings}
             />
             {message && (
                 <div>
                     <div>{message}</div>
                     {details.length > 0 && (
-                        <ul className="list-disc pl-4 text-sm">
+                        <ul className="list-unstyled ms-3 small">
                             {details.map(line => <li key={line}>{line}</li>)}
                         </ul>
                     )}
