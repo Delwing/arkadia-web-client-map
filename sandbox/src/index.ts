@@ -1,8 +1,8 @@
 import "./sandbox.ts"
 import "@client/src/main.ts"
 
-import npc from "./npc.json";
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
+import { loadNpcData } from "./npcDataLoader.ts";
 import { fakeClient } from "./fakeClient.ts";
 import { demoMap } from "./Controls.tsx";
 
@@ -17,14 +17,16 @@ const defaultSettings = {
     collectExtra: []
 }
 
-localStorage.setItem('npc', JSON.stringify(npc))
 localStorage.setItem('settings', JSON.stringify(defaultSettings))
+
+loadNpcData().then(npc => {
+    fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
+});
 
 if (!localStorage.getItem('kill_counter')) {
     localStorage.setItem('kill_counter', JSON.stringify({}))
 }
 
-fakeClient.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}));
 const frame: HTMLIFrameElement = document.getElementById("cm-frame")! as HTMLIFrameElement;
 
 // Load map data and colors asynchronously
