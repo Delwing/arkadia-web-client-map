@@ -1,3 +1,5 @@
+import storage from "@options/src/storage.ts";
+
 export default class MockPort {
     listeners: Array<(msg: any) => void> = [];
     onMessage = {
@@ -5,6 +7,17 @@ export default class MockPort {
             this.listeners.push(cb);
         }
     };
+
+    constructor() {
+        storage.onChanged?.addListener(changes => {
+            Object.entries(changes).forEach(([key, {newValue}]) => {
+                this.dispatch({storage: {key, value: newValue}});
+                if (key === 'settings' || key === 'npc') {
+                    this.dispatch({[key]: newValue});
+                }
+            });
+        });
+    }
 
     private dispatch(message: any) {
         this.listeners.forEach(l => l(message));
