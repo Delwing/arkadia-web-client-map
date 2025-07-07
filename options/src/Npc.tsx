@@ -55,7 +55,7 @@ function Npc() {
                 />
             </div>
             <Table bordered size="sm" className="table-zebra">
-                <tbody>
+                <tbody className="align-middle">
                 {npcs
                     .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
                     .sort((a, b) => a.name.localeCompare(b.name))
