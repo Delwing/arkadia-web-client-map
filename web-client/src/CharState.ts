@@ -8,8 +8,8 @@ const MAX_STATE = {
   form: 6,
   intox: 9,
   headache: 5,
-  stuffed: 2,
-  soaked: 2,
+  stuffed: 3,
+  soaked: 3,
   encumbrance: 5,
   panic: 4,
 } as const;
@@ -63,7 +63,6 @@ export default class CharState {
   }
 
   private update(state: CharStateData) {
-    console.log(state);
     if (!this.container) return;
 
     const entries: [keyof CharStateData, number][] = Object.entries(state) as [
@@ -71,7 +70,7 @@ export default class CharState {
       number,
     ][];
     this.container.textContent = entries
-      .map(([key, value]) => `${this.labels[key]}: ${value}/${MAX_STATE[key]}`)
+      .map(([key, value]) => `${this.labels[key]}: [${value}/${MAX_STATE[key]}]`)
       .join(" ");
   }
 }
