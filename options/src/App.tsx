@@ -12,7 +12,7 @@ function App() {
 
     return (
         <div className="p-2 d-flex flex-column h-100">
-            <Tabs activeKey={tab} onSelect={(k) => k && setTab(k as any)} className="mb-2">
+            <Tabs activeKey={tab} onSelect={(k) => k && setTab(k as any)} className="mb-2" variant={"pills"}>
                 <Tab eventKey="settings" title="Ustawienia">
                     <SettingsForm />
                 </Tab>
