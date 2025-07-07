@@ -362,7 +362,8 @@ button:focus-visible {
 }
 
 #options-modal .modal-dialog,
-#docs-modal .modal-dialog {
+#docs-modal .modal-dialog,
+#login-modal .modal-dialog {
   margin-top: 5vh;
   margin-bottom: 5vh;
 }

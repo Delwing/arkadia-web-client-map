@@ -173,7 +173,7 @@ client.on('message', (message: string, type?: string) => {
 let isConnected = false;
 
 // Function to update the connect button state
-function updateConnectButton() {
+function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     if (connectButton) {
         if (isConnected) {
@@ -185,19 +185,20 @@ function updateConnectButton() {
             connectButton.classList.remove('connected');
         }
     }
+    document.getElementById('login-button').style.display = connectButton.style.display;
 }
 
 // Handle client connect event
 client.on('client.connect', () => {
     isConnected = true;
-    updateConnectButton();
+    updateConnectButtons();
     console.log('Client connected to Arkadia server.');
 });
 
 // Handle client disconnect event
 client.on('client.disconnect', () => {
     isConnected = false;
-    updateConnectButton();
+    updateConnectButtons();
     console.log('Client disconnected from Arkadia server.');
 });
 
@@ -242,12 +243,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
+    const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
 
     // Initialize Bootstrap modal
     const optionsModalElement = document.getElementById('options-modal');
     const optionsModal = optionsModalElement ? new Modal(optionsModalElement) : null;
+    const loginModalElement = document.getElementById('login-modal');
+    const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
+    const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
+    const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
+    const loginSubmit = document.getElementById('login-submit') as HTMLButtonElement | null;
 
     if (menuButton) {
         new Dropdown(menuButton);
@@ -263,6 +270,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (optionsButton && optionsModal) {
         optionsButton.addEventListener('click', () => {
             optionsModal.show();
+        });
+    }
+
+    if (loginButton && loginModal && loginSubmit) {
+        loginButton.addEventListener('click', () => {
+            loginModal.show();
+        });
+
+        loginSubmit.addEventListener('click', () => {
+            const character = loginCharacter?.value || '';
+            const password = loginPassword?.value || '';
+            loginModal.hide();
+
+            const sendCreds = () => {
+                if (character) Input.send(character);
+                if (password) Input.send(password);
+                client.off('client.connect', sendCreds);
+            };
+
+            if (!isConnected) {
+                client.on('client.connect', sendCreds);
+                client.connect();
+            } else {
+                sendCreds();
+            }
         });
     }
 
@@ -358,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize button state
-    updateConnectButton();
+    updateConnectButtons();
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
