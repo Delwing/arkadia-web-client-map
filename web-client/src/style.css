@@ -98,6 +98,22 @@ h1 {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+#menu-button {
+    height: 100%;
+}
+
+#input-area .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+    padding: 0.5vh;
+}
+
+#input-area .dropdown-menu .dropdown-item {
+    width: 100%;
+    text-align: left;
+}
+
 #input-area button:hover {
     border-color: #fff;
 }
