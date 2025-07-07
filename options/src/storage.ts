@@ -6,7 +6,7 @@ interface Storage {
     downloadItem(url: string, ttl: number): Promise<{value: any, cacheTime: number, ttl: number }>;
 }
 
-let download = async (storage: Storage, url: string, ttl: number) => {
+const download = async (storage: Storage, url: string, ttl: number) => {
     return storage.getItem(url).then(cacheContent => {
         if (cacheContent && cacheContent.value && cacheContent.cacheTime && cacheContent.cacheTime + cacheContent.ttl > Date.now()) {
             return cacheContent.value;

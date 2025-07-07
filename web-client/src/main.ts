@@ -94,19 +94,6 @@ function playNoSleepAudio() {
     }
 }
 
-const defaultSettings = {
-    guilds: [],
-    packageHelper: true,
-    inlineCompassRose: false,
-    prettyContainers: true,
-    containerColumns: 1,
-    collectMode: 3,
-    collectMoneyType: 1,
-    collectExtra: []
-}
-
-localStorage.setItem('settings', JSON.stringify(defaultSettings))
-
 loadNpcData().then(npc => {
     window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
 })

@@ -10,7 +10,7 @@ export default defineConfig({
     ],
     base: "./",
     build: {
-        minify: false,
+        minify: true,
         sourcemap: true,
         rollupOptions: {
             input: {
