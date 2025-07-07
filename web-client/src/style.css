@@ -324,37 +324,13 @@ button:focus-visible {
   pointer-events: none;
 }
 
-#docs-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 8vh 2vh 2vh;
-  z-index: 10000;
-}
-#docs-modal.hidden {
-  display: none;
-}
-.docs-modal-content {
-  background: #1a1a1a;
-  border: 1px solid #444;
-  padding: 2vh;
-  max-height: 90vh;
-  overflow: hidden;
-  width: 90vw;
+#docs-modal .modal-body {
   display: flex;
   gap: 2vw;
 }
+
 .docs-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 1vmin;
   min-width: 20vw;
-}
-.docs-nav button {
-  width: 100%;
 }
 
 .docs-content {
