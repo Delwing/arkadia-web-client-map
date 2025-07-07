@@ -99,6 +99,7 @@ export default class Client {
 
         this.addEventListener('output-sent', () => {
             buffer.forEach(item => Output.send(item.out, item.type));
+            this.sendEvent('output-sent', buffer.length)
         }, {once: true});
 
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
