@@ -4,18 +4,23 @@ import aliasesMd from "../../docs/ALIASES.md?raw";
 import bagManagerMd from "../../docs/BAG_MANAGER.md?raw";
 import charStateMd from "../../docs/CHAR_STATE.md?raw";
 
-interface DocDef { key: string; title: string; md: string; }
+interface DocDef {
+  key: string;
+  title: string;
+  md: string;
+}
 const docs: DocDef[] = [
-    { key: 'aliases', title: 'Aliasy', md: aliasesMd },
-    { key: 'bag', title: 'Mened\u017cer pojemnik\u00f3w', md: bagManagerMd }
+  { key: "aliases", title: "Aliasy", md: aliasesMd },
+  { key: "bag", title: "Mened\u017cer pojemnik\u00f3w", md: bagManagerMd },
+  { key: "charstate", title: "Stan postaci", md: charStateMd },
 ];
 
 function createModal() {
-    const modalEl = document.createElement("div");
-    modalEl.id = "docs-modal";
-    modalEl.className = "modal fade";
-    modalEl.tabIndex = -1;
-    modalEl.innerHTML = `
+  const modalEl = document.createElement("div");
+  modalEl.id = "docs-modal";
+  modalEl.className = "modal fade";
+  modalEl.tabIndex = -1;
+  modalEl.innerHTML = `
 <div class="modal-dialog modal-xl modal-dialog-scrollable">
   <div class="modal-content">
     <div class="modal-header">
@@ -29,48 +34,52 @@ function createModal() {
         </button>
         <ul class="dropdown-menu" aria-labelledby="docs-menu">
           ${docs
-              .map(
-                  (d) =>
-                      `<li><a class="dropdown-item" href="#" data-key="${d.key}">${d.title}</a></li>`
-              )
-              .join("")}
+            .map(
+              (d) =>
+                `<li><a class="dropdown-item" href="#" data-key="${d.key}">${d.title}</a></li>`,
+            )
+            .join("")}
         </ul>
       </div>
       <div id="docs-content" class="docs-content flex-fill overflow-auto"></div>
     </div>
   </div>
 </div>`;
-    document.body.appendChild(modalEl);
-    const modal = new Modal(modalEl);
-    return { modalEl, modal };
+  document.body.appendChild(modalEl);
+  const modal = new Modal(modalEl);
+  return { modalEl, modal };
 }
 
 function initDocs() {
-    const docsButton = document.getElementById('docs-button') as HTMLButtonElement | null;
-    if (!docsButton) return;
+  const docsButton = document.getElementById(
+    "docs-button",
+  ) as HTMLButtonElement | null;
+  if (!docsButton) return;
 
-    const { modalEl, modal } = createModal();
-    const content = modalEl.querySelector('#docs-content') as HTMLElement;
-    const toggleBtn = modalEl.querySelector('#docs-menu') as HTMLButtonElement;
-    const navButtons = Array.from(modalEl.querySelectorAll('.docs-nav [data-key]')) as HTMLElement[];
+  const { modalEl, modal } = createModal();
+  const content = modalEl.querySelector("#docs-content") as HTMLElement;
+  const toggleBtn = modalEl.querySelector("#docs-menu") as HTMLButtonElement;
+  const navButtons = Array.from(
+    modalEl.querySelectorAll(".docs-nav [data-key]"),
+  ) as HTMLElement[];
 
-    async function showDoc(key: string) {
-        const doc = docs.find(d => d.key === key);
-        if (!doc) return;
-        const html = await marked.parse(doc.md);
-        content.innerHTML = html as string;
-        toggleBtn.textContent = doc.title;
-        modal.show();
-    }
+  async function showDoc(key: string) {
+    const doc = docs.find((d) => d.key === key);
+    if (!doc) return;
+    const html = await marked.parse(doc.md);
+    content.innerHTML = html as string;
+    toggleBtn.textContent = doc.title;
+    modal.show();
+  }
 
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showDoc((btn as HTMLElement).dataset.key!);
-        });
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showDoc((btn as HTMLElement).dataset.key!);
     });
+  });
 
-    docsButton.addEventListener('click', () => showDoc(docs[0].key));
+  docsButton.addEventListener("click", () => showDoc(docs[0].key));
 }
 
-document.addEventListener('DOMContentLoaded', initDocs);
+document.addEventListener("DOMContentLoaded", initDocs);
