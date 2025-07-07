@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const rootElement = document.getElementById('options');
     if (rootElement) {
-        createRoot(rootElement).render(createElement(App));
+        createRoot(rootElement).render(createElement(Settings));
     }
 });
 
@@ -413,3 +413,4 @@ window.addEventListener('resize', () => {
 window.client = client
 
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
+import Settings from "@options/src/Settings.tsx";

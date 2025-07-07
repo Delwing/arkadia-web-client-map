@@ -289,8 +289,6 @@ function SettingsForm() {
                     )}
                 </div>
             </div>
-        </div>
-        <div className="sticky-footer text-end">
             <Button onClick={handleSubmission}>Zapisz</Button>
         </div>
     )
