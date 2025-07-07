@@ -103,10 +103,14 @@ h1 {
 }
 
 #input-area .dropdown-menu {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 0.5vh;
     padding: 0.5vh;
+}
+
+#input-area .dropdown-menu.show {
+    display: flex;
 }
 
 #input-area .dropdown-menu .dropdown-item {
@@ -389,4 +393,3 @@ button:focus-visible {
   flex: 1;
   overflow-y: auto;
 }
-
