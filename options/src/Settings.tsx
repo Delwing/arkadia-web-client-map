@@ -98,6 +98,8 @@ function SettingsForm() {
         storage.setItem("settings", settings)
         if (chrome.runtime) {
             window.close()
+        } else {
+            window.dispatchEvent(new Event('close-options'))
         }
     }
 
