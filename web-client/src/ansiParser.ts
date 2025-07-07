@@ -323,7 +323,7 @@ export function parseAnsiPatterns(input: string): string {
     let offset = 0;
     let output = input;
 
-    const ansiRegex = /\[([0-9]+(?:;[0-9]+)*)m/g;
+    const ansiRegex = /\x1B\[([0-9]+(?:;[0-9]+)*)m/g;
 
     for (let match; match = ansiRegex.exec(input);) {
         const ansiSequence = match[1];

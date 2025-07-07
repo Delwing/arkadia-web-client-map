@@ -20,6 +20,7 @@ class ArkadiaClient {
     private socket!: WebSocket;
     private events: EventMap = {};
     private receivedFirstGmcp: boolean = false;
+    private linesProcessed = 0
 
 
     /**
@@ -131,10 +132,12 @@ class ArkadiaClient {
             return
         }
 
+        this.linesProcessed = 0
         const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this));
         if (leftOver.length > 2) {
             this.emit('message', leftOver.substring(2, leftOver.length - 2));
         }
+        window.clientExtension.sendEvent('output-sent', this.linesProcessed)
     }
 
     /**
@@ -172,12 +175,14 @@ class ArkadiaClient {
                 const gmcp = JSON.parse(payload);
                 this.receivedFirstGmcp = this.receivedFirstGmcp  || type === "char.info";
                 window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
+                window.clientExtension.sendEvent('gmcp', { path: type, value: gmcp })
                 if (type === "gmcp_msgs") {
                     let text = atob(gmcp.text)
                     text = window.clientExtension.onLine(text, gmcp.type)
                     gmcp.text = btoa(text)
                     window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${gmcp.type}`, gmcp), {once: true})
                     Output.send(parseAnsiPatterns(text), gmcp.type);
+                    this.linesProcessed++;
                 }
             } catch (error) {
                 console.error('Error parsing GMCP JSON:', error);

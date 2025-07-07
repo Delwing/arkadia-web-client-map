@@ -381,5 +381,4 @@ window.addEventListener('resize', () => {
 // @ts-ignore
 window.client = client
 
-// Import mobile direction buttons (only in sandbox)
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"

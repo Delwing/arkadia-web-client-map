@@ -44,13 +44,6 @@ Input.send = (command: string) => {
         })
     }
 }
-Output.send = (out, type): any => {
-    const bufferSize = Output.buffer.length + 1
-    const result = rawOutputSend(out, type)
-    client.sendEvent('output-sent', bufferSize)
-    return result;
-}
-
 
 const aliases = [
     {

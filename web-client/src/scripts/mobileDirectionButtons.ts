@@ -2,11 +2,11 @@ import Client from "@client/src/Client";
 
 export default class MobileDirectionButtons {
     private client: Client;
-    private container: HTMLDivElement;
+    private readonly container: HTMLDivElement;
+    private readonly messageInput: HTMLInputElement | null = null;
+    private readonly contentArea: HTMLElement | null = null;
     private enabled = false;
     private isMobile = false;
-    private messageInput: HTMLInputElement | null = null;
-    private contentArea: HTMLElement | null = null;
 
     // Variables for dragging functionality
     private isDragging = false;
