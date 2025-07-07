@@ -2,6 +2,7 @@ import 'bootswatch/dist/darkly/bootstrap.min.css';
 import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
+import { Modal } from 'bootstrap';
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
@@ -254,6 +255,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
+    const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
+
+    // Initialize Bootstrap modal
+    const optionsModalElement = document.getElementById('options-modal');
+    const optionsModal = optionsModalElement ? new Modal(optionsModalElement) : null;
+
+    // Add event listener to options button
+    if (optionsButton && optionsModal) {
+        optionsButton.addEventListener('click', () => {
+            optionsModal.show();
+        });
+    }
 
     // Command history implementation
     const commandHistory: string[] = [];
@@ -372,4 +385,3 @@ window.client = client
 
 // Import mobile direction buttons (only in sandbox)
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
-
