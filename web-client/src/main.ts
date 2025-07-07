@@ -173,7 +173,7 @@ client.on('message', (message: string, type?: string) => {
 let isConnected = false;
 
 // Function to update the connect button state
-function updateConnectButton() {
+function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     if (connectButton) {
         if (isConnected) {
@@ -185,19 +185,20 @@ function updateConnectButton() {
             connectButton.classList.remove('connected');
         }
     }
+    document.getElementById('login-button').style.display = connectButton.style.display;
 }
 
 // Handle client connect event
 client.on('client.connect', () => {
     isConnected = true;
-    updateConnectButton();
+    updateConnectButtons();
     console.log('Client connected to Arkadia server.');
 });
 
 // Handle client disconnect event
 client.on('client.disconnect', () => {
     isConnected = false;
-    updateConnectButton();
+    updateConnectButtons();
     console.log('Client disconnected from Arkadia server.');
 });
 
@@ -389,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize button state
-    updateConnectButton();
+    updateConnectButtons();
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
