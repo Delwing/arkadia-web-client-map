@@ -2,6 +2,7 @@ import './App.css'
 import {ChangeEvent, useEffect, useState} from "react";
 import {Button, Form, Table} from 'react-bootstrap';
 import storage from "./storage.ts";
+import {TiDelete} from "react-icons/ti";
 
 interface NpcProps {
     name: string;
@@ -42,8 +43,8 @@ function Npc() {
     return (
         <div className="m-2">
             <div className="mb-2 d-flex align-items-center gap-2">
-                <Button variant="primary" size="sm" onClick={downloadNpcs}>Pobierz bazę</Button>
-                <Button variant="danger" size="sm" onClick={clearNpcs}>Wyczyść bazę</Button>
+                <Button variant="primary" size="sm" onClick={downloadNpcs}>Pobierz</Button>
+                <Button variant="danger" size="sm" onClick={clearNpcs}>Wyczyść</Button>
                 <Form.Control
                     type="text"
                     placeholder="Filtruj"
@@ -63,7 +64,7 @@ function Npc() {
                             <td>{item.name}</td>
                             <td>{item.loc}</td>
                             <td>
-                                <Button variant="danger" size="sm" onClick={() => deleteNpc(item)}>usuń</Button>
+                                <Button variant="danger" size="sm" onClick={() => deleteNpc(item)}><TiDelete /></Button>
                             </td>
                         </tr>
                     ))}
