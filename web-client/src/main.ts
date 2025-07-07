@@ -1,4 +1,5 @@
 import 'bootswatch/dist/darkly/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.js'
 import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
