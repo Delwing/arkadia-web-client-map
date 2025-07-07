@@ -56,4 +56,13 @@ describe('TeamManager', () => {
     expect(members).toEqual(expect.arrayContaining(['Vesper', 'Pablo', 'Opeteh']));
     expect(manager.isInTeam('Pablo')).toBe(true);
   });
+
+  test('stores attack and defense target ids', () => {
+    client.sendEvent('gmcp.objects.data', {
+      '1': { desc: 'Bob', living: true, team: true, attack_target: true },
+      '2': { desc: 'Alice', living: true, team: true, defense_target: true },
+    });
+    expect(manager.getAttackTargetId()).toBe('1');
+    expect(manager.getDefenseTargetId()).toBe('2');
+  });
 });

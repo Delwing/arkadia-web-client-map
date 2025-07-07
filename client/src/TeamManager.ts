@@ -18,6 +18,8 @@ export default class TeamManager {
     private leader?: string;
     private tag = 'teamManager';
     private accumulatedObjectsData = {}
+    private attackTargetId?: string
+    private defenseTargetId?: string
 
     constructor(client: Client) {
         this.client = client;
@@ -29,10 +31,26 @@ export default class TeamManager {
         }
     }
 
-    private handleObjectsData(data: Record<number,ObjectData>) {
-        Object.assign(this.accumulatedObjectsData, data)
+    private handleObjectsData(data: Record<number, ObjectData>) {
+        Object.entries(data).forEach(([id, obj]) => {
+            this.accumulatedObjectsData[id] = { ...(this.accumulatedObjectsData as any)[id], ...obj };
 
-        Object.values(data).forEach(obj => {
+            if (typeof obj.attack_target === 'boolean') {
+                if (obj.attack_target) {
+                    this.attackTargetId = id;
+                } else if (this.attackTargetId === id) {
+                    this.attackTargetId = undefined;
+                }
+            }
+
+            if (typeof obj.defense_target === 'boolean') {
+                if (obj.defense_target) {
+                    this.defenseTargetId = id;
+                } else if (this.defenseTargetId === id) {
+                    this.defenseTargetId = undefined;
+                }
+            }
+
             if (obj && obj.living && obj.team) {
                 const name = obj.desc;
                 if (name) {
@@ -114,6 +132,14 @@ export default class TeamManager {
 
     getAccumulatedObjectsData() {
         return this.accumulatedObjectsData
+    }
+
+    getAttackTargetId() {
+        return this.attackTargetId;
+    }
+
+    getDefenseTargetId() {
+        return this.defenseTargetId;
     }
 
 
