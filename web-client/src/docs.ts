@@ -2,11 +2,12 @@ import { marked } from "marked";
 import Modal from "bootstrap/js/dist/modal";
 import aliasesMd from "../../docs/ALIASES.md?raw";
 import bagManagerMd from "../../docs/BAG_MANAGER.md?raw";
+import charStateMd from "../../docs/CHAR_STATE.md?raw";
 
 interface DocDef { key: string; title: string; md: string; }
 const docs: DocDef[] = [
     { key: 'aliases', title: 'Aliasy', md: aliasesMd },
-    { key: 'bag', title: 'Mened\u017cer pojemnik\u00f3w', md: bagManagerMd },
+    { key: 'bag', title: 'Mened\u017cer pojemnik\u00f3w', md: bagManagerMd }
 ];
 
 function createModal() {

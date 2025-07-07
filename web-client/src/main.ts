@@ -3,6 +3,7 @@ import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 import { Modal, Dropdown } from 'bootstrap';
+import CharState from "./CharState";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
@@ -391,6 +392,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize button state
     updateConnectButtons();
+
+    // Display character state
+    new CharState(client);
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
