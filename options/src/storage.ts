@@ -4,6 +4,11 @@ interface Storage {
     setItem(key: string, value: any): Promise<any>;
 
     downloadItem(url: string, ttl: number): Promise<{value: any, cacheTime: number, ttl: number }>;
+
+    onChanged?: {
+        addListener: (listener: (changes: { [key: string]: { oldValue: any, newValue: any } }) => void) => void;
+        removeListener?: (listener: (changes: { [key: string]: { oldValue: any, newValue: any } }) => void) => void;
+    };
 }
 
 let download = async (storage: Storage, url: string, ttl: number) => {
@@ -21,6 +26,25 @@ let download = async (storage: Storage, url: string, ttl: number) => {
 
 
 class LocalStorage implements Storage {
+    private listeners: Array<(changes: { [key: string]: { oldValue: any, newValue: any } }) => void> = [];
+
+    constructor() {
+        window.addEventListener('storage', (ev: StorageEvent) => {
+            if (!ev.key) return;
+            const changes: { [key: string]: { oldValue: any, newValue: any } } = {};
+            let oldValue: any = undefined;
+            if (ev.oldValue !== null) {
+                try { oldValue = JSON.parse(ev.oldValue); } catch { oldValue = ev.oldValue; }
+            }
+            let newValue: any = undefined;
+            if (ev.newValue !== null) {
+                try { newValue = JSON.parse(ev.newValue); } catch { newValue = ev.newValue; }
+            }
+            changes[ev.key] = { oldValue, newValue };
+            this.listeners.forEach(l => l(changes));
+        });
+    }
+
     getItem(key: string): Promise<any> {
         const value = localStorage.getItem(key);
         if (value) {
@@ -35,11 +59,30 @@ class LocalStorage implements Storage {
     }
 
     setItem(key: string, value: any): Promise<void> {
-        return Promise.resolve(localStorage.setItem(key, JSON.stringify(value)));
+        const oldRaw = localStorage.getItem(key);
+        let oldValue: any = undefined;
+        if (oldRaw !== null) {
+            try { oldValue = JSON.parse(oldRaw); } catch { oldValue = oldRaw; }
+        }
+        localStorage.setItem(key, JSON.stringify(value));
+        const changes: { [key: string]: { oldValue: any, newValue: any } } = {
+            [key]: { oldValue, newValue: value }
+        };
+        this.listeners.forEach(l => l(changes));
+        return Promise.resolve();
     }
 
     downloadItem(url: string, ttl: number): Promise<any> {
         return download(this, url, ttl)
+    }
+
+    onChanged = {
+        addListener: (listener: (changes: { [key: string]: { oldValue: any, newValue: any } }) => void) => {
+            this.listeners.push(listener);
+        },
+        removeListener: (listener: (changes: { [key: string]: { oldValue: any, newValue: any } }) => void) => {
+            this.listeners = this.listeners.filter(l => l !== listener);
+        }
     }
 }
 
