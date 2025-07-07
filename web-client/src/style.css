@@ -360,3 +360,9 @@ button:focus-visible {
   flex: 1;
   overflow-y: auto;
 }
+
+#options-modal .modal-dialog,
+#docs-modal .modal-dialog {
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
