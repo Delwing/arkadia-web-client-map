@@ -51,11 +51,13 @@ function Binds() {
     }
 
     function save() {
-        storage.getItem('settings').then(res => {
-            const settings = { ...(res.settings || {}), binds };
-            storage.setItem('settings', settings).then(() => {
+            storage.getItem('settings').then(res => {
+                const settings = { ...(res.settings || {}), binds };
+                storage.setItem('settings', settings).then(() => {
                 if (chrome.runtime) {
                     window.close();
+                } else {
+                    window.dispatchEvent(new Event('close-options'));
                 }
             });
         });

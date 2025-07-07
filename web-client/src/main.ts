@@ -266,6 +266,12 @@ document.addEventListener('DOMContentLoaded', () => {
         new Dropdown(menuButton);
     }
 
+    window.addEventListener('close-options', () => {
+        if (optionsModal) {
+            optionsModal.hide();
+        }
+    });
+
     // Add event listener to options button
     if (optionsButton && optionsModal) {
         optionsButton.addEventListener('click', () => {
