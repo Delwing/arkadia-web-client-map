@@ -50,7 +50,7 @@ function Npc() {
                     size="sm"
                     value={filter}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
-                    style={{width: '160px'}}
+                    style={{width: '100%', maxWidth: '160px'}}
                 />
             </div>
             <Table bordered size="sm" className="table-zebra">
