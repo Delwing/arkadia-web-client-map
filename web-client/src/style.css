@@ -330,8 +330,7 @@ button:focus-visible {
   touch-action: manipulation; /* Improve touch behavior */
 }
 
-#c-button {
-  background-color: #6CA6CD; /* Slightly darker sky blue */
+.mobile-button-text {
   font-size: 9px; /* Smaller font for 'zerknij' text */
   padding: 1px; /* Minimal padding */
   line-height: 1; /* Tighter line height */
@@ -340,13 +339,8 @@ button:focus-visible {
   overflow-wrap: break-word; /* Break words if necessary */
 }
 
-#special-exit-button {
-  font-size: 9px;
-  padding: 1px;
-  line-height: 1;
-  white-space: normal;
-  text-align: center;
-  overflow-wrap: break-word;
+#c-button {
+  background-color: #6CA6CD; /* Slightly darker sky blue */
 }
 
 /* Dragging state for mobile buttons */

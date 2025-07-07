@@ -1,4 +1,5 @@
 import Client from "@client/src/Client";
+import {client} from "@client/src/main.ts";
 
 export default class MobileDirectionButtons {
     private client: Client;
@@ -91,7 +92,7 @@ export default class MobileDirectionButtons {
         const button1 = document.getElementById('button-1');
         if (button1) {
             button1.addEventListener('click', () => {
-                // Unassigned button 1
+                client.sendCommand("wesprzyj")
             });
         }
 
@@ -99,7 +100,9 @@ export default class MobileDirectionButtons {
         const button2 = document.getElementById('button-2');
         if (button2) {
             button2.addEventListener('click', () => {
-                // Unassigned button 2
+                if (window.clientExtension.TeamManager.getAttackTargetId()) {
+                    client.sendCommand(`zabij ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
+                }
             });
         }
 
@@ -107,7 +110,9 @@ export default class MobileDirectionButtons {
         const button3 = document.getElementById('button-3');
         if (button3) {
             button3.addEventListener('click', () => {
-                // Unassigned button 3
+                if (window.clientExtension.TeamManager.getAttackTargetId()) {
+                    client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
+                }
             });
         }
 
