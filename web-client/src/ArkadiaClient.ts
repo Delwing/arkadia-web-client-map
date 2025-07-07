@@ -176,6 +176,7 @@ class ArkadiaClient {
                 this.receivedFirstGmcp = this.receivedFirstGmcp  || type === "char.info";
                 window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
                 window.clientExtension.sendEvent('gmcp', { path: type, value: gmcp })
+                this.emit(`gmcp.${type}`, gmcp);
                 if (type === "gmcp_msgs") {
                     let text = atob(gmcp.text)
                     text = window.clientExtension.onLine(text, gmcp.type)

@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateConnectButton();
 
     // Display character state
-    new CharState(window.clientExtension);
+    new CharState(client);
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
