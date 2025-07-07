@@ -37,9 +37,14 @@
     <div id="input-area">
         <input type="text" id="message-input" autocomplete="off" autocapitalize="off" spellcheck="false"/>
         <button id="send-button">➢</button>
+        <div class="dropdown">
+            <button id="menu-button" class="dropdown-toggle h-100" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><button class="dropdown-item" id="options-button">Options</button></li>
+                <li><button class="dropdown-item" id="docs-button">Docs</button></li>
+            </ul>
+        </div>
         <button id="connect-button">Connect</button>
-        <button id="options-button">Options</button>
-        <button id="docs-button">Docs</button>
     </div>
 
     <!-- Mobile Direction Buttons (hidden by default) -->
