@@ -40,8 +40,7 @@ export default class PackageHelper {
 
 
         this.client.addEventListener('settings', (event) => {
-            this.enabled = event.detail.packageHelper;
-            if (this.enabled) {
+            if (!this.enabled && event.detail.packageHelper) {
                 this.init()
             } else {
                 this.disable()
@@ -50,6 +49,7 @@ export default class PackageHelper {
     }
 
     init() {
+        this.enabled = true;
         this.client.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
             this.leadToPackage(toTitleCase(matches[1]));
         }, tag)
@@ -127,7 +127,6 @@ export default class PackageHelper {
 
     disable() {
         this.client.Triggers.removeByTag(tag)
-        this.client.println(`Asystent paczek wyłączony.`)
     }
 
 }
