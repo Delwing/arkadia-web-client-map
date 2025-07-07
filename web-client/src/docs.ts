@@ -11,8 +11,7 @@ interface DocDef {
 }
 const docs: DocDef[] = [
   { key: "aliases", title: "Aliasy", md: aliasesMd },
-  { key: "bag", title: "Mened\u017cer pojemnik\u00f3w", md: bagManagerMd },
-  { key: "charstate", title: "Stan postaci", md: charStateMd },
+  { key: "bag", title: "Mened\u017cer pojemnik\u00f3w", md: bagManagerMd }
 ];
 
 function createModal() {

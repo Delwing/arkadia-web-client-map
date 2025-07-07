@@ -39,15 +39,15 @@ export default class CharState {
     this.labels = {
       hp: "HP",
       mana: "MANA",
-      fatigue: "FATIGUE",
-      improve: "IMPROVE",
-      form: "FORM",
-      intox: "INTOX",
-      headache: "HEADACHE",
-      stuffed: "STUFFED",
-      soaked: "SOAKED",
-      encumbrance: "ENCUMBRANCE",
-      panic: "PANIC",
+      fatigue: "ZM",
+      improve: "POS",
+      form: "FOR",
+      intox: "UPI",
+      headache: "KAC",
+      stuffed: "GLO",
+      soaked: "PRA",
+      encumbrance: "OBC",
+      panic: "PAN",
     };
 
     if (this.container) {
