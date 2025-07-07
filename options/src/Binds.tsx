@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent } from "react";
+import { useEffect, useState } from "react";
 import {Form, Button} from 'react-bootstrap';
 import storage from "./storage";
 
@@ -44,7 +44,7 @@ function Binds() {
         });
     }, []);
 
-    function handleCapture(name: keyof BindSettings, ev: KeyboardEvent<HTMLInputElement>) {
+    function handleCapture(name: keyof BindSettings, ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
         ev.preventDefault();
         const { code, ctrlKey, altKey, shiftKey } = ev;
         setBinds(prev => ({ ...prev, [name]: { key: code, ctrl: ctrlKey, alt: altKey, shift: shiftKey } }));

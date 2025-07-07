@@ -16,13 +16,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Dist
         run: yarn install && yarn build
-      - run: yarn --cwd sandbox install && yarn --cwd sandbox build
+      - run: yarn --cwd web-client install && yarn --cwd web-client build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './sandbox/dist'
+          path: './web-client/dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
