@@ -208,7 +208,7 @@ function SettingsForm() {
                             id="containerColumns"
                             value={settings.containerColumns}
                             onChange={ev => onChangeSetting(s => s.containerColumns = parseInt(ev.target.value) || 1)}
-                            style={{width: '4rem'}}
+                            style={{width: '100%', maxWidth: '4rem'}}
                         />
                     </Form.Group>
                 </div>
@@ -260,7 +260,7 @@ function SettingsForm() {
                                 }
                             }}
                             className="d-inline-block me-1 w-auto"
-                            style={{width: '10rem'}}
+                            style={{width: '100%', maxWidth: '10rem'}}
                         />
                         <Button
                             size="sm"
