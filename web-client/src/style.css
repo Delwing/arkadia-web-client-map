@@ -324,15 +324,6 @@ button:focus-visible {
   pointer-events: none;
 }
 
-#docs-modal .modal-body {
-  display: flex;
-  gap: 2vw;
-}
-
-.docs-nav {
-  min-width: 20vw;
-}
-
 .docs-content {
   flex: 1;
   overflow-y: auto;

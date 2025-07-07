@@ -21,14 +21,19 @@ function createModal() {
       <h5 class="modal-title">Dokumentacja</h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
-    <div class="modal-body d-flex gap-3">
-      <div class="docs-nav btn-group-vertical" role="group">
-        ${docs
-            .map(
-                (d) =>
-                    `<button type="button" class="btn btn-secondary" data-key="${d.key}">${d.title}</button>`
-            )
-            .join("")}
+    <div class="modal-body d-flex flex-column gap-3">
+      <div class="dropdown docs-nav align-self-start">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="docs-menu" data-bs-toggle="dropdown" aria-expanded="false">
+          Wybierz dokument
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="docs-menu">
+          ${docs
+              .map(
+                  (d) =>
+                      `<li><a class="dropdown-item" href="#" data-key="${d.key}">${d.title}</a></li>`
+              )
+              .join("")}
+        </ul>
       </div>
       <div id="docs-content" class="docs-content flex-fill overflow-auto"></div>
     </div>
@@ -45,18 +50,23 @@ function initDocs() {
 
     const { modalEl, modal } = createModal();
     const content = modalEl.querySelector('#docs-content') as HTMLElement;
-    const navButtons = Array.from(modalEl.querySelectorAll('.docs-nav button[data-key]')) as HTMLButtonElement[];
+    const toggleBtn = modalEl.querySelector('#docs-menu') as HTMLButtonElement;
+    const navButtons = Array.from(modalEl.querySelectorAll('.docs-nav [data-key]')) as HTMLElement[];
 
     async function showDoc(key: string) {
         const doc = docs.find(d => d.key === key);
         if (!doc) return;
         const html = await marked.parse(doc.md);
         content.innerHTML = html as string;
+        toggleBtn.textContent = doc.title;
         modal.show();
     }
 
     navButtons.forEach(btn => {
-        btn.addEventListener('click', () => showDoc(btn.dataset.key!));
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showDoc((btn as HTMLElement).dataset.key!);
+        });
     });
 
     docsButton.addEventListener('click', () => showDoc(docs[0].key));
