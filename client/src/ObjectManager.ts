@@ -76,16 +76,70 @@ export default class ObjectManager {
     }
 
     getObjectsOnLocation() {
-        const objects = this.nums.map(num => {
-            const obj = this.data[num] || {};
+        type Obj = {
+            num: number,
+            desc: string | undefined,
+            state: any,
+            attack_num: boolean | number | undefined,
+            avatar_target: boolean | undefined,
+            shortcut?: string,
+            __category?: 'player' | 'team' | 'rest',
+        };
+
+        const makeObj = (numStr: string): Obj => {
+            const obj = this.data[numStr] || {};
             return {
-                num:  parseInt(num),
+                num: parseInt(numStr),
                 desc: obj.desc,
                 state: obj.state ?? obj.hp,
                 attack_num: obj.attack_num,
                 avatar_target: obj.avatar_target,
-            };
+            } as Obj;
+        };
+
+        const playerObj = this.playerNum ? makeObj(this.playerNum) : undefined;
+        const team: Obj[] = [];
+        const rest: Obj[] = [];
+
+        this.nums.forEach(n => {
+            if (this.playerNum && n === this.playerNum) {
+                return;
+            }
+            const o = makeObj(n);
+            if ((this.data[n] as any)?.team) {
+                team.push(o);
+            } else {
+                rest.push(o);
+            }
         });
-        return objects;
+
+        const ordered: Obj[] = [];
+        if (playerObj) {
+            playerObj.__category = 'player';
+            ordered.push(playerObj);
+        }
+        team.forEach(o => {
+            o.__category = 'team';
+            ordered.push(o);
+        });
+        rest.forEach(o => {
+            o.__category = 'rest';
+            ordered.push(o);
+        });
+
+        let teamIndex = 0;
+        let restIndex = 1;
+        ordered.forEach(o => {
+            if (o.__category === 'player') {
+                o.shortcut = '@';
+            } else if (o.__category === 'team') {
+                o.shortcut = String.fromCharCode('A'.charCodeAt(0) + teamIndex++);
+            } else {
+                o.shortcut = String(restIndex++);
+            }
+            delete o.__category;
+        });
+
+        return ordered;
     }
 }

@@ -30,7 +30,7 @@ describe('ObjectManager', () => {
     });
     client.sendEvent('gmcp.objects.nums', ['1']);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '1', desc: 'Goblin', state: 5, attack_num: true, avatar_target: true },
+      { num: 1, desc: 'Goblin', state: 5, attack_num: true, avatar_target: true, shortcut: '1' },
     ]);
   });
 
@@ -40,7 +40,7 @@ describe('ObjectManager', () => {
     });
     client.sendEvent('gmcp.objects.nums', { nums: [2] });
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '2', desc: 'Orc', state: 10, attack_num: undefined, avatar_target: undefined },
+      { num: 2, desc: 'Orc', state: 10, attack_num: undefined, avatar_target: undefined, shortcut: '1' },
     ]);
   });
 
@@ -49,7 +49,7 @@ describe('ObjectManager', () => {
     client.sendEvent('gmcp.char.state', { hp: 50 });
     client.sendEvent('gmcp.objects.nums', []);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '99', desc: 'Hero', state: 50, attack_num: undefined, avatar_target: undefined },
+      { num: 99, desc: 'Hero', state: 50, attack_num: undefined, avatar_target: undefined, shortcut: '@' },
     ]);
   });
 
@@ -57,7 +57,26 @@ describe('ObjectManager', () => {
     client.sendEvent('gmcp.objects.data', { '1': { desc: 'Ogre', avatar_target: true } });
     client.sendEvent('gmcp.objects.nums', ['1']);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '1', desc: 'Ogre', state: undefined, attack_num: undefined, avatar_target: true },
+      { num: 1, desc: 'Ogre', state: undefined, attack_num: undefined, avatar_target: true, shortcut: '1' },
+    ]);
+  });
+
+  test('sorts player, team, and rest with shortcuts', () => {
+    client.sendEvent('gmcp.char.info', { object_num: 100, name: 'Player' });
+    client.sendEvent('gmcp.char.state', { hp: 30 });
+    client.sendEvent('gmcp.objects.data', {
+      '1': { desc: 'Goblin', hp: 10 },
+      '2': { desc: 'Ally1', hp: 40, team: true },
+      '3': { desc: 'Ally2', hp: 50, team: true },
+      '4': { desc: 'Ogre', hp: 20 },
+    });
+    client.sendEvent('gmcp.objects.nums', ['1', '2', '3', '4']);
+    expect(manager.getObjectsOnLocation()).toEqual([
+      { num: 100, desc: 'Player', state: 30, attack_num: undefined, avatar_target: undefined, shortcut: '@' },
+      { num: 2, desc: 'Ally1', state: 40, attack_num: undefined, avatar_target: undefined, shortcut: 'A' },
+      { num: 3, desc: 'Ally2', state: 50, attack_num: undefined, avatar_target: undefined, shortcut: 'B' },
+      { num: 1, desc: 'Goblin', state: 10, attack_num: undefined, avatar_target: undefined, shortcut: '1' },
+      { num: 4, desc: 'Ogre', state: 20, attack_num: undefined, avatar_target: undefined, shortcut: '2' },
     ]);
   });
 });
