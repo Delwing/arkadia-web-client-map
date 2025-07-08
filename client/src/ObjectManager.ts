@@ -79,23 +79,13 @@ export default class ObjectManager {
         const objects = this.nums.map(num => {
             const obj = this.data[num] || {};
             return {
-                num,
+                num:  parseInt(num),
                 desc: obj.desc,
                 state: obj.state ?? obj.hp,
                 attack_num: obj.attack_num,
                 avatar_target: obj.avatar_target,
             };
         });
-        if (this.playerNum) {
-            const obj = this.data[this.playerNum] || {};
-            objects.push({
-                num: this.playerNum,
-                desc: obj.desc,
-                state: obj.state ?? obj.hp,
-                attack_num: obj.attack_num,
-                avatar_target: obj.avatar_target,
-            });
-        }
         return objects;
     }
 }
