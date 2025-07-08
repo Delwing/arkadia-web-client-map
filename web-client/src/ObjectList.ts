@@ -84,7 +84,12 @@ export default class ObjectList {
         const descWidth = Math.max(0, ...objects.map((o: any) => (o.desc || "").length));
         const lines = objects.map((obj: any) => {
             const num = String(obj.num).padStart(numWidth, " ");
-            const desc = (obj.desc || "").padEnd(descWidth, " ");
+            const rawDesc = obj.desc || "";
+            let coloredDesc = rawDesc;
+            if (obj.avatar_target) {
+                coloredDesc = `<span style="color:#ffaaaa">${rawDesc}</span>`;
+            }
+            const desc = coloredDesc + " ".repeat(Math.max(0, descWidth - rawDesc.length));
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
@@ -99,6 +104,6 @@ export default class ObjectList {
             const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
             return `${obj.shortcut} ${desc} ${bar}${arrow}`.trimEnd();
         });
-        this.container.innerHTML = lines.join("\n");
+        this.container.innerHTML = lines.join("<br>");
     }
 }
