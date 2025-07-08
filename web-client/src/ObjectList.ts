@@ -18,19 +18,21 @@ export default class ObjectList {
         const manager = (window as any).clientExtension?.ObjectManager;
         if (!manager) return;
         const objects = manager.getObjectsOnLocation();
+        const numWidth = Math.max(0, ...objects.map((o: any) => String(o.num).length));
+        const descWidth = Math.max(0, ...objects.map((o: any) => (o.desc || "").length));
         const lines = objects.map((obj: any) => {
-            const num = obj.num;
-            const desc = obj.desc || "";
+            const num = String(obj.num).padStart(numWidth, " ");
+            const desc = (obj.desc || "").padEnd(descWidth, " ");
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
                 bar = `[${"#".repeat(hp)}${"-".repeat(6 - hp)}]`;
             }
             const attackers = objects
-                .filter((o: any) => o.attack_num === num)
+                .filter((o: any) => o.attack_num === obj.num)
                 .map((o: any) => o.num);
             const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
-            return `${num} ${desc} ${bar}${arrow}`.trim();
+            return `${num} ${desc} ${bar}${arrow}`.trimEnd();
         });
         this.container.textContent = lines.join("\n");
     }
