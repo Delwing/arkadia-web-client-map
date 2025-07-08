@@ -30,9 +30,9 @@ export default class ObjectList {
             }
             const attackers = objects
                 .filter((o: any) => o.attack_num === obj.num)
-                .map((o: any) => o.num);
+                .map((o: any) => o.shortcut);
             const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
-            return `${num} ${desc} ${bar}${arrow}`.trimEnd();
+            return `${obj.shortcut} ${desc} ${bar}${arrow}`.trimEnd();
         });
         this.container.textContent = lines.join("\n");
     }
