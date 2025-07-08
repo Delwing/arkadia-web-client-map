@@ -56,7 +56,7 @@ export default class ObjectList {
         if (!this.isDragging || !this.container || e.pointerId !== this.pointerId) return;
 
         const deltaX = this.startX - e.clientX;
-        const deltaY = this.startY - e.clientY;
+        const deltaY = e.clientY - this.startY;
         const newRight = this.offsetRight + deltaX;
         const newTop = this.offsetTop + deltaY;
         this.container.style.right = `${Math.max(0, newRight)}px`;
