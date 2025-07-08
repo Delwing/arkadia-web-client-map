@@ -88,7 +88,10 @@ export default class ObjectList {
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
-                bar = `[${"#".repeat(hp + 1)}${"-".repeat(6 - hp)}]`;
+                const color = hp < 3 ? "tomato" : "springgreen";
+                const filled = "#".repeat(hp + 1);
+                const empty = "-".repeat(6 - hp);
+                bar = `[<span style="color:${color}">${filled}${empty}</span>]`;
             }
             const attackers = objects
                 .filter((o: any) => o.attack_num === obj.num)
@@ -96,6 +99,6 @@ export default class ObjectList {
             const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
             return `${obj.shortcut} ${desc} ${bar}${arrow}`.trimEnd();
         });
-        this.container.textContent = lines.join("\n");
+        this.container.innerHTML = lines.join("\n");
     }
 }
