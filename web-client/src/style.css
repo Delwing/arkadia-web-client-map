@@ -376,3 +376,13 @@ button:focus-visible {
 .modal-dialog {
   max-height: 85%;
 }
+
+#auth-buttons {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 1vw;
+  z-index: 1000;
+}
