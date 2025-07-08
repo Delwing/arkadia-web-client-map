@@ -15,7 +15,7 @@ export default function initObjectAliases(
     function exec(short: string, command: string) {
         const obj = findByShortcut(short);
         if (obj) {
-            Input.send(`${command} ${obj.num}`);
+            Input.send(`${command} ob_${obj.num}`);
         }
     }
 
