@@ -5,6 +5,7 @@ export interface ObjectData {
     hp?: number;
     attack_num?: boolean | number;
     attack_target?: boolean;
+    defense_target?: boolean;
     avatar_target?: boolean;
     state?: any;
     [key: string]: any;

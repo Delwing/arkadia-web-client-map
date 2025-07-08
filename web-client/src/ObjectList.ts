@@ -2,7 +2,7 @@ import Client from "@client/src/Client";
 
 export default class ObjectList {
     private client: Client;
-    private container: HTMLElement | null;
+    private readonly container: HTMLElement | null;
     private isDragging = false;
     private startX = 0;
     private startY = 0;
@@ -80,17 +80,14 @@ export default class ObjectList {
         const manager = (window as any).clientExtension?.ObjectManager;
         if (!manager) return;
         const objects = manager.getObjectsOnLocation();
-        const teamManager = (window as any).clientExtension?.TeamManager;
-        const attackId = teamManager?.getAttackTargetId?.();
-        const defenseId = teamManager?.getDefenseTargetId?.();
         const numWidth = Math.max(0, ...objects.map((o: any) => String(o.num).length));
         const descWidth = Math.max(0, ...objects.map((o: any) => (o.desc || "").length));
         const lines = objects.map((obj: any) => {
             const num = String(obj.num).padStart(numWidth, " ");
             let prefix = " ";
-            if (String(obj.num) === String(attackId)) {
+            if (obj.attack_target) {
                 prefix = ">";
-            } else if (String(obj.num) === String(defenseId)) {
+            } else if (obj.defense_target) {
                 prefix = "*";
             }
             const numLabel = `${prefix}${num}`;
