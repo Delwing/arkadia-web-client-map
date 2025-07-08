@@ -80,10 +80,20 @@ export default class ObjectList {
         const manager = (window as any).clientExtension?.ObjectManager;
         if (!manager) return;
         const objects = manager.getObjectsOnLocation();
+        const teamManager = (window as any).clientExtension?.TeamManager;
+        const attackId = teamManager?.getAttackTargetId?.();
+        const defenseId = teamManager?.getDefenseTargetId?.();
         const numWidth = Math.max(0, ...objects.map((o: any) => String(o.num).length));
         const descWidth = Math.max(0, ...objects.map((o: any) => (o.desc || "").length));
         const lines = objects.map((obj: any) => {
             const num = String(obj.num).padStart(numWidth, " ");
+            let prefix = " ";
+            if (String(obj.num) === String(attackId)) {
+                prefix = ">";
+            } else if (String(obj.num) === String(defenseId)) {
+                prefix = "*";
+            }
+            const numLabel = `${prefix}${num}`;
             const rawDesc = obj.desc || "";
             let coloredDesc = rawDesc;
             if (obj.avatar_target) {
@@ -102,7 +112,7 @@ export default class ObjectList {
                 .filter((o: any) => o.attack_num === obj.num)
                 .map((o: any) => o.shortcut);
             const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
-            return `${obj.shortcut} ${desc} ${bar}${arrow}`.trimEnd();
+            return `${numLabel} ${desc} ${bar}${arrow}`.trimEnd();
         });
         this.container.innerHTML = lines.join("<br>");
     }
