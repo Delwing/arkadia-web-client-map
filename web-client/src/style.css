@@ -77,6 +77,8 @@ h1 {
   font-family: monospace;
   font-size: 0.8rem;
   background-color: rgba(0, 0, 0, 0.4);
+  border: 0.1vh solid rgba(255, 255, 255, 0.1);
+  cursor: move;
   white-space: pre;
   z-index: 10;
 }
