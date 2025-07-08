@@ -32,6 +32,7 @@ export default class CharState {
   private client: typeof ArkadiaClient;
   private container: HTMLElement | null;
   private labels: Record<keyof CharStateData, string>;
+  private state: Partial<CharStateData> = {};
 
   constructor(client: typeof ArkadiaClient) {
     this.client = client;
@@ -57,20 +58,24 @@ export default class CharState {
       });
     }
 
-    this.client.on("gmcp.char.state", (state: CharStateData) =>
-      this.update(state),
+    this.client.on(
+      "gmcp.char.state",
+      (state: Partial<CharStateData>) => this.update(state),
     );
   }
 
-  private update(state: CharStateData) {
+  private update(partialState: Partial<CharStateData>) {
     if (!this.container) return;
 
-    const entries: [keyof CharStateData, number][] = Object.entries(state) as [
-      keyof CharStateData,
-      number,
-    ][];
+    this.state = { ...this.state, ...partialState };
+
+    const entries = Object.keys(this.state) as (keyof CharStateData)[];
     this.container.textContent = entries
-      .map(([key, value]) => `${this.labels[key]}: [${value}/${MAX_STATE[key]}]`)
+      .map(
+        (key) =>
+          `${this.labels[key]}: [` +
+          `${this.state[key]}/${MAX_STATE[key]}]`,
+      )
       .join(" ");
   }
 }
