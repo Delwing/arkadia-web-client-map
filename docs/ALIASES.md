@@ -26,3 +26,5 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/cechy** - uruchamia licznik poziomowania i wyświetla postępy.
 - **/z _skrot_** - wykonuje polecenie `zabij` na obiekcie o podanym skrócie.
 - **/za _skrot_** - wykonuje polecenie `zaslon` na obiekcie o podanym skrócie.
+- **/z** - atakuje cel oznaczony jako cel ataku.
+- **/za** - zasłania cel oznaczony jako cel obrony.
