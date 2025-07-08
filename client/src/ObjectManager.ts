@@ -18,7 +18,7 @@ export default class ObjectManager {
 
     constructor(client: Client) {
         this.client = client;
-        this.client.addEventListener('gmcp.object.nums', (e: CustomEvent) => {
+        this.client.addEventListener('gmcp.objects.nums', (e: CustomEvent) => {
             this.handleNums(e.detail);
         });
         this.client.addEventListener('gmcp.objects.data', (e: CustomEvent) => {
