@@ -56,7 +56,7 @@ export default class ObjectList {
         if (!this.isDragging || !this.container || e.pointerId !== this.pointerId) return;
 
         const deltaX = this.startX - e.clientX;
-        const deltaY = this.startY - e.clientY;
+        const deltaY = e.clientY - this.startY;
         const newRight = this.offsetRight + deltaX;
         const newTop = this.offsetTop + deltaY;
         this.container.style.right = `${Math.max(0, newRight)}px`;
@@ -93,7 +93,10 @@ export default class ObjectList {
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
-                bar = `[${"#".repeat(hp + 1)}${"-".repeat(6 - hp)}]`;
+                const color = hp < 3 ? "tomato" : "springgreen";
+                const filled = "#".repeat(hp + 1);
+                const empty = "-".repeat(6 - hp);
+                bar = `[<span style="color:${color}">${filled}${empty}</span>]`;
             }
             const attackers = objects
                 .filter((o: any) => o.attack_num === obj.num)
