@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
-    const loginSubmit = document.getElementById('login-submit') as HTMLButtonElement | null;
+    const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
 
     if (menuButton) {
         new Dropdown(menuButton);
@@ -274,12 +274,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (loginButton && loginModal && loginSubmit) {
+    if (loginButton && loginModal && loginForm) {
         loginButton.addEventListener('click', () => {
             loginModal.show();
         });
 
-        loginSubmit.addEventListener('click', () => {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             const character = loginCharacter?.value || '';
             const password = loginPassword?.value || '';
             loginModal.hide();

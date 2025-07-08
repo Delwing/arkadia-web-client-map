@@ -41,8 +41,12 @@
         <div class="dropdown">
             <button id="menu-button" class="dropdown-toggle h-100" data-bs-toggle="dropdown">⋮</button>
             <ul class="dropdown-menu dropdown-menu-end mb-1 gap-2">
-                <li><button class="w-100 p-1" id="options-button">Ustawienia</button></li>
-                <li><button class="w-100 p-1" id="docs-button">Docs</button></li>
+                <li>
+                    <button class="w-100 p-1" id="options-button">Ustawienia</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="docs-button">Docs</button>
+                </li>
             </ul>
         </div>
     </div>
@@ -53,21 +57,23 @@
     </div>
 
     <div id="login-modal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex flex-column gap-2">
-                    <input id="login-character" class="form-control" placeholder="Character">
-                    <input id="login-password" type="password" class="form-control" placeholder="Password">
-                </div>
-                <div class="modal-footer">
-                    <button id="login-submit" class="btn btn-primary">Login</button>
+        <form id="login-form">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex flex-column gap-2">
+                        <input id="login-character" class="form-control" placeholder="Character">
+                        <input id="login-password" type="password" class="form-control" placeholder="Password">
+                    </div>
+                    <div class="modal-footer">
+                        <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Mobile Direction Buttons (hidden by default) -->
