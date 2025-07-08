@@ -82,7 +82,7 @@ export default class ObjectManager {
                 num,
                 desc: obj.desc,
                 state: obj.state ?? obj.hp,
-                attack_target: obj.attack_target,
+                attack_num: obj.attack_num,
                 avatar_target: obj.avatar_target,
             };
         });
@@ -92,7 +92,7 @@ export default class ObjectManager {
                 num: this.playerNum,
                 desc: obj.desc,
                 state: obj.state ?? obj.hp,
-                attack_target: obj.attack_target,
+                attack_num: obj.attack_num,
                 avatar_target: obj.avatar_target,
             });
         }

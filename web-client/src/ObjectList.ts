@@ -26,7 +26,11 @@ export default class ObjectList {
                 const hp = Math.max(0, Math.min(6, obj.state));
                 bar = `[${"#".repeat(hp)}${"-".repeat(6 - hp)}]`;
             }
-            return `${num} ${desc} ${bar}`.trim();
+            const attackers = objects
+                .filter((o: any) => o.attack_num === num)
+                .map((o: any) => o.num);
+            const arrow = attackers.length ? ` <- ${attackers.join(" ")}` : "";
+            return `${num} ${desc} ${bar}${arrow}`.trim();
         });
         this.container.textContent = lines.join("\n");
     }

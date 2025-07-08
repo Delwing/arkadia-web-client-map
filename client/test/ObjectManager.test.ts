@@ -26,11 +26,11 @@ describe('ObjectManager', () => {
 
   test('stores nums and data and returns objects', () => {
     client.sendEvent('gmcp.objects.data', {
-      '1': { desc: 'Goblin', hp: 5, attack_target: true, avatar_target: true },
+      '1': { desc: 'Goblin', hp: 5, attack_num: true, avatar_target: true },
     });
     client.sendEvent('gmcp.objects.nums', ['1']);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '1', desc: 'Goblin', state: 5, attack_target: true, avatar_target: true },
+      { num: '1', desc: 'Goblin', state: 5, attack_num: true, avatar_target: true },
     ]);
   });
 
@@ -40,7 +40,7 @@ describe('ObjectManager', () => {
     });
     client.sendEvent('gmcp.objects.nums', { nums: [2] });
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '2', desc: 'Orc', state: 10, attack_target: undefined, avatar_target: undefined },
+      { num: '2', desc: 'Orc', state: 10, attack_num: undefined, avatar_target: undefined },
     ]);
   });
 
@@ -49,7 +49,7 @@ describe('ObjectManager', () => {
     client.sendEvent('gmcp.char.state', { hp: 50 });
     client.sendEvent('gmcp.objects.nums', []);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '99', desc: 'Hero', state: 50, attack_target: undefined, avatar_target: undefined },
+      { num: '99', desc: 'Hero', state: 50, attack_num: undefined, avatar_target: undefined },
     ]);
   });
 
@@ -57,7 +57,7 @@ describe('ObjectManager', () => {
     client.sendEvent('gmcp.objects.data', { '1': { desc: 'Ogre', avatar_target: true } });
     client.sendEvent('gmcp.objects.nums', ['1']);
     expect(manager.getObjectsOnLocation()).toEqual([
-      { num: '1', desc: 'Ogre', state: undefined, attack_target: undefined, avatar_target: true },
+      { num: '1', desc: 'Ogre', state: undefined, attack_num: undefined, avatar_target: true },
     ]);
   });
 });
