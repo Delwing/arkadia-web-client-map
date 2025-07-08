@@ -84,6 +84,7 @@ h1 {
   touch-action: none;
   white-space: pre;
   z-index: 10;
+  width: 350px
 }
 
 #app {
