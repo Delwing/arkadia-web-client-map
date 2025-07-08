@@ -26,7 +26,7 @@ export default class ObjectList {
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
-                bar = `[${"#".repeat(hp + 1)}${"-".repeat(7 - hp)}]`;
+                bar = `[${"#".repeat(hp + 1)}${"-".repeat(6 - hp)}]`;
             }
             const attackers = objects
                 .filter((o: any) => o.attack_num === obj.num)
