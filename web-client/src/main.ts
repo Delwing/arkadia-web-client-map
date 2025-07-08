@@ -4,6 +4,7 @@ import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
 import { Modal, Dropdown } from 'bootstrap';
 import CharState from "./CharState";
+import ObjectList from "./ObjectList";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
@@ -396,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display character state
     new CharState(client);
+    new ObjectList(window.clientExtension as any);
 
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
