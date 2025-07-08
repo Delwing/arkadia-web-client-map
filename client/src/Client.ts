@@ -7,6 +7,7 @@ import {FunctionalBind, LINE_START_EVENT, formatLabel} from "./scripts/functiona
 import OutputHandler from "./OutputHandler";
 import {rawInputSend, rawOutputSend} from "./main";
 import TeamManager from "./TeamManager";
+import ObjectManager from "./ObjectManager";
 import {beepSound} from "./sounds";
 import { attachGmcpListener } from "./gmcp";
 
@@ -20,6 +21,7 @@ export default class Client {
     Map = new MapHelper(this)
     OutputHandler = new OutputHandler(this)
     TeamManager = new TeamManager(this)
+    ObjectManager = new ObjectManager(this)
     inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
