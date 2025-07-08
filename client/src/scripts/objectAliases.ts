@@ -28,5 +28,23 @@ export default function initObjectAliases(
             pattern: /\/za ([A-Za-z0-9@]+)$/,
             callback: (m: RegExpMatchArray) => exec(m[1], "zaslon")
         });
+        aliases.push({
+            pattern: /^\/z$/,
+            callback: () => {
+                const id = client.TeamManager.getAttackTargetId();
+                if (id) {
+                    Input.send(`zabij ob_${id}`);
+                }
+            }
+        });
+        aliases.push({
+            pattern: /^\/za$/,
+            callback: () => {
+                const id = client.TeamManager.getDefenseTargetId();
+                if (id) {
+                    Input.send(`zaslon ob_${id}`);
+                }
+            }
+        });
     }
 }

@@ -24,3 +24,7 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/zbieraj_extra _przedmiot_** - dodaje przedmiot do listy ekstra rzeczy zbieranych z ciał.
 - **/nie_zbieraj_extra [_przedmiot_]** - usuwa wskazany przedmiot z listy ekstra lub bez parametru czyści całą listę.
 - **/cechy** - uruchamia licznik poziomowania i wyświetla postępy.
+- **/z _skrot_** - wykonuje polecenie `zabij` na obiekcie o podanym skrócie.
+- **/za _skrot_** - wykonuje polecenie `zaslon` na obiekcie o podanym skrócie.
+- **/z** - atakuje cel oznaczony jako cel ataku.
+- **/za** - zasłania cel oznaczony jako cel obrony.
