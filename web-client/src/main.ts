@@ -150,6 +150,14 @@ client.on('client.disconnect', () => {
     console.log('Client disconnected from Arkadia server.');
 });
 
+// Ensure button state is correct when returning to the tab
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && client.isSocketOpen()) {
+        isConnected = true;
+        updateConnectButtons();
+    }
+});
+
 
 // Numpad key mapping for directions (reversed)
 const numpadDirections: { [key: string]: string } = {
