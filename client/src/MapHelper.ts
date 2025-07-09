@@ -76,6 +76,10 @@ export default class MapHelper {
             Object.values(this.mapReader.roomIndex).forEach(room => this.hashes[room.hash] = room);
             const startId = this.savedRoomId ?? 1;
             this.renderRoomById(startId, false)
+            this.client.sendEvent('restoredPosition', {
+                id: startId,
+                room: this.mapReader.getRoomById(startId),
+            });
         })
 
         this.client.addEventListener('gmcp.room.info', (event: CustomEvent) => {
