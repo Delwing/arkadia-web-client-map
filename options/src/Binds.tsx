@@ -11,14 +11,10 @@ interface Bind {
 
 interface BindSettings {
     main: Bind;
-    gates: Bind;
-    collector: Bind;
 }
 
 const defaultBinds: BindSettings = {
     main: { key: 'BracketRight' },
-    gates: { key: 'Digit2', ctrl: true },
-    collector: { key: 'Digit3', ctrl: true },
 };
 
 function label(bind: Bind) {
@@ -40,7 +36,10 @@ function Binds() {
 
     useEffect(() => {
         storage.getItem('settings').then(res => {
-            setBinds({ ...defaultBinds, ...(res.settings?.binds || {}) });
+            setBinds({
+                ...defaultBinds,
+                main: res.settings?.binds?.main || defaultBinds.main,
+            });
         });
     }, []);
 
@@ -52,13 +51,13 @@ function Binds() {
 
     function save() {
             storage.getItem('settings').then(res => {
-                const settings = { ...(res.settings || {}), binds };
+                const settings = { ...(res.settings || {}), binds: { main: binds.main } };
                 storage.setItem('settings', settings).then(() => {
-                if (chrome.runtime) {
-                    window.close();
-                } else {
-                    window.dispatchEvent(new Event('close-options'));
-                }
+                    if (chrome.runtime) {
+                        window.close();
+                    } else {
+                        window.dispatchEvent(new Event('close-options'));
+                    }
             });
         });
     }
@@ -74,28 +73,6 @@ function Binds() {
                     className="w-40"
                     value={label(binds.main)}
                     onKeyDown={ev => handleCapture('main', ev)}
-                />
-            </Form.Group>
-            <Form.Group className="d-flex align-items-center gap-2">
-                <Form.Label className="w-32 mb-0">Wrota</Form.Label>
-                <Form.Control
-                    type="text"
-                    readOnly
-                    size="sm"
-                    className="w-40"
-                    value={label(binds.gates)}
-                    onKeyDown={ev => handleCapture('gates', ev)}
-                />
-            </Form.Group>
-            <Form.Group className="d-flex align-items-center gap-2">
-                <Form.Label className="w-32 mb-0">Zbieranie</Form.Label>
-                <Form.Control
-                    type="text"
-                    readOnly
-                    size="sm"
-                    className="w-40"
-                    value={label(binds.collector)}
-                    onKeyDown={ev => handleCapture('collector', ev)}
                 />
             </Form.Group>
             <Button className="mt-2 w-auto" onClick={save}>Zapisz</Button>
