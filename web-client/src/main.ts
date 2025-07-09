@@ -6,7 +6,6 @@ import { Modal, Dropdown } from 'bootstrap';
 import CharState from "./CharState";
 import ObjectList from "./ObjectList";
 
-import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
 import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
