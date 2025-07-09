@@ -100,6 +100,8 @@ h1 {
   background-color: rgba(0, 0, 0, 0.1);
   border-top: 0.1vh solid rgba(255, 255, 255, 0.1);
   gap: 1vw;
+  position: relative;
+  z-index: 1102;
 }
 
 #message-input {
