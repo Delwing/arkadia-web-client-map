@@ -28,18 +28,19 @@ Gmcp.parse_option_subnegotiation = (match) => {
     }
     gmcpParseOption(match)
 }
-Input.send = (command: string) => {
+Input.send = (command?: string) => {
+    const cmd = command ?? ""
     const isAlias = aliases.find(alias => {
-        const matches = command.match(alias.pattern)
+        const matches = cmd.match(alias.pattern)
         if (matches) {
-            Output.send("→ " + command, "command")
+            Output.send("→ " + cmd, "command")
             alias.callback(matches);
             return true;
         }
         return false
     })
-    if (!isAlias && command !== undefined) {
-        command.split("#").forEach(subcommand => {
+    if (!isAlias) {
+        cmd.split("#").forEach(subcommand => {
             client.sendCommand(subcommand);
         })
     }

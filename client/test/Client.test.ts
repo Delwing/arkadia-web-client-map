@@ -98,6 +98,13 @@ test('sendCommand dispatches event and sends parsed command', () => {
   expect((window as any).Input.send).toHaveBeenCalledWith('parsed:test');
 });
 
+test('sendCommand allows empty command', () => {
+  const client = new Client();
+  client.sendCommand('');
+  expect(parseCommand).toHaveBeenCalledWith('');
+  expect((window as any).Input.send).toHaveBeenCalledWith('parsed:');
+});
+
 test('onLine sends printed messages after line and restores Output.send', () => {
   const client = new Client();
   const originalOutputSend = (window as any).Output.send;
