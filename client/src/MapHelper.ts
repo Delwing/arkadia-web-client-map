@@ -88,6 +88,8 @@ export default class MapHelper {
         this.client.addEventListener('refreshPositionWhenAble', () => {
             this.refreshPosition = true;
         });
+
+        this.client.sendEvent('refreshPositionWhenAble');
     }
 
     parseCommand(command) {
