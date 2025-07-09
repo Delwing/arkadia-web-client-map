@@ -1,5 +1,5 @@
 interface ClientInput {
-    send(command: string): void;
+    send(command?: string): void;
 }
 
 declare var Input: ClientInput;
