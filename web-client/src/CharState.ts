@@ -1,19 +1,5 @@
 import ArkadiaClient from "./ArkadiaClient.ts";
 
-const MAX_STATE = {
-  hp: 6,
-  mana: 8,
-  fatigue: 8,
-  improve: 15,
-  form: 3,
-  intox: 9,
-  headache: 5,
-  stuffed: 3,
-  soaked: 3,
-  encumbrance: 5,
-  panic: 4,
-} as const;
-
 export interface CharStateData {
   hp: number;
   mana: number;
@@ -28,33 +14,56 @@ export interface CharStateData {
   panic: number;
 }
 
+export interface CharStateConfig {
+  label: string;
+  max: number;
+  transform?: (
+    value: number,
+    max: number,
+  ) => { value: number; max: number };
+}
+
+const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
+  hp: { label: "HP", max: 6 },
+  mana: { label: "MANA", max: 8 },
+  fatigue: { label: "ZM", max: 8 },
+  improve: { label: "POS", max: 15 },
+  form: { label: "FOR", max: 3 },
+  intox: { label: "UPI", max: 9 },
+  headache: { label: "KAC", max: 5 },
+  stuffed: { label: "GLO", max: 3 },
+  soaked: { label: "PRA", max: 3 },
+  encumbrance: { label: "OBC", max: 5 },
+  panic: { label: "PAN", max: 4 },
+};
+
 export default class CharState {
   private client: typeof ArkadiaClient;
   private container: HTMLElement | null;
-  private labels: Record<keyof CharStateData, string>;
+  private config: Record<keyof CharStateData, CharStateConfig>;
   private state: Partial<CharStateData> = {};
 
-  constructor(client: typeof ArkadiaClient) {
+  constructor(
+    client: typeof ArkadiaClient,
+    overrides?: Partial<
+      Record<keyof CharStateData, Partial<CharStateConfig>>
+    >,
+  ) {
     this.client = client;
     this.container = document.getElementById("char-state");
-    this.labels = {
-      hp: "HP",
-      mana: "MANA",
-      fatigue: "ZM",
-      improve: "POS",
-      form: "FOR",
-      intox: "UPI",
-      headache: "KAC",
-      stuffed: "GLO",
-      soaked: "PRA",
-      encumbrance: "OBC",
-      panic: "PAN",
-    };
+
+    this.config = { ...DEFAULT_CONFIG };
+
+    if (overrides) {
+      (Object.keys(overrides) as (keyof CharStateData)[]).forEach((key) => {
+        this.config[key] = { ...this.config[key], ...overrides[key]! };
+      });
+    }
 
     if (this.container) {
-      (Object.keys(this.labels) as (keyof CharStateData)[]).forEach((key) => {
+      (Object.keys(this.config) as (keyof CharStateData)[]).forEach((key) => {
         const attr = this.container!.getAttribute(`data-label-${key}`);
-        if (attr) this.labels[key] = attr;
+        if (attr) this.config[key].label = attr;
       });
     }
 
@@ -71,11 +80,15 @@ export default class CharState {
 
     const entries = Object.keys(this.state) as (keyof CharStateData)[];
     this.container.textContent = entries
-      .map(
-        (key) =>
-          `${this.labels[key]}: [` +
-          `${this.state[key]}/${MAX_STATE[key]}]`,
-      )
+      .map((key) => {
+        let value = this.state[key] as number;
+        const { max, label, transform } = this.config[key];
+        let maxValue = max;
+        if (transform && typeof value === "number") {
+          ({ value, max: maxValue } = transform(value, maxValue));
+        }
+        return `${label}: [${value}/${maxValue}]`;
+      })
       .join(" ");
   }
 }
