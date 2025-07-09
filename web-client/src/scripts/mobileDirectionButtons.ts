@@ -45,8 +45,12 @@ export default class MobileDirectionButtons {
 
         // Listen for settings changes
         this.client.addEventListener("settings", (event: CustomEvent) => {
+            const detail = event.detail || {};
+            if (!Object.prototype.hasOwnProperty.call(detail, "mobileDirectionButtons")) {
+                return;
+            }
             // Only disable if explicitly set to false
-            const disabled = event.detail.mobileDirectionButtons === false;
+            const disabled = detail.mobileDirectionButtons === false;
             if (disabled) {
                 this.disable();
             } else {
