@@ -7,3 +7,4 @@ client.js
 arkadia-extension.zip
 vite.config.js
 .yarn
+.DS_Store

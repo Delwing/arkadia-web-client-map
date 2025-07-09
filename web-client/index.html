@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <title>Arkadia</title>
 </head>
 <body>
@@ -74,6 +76,8 @@
                 </li>
                 <li>
                     <button class="w-100 p-1" id="ui-settings-button">UI</button>
+                </li>
+                <li>
                     <button class="w-100 p-1" id="binds-button">Bindowanie</button>
                 </li>
                 <li>
@@ -127,6 +131,10 @@
                     </label>
                     <label class="form-label">Mobile button size (%)
                         <input id="ui-button-size" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">
+                        <input id="ui-show-buttons" type="checkbox" class="form-check-input me-2" />
+                        Show on-screen buttons
                     </label>
                     <label class="form-label">Map zoom
                         <input id="ui-map-scale" type="number" step="0.05" class="form-control" />
