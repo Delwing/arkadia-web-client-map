@@ -12,7 +12,7 @@ const defaultSettings: UiSettings = {
     contentFontSize: 0.775,
     objectsFontSize: 0.6,
     buttonSize: 1,
-    mapScale: 1,
+    mapScale: 0.30,
     showButtons: true,
 };
 
@@ -33,7 +33,7 @@ function apply(settings: UiSettings) {
         btn.style.fontSize = baseFont * settings.buttonSize + 'px';
     });
     if ((window as any).embedded?.renderer?.controls) {
-        (window as any).embedded.renderer.controls.view.zoom = settings.mapScale;
+        (window as any).embedded.setZoom?.(settings.mapScale);
         (window as any).embedded.refresh();
     }
     if ((window as any).clientExtension?.eventTarget) {
