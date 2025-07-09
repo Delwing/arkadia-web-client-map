@@ -36,6 +36,32 @@
             </div>
         </div>
     </div>
+    <div id="binds-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bindowanie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="binds-options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="npc-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Odbiorcy paczek</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="npc-options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="input-area">
         <input type="text" id="message-input" autocomplete="off" autocapitalize="off" spellcheck="false"/>
         <button id="send-button">➢</button>
@@ -44,6 +70,12 @@
             <ul class="dropdown-menu dropdown-menu-end mb-1 gap-2">
                 <li>
                     <button class="w-100 p-1" id="options-button">Ustawienia</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="binds-button">Bindowanie</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="npc-button">Odbiorcy paczek</button>
                 </li>
                 <li>
                     <button class="w-100 p-1" id="docs-button">Docs</button>
