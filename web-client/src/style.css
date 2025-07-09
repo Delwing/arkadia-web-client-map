@@ -404,3 +404,19 @@ button:focus-visible {
   gap: 1vw;
   z-index: 1000;
 }
+
+#fullscreen-button {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  z-index: 1001;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: 1px solid silver;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+#fullscreen-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
