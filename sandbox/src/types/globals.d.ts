@@ -1,7 +1,7 @@
 import Client from "@client/src/Client.ts";
 
 interface ClientInput {
-    send(command: string): void;
+    send(command?: string): void;
 }
 
 interface ClientOutput {
