@@ -12,6 +12,7 @@ class EmbeddedMap {
         this.settings.areaName = false
         this.settings.scale = 90
         this.settings.borders = true
+        this.zoom = 0.90
 
         this.renderRoomById(1)
 
@@ -43,7 +44,7 @@ class EmbeddedMap {
             this.renderer?.clear();
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
             this.renderer.controls.centerRoom(room.id);
-            this.renderer.controls.view.zoom = 0.30;
+            this.renderer.controls.view.zoom = this.zoom;
             this.renderer.backgroundLayer.remove()
 
             this.currentRoom = room;
@@ -60,6 +61,13 @@ class EmbeddedMap {
 
     refresh() {
         this.renderRoom(this.currentRoom)
+    }
+
+    setZoom(zoom) {
+        this.zoom = zoom
+        if (this.renderer?.controls) {
+            this.renderer.controls.view.zoom = this.zoom
+        }
     }
 
     leadTo(id) {
