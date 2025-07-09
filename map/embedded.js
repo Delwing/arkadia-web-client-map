@@ -34,6 +34,9 @@ class EmbeddedMap {
                 case "enterLocation":
                     this.renderRoomById(data.id)
                     break;
+                case "restoredPosition":
+                    this.renderRoomById(data.id)
+                    break;
                 case "leadTo":
                     this.leadTo(data)
                     break;
