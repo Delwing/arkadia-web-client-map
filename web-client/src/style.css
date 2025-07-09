@@ -312,7 +312,7 @@ button:focus-visible {
 .mobile-top-buttons {
   display: flex;
   justify-content: center;
-  gap: 3px;
+  gap: 5px;
   margin-bottom: 5px;
 }
 
