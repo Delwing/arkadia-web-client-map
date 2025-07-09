@@ -402,6 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
 
+    initUiSettings();
+
     const rootElement = document.getElementById('options');
     if (rootElement) {
         createRoot(rootElement).render(createElement(Settings));
@@ -422,3 +424,4 @@ window.client = client
 
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
 import Settings from "@options/src/Settings.tsx";
+import initUiSettings from "./uiSettings";
