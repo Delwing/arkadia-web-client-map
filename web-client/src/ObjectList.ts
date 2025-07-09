@@ -100,7 +100,7 @@ export default class ObjectList {
             let bar = "";
             if (typeof obj.state === "number") {
                 const hp = Math.max(0, Math.min(6, obj.state));
-                const color = hp < 3 ? "tomato" : "springgreen";
+                const color = hp < 2 ? "tomato" : (hp < 4 ? "yellow" : "springgreen");
                 const filled = "#".repeat(hp + 1);
                 const empty = "-".repeat(6 - hp);
                 bar = `[<span style="color:${color}">${filled}${empty}</span>]`;
