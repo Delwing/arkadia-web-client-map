@@ -27,21 +27,20 @@ class EmbeddedMap {
         this.zoom = zoom
 
         this.renderRoomById(1)
+    }
 
-        window.addEventListener("message", (e) => {
-            const {type, data} = e.data
-            switch (type) {
-                case "enterLocation":
-                    this.renderRoomById(data.id)
-                    break;
-                case "restoredPosition":
-                    this.renderRoomById(data.id)
-                    break;
-                case "leadTo":
-                    this.leadTo(data)
-                    break;
-            }
-        });
+    handleMessage({type, data}) {
+        switch (type) {
+            case "enterLocation":
+                this.renderRoomById(data.id)
+                break;
+            case "restoredPosition":
+                this.renderRoomById(data.id)
+                break;
+            case "leadTo":
+                this.leadTo(data)
+                break;
+        }
     }
 
     renderRoomById(id) {
@@ -96,9 +95,17 @@ class EmbeddedMap {
 
 }
 
-const loadListener = (event) => {
-    if (event.data.mapData !== undefined && event.data.colors !== undefined) {
-        window.embedded = new EmbeddedMap(event.data.mapData, event.data.colors)
+const pendingMessages = []
+const handleData = (data) => {
+    if (window.embedded) {
+        window.embedded.handleMessage(data)
+    } else if (data.mapData !== undefined && data.colors !== undefined) {
+        window.embedded = new EmbeddedMap(data.mapData, data.colors)
+        pendingMessages.forEach(handleData)
+        pendingMessages.length = 0
+    } else {
+        pendingMessages.push(data)
     }
 }
-window.addEventListener("message", loadListener)
+
+window.addEventListener("message", (e) => handleData(e.data))
