@@ -73,7 +73,9 @@ export class FunctionalBind {
         this.functionalBind = callback;
         if (this.currentPrintable === printable) {
             if (printable && !this.printedInMessage) {
-                this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
+                const line = `\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`;
+                const clickable = this.client.OutputHandler.makeClickable(line, printable, callback);
+                this.client.println(clickable);
                 this.printedInMessage = true;
             }
             return;
@@ -82,7 +84,9 @@ export class FunctionalBind {
         this.printedInMessage = true;
         this.button?.remove();
         if (printable) {
-            this.client.println(`\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`);
+            const line = `\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`;
+            const clickable = this.client.OutputHandler.makeClickable(line, printable, callback);
+            this.client.println(clickable);
             this.button = this.client.createButton(printable, callback);
         }
     }
