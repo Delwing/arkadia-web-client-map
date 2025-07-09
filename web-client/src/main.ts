@@ -402,6 +402,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
 
+    const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement | null;
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.error(err));
+            } else {
+                document.exitFullscreen().catch(err => console.error(err));
+            }
+        });
+    }
+
     const rootElement = document.getElementById('options');
     if (rootElement) {
         createRoot(rootElement).render(createElement(Settings));
