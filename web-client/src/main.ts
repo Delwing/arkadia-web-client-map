@@ -8,6 +8,7 @@ import ObjectList from "./ObjectList";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
+import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
@@ -15,11 +16,12 @@ const client = ArkadiaClient
 
 import { createElement } from 'react'
 import { createRoot} from 'react-dom/client'
-import App from "@options/src/App.tsx"
+import Settings from "@options/src/Settings.tsx"
+import Binds from "@options/src/Binds.tsx"
+import Npc from "@options/src/Npc.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
-let noSleepAudio: HTMLAudioElement | null = null;
-let wakeLock: any = null;
+let noSleepInstance: NoSleep | null = null;
 let tabSleepPreventionActive = false;
 
 // Function to prevent tab sleep
@@ -29,71 +31,16 @@ function preventTabSleep() {
 
     tabSleepPreventionActive = true;
 
-    // Create silent audio element if it doesn't exist
-    if (!noSleepAudio) {
-        noSleepAudio = document.createElement('audio');
-        noSleepAudio.setAttribute('playsinline', '');
-        noSleepAudio.setAttribute('src', 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAA='); // 1ms silent audio
-        noSleepAudio.loop = true;
-        document.body.appendChild(noSleepAudio);
+    if (!noSleepInstance) {
+        noSleepInstance = new NoSleep();
     }
 
-    // Try to use Wake Lock API if available
-    if ('wakeLock' in navigator) {
-        try {
-            // @ts-ignore - TypeScript might not recognize wakeLock API
-            navigator.wakeLock.request('screen').then((lock: any) => {
-                wakeLock = lock;
-                console.log('Wake Lock activated');
+    const enableNoSleep = () => {
+        noSleepInstance!.enable();
+    };
 
-                // Release wake lock when page is hidden
-                document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible' && !wakeLock) {
-                        // @ts-ignore
-                        navigator.wakeLock.request('screen').then((lock: any) => {
-                            wakeLock = lock;
-                            console.log('Wake Lock reactivated');
-                        });
-                    }
-                });
-            }).catch((err: any) => {
-                console.error('Wake Lock error:', err);
-                // Fallback to audio method if Wake Lock fails
-                playNoSleepAudio();
-            });
-        } catch (err) {
-            console.error('Wake Lock error:', err);
-            // Fallback to audio method if Wake Lock fails
-            playNoSleepAudio();
-        }
-    } else {
-        // Fallback to audio method if Wake Lock is not supported
-        playNoSleepAudio();
-    }
-}
-
-// Function to play silent audio to prevent sleep
-function playNoSleepAudio() {
-    if (noSleepAudio) {
-        // Play audio when page becomes visible or hidden
-        document.addEventListener('visibilitychange', () => {
-            if (noSleepAudio) {
-                if (document.visibilityState === 'hidden') {
-                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-                } else {
-                    // Keep playing even when visible to maintain the audio context
-                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-                }
-            }
-        });
-
-        // Initial play (requires user interaction)
-        document.addEventListener('touchstart', () => {
-            if (noSleepAudio && noSleepAudio.paused) {
-                noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-            }
-        }, { once: true });
-    }
+    document.addEventListener('touchstart', enableNoSleep, { once: true });
+    document.addEventListener('click', enableNoSleep, { once: true });
 }
 
 loadNpcData().then(npc => {
@@ -248,10 +195,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
+    const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
+    const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
 
     // Initialize Bootstrap modal
     const optionsModalElement = document.getElementById('options-modal');
     const optionsModal = optionsModalElement ? new Modal(optionsModalElement) : null;
+    const bindsModalElement = document.getElementById('binds-modal');
+    const bindsModal = bindsModalElement ? new Modal(bindsModalElement) : null;
+    const npcModalElement = document.getElementById('npc-modal');
+    const npcModal = npcModalElement ? new Modal(npcModalElement) : null;
     const loginModalElement = document.getElementById('login-modal');
     const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
@@ -266,12 +219,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (optionsModal) {
             optionsModal.hide();
         }
+        if (bindsModal) {
+            bindsModal.hide();
+        }
+        if (npcModal) {
+            npcModal.hide();
+        }
     });
 
     // Add event listener to options button
     if (optionsButton && optionsModal) {
         optionsButton.addEventListener('click', () => {
             optionsModal.show();
+        });
+    }
+
+    if (bindsButton && bindsModal) {
+        bindsButton.addEventListener('click', () => {
+            bindsModal.show();
+        });
+    }
+
+    if (npcButton && npcModal) {
+        npcButton.addEventListener('click', () => {
+            npcModal.show();
         });
     }
 
@@ -403,10 +374,31 @@ document.addEventListener('DOMContentLoaded', () => {
     new MobileDirectionButtons(window.clientExtension);
 
     initUiSettings();
+  
+    const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement | null;
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.error('Failed to enter fullscreen:', err));
+            } else {
+                document.exitFullscreen().catch(err => console.error('Failed to exit fullscreen:', err));
+            }
+        });
+    }
 
     const rootElement = document.getElementById('options');
     if (rootElement) {
         createRoot(rootElement).render(createElement(Settings));
+    }
+
+    const bindsRoot = document.getElementById('binds-options');
+    if (bindsRoot) {
+        createRoot(bindsRoot).render(createElement(Binds));
+    }
+
+    const npcRoot = document.getElementById('npc-options');
+    if (npcRoot) {
+        createRoot(npcRoot).render(createElement(Npc));
     }
 });
 
