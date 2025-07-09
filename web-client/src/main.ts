@@ -8,6 +8,7 @@ import ObjectList from "./ObjectList";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
+import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
@@ -18,8 +19,7 @@ import { createRoot} from 'react-dom/client'
 import App from "@options/src/App.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
-let noSleepAudio: HTMLAudioElement | null = null;
-let wakeLock: any = null;
+let noSleepInstance: NoSleep | null = null;
 let tabSleepPreventionActive = false;
 
 // Function to prevent tab sleep
@@ -29,71 +29,16 @@ function preventTabSleep() {
 
     tabSleepPreventionActive = true;
 
-    // Create silent audio element if it doesn't exist
-    if (!noSleepAudio) {
-        noSleepAudio = document.createElement('audio');
-        noSleepAudio.setAttribute('playsinline', '');
-        noSleepAudio.setAttribute('src', 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAA='); // 1ms silent audio
-        noSleepAudio.loop = true;
-        document.body.appendChild(noSleepAudio);
+    if (!noSleepInstance) {
+        noSleepInstance = new NoSleep();
     }
 
-    // Try to use Wake Lock API if available
-    if ('wakeLock' in navigator) {
-        try {
-            // @ts-ignore - TypeScript might not recognize wakeLock API
-            navigator.wakeLock.request('screen').then((lock: any) => {
-                wakeLock = lock;
-                console.log('Wake Lock activated');
+    const enableNoSleep = () => {
+        noSleepInstance!.enable();
+    };
 
-                // Release wake lock when page is hidden
-                document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible' && !wakeLock) {
-                        // @ts-ignore
-                        navigator.wakeLock.request('screen').then((lock: any) => {
-                            wakeLock = lock;
-                            console.log('Wake Lock reactivated');
-                        });
-                    }
-                });
-            }).catch((err: any) => {
-                console.error('Wake Lock error:', err);
-                // Fallback to audio method if Wake Lock fails
-                playNoSleepAudio();
-            });
-        } catch (err) {
-            console.error('Wake Lock error:', err);
-            // Fallback to audio method if Wake Lock fails
-            playNoSleepAudio();
-        }
-    } else {
-        // Fallback to audio method if Wake Lock is not supported
-        playNoSleepAudio();
-    }
-}
-
-// Function to play silent audio to prevent sleep
-function playNoSleepAudio() {
-    if (noSleepAudio) {
-        // Play audio when page becomes visible or hidden
-        document.addEventListener('visibilitychange', () => {
-            if (noSleepAudio) {
-                if (document.visibilityState === 'hidden') {
-                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-                } else {
-                    // Keep playing even when visible to maintain the audio context
-                    noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-                }
-            }
-        });
-
-        // Initial play (requires user interaction)
-        document.addEventListener('touchstart', () => {
-            if (noSleepAudio && noSleepAudio.paused) {
-                noSleepAudio.play().catch(err => console.error('Audio play error:', err));
-            }
-        }, { once: true });
-    }
+    document.addEventListener('touchstart', enableNoSleep, { once: true });
+    document.addEventListener('click', enableNoSleep, { once: true });
 }
 
 loadNpcData().then(npc => {
