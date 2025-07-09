@@ -11,7 +11,7 @@ const defaultSettings: UiSettings = {
     contentFontSize: 0.775,
     objectsFontSize: 0.6,
     buttonSize: 1,
-    mapScale: 0.90,
+    mapScale: 0.30,
 };
 
 function apply(settings: UiSettings) {

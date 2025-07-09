@@ -12,7 +12,19 @@ class EmbeddedMap {
         this.settings.areaName = false
         this.settings.scale = 90
         this.settings.borders = true
-        this.zoom = 0.90
+        let zoom = 0.30
+        try {
+            const raw = localStorage.getItem('uiSettings')
+            if (raw) {
+                const parsed = JSON.parse(raw)
+                if (typeof parsed.mapScale === 'number') {
+                    zoom = parsed.mapScale
+                }
+            }
+        } catch {
+            // ignore malformed data
+        }
+        this.zoom = zoom
 
         this.renderRoomById(1)
 
