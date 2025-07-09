@@ -28,5 +28,6 @@ export default new ClientScript(fakeClient)
     .fake("Masakrujesz brzydkiego zgarbionego goblina ciezkim bojowym toporem, trafiajac go w nogi.", "combat.avatar")
     .fake("Brzydki zgarbiony goblin umarl.", "combat.avatar")
     .fake("Zabiles zgarbionego brzydkiego goblina.")
-    .fake("Wyszczerzony zielony goblin ledwo muska cie krzywym krotkim nozem, trafiajac cie w korpus.", "combat.avatar");
+    .fake("Wyszczerzony zielony goblin ledwo muska cie krzywym krotkim nozem, trafiajac cie w korpus.", "combat.avatar")
+    .fake("Nie tracac czasu na zbedne manewry z calej sily walisz kulejacy grzechocacy szkielet na odlew polyskujacym dlugim dragiem, gruchoczac mu przy tym prawe ramie. Nieprzyjemne chrzakniecie i metny wzrok przeciwnika swiadcza, ze dobrze wymierzony cios musial trafic w jakies wrazliwe miejsce.", "combat.avatar");
 
