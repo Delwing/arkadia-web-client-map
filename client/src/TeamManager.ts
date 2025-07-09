@@ -19,6 +19,8 @@ export default class TeamManager {
     private leader?: string;
     private tag = 'teamManager';
     private accumulatedObjectsData = {}
+    private attackTargetId?: string
+    private defenseTargetId?: string
     private leaderTargetNotifiedNum?: string
 
     constructor(client: Client) {
@@ -32,38 +34,56 @@ export default class TeamManager {
     }
 
     private handleObjectsData(data: Record<number, ObjectData>) {
-        Object.assign(this.accumulatedObjectsData, data);
+        Object.entries(data).forEach(([id, obj]) => {
+            this.accumulatedObjectsData[id] = { ...(this.accumulatedObjectsData as any)[id], ...obj };
 
-        Object.entries(data).forEach(([num, obj]) => {
-            if (!obj || !obj.living || !obj.team) {
-                return;
-            }
-            const name = obj.desc;
-            if (!name) {
-                return;
-            }
-
-            this.members.add(name);
-
-            if (obj.team_leader) {
-                if (this.leader !== name) {
-                    this.leaderTargetNotifiedNum = undefined;
-                }
-                this.leader = name;
-
+            if (typeof obj.attack_target === 'boolean') {
                 if (obj.attack_target) {
-                    if (obj.avatar_target !== true) {
-                        if (this.leaderTargetNotifiedNum !== num) {
-                            this.client.sendEvent('teamLeaderTargetNoAvatar');
-                            this.leaderTargetNotifiedNum = num;
+                    this.attackTargetId = id;
+                } else if (this.attackTargetId === id) {
+                    this.attackTargetId = undefined;
+                }
+            }
+
+            if (typeof obj.defense_target === 'boolean') {
+                if (obj.defense_target) {
+                    this.defenseTargetId = id;
+                } else if (this.defenseTargetId === id) {
+                    this.defenseTargetId = undefined;
+                }
+            }
+
+            Object.entries(data).forEach(([num, obj]) => {
+                if (!obj || !obj.living || !obj.team) {
+                    return;
+                }
+                const name = obj.desc;
+                if (!name) {
+                    return;
+                }
+
+                this.members.add(name);
+
+                if (obj.team_leader) {
+                    if (this.leader !== name) {
+                        this.leaderTargetNotifiedNum = undefined;
+                    }
+                    this.leader = name;
+
+                    if (obj.attack_target) {
+                        if (obj.avatar_target !== true) {
+                            if (this.leaderTargetNotifiedNum !== num) {
+                                this.client.sendEvent('teamLeaderTargetNoAvatar');
+                                this.leaderTargetNotifiedNum = num;
+                            }
+                        } else {
+                            this.leaderTargetNotifiedNum = undefined;
                         }
                     } else {
                         this.leaderTargetNotifiedNum = undefined;
                     }
-                } else {
-                    this.leaderTargetNotifiedNum = undefined;
                 }
-            }
+            });
         });
     }
 
@@ -136,6 +156,14 @@ export default class TeamManager {
 
     getAccumulatedObjectsData() {
         return this.accumulatedObjectsData
+    }
+
+    getAttackTargetId() {
+        return this.attackTargetId;
+    }
+
+    getDefenseTargetId() {
+        return this.defenseTargetId;
     }
 
 

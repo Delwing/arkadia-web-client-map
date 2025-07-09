@@ -1,9 +1,27 @@
 html, body {
-    width: 760px;
-    height: 550px;
+    max-width: 760px;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
     scrollbar-gutter: stable;
     margin: 5px;
 }
+
+#root {
+    height: 100%;
+}
+
+#root > div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
 
 .sticky-footer {
     position: sticky;

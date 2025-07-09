@@ -10,7 +10,11 @@
 (window as any).Gmcp = { parse_option_subnegotiation: jest.fn() };
 const parseCommand = jest.fn((cmd: string) => `parsed:${cmd}`);
 
-jest.mock('../src/main', () => ({ rawSend: jest.fn() }));
+jest.mock('../src/main', () => ({
+  __esModule: true,
+  rawInputSend: jest.fn((cmd: string) => (window as any).Input.send(cmd)),
+  rawOutputSend: jest.fn(),
+}));
 
 import Client from '../src/Client';
 import { Howl } from 'howler';
@@ -36,7 +40,6 @@ jest.mock('../src/scripts/functionalBind', () => ({
     newMessage: jest.fn(),
   })),
 }));
-jest.mock('../src/main', () => ({ __esModule: true, rawSend: jest.fn() }));
 
 
 jest.mock('../src/MapHelper', () => {
