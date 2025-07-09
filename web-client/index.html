@@ -73,6 +73,7 @@
                     <button class="w-100 p-1" id="options-button">Ustawienia</button>
                 </li>
                 <li>
+                    <button class="w-100 p-1" id="ui-settings-button">UI</button>
                     <button class="w-100 p-1" id="binds-button">Bindowanie</button>
                 </li>
                 <li>
@@ -108,6 +109,34 @@
                 </div>
             </div>
         </form>
+    </div>
+
+    <div id="ui-settings-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">UI Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-2">
+                    <label class="form-label">Content font size (rem)
+                        <input id="ui-content-font" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">Objects list font size (rem)
+                        <input id="ui-objects-font" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">Button font size (rem)
+                        <input id="ui-button-size" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">Map zoom
+                        <input id="ui-map-scale" type="number" step="0.05" class="form-control" />
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="ui-settings-save">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Mobile Direction Buttons (hidden by default) -->

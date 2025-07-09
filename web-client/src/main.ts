@@ -373,6 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize mobile direction buttons
     new MobileDirectionButtons(window.clientExtension);
 
+    initUiSettings();
+  
     const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement | null;
     if (fullscreenButton) {
         fullscreenButton.addEventListener('click', () => {
@@ -413,3 +415,5 @@ window.addEventListener('resize', () => {
 window.client = client
 
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
+import Settings from "@options/src/Settings.tsx";
+import initUiSettings from "./uiSettings";
