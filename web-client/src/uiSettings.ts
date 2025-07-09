@@ -5,13 +5,15 @@ interface UiSettings {
     objectsFontSize: number;
     buttonSize: number;
     mapScale: number;
+    showButtons: boolean;
 }
 
 const defaultSettings: UiSettings = {
     contentFontSize: 0.775,
     objectsFontSize: 0.6,
     buttonSize: 1,
-    mapScale: 90,
+    mapScale: 1,
+    showButtons: true,
 };
 
 function apply(settings: UiSettings) {
@@ -33,6 +35,11 @@ function apply(settings: UiSettings) {
     if ((window as any).embedded?.renderer?.controls) {
         (window as any).embedded.renderer.controls.view.zoom = settings.mapScale;
         (window as any).embedded.refresh();
+    }
+    if ((window as any).clientExtension?.eventTarget) {
+        (window as any).clientExtension.eventTarget.dispatchEvent(
+            new CustomEvent('settings', { detail: { mobileDirectionButtons: settings.showButtons } })
+        );
     }
 }
 
@@ -63,6 +70,7 @@ export default function initUiSettings() {
     const objectsInput = modalEl.querySelector('#ui-objects-font') as HTMLInputElement;
     const buttonInput = modalEl.querySelector('#ui-button-size') as HTMLInputElement;
     const mapInput = modalEl.querySelector('#ui-map-scale') as HTMLInputElement;
+    const showButtonsInput = modalEl.querySelector('#ui-show-buttons') as HTMLInputElement;
     const saveBtn = modalEl.querySelector('#ui-settings-save') as HTMLButtonElement;
 
     let current = load();
@@ -70,6 +78,7 @@ export default function initUiSettings() {
     objectsInput.value = String(current.objectsFontSize);
     buttonInput.value = String(current.buttonSize);
     mapInput.value = String(current.mapScale);
+    showButtonsInput.checked = current.showButtons;
     apply(current);
 
     function read(): UiSettings {
@@ -78,6 +87,7 @@ export default function initUiSettings() {
             objectsFontSize: parseFloat(objectsInput.value) || defaultSettings.objectsFontSize,
             buttonSize: parseFloat(buttonInput.value) || defaultSettings.buttonSize,
             mapScale: parseFloat(mapInput.value) || defaultSettings.mapScale,
+            showButtons: showButtonsInput.checked,
         };
     }
 
