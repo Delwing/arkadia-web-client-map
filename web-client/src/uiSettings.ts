@@ -21,6 +21,10 @@ function apply(settings: UiSettings) {
     if (content) {
         content.style.fontSize = settings.contentFontSize + 'rem';
     }
+    const charState = document.getElementById('char-state');
+    if (charState) {
+        charState.style.fontSize = settings.contentFontSize + 'rem';
+    }
     const objects = document.getElementById('objects-list');
     if (objects) {
         objects.style.fontSize = settings.objectsFontSize + 'rem';
