@@ -1,10 +1,8 @@
 import Client from "../Client";
-import { FunctionalBind, formatLabel } from "./functionalBind";
 
 export default class ItemCollector {
     private client: Client;
     private checkBody = false;
-    private bind: FunctionalBind;
 
     modes = [
         "monety",
@@ -24,20 +22,7 @@ export default class ItemCollector {
 
     constructor(client: Client) {
         this.client = client;
-        this.bind = new FunctionalBind(client, { key: "Digit3", ctrl: true, label: "CTRL+3" });
-        this.client.addEventListener('settings', (ev: CustomEvent) => {
-            const o = ev.detail?.binds?.collector;
-            if (o) {
-                this.bind.updateOptions({
-                    key: o.key,
-                    ctrl: o.ctrl,
-                    alt: o.alt,
-                    shift: o.shift,
-                    label: formatLabel(o)
-                });
-            }
-        });
-        this.bind.set(null, () => this.keyPressed(true));
+        this.client.FunctionalBind.set(null, () => this.keyPressed(true));
         this.client.addEventListener("settings", (ev: CustomEvent) => {
             const s = ev.detail || {};
             if (typeof s.collectMode === "number") {
@@ -88,7 +73,7 @@ export default class ItemCollector {
 
     killedAction() {
         if (this.currentMode !== 7 || this.extra.length > 0) {
-            this.bind.set("wez z ciala", () => this.keyPressed(true));
+            this.client.FunctionalBind.set("wez z ciala", () => this.keyPressed(true));
             this.checkBody = true;
         }
     }
@@ -98,7 +83,7 @@ export default class ItemCollector {
             (this.currentMode === 4 || this.currentMode === 5 || this.currentMode === 6 || this.extra.length > 0) &&
             this.client.TeamManager.isInTeam(name)
         ) {
-            this.bind.set("wez z ciala", () => this.keyPressed(true));
+            this.client.FunctionalBind.set("wez z ciala", () => this.keyPressed(true));
             this.checkBody = true;
         }
     }

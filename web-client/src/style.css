@@ -263,7 +263,7 @@ button:focus-visible {
     padding: 0.75vh 2vw;
     position: sticky;
     bottom: 0;
-    z-index: 10;
+    z-index: 1102;
   }
 
   #message-input {
