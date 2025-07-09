@@ -56,12 +56,10 @@ export default class MapHelper {
     currentRoom: Room;
     locationHistory: number[] = []
     client: Client
-    drinkableButton
     mapReader
     refreshPosition = true;
     hashes = {};
     gmcpPosition: Position;
-    roomBind: HTMLInputElement
     savedRoomId: number | null = null;
 
     constructor(clientExtension: Client) {
@@ -135,7 +133,7 @@ export default class MapHelper {
     }
 
     refresh() {
-        this.renderRoom(this.currentRoom)
+        this.setMapPosition(this.gmcpPosition)
     }
 
     setMapPosition(data: Position) {

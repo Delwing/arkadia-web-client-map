@@ -318,7 +318,7 @@ const defaultTransforms: TransformDefinition[] = [
 export default function initContainers(client: Client) {
     const tag = 'prettyContainers';
     let enabled = false;
-    let columns = 2;
+    let columns = 1;
 
     const register = () => {
         client.Triggers.removeByTag(tag);

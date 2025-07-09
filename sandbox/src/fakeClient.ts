@@ -7,6 +7,7 @@ export const fakeClient = client as FakeClient;
 const port = new MockPort();
 fakeClient.connect(port as any, true);
 
+//TODO fix dispatch
 const originalDispatch = fakeClient.eventTarget.dispatchEvent.bind(fakeClient.eventTarget);
 fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     if (event.type.startsWith('gmcp.')) {

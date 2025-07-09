@@ -10,6 +10,21 @@ class EmbeddedMap {
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
+        this.settings.scale = 90
+        this.settings.borders = true
+        let zoom = 0.30
+        try {
+            const raw = localStorage.getItem('uiSettings')
+            if (raw) {
+                const parsed = JSON.parse(raw)
+                if (typeof parsed.mapScale === 'number') {
+                    zoom = parsed.mapScale
+                }
+            }
+        } catch {
+            // ignore malformed data
+        }
+        this.zoom = zoom
 
         this.renderRoomById(1)
 
@@ -41,7 +56,8 @@ class EmbeddedMap {
             this.renderer?.clear();
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
             this.renderer.controls.centerRoom(room.id);
-            this.renderer.controls.view.zoom = 0.30;
+            this.renderer.controls.view.zoom = this.zoom;
+            this.renderer.backgroundLayer.remove()
 
             this.currentRoom = room;
 
@@ -57,6 +73,13 @@ class EmbeddedMap {
 
     refresh() {
         this.renderRoom(this.currentRoom)
+    }
+
+    setZoom(zoom) {
+        this.zoom = zoom
+        if (this.renderer?.controls) {
+            this.renderer.controls.view.zoom = this.zoom
+        }
     }
 
     leadTo(id) {

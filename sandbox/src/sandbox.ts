@@ -1,6 +1,3 @@
-import Convert from "ansi-to-html";
-
-const converter = new Convert({})
 
 const colorTable = [
     "dummy",
@@ -280,7 +277,7 @@ window.Output = {
         window.Output.buffer = [content]
         const contentDiv = document.createElement("div");
         contentDiv.className = "output_msg_text"
-        contentDiv.innerHTML = converter.toHtml(content)
+        contentDiv.innerHTML = content
         div.appendChild(contentDiv)
 
         output.appendChild(div)

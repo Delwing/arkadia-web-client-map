@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="manifest.json" />
+    <title>Arkadia</title>
+</head>
+<body>
+<div id="main-container">
+    <button id="fullscreen-button" title="Fullscreen">⛶</button>
+    <div id="iframe-container">
+        <canvas id="map" resize="true"></canvas>
+        <div id="map-progress-container" class="position-absolute top-50 start-50 translate-middle w-75">
+            <div class="progress">
+                <div id="map-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0"></div>
+            </div>
+        </div>
+    </div>
+    <div id="main_text_output_msg_wrapper">
+
+    </div>
+    <div id="char-state"></div>
+    <div id="objects-list"></div>
+    <div id="options-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="binds-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bindowanie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="binds-options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="npc-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Odbiorcy paczek</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="npc-options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="input-area">
+        <input type="search" id="message-input" autocomplete="false" autocapitalize="off" spellcheck="false"/>
+        <button id="send-button">➢</button>
+        <div class="dropdown">
+            <button id="menu-button" class="dropdown-toggle h-100" data-bs-toggle="dropdown">⋮</button>
+            <ul class="dropdown-menu dropdown-menu-end mb-1 gap-2">
+                <li>
+                    <button class="w-100 p-1" id="options-button">Ustawienia</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="ui-settings-button">UI</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="binds-button">Bindowanie</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="npc-button">Odbiorcy paczek</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="docs-button">Docs</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="auth-buttons">
+        <button id="login-button">Login</button>
+        <button id="connect-button">Connect</button>
+    </div>
+
+    <div id="login-modal" class="modal fade" tabindex="-1">
+        <form id="login-form">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex flex-column gap-2">
+                        <input id="login-character" class="form-control" placeholder="Character">
+                        <input id="login-password" type="password" class="form-control" placeholder="Password">
+                    </div>
+                    <div class="modal-footer">
+                        <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="ui-settings-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">UI Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-2">
+                    <label class="form-label">Content font size (rem)
+                        <input id="ui-content-font" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">Objects list font size (rem)
+                        <input id="ui-objects-font" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">Mobile button size (%)
+                        <input id="ui-button-size" type="number" step="0.1" class="form-control" />
+                    </label>
+                    <label class="form-label">
+                        <input id="ui-show-buttons" type="checkbox" class="form-check-input me-2" />
+                        Show on-screen buttons
+                    </label>
+                    <label class="form-label">Map zoom
+                        <input id="ui-map-scale" type="number" step="0.05" class="form-control" />
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="ui-settings-save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Direction Buttons (hidden by default) -->
+    <div id="mobile-direction-buttons" class="mobile-direction-buttons">
+        <div class="mobile-top-buttons">
+            <button class="mobile-button top-button" id="bracket-right-button">]</button>
+            <button class="mobile-button mobile-button-text top-button" id="button-1">wesprzyj</button>
+            <button class="mobile-button mobile-button-text top-button" id="button-2">/za</button>
+            <button class="mobile-button mobile-button-text top-button" id="button-3">/zas</button>
+        </div>
+        <div class="mobile-direction-main">
+            <div class="mobile-direction-grid">
+                <button class="mobile-button direction-button" id="nw-button">↖</button>
+                <button class="mobile-button direction-button" id="n-button">↑</button>
+                <button class="mobile-button direction-button" id="ne-button">↗</button>
+                <button class="mobile-button direction-button" id="w-button">←</button>
+                <button class="mobile-button mobile-button-text direction-button" id="c-button">zerknij</button>
+                <button class="mobile-button direction-button" id="e-button">→</button>
+                <button class="mobile-button direction-button" id="sw-button">↙</button>
+                <button class="mobile-button direction-button" id="s-button">↓</button>
+                <button class="mobile-button direction-button" id="se-button">↘</button>
+            </div>
+            <div class="mobile-right-buttons">
+                <button class="mobile-button direction-button" id="u-button">u</button>
+                <button class="mobile-button direction-button" id="d-button">d</button>
+                <button class="mobile-button direction-button" id="special-exit-button" title="">3</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="module" src="/src/plugin.ts"></script>
+<script type="module" src="/src/main.ts"></script>
+<script type="module" src="/src/docs.ts"></script>
+</body>
+</html>

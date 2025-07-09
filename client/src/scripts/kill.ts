@@ -49,6 +49,8 @@ const twoWordNames = [
     "zywiolaka ziemi",
 ];
 
+const width = 50
+
 function parseName(full: string): string {
     const originalWords = full.trim().split(/\s+/);
     const words = originalWords.map((w) => w.toLowerCase());
@@ -98,7 +100,7 @@ function createHeader(
 }
 
 function formatSessionTable(counts: KillCounts): string {
-    const WIDTH = 57;
+    const WIDTH = width - 2;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
     const CONTENT_WIDTH = WIDTH - LEFT_PADDING - RIGHT_PADDING;
@@ -158,7 +160,7 @@ function formatSessionTable(counts: KillCounts): string {
 }
 
 function formatLifetimeTable(counts: KillCounts): string {
-    const WIDTH = 59;
+    const WIDTH = width;
     const LEFT_PADDING = 2;
     const RIGHT_PADDING = 5;
     const INNER = WIDTH - 2;
@@ -203,7 +205,7 @@ function formatLifetimeTable(counts: KillCounts): string {
         lines.push(mobLine(name, entry.myTotal));
     });
     lines.push(pad());
-    lines.push(pad("       ------------------------------------"));
+    lines.push(pad("    ----------------------------------- "));
     lines.push(pad());
     const summary =
         "  " +

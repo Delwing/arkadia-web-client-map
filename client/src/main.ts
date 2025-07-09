@@ -4,8 +4,8 @@ import registerGagTriggers from "./scripts/gags";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
-export const rawSend = Output.send
-
+export const rawOutputSend = Output.send
+export const rawInputSend = Input.send
 
 export const client = new Client()
 
@@ -45,13 +45,6 @@ Input.send = (command?: string) => {
         })
     }
 }
-Output.send = (out, type): any => {
-    const bufferSize = Output.buffer.length + 1
-    const result = rawSend(out, type)
-    client.sendEvent('output-sent', bufferSize)
-    return result;
-}
-
 
 const aliases = [
     {
@@ -202,9 +195,11 @@ initDeposits(client, aliases)
 import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
 import initInvite from "./scripts/invite"
+import initObjectAliases from "./scripts/objectAliases"
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
 initInvite(client)
+initObjectAliases(client, aliases)
 
 window["clientExtension"] = client

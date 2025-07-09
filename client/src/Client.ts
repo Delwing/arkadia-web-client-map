@@ -5,12 +5,11 @@ import InlineCompassRose from "./scripts/inlineCompassRose";
 import {Howl} from "howler"
 import {FunctionalBind, LINE_START_EVENT, formatLabel} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
-import {rawSend} from "./main";
+import {rawInputSend, rawOutputSend} from "./main";
 import TeamManager from "./TeamManager";
+import ObjectManager from "./ObjectManager";
 import {beepSound} from "./sounds";
 import { attachGmcpListener } from "./gmcp";
-
-const originalSend = Input.send
 
 export default class Client {
 
@@ -22,6 +21,7 @@ export default class Client {
     Map = new MapHelper(this)
     OutputHandler = new OutputHandler(this)
     TeamManager = new TeamManager(this)
+    ObjectManager = new ObjectManager(this)
     inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
     sounds: Record<string, Howl> = {
@@ -34,7 +34,9 @@ export default class Client {
     constructor() {
         attachGmcpListener(this);
         window.addEventListener('message', ({data: data}) => {
-            this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+            if (data.payload) { //TODO doubtful!
+                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+            }
         })
 
 
@@ -82,7 +84,7 @@ export default class Client {
 
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        originalSend(this.Map.parseCommand(command))
+        rawInputSend(this.Map.parseCommand(command))
     }
 
     onLine(line: string, type: string) {
@@ -93,12 +95,13 @@ export default class Client {
             if (out) {
                 buffer.push({out, type: outputType});
             } else {
-                rawSend()
+                rawOutputSend()
             }
         };
 
         this.addEventListener('output-sent', () => {
             buffer.forEach(item => Output.send(item.out, item.type));
+            this.sendEvent('output-sent', buffer.length)
         }, {once: true});
 
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
@@ -136,7 +139,11 @@ export default class Client {
     sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
         const frame = document.getElementById('cm-frame') as HTMLIFrameElement;
-        return frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
+        if (frame) {
+            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
+        } else {
+            window.postMessage(this.createEvent(type, payload));
+        }
     }
 
     createEvent(type, payload) {
@@ -167,7 +174,7 @@ export default class Client {
         button.type = 'button'
         button.className = 'panel_button button k-button'
         button.onclick = callback
-        this.panel.appendChild(button)
+        this.panel?.appendChild(button)
         return button
     }
 
