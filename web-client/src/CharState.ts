@@ -24,17 +24,17 @@ export interface CharStateConfig {
 }
 
 const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
-  hp: { label: "HP", max: 6 },
+  hp: { label: "HP", max: 6, transform: (value, max) => ({ value: value + 1, max: max + 1 }) },
   mana: { label: "MANA", max: 8 },
   fatigue: { label: "ZM", max: 8 },
   improve: { label: "POS", max: 15 },
   form: { label: "FOR", max: 3 },
   intox: { label: "UPI", max: 9 },
-  headache: { label: "KAC", max: 5 },
+  headache: { label: "KAC", max: 6 },
   stuffed: { label: "GLO", max: 3 },
   soaked: { label: "PRA", max: 3 },
-  encumbrance: { label: "OBC", max: 5 },
-  panic: { label: "PAN", max: 4 },
+  encumbrance: { label: "OBC", max: 6 },
+  panic: { label: "PAN", max: 5 },
 };
 
 export default class CharState {
