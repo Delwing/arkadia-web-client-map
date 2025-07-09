@@ -22,6 +22,14 @@ import Npc from "@options/src/Npc.tsx"
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
 let tabSleepPreventionActive = false;
+let wakeLockEnabled = false;
+let wakeLockButton: HTMLButtonElement | null = null;
+
+function updateWakeLockButton() {
+    if (wakeLockButton) {
+        wakeLockButton.textContent = wakeLockEnabled ? 'NoSleep ON' : 'NoSleep OFF';
+    }
+}
 
 // Function to prevent tab sleep
 function preventTabSleep() {
@@ -36,10 +44,22 @@ function preventTabSleep() {
 
     const enableNoSleep = () => {
         noSleepInstance!.enable();
+        wakeLockEnabled = true;
+        updateWakeLockButton();
     };
 
     document.addEventListener('touchstart', enableNoSleep, { once: true });
     document.addEventListener('click', enableNoSleep, { once: true });
+}
+
+function disableTabSleepPrevention() {
+    if (!tabSleepPreventionActive) return;
+    tabSleepPreventionActive = false;
+    if (noSleepInstance) {
+        noSleepInstance.disable();
+    }
+    wakeLockEnabled = false;
+    updateWakeLockButton();
 }
 
 loadNpcData().then(npc => {
@@ -204,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
+    wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
+    updateWakeLockButton();
 
     // Initialize Bootstrap modal
     const optionsModalElement = document.getElementById('options-modal');
@@ -250,6 +272,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (npcButton && npcModal) {
         npcButton.addEventListener('click', () => {
             npcModal.show();
+        });
+    }
+
+    if (wakeLockButton) {
+        wakeLockButton.addEventListener('click', () => {
+            if (wakeLockEnabled) {
+                disableTabSleepPrevention();
+            } else {
+                preventTabSleep();
+            }
         });
     }
 
