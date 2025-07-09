@@ -16,7 +16,6 @@ const client = ArkadiaClient
 
 import { createElement } from 'react'
 import { createRoot} from 'react-dom/client'
-import Settings from "@options/src/Settings.tsx"
 import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
 
