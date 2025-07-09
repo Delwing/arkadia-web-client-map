@@ -1,5 +1,5 @@
 import Client from "../Client";
-import {colorStringInLine, colorString, findClosestColor} from "../Colors";
+import {colorString, findClosestColor} from "../Colors";
 import people from '../people.json';
 
 const RED = findClosestColor("#ff0000");
@@ -13,7 +13,7 @@ function highlightAttack(line: string, upper?: string) {
 
 function highlightPhrase(line: string) {
     const phrase = "atakuje cie";
-    const colored = colorStringInLine(line, phrase, RED);
+    const colored = colorString(line, RED);
     return colored.replace(phrase, phrase.toUpperCase());
 }
 
@@ -68,5 +68,5 @@ export default function initAttackBeep(client: Client) {
         /^\w+(?: \w+){0,4} z pierwotna wsciekloscia (?<upper>rzuca sie na ciebie), rozpoczynajac walke!/
     ].forEach(p => client.Triggers.registerTrigger(p, beep, tag));
 
-    client.Triggers.registerTrigger(/^atakuje cie!$/, (_r, line) => highlightPhrase(line), tag);
+    client.Triggers.registerTrigger(/atakuje cie!$/, (_r, line) => highlightPhrase(line), tag);
 }
