@@ -2,6 +2,8 @@ import {MapReader} from "mudlet-map-renderer";
 import Client from "./Client";
 import Room = MapData.Room;
 
+const STORAGE_KEY = 'mapperRoomId';
+
 const polishToEnglish = {
     ["polnoc"]: "north",
     ["poludnie"]: "south",
@@ -60,15 +62,21 @@ export default class MapHelper {
     hashes = {};
     gmcpPosition: Position;
     roomBind: HTMLInputElement
+    savedRoomId: number | null = null;
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            this.savedRoomId = parseInt(saved);
+        }
         this.client.addEventListener('enterLocation', (event) => this.handleNewLocation(event.detail))
         window.addEventListener('map-ready', (event: CustomEvent) => {
             this.mapReader = new MapReader(event.detail.mapData, event.detail.colors)
             // @ts-ignore
             Object.values(this.mapReader.roomIndex).forEach(room => this.hashes[room.hash] = room);
-            this.renderRoomById(1, false)
+            const startId = this.savedRoomId ?? 1;
+            this.renderRoomById(startId, false)
         })
 
         this.client.addEventListener('gmcp.room.info', (event: CustomEvent) => {
@@ -161,6 +169,7 @@ export default class MapHelper {
 
     renderRoomById(id: number, sendEvent = true) {
         this.currentRoom = this.mapReader.getRoomById(id)
+        localStorage.setItem(STORAGE_KEY, id.toString())
         if (sendEvent) {
             this.client.sendEvent('enterLocation', {id: id, room: this.currentRoom});
         }
