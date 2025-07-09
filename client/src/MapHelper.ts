@@ -61,6 +61,7 @@ export default class MapHelper {
     hashes = {};
     gmcpPosition: Position;
     savedRoomId: number | null = null;
+    pendingSpecial: string[] = [];
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
@@ -96,6 +97,33 @@ export default class MapHelper {
         if (command === "zerknij" || command === "spojrz" || command === "sp") {
             this.refreshPosition = true;
         }
+
+        const specials = this.currentRoom?.specialExits ?? {};
+
+        if (this.pendingSpecial.length) {
+            const combined = [...this.pendingSpecial, command].join("#");
+            if (specials[combined]) {
+                this.move(combined);
+                this.pendingSpecial = [];
+                return command;
+            }
+
+            const further = Object.keys(specials).some(k => k.startsWith(combined + "#"));
+            if (further) {
+                this.pendingSpecial.push(command);
+                return command;
+            } else {
+                this.pendingSpecial = [];
+            }
+        }
+
+        const start = Object.keys(specials).some(k => k.startsWith(command + "#"));
+        if (start) {
+            this.pendingSpecial = [command];
+            return command;
+        }
+
+        this.pendingSpecial = [];
         return this.move(command) ?? command;
     }
 
