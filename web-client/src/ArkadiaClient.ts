@@ -117,6 +117,13 @@ class ArkadiaClient {
     }
 
     /**
+     * Check if the WebSocket is currently open
+     */
+    isSocketOpen(): boolean {
+        return !!this.socket && this.socket.readyState === WebSocket.OPEN;
+    }
+
+    /**
      * Check if the first GMCP event has been received
      */
     hasReceivedFirstGmcp(): boolean {
