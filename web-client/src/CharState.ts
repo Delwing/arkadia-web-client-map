@@ -17,6 +17,7 @@ export interface CharStateData {
 export interface CharStateConfig {
   label: string;
   max: number;
+  default?: number;
   transform?: (
     value: number,
     max: number,
@@ -28,13 +29,13 @@ const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
   mana: { label: "MANA", max: 8 },
   fatigue: { label: "ZM", max: 8 },
   improve: { label: "POS", max: 15 },
-  form: { label: "FOR", max: 3 },
-  intox: { label: "UPI", max: 9 },
-  headache: { label: "KAC", max: 5 },
-  stuffed: { label: "GLO", max: 3 },
-  soaked: { label: "PRA", max: 3 },
-  encumbrance: { label: "OBC", max: 5 },
-  panic: { label: "PAN", max: 4 },
+  form: { label: "FOR", max: 3, default: 0 },
+  intox: { label: "UPI", max: 9, default: 0 },
+  headache: { label: "KAC", max: 5, default: 0 },
+  stuffed: { label: "GLO", max: 3, default: 0 },
+  soaked: { label: "PRA", max: 3, default: 0 },
+  encumbrance: { label: "OBC", max: 5, default: 0 },
+  panic: { label: "PAN", max: 4, default: 0 },
 };
 
 export default class CharState {
@@ -78,7 +79,11 @@ export default class CharState {
 
     this.state = { ...this.state, ...partialState };
 
-    const entries = Object.keys(this.state) as (keyof CharStateData)[];
+    const entries = (Object.keys(this.state) as (keyof CharStateData)[]).filter(
+      (key) =>
+        this.config[key].default === undefined ||
+        this.state[key] !== this.config[key].default,
+    );
     this.container.textContent = entries
       .map((key) => {
         let value = this.state[key] as number;
