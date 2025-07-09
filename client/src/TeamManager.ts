@@ -10,6 +10,7 @@ interface ObjectData {
     living: boolean
     team: boolean
     team_leader: boolean
+    avatar_target?: boolean
 }
 
 export default class TeamManager {
@@ -18,6 +19,7 @@ export default class TeamManager {
     private leader?: string;
     private tag = 'teamManager';
     private accumulatedObjectsData = {}
+    private leaderTargetNotifiedNum?: string
 
     constructor(client: Client) {
         this.client = client;
@@ -29,17 +31,37 @@ export default class TeamManager {
         }
     }
 
-    private handleObjectsData(data: Record<number,ObjectData>) {
-        Object.assign(this.accumulatedObjectsData, data)
+    private handleObjectsData(data: Record<number, ObjectData>) {
+        Object.assign(this.accumulatedObjectsData, data);
 
-        Object.values(data).forEach(obj => {
-            if (obj && obj.living && obj.team) {
-                const name = obj.desc;
-                if (name) {
-                    this.members.add(name);
-                    if (obj.team_leader) {
-                        this.leader = name;
+        Object.entries(data).forEach(([num, obj]) => {
+            if (!obj || !obj.living || !obj.team) {
+                return;
+            }
+            const name = obj.desc;
+            if (!name) {
+                return;
+            }
+
+            this.members.add(name);
+
+            if (obj.team_leader) {
+                if (this.leader !== name) {
+                    this.leaderTargetNotifiedNum = undefined;
+                }
+                this.leader = name;
+
+                if (obj.attack_target) {
+                    if (obj.avatar_target !== true) {
+                        if (this.leaderTargetNotifiedNum !== num) {
+                            this.client.sendEvent('teamLeaderTargetNoAvatar');
+                            this.leaderTargetNotifiedNum = num;
+                        }
+                    } else {
+                        this.leaderTargetNotifiedNum = undefined;
                     }
+                } else {
+                    this.leaderTargetNotifiedNum = undefined;
                 }
             }
         });
