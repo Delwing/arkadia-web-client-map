@@ -23,8 +23,12 @@ function apply(settings: UiSettings) {
     if (objects) {
         objects.style.fontSize = settings.objectsFontSize + 'rem';
     }
-    document.querySelectorAll<HTMLButtonElement>('button').forEach(btn => {
-        btn.style.fontSize = settings.buttonSize + 'rem';
+    document.querySelectorAll<HTMLButtonElement>('.mobile-button').forEach(btn => {
+        const baseSize = 36; // default width/height in px
+        const baseFont = btn.classList.contains('mobile-button-text') ? 9 : 14;
+        btn.style.width = baseSize * settings.buttonSize + 'px';
+        btn.style.height = baseSize * settings.buttonSize + 'px';
+        btn.style.fontSize = baseFont * settings.buttonSize + 'px';
     });
     if ((window as any).embedded?.renderer?.controls) {
         (window as any).embedded.renderer.controls.view.zoom = settings.mapScale;
