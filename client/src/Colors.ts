@@ -14,7 +14,7 @@ export const colorCodes = {
 export const RESET = '\x1B[0m'
 
 export function color(colorCode:number) {
-    return `\x1B[22;38;5;${colorCode-1}m`
+    return `\x1B[22;38;5;${colorCode}m`
 }
 
 export function colorString(string: string, colorCode: number) {
