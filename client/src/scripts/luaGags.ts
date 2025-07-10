@@ -154,15 +154,16 @@ function mudletColorLine(line: string) {
         if (stringColor === "reset") {
             return RESET
         } else {
-            return color(findClosestColor(mudletColors[stringColor]))
+            return color(findClosestColor(mudletColors[stringColor] ?? stringColor.split(",")))
         }
     }));
 }
 
 function createLuaEnv() {
-    const global: { line?: string, matches?: RegExpMatchArray } = {
+    const global: { line?: string, matches?: RegExpMatchArray, color?: string | number } = {
         line: null,
-        matches: null
+        matches: null,
+        color: null
     }
 
     let selection = [0, 0]
@@ -246,9 +247,13 @@ function createLuaEnv() {
             global.line = mudletColorLine(line)
         },
         cecho: (line: string) => {
+            if (global.color)  {
+                global.line += `<${global.color}>`
+            }
             global.line += mudletColorLine(line)
         },
         resetFormat: () => {
+            global.color = null
         },
         selectCurrentLine: () => {
             selection = [0, global.line.length]
@@ -261,12 +266,17 @@ function createLuaEnv() {
             client.sendEvent(event, args)
         },
         setFgColor(rgb: number[]) {
+            global.color = rgb.join(",")
             mudlet.fg(findClosestColor(rgb))
         },
         prefix(prefix: string) {
-            global.line = prefix + global.line
+            if (global.color) {
+                prefix = `<${global.color}>` + prefix
+            }
+            global.line = mudletColorLine(prefix + stripAnsiCodes(global.line))
         },
         fg(stringColor: string | number) {
+            global.color = stringColor
             if (selection[0] > -1 && selection[0] !== selection[1]) {
                 global.line = global.line.substring(0, selection[0]) + colorString(stripAnsiCodes(global.line.substring(selection[0], selection[1])), getColorCode(stringColor)) + global.line.substring(selection[1])
             }

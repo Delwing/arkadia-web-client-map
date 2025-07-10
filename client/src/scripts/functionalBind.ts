@@ -1,6 +1,5 @@
 import {color} from "../Colors";
 import Client from "../Client";
-import {client} from "../main";
 
 export const LINE_START_EVENT = 'line-start';
 
@@ -74,7 +73,7 @@ export class FunctionalBind {
         if (callback) {
             this.functionalBind = callback;
         } else {
-            this.functionalBind = () => {client.sendCommand(printable)};
+            this.functionalBind = () => {this.client.sendCommand(printable)};
         }
         if (this.currentPrintable === printable) {
             if (printable && !this.printedInMessage) {

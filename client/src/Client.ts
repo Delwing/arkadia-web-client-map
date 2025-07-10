@@ -153,22 +153,19 @@ export default class Client {
         }
     }
 
-    print(printable: string, send: boolean = false) {
+    print(printable: string) {
         if (typeof printable === 'object') {
             printable = JSON.stringify(printable)
         }
         // @ts-ignore
         const text = Text.parse_patterns(printable)
         Output.send(text)
-        if (send) {
-            this.sendEvent('output-sent', 1)
-        }
     }
 
-    println(printable: string, send: boolean = false) {
-        this.print("\n", send)
-        this.print(printable, send)
-        this.print("\n", send)
+    println(printable: string) {
+        this.print("\n")
+        this.print(printable)
+        this.print("\n")
     }
 
     createButton(name: string, callback: () => void) {

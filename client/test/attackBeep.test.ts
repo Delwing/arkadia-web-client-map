@@ -1,5 +1,5 @@
 import initAttackBeep from '../src/scripts/attackBeep';
-import Triggers from '../src/Triggers';
+import Triggers, {stripAnsiCodes} from '../src/Triggers';
 import {findClosestColor} from '../src/Colors';
 
 class FakeClient {
@@ -29,7 +29,7 @@ describe('attack beep triggers', () => {
     expect(client.playSound).toHaveBeenCalledTimes(1);
     const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000') + 1}m`;
     expect(result.startsWith(prefix)).toBe(true);
-    expect(result).toContain('Wojownik atakuje cie!');
+    expect(result).toContain('Wojownik ATAKUJE CIE!');
     expect(result.endsWith('\x1B[0m')).toBe(true);
   });
 
@@ -46,6 +46,6 @@ describe('attack beep triggers', () => {
     expect(result.startsWith(prefix)).toBe(true);
     expect(result).toContain('ATAKUJE CIE');
     expect(result.includes('\x1B[0m')).toBe(true);
-    expect(result.endsWith('!')).toBe(true);
+    expect(stripAnsiCodes(result).endsWith('!')).toBe(true);
   });
 });
