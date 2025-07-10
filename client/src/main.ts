@@ -40,7 +40,7 @@ Input.send = (command?: string) => {
         return false
     })
     if (!isAlias) {
-        cmd.split("#").forEach(subcommand => {
+        cmd.split(/[#;]/).forEach(subcommand => {
             client.sendCommand(subcommand);
         })
     }
