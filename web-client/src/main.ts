@@ -179,16 +179,16 @@ document.addEventListener('visibilitychange', () => {
 });
 
 
-// Numpad key mapping for directions (reversed)
+// Numpad key mapping for directions (standard orientation)
 const numpadDirections: { [key: string]: string } = {
-    'Numpad8': 's',      // South (reversed from North)
-    'Numpad2': 'n',      // North (reversed from South)
-    'Numpad4': 'e',      // East (reversed from West)
-    'Numpad6': 'w',      // West (reversed from East)
-    'Numpad7': 'se',     // Southeast (reversed from Northwest)
-    'Numpad9': 'sw',     // Southwest (reversed from Northeast)
-    'Numpad1': 'ne',     // Northeast (reversed from Southwest)
-    'Numpad3': 'nw',     // Northwest (reversed from Southeast)
+    'Numpad8': 'n',      // North
+    'Numpad2': 's',      // South
+    'Numpad4': 'w',      // West
+    'Numpad6': 'e',      // East
+    'Numpad7': 'nw',     // Northwest
+    'Numpad9': 'ne',     // Northeast
+    'Numpad1': 'sw',     // Southwest
+    'Numpad3': 'se',     // Southeast
     'NumpadMultiply': 'u',   // Up (unchanged)
     'NumpadSubtract': '',
     'Numpad5': 'zerknij'  // Look (unchanged)
