@@ -138,7 +138,7 @@ export default class MapHelper {
                 const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map((item: string) => item.split("=")))
                 if (dirBinds[getLongDir(actualDirection)]) {
                     direction = dirBinds[getLongDir(actualDirection)]
-                    return direction
+                    return this.move(direction)
                 }
             }
             const allExits = Object.assign(

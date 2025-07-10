@@ -11,5 +11,6 @@ export default new ClientScript(fakeClient)
     .fake("Pablo porzuca twoja druzyne.")
     .eval("window.clientExtension.TeamManager.getTeamMembers()")
     .fake("Nie jestes w zadnej druzynie.")
-    .eval("window.clientExtension.TeamManager.getTeamMembers()");
+    .eval("window.clientExtension.TeamManager.getTeamMembers()")
+    .fake("Dargoth przekazuje ci prowadzenie druzyny.");
 

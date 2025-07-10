@@ -52,7 +52,7 @@ export class FunctionalBind {
         this.shift = !!options.shift;
         window.addEventListener('keydown', (ev) => {
             if (
-                ev.code === this.key &&
+                (ev.code === this.key || ev.key === this.key) &&
                 (!!this.ctrl === ev.ctrlKey) &&
                 (!!this.alt === ev.altKey) &&
                 (!!this.shift === ev.shiftKey)
@@ -69,8 +69,12 @@ export class FunctionalBind {
         this.printedInMessage = false;
     }
 
-    set(printable: string | null, callback: () => void) {
-        this.functionalBind = callback;
+    set(printable: string | null, callback?: () => void) {
+        if (callback) {
+            this.functionalBind = callback;
+        } else {
+            this.functionalBind = () => {this.client.sendCommand(printable)};
+        }
         if (this.currentPrintable === printable) {
             if (printable && !this.printedInMessage) {
                 const line = `\t${color(49)}bind ${color(222)}${this.label}${color(49)}: ${printable}`;

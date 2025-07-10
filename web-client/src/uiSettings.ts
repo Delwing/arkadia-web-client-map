@@ -6,6 +6,7 @@ interface UiSettings {
     buttonSize: number;
     mapScale: number;
     showButtons: boolean;
+    mapHeight: number;
 }
 
 const defaultSettings: UiSettings = {
@@ -14,6 +15,7 @@ const defaultSettings: UiSettings = {
     buttonSize: 1,
     mapScale: 0.30,
     showButtons: true,
+    mapHeight: typeof window !== 'undefined' && window.innerWidth < 768 ? 25 : 30,
 };
 
 function apply(settings: UiSettings) {
@@ -28,6 +30,12 @@ function apply(settings: UiSettings) {
     const objects = document.getElementById('objects-list');
     if (objects) {
         objects.style.fontSize = settings.objectsFontSize + 'rem';
+    }
+    const iframeContainer = document.getElementById('iframe-container');
+    if (iframeContainer) {
+        const height = settings.mapHeight + 'vh';
+        (iframeContainer as HTMLElement).style.height = height;
+        (iframeContainer as HTMLElement).style.maxHeight = height;
     }
     document.querySelectorAll<HTMLButtonElement>('.mobile-button').forEach(btn => {
         const baseSize = 36; // default width/height in px
@@ -74,6 +82,7 @@ export default function initUiSettings() {
     const objectsInput = modalEl.querySelector('#ui-objects-font') as HTMLInputElement;
     const buttonInput = modalEl.querySelector('#ui-button-size') as HTMLInputElement;
     const mapInput = modalEl.querySelector('#ui-map-scale') as HTMLInputElement;
+    const mapHeightInput = modalEl.querySelector('#ui-map-height') as HTMLInputElement;
     const showButtonsInput = modalEl.querySelector('#ui-show-buttons') as HTMLInputElement;
     const saveBtn = modalEl.querySelector('#ui-settings-save') as HTMLButtonElement;
 
@@ -82,6 +91,7 @@ export default function initUiSettings() {
     objectsInput.value = String(current.objectsFontSize);
     buttonInput.value = String(current.buttonSize);
     mapInput.value = String(current.mapScale);
+    mapHeightInput.value = String(current.mapHeight);
     showButtonsInput.checked = current.showButtons;
     apply(current);
 
@@ -90,7 +100,11 @@ export default function initUiSettings() {
             contentFontSize: parseFloat(contentInput.value) || defaultSettings.contentFontSize,
             objectsFontSize: parseFloat(objectsInput.value) || defaultSettings.objectsFontSize,
             buttonSize: parseFloat(buttonInput.value) || defaultSettings.buttonSize,
-            mapScale: parseFloat(mapInput.value) || defaultSettings.mapScale,
+            mapScale: (() => {
+                const value = parseFloat(mapInput.value);
+                return value > 0 ? value : defaultSettings.mapScale;
+            })(),
+            mapHeight: parseFloat(mapHeightInput.value) || defaultSettings.mapHeight,
             showButtons: showButtonsInput.checked,
         };
     }

@@ -262,7 +262,7 @@ export const colorTable = [
     "#eeeeee",
 ]
 
-const RESET = '\x1B[0m'
+export const RESET = '\x1B[0m'
 
 export function color(colorCode:number) {
     return `\x1B[22;38;5;${colorCode+1}m`
@@ -280,8 +280,8 @@ export function colorStringInLine(rawLine: string, string: string, colorCode: nu
     return rawLine.substring(0, matchIndex) + color(colorCode) + string + RESET + rawLine.substring(matchIndex + string.length)
 }
 
-export function findClosestColor(hex: string): number {
-    const targetRgb = hexToRgb(hex)
+export function findClosestColor(hex: string | number[]): number {
+    const targetRgb = Array.isArray(hex) ? hex : hexToRgb(hex)
     let distance = 99999999999999
     let currentPick: number = 0;
     colorTable.forEach((colorsKey, index) => {

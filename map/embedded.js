@@ -17,7 +17,7 @@ class EmbeddedMap {
             const raw = localStorage.getItem('uiSettings')
             if (raw) {
                 const parsed = JSON.parse(raw)
-                if (typeof parsed.mapScale === 'number') {
+                if (typeof parsed.mapScale === 'number' && parsed.mapScale > 0) {
                     zoom = parsed.mapScale
                 }
             }
