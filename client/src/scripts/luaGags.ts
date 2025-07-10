@@ -230,12 +230,23 @@ function createLuaEnv() {
         gags: new luainjs.Table(gags),
         utils: new luainjs.Table({
             bind_functional: (string: string) => {
+                client.FunctionalBind.newMessage()
                 client.FunctionalBind.set(string)
             }
         }),
         ui: new luainjs.Table({
             info_action_update: () => {},
             info_action_bind: null,
+        }),
+        keybind: new luainjs.Table({
+            keybind_tostring: () => {
+                return client.FunctionalBind.getLabel()
+            }
+        }),
+        inv: new luainjs.Table({
+            weapons: new luainjs.Table({
+                wield: "dobadz wszystkich broni"
+            })
         })
     }
 

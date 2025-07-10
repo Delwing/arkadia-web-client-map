@@ -160,6 +160,7 @@ export default class Client {
         // @ts-ignore
         const text = Text.parse_patterns(printable)
         Output.send(text)
+        setTimeout(() => window.clientExtension.sendEvent('output-sent', 1), 0)
     }
 
     println(printable: string) {
