@@ -60,7 +60,11 @@ function load(): UiSettings {
         const raw = localStorage.getItem('uiSettings');
         if (raw) {
             const parsed = JSON.parse(raw);
-            return { ...defaultSettings, ...parsed };
+            const mapScale = (() => {
+                const value = Math.abs(parseFloat(parsed.mapScale));
+                return value > 0 ? value : defaultSettings.mapScale;
+            })();
+            return { ...defaultSettings, ...parsed, mapScale };
         }
     } catch {
         // ignore malformed data
@@ -96,14 +100,18 @@ export default function initUiSettings() {
     apply(current);
 
     function read(): UiSettings {
+        const mapScale = (() => {
+            const value = Math.abs(parseFloat(mapInput.value));
+            const scale = value > 0 ? value : defaultSettings.mapScale;
+            mapInput.value = String(scale);
+            return scale;
+        })();
+
         return {
             contentFontSize: parseFloat(contentInput.value) || defaultSettings.contentFontSize,
             objectsFontSize: parseFloat(objectsInput.value) || defaultSettings.objectsFontSize,
             buttonSize: parseFloat(buttonInput.value) || defaultSettings.buttonSize,
-            mapScale: (() => {
-                const value = Math.abs(parseFloat(mapInput.value));
-                return value > 0 ? value : defaultSettings.mapScale;
-            })(),
+            mapScale,
             mapHeight: parseFloat(mapHeightInput.value) || defaultSettings.mapHeight,
             showButtons: showButtonsInput.checked,
         };
