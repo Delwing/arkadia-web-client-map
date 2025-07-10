@@ -14,7 +14,7 @@ export const colorCodes = {
 export const RESET = '\x1B[0m'
 
 export function color(colorCode:number) {
-    return `\x1B[22;38;5;${colorCode+1}m`
+    return `\x1B[22;38;5;${colorCode-1}m`
 }
 
 export function colorString(string: string, colorCode: number) {
@@ -41,5 +41,5 @@ export function findClosestColor(hex: string | number[]): number {
             distance = compDistance
         }
     })
-    return currentPick
+    return currentPick + 1
 }
