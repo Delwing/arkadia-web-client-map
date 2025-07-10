@@ -55,6 +55,7 @@ Promise.all([mapPromise, colorsPromise])
 fakeClient.eventTarget.dispatchEvent(new CustomEvent("gmcp.room.info", {
     detail: {map: {x: 80, y: 89, z: 0, name: "Wissenland"}}
 }));
+fakeClient.fake("Dargoth wskazuje Packa jako cel obrony.")
 
 const wrapper = document.getElementById('main_text_output_msg_wrapper')!;
 

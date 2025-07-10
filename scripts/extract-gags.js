@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
+const xpath = require("xml2js-xpath");
 
 const repoPath = process.argv[2] || '.';
 const luaDir = path.join(repoPath, 'skrypty');
@@ -62,7 +63,7 @@ function extractPatterns(obj) {
     const pats = toArray(obj.regexCodeList && obj.regexCodeList.string).filter(Boolean);
     const props = toArray(obj.regexCodePropertyList && obj.regexCodePropertyList.integer);
     const out = [];
-    for (let i = 0; i < Math.max(pats.length, props.length); i++) {
+    for (let i = 0; i < Math.max(pats.length, pats.length); i++) {
         const pattern = pats[i].replaceAll(/\?'(.*?)'/g, "?<$1>") || '';
         const type = props[i] !== undefined ? Number(props[i]) : null;
         if (pattern || type !== null) out.push({pattern, type});
@@ -90,13 +91,11 @@ function processTrigger(tr) {
     const scriptNode = tr.script;
     if (!scriptNode) return null;
     const script = String(scriptNode).trim();
-    if (!script) return null;
-    const calls = getCalls(script);
-    if (calls.length === 0) return null;
+    if (!script ||script.length === 0) return null;
     return {
         name: tr.name || '',
+        script: scriptNode,
         patterns: extractPatterns(tr),
-        calls,
     };
 }
 
@@ -121,8 +120,8 @@ function processGroup(gr) {
 const xmlData = fs.readFileSync(xmlPath, 'utf8');
 xml2js.parseString(xmlData, {explicitArray: false}, (err, result) => {
     if (err) throw err;
-    const root = result.MudletPackage && result.MudletPackage.TriggerPackage;
+    const root = xpath.find(result, "//MudletPackage/TriggerPackage/TriggerGroup[name='skrypty']/TriggerGroup[name='ui']/TriggerGroup[name='gags']")
     if (!root) return;
-    const groups = toArray(root.TriggerGroup).map(processGroup).filter(Boolean);
-    fs.writeFileSync("./client/src/scripts/gags.json", JSON.stringify(groups));
+    const groups = toArray(root).map(processGroup).filter(Boolean);
+    fs.writeFileSync("../client/src/scripts/gags_lua.json", JSON.stringify(groups));
 });
