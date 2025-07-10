@@ -336,6 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 Input.send(message);
                 messageInput.value = '';
             }
+        } else {
+            Input.send('');
         }
     }
 
