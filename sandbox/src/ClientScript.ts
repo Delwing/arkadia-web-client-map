@@ -1,10 +1,12 @@
 import { FakeClient } from "./types/globals";
+import {color, findClosestColor} from "@client/src/Colors.ts";
 
 export default class ClientScript {
     actions: Array<() => Promise<void> | void> = [];
     constructor(private client: FakeClient) {}
 
     fake(text: string, type?: string) {
+        text = color(findClosestColor("#666666")) + text
         this.actions.push(() => this.client.fake(text, type));
         return this;
     }

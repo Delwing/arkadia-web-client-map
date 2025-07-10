@@ -1,5 +1,5 @@
 import initAttackBeep from '../src/scripts/attackBeep';
-import Triggers from '../src/Triggers';
+import Triggers, {stripAnsiCodes} from '../src/Triggers';
 import {findClosestColor} from '../src/Colors';
 
 class FakeClient {
@@ -46,6 +46,7 @@ describe('attack beep triggers', () => {
     expect(result.startsWith(prefix)).toBe(true);
     expect(result).toContain('ATAKUJE CIE');
     expect(result.includes('\x1B[0m')).toBe(true);
+    expect(stripAnsiCodes(result).endsWith('!')).toBe(true);
     expect(result.endsWith('\x1B[0m')).toBe(true);
   });
 });
