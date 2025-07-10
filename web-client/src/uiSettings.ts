@@ -101,7 +101,7 @@ export default function initUiSettings() {
             objectsFontSize: parseFloat(objectsInput.value) || defaultSettings.objectsFontSize,
             buttonSize: parseFloat(buttonInput.value) || defaultSettings.buttonSize,
             mapScale: (() => {
-                const value = parseFloat(mapInput.value);
+                const value = Math.abs(parseFloat(mapInput.value));
                 return value > 0 ? value : defaultSettings.mapScale;
             })(),
             mapHeight: parseFloat(mapHeightInput.value) || defaultSettings.mapHeight,
