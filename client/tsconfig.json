@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
+    "target": "es2022",
     "module": "CommonJS",
     "outDir": "dist",
     "resolveJsonModule": true,
@@ -10,7 +10,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "types": ["vite/client"]
   },
   "typeRoots": ["./src/types", "./node_modules/@types"],
   "include": ["src"]

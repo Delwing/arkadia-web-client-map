@@ -1,6 +1,6 @@
 import Client from "./Client";
 import People from "./People";
-import registerGagTriggers from "./scripts/gags";
+import registerGagTriggers from "./scripts/lua_gags";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation

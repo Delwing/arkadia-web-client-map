@@ -1,5 +1,6 @@
 import ClientScript from "../ClientScript.ts";
 import {fakeClient} from "../fakeClient.ts";
+import {color} from "@client/src/Colors.ts";
 
 export default new ClientScript(fakeClient)
     .reset()
