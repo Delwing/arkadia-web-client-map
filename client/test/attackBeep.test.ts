@@ -47,5 +47,6 @@ describe('attack beep triggers', () => {
     expect(result).toContain('ATAKUJE CIE');
     expect(result.includes('\x1B[0m')).toBe(true);
     expect(stripAnsiCodes(result).endsWith('!')).toBe(true);
+    expect(result.endsWith('\x1B[0m')).toBe(true);
   });
 });
