@@ -1,6 +1,6 @@
 import Client from "./Client";
 import People from "./People";
-import registerGagTriggers from "./scripts/gags";
+import registerLuaGagTriggers from "./scripts/./luaGags";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
@@ -118,7 +118,8 @@ blockers.forEach(blocker => {
     People
  */
 new People(client)
-registerGagTriggers(client.Triggers)
+registerGagTriggers(client)
+registerLuaGagTriggers(client)
 
 /*
     Follows
@@ -152,10 +153,7 @@ initGates(client)
 initAttackBeep(client)
 
 import initKillTrigger from "./scripts/kill"
-import initStun from "./scripts/stun"
-
 initKillTrigger(client, aliases)
-initStun(client)
 
 import ItemCollector from "./scripts/itemCollector"
 
@@ -196,6 +194,7 @@ import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
 import initInvite from "./scripts/invite"
 import initObjectAliases from "./scripts/objectAliases"
+import registerGagTriggers from "./scripts/gags";
 
 initLvlCalc(client, aliases)
 initItemCondition(client)

@@ -2,7 +2,6 @@ import { marked } from "marked";
 import Modal from "bootstrap/js/dist/modal";
 import aliasesMd from "../../docs/ALIASES.md?raw";
 import bagManagerMd from "../../docs/BAG_MANAGER.md?raw";
-import charStateMd from "../../docs/CHAR_STATE.md?raw";
 
 interface DocDef {
   key: string;

@@ -1,7 +1,6 @@
-import Triggers, {Trigger} from "../Triggers";
-import gagsData from "./gags.json";
 import {client} from "../main";
 import {colorStringInLine, colorString, findClosestColor} from "../Colors";
+import Client from "../Client";
 
 const gagColors = {
     "moje_ciosy": "#f0f8ff",
@@ -42,136 +41,13 @@ function isCombatMsg(
     return combatTypes.indexOf(type) > -1 ? new EmptyMatches() : undefined;
 }
 
-function gagsIsType(
-    checkedType: string,
-    _rawLine: string,
-    _line: string,
-    _matches: any,
-    type: string
-): RegExpMatchArray | undefined {
-    return checkedType.match(type)
-}
-
 function gag(rawLine: string, power: string, totalPower: string, kind: string) {
     return gagPrefix(rawLine, `${power}/${totalPower}`, kind)
-}
-
-function gagOwnSpec(rawLine: string, power: string, totalPower: string) {
-    if (totalPower) {
-        gagSpec(rawLine, '', power, totalPower, "moje_spece")
-    }
-    return gagPrefix(rawLine, `${power}/${totalPower}`, "moje_spece");
 }
 
 function gagPrefix(rawLine: string, prefix: string, type: string) {
     return client.prefix(rawLine, colorString(`[${prefix}] `, gagColorCodes[type]));
 }
-
-function gagSpec(rawLine: string, prefix: string, power: string, totalPower: string, kind: string) {
-    return gagPrefix(rawLine, `${prefix}${power}/${totalPower}`, kind)
-}
-
-const callMap: Record<string, (...args: any[]) => string> = {
-    gag,
-    gag_own_spec: gagOwnSpec,
-    gag_prefix: gagPrefix,
-    gag_spec: gagSpec,
-};
-
-type PatternObj = { pattern: string; type?: number | null };
-
-type GagTrigger = {
-    name: string;
-    patterns: PatternObj[];
-    calls?: { func: string; args: string[] }[];
-};
-
-type GagGroup = {
-    name: string;
-    patterns: PatternObj[];
-    triggers: GagTrigger[];
-    groups: GagGroup[];
-};
-
-function parseArg(arg: string): any {
-    const trimmed = arg.trim();
-    let value: any = trimmed;
-    if (
-        (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
-        (trimmed.startsWith("'") && trimmed.endsWith("'")) ||
-        trimmed.includes("\\\"")
-    ) {
-        try {
-            value = JSON.parse(trimmed);
-        } catch {
-            value = trimmed.slice(1, -1);
-        }
-        if (typeof value === "string") {
-            value = value.replace(/^\"|\"$/g, "");
-        }
-    }
-    const num = Number(value);
-    if (!Number.isNaN(num)) return num;
-    return value;
-}
-
-function toPattern(p: PatternObj) {
-    if (p.type === 1) {
-        return new RegExp(p.pattern);
-    }
-    if (p.type === 4) {
-        const code = p.pattern.trim();
-        if (code === "return is_combat_msg()") {
-            return (raw: string, line: string, matches: any, type: string) =>
-                isCombatMsg(raw, line, matches, type);
-        }
-        const m = code.match(/^return scripts\.gags:is_type\("(.+)"\)$/);
-        if (m) {
-            return (raw: string, line: string, matches: any, type: string) =>
-                gagsIsType(m[1], raw, line, matches, type);
-        }
-        return () => undefined;
-    }
-    return p.pattern;
-}
-
-function registerGroup(parent: Triggers | Trigger, group: GagGroup) {
-    const patterns = Array.isArray(group.patterns) ? group.patterns : [];
-    const triggers = Array.isArray(group.triggers) ? group.triggers : [];
-    const groups = Array.isArray(group.groups) ? group.groups : [];
-
-    if (patterns.length === 0 && triggers.length === 0) {
-        groups.forEach(gr => registerGroup(parent, gr));
-        return;
-    }
-
-    let container: Triggers | Trigger = parent;
-    patterns.forEach(pat => {
-        const pattern = toPattern(pat);
-        container = container instanceof Trigger
-            ? container.registerChild(pattern, undefined, group.name)
-            : (parent as Triggers).registerTrigger(pattern, undefined, group.name);
-    });
-    triggers.forEach(tr => registerTrigger(container, tr));
-    groups.forEach(gr => registerGroup(container, gr));
-}
-
-function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
-    if (!tr.patterns || tr.patterns.length === 0) return;
-    let container: Triggers | Trigger = parent;
-    tr.patterns.forEach((pat) => {
-        const pattern = toPattern(pat);
-        const callback = (rawLine: string) => {
-            (tr.calls || []).forEach(c => {
-                const fn = callMap[c.func];
-                if (fn) rawLine = fn(rawLine, ...c.args.map(parseArg));
-            });
-            return rawLine;
-        }
-        container instanceof Trigger ? container.registerChild(pattern, callback, tr.name) : (parent as Triggers).registerTrigger(pattern, callback, tr.name);
-    });
-}
-
 
 function gagOwnRegularHits(rawLine: string, matches: RegExpMatchArray | { index: number }, power: string) {
     let ignoreList = [
@@ -236,9 +112,7 @@ function gagOtherRegularHits(rawLine: string, matches: RegExpMatchArray, type: s
     return color_hit(rawLine, matches, value.toString(), type)
 }
 
-export default function registerGagTriggers(manager: Triggers) {
-    (gagsData as GagGroup[]).forEach(group => registerGroup(manager, group));
-
+export default function registerGagTriggers(client: Client) {
     const combatMessages = client.Triggers.registerTrigger(isCombatMsg)
     combatMessages.registerChild(/^Ledwo muskasz/, (rawLine, _, matches) => gagOwnRegularHits(rawLine, matches, "1"))
     combatMessages.registerChild(/^Lekko ranisz/, (rawLine, _, matches) => gagOwnRegularHits(rawLine, matches, "2"))
