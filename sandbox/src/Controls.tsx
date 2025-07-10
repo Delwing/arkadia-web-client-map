@@ -9,6 +9,7 @@ import teamEventsDemo from "./scenario/team-events-demo.ts";
 import shipsDemo from "./scenario/ships-demo.ts";
 import busesDemo from "./scenario/buses-demo.ts";
 import combatDemo from "./scenario/combat-demo.ts";
+import combatFullDemo from "./scenario/combat-full-demo.ts";
 import compassDemo from "./scenario/compass-demo.ts";
 import containersDemo from "./scenario/containers-demo.ts";
 import inventoryDemo from "./scenario/inventory-demo.ts";
@@ -27,6 +28,7 @@ export const demoMap = {
     'shipsDemo': shipsDemo,
     'busesDemo': busesDemo,
     'combatDemo': combatDemo,
+    'combatFullDemo': combatFullDemo,
     'compassDemo': compassDemo,
     'containersDemo': containersDemo,
     'inventoryDemo': inventoryDemo,
@@ -73,6 +75,13 @@ export function Controls() {
                         onClick={() => runDemo('combatDemo')}
                     >
                         Combat Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => runDemo('combatFullDemo')}
+                    >
+                        Combat Full
                     </Button>
                     <Button
                         size="sm"
