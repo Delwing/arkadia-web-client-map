@@ -153,7 +153,7 @@ class ArkadiaClient {
         try {
             this.socket.send(btoa(message + "\r\n"));
             // Only echo commands if we've received the first GMCP event
-            if (this.receivedFirstGmcp) {
+            if (this.receivedFirstGmcp && message) {
                 Output.send("-> " + message);
             }
         } catch (error) {

@@ -33,7 +33,8 @@ export function formatLabel(options: FunctionalBindOptions) {
 export class FunctionalBind {
 
     private client: Client;
-    private functionalBind = () => {};
+    private functionalBind = () => {
+    };
     private button?: HTMLInputElement;
     private currentPrintable: string | null = null;
     private printedInMessage = false;
@@ -69,11 +70,21 @@ export class FunctionalBind {
         this.printedInMessage = false;
     }
 
-    set(printable: string | null, callback?: () => void) {
+    set(printable: string | null, callback?: () => void, clearAfterUse: boolean = false) {
         if (callback) {
-            this.functionalBind = callback;
+            this.functionalBind = () => {
+                callback();
+                if (clearAfterUse) {
+                    this.clear()
+                }
+            }
         } else {
-            this.functionalBind = () => {this.client.sendCommand(printable)};
+            this.functionalBind = () => {
+                this.client.sendCommand(printable)
+                if (clearAfterUse) {
+                    this.clear()
+                }
+            };
         }
         if (this.currentPrintable === printable) {
             if (printable && !this.printedInMessage) {
@@ -96,7 +107,8 @@ export class FunctionalBind {
     }
 
     clear() {
-        this.functionalBind = () => {};
+        this.functionalBind = () => {
+        };
         this.currentPrintable = null;
         this.printedInMessage = false;
         this?.button?.remove();
@@ -114,6 +126,10 @@ export class FunctionalBind {
         if (options.ctrl !== undefined) this.ctrl = !!options.ctrl;
         if (options.alt !== undefined) this.alt = !!options.alt;
         if (options.shift !== undefined) this.shift = !!options.shift;
+    }
+
+    getLabel() {
+        return this.label;
     }
 
 }
