@@ -143,6 +143,7 @@ let isConnected = false;
 // Function to update the connect button state
 function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
+    const authOverlay = document.getElementById('auth-overlay') as HTMLElement | null;
     if (connectButton) {
         if (isConnected) {
             connectButton.style.display = 'none'; // Hide button when connected
@@ -153,7 +154,11 @@ function updateConnectButtons() {
             connectButton.classList.remove('connected');
         }
     }
-    document.getElementById('login-button').style.display = connectButton.style.display;
+    const displayValue = connectButton.style.display;
+    document.getElementById('login-button').style.display = displayValue;
+    if (authOverlay) {
+        authOverlay.style.display = displayValue;
+    }
 }
 
 // Handle client connect event
