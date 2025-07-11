@@ -76,7 +76,6 @@ const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 progressContainer.style.display = 'none';
 
 const outputWrapper = document.getElementById('main_text_output_msg_wrapper') as HTMLElement;
-const scrollArea = document.getElementById('scroll-area') as HTMLElement;
 const splitBottom = document.getElementById('split-bottom') as HTMLElement;
 const stickyArea = document.getElementById('sticky-area') as HTMLElement;
 let isSplitView = false;
@@ -94,7 +93,7 @@ function checkSplitView() {
         isSplitView = true;
         splitBottom.classList.remove('split-hidden');
         stickyArea.innerHTML = '';
-        const nodes = Array.from(scrollArea.children);
+        const nodes = Array.from(outputWrapper.children);
         const start = Math.max(0, nodes.length - STICKY_LINES);
         for (let i = start; i < nodes.length; i++) {
             stickyArea.appendChild(nodes[i].cloneNode(true));
@@ -159,13 +158,13 @@ client.on('message', (message: string, type?: string) => {
     messageDiv.style.whiteSpace = 'pre-wrap';
 
     wrapper.appendChild(messageDiv);
-    scrollArea.appendChild(wrapper);
+    outputWrapper.appendChild(wrapper);
 
     const maxElements = 1000;
-    while (scrollArea.childElementCount > maxElements) {
-        const first = scrollArea.firstElementChild;
+    while (outputWrapper.childElementCount > maxElements) {
+        const first = outputWrapper.firstElementChild;
         if (first) {
-            scrollArea.removeChild(first);
+            outputWrapper.removeChild(first);
         } else {
             break;
         }

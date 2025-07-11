@@ -60,11 +60,6 @@ h1 {
   position: relative;
 }
 
-#scroll-area {
-  display: flex;
-  flex-direction: column;
-}
-
 #split-bottom {
   position: sticky;
   bottom: 0;
