@@ -167,7 +167,7 @@ function updateConnectButtons() {
     const displayValue = connectButton.style.display;
     document.getElementById('login-button').style.display = displayValue;
     if (authOverlay) {
-        authOverlay.style.display = displayValue;
+        authOverlay.style.display = isConnected ? 'none' : 'block';
     }
 }
 
