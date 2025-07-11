@@ -56,7 +56,7 @@ export default class MapHelper {
     currentRoom: Room;
     locationHistory: number[] = []
     client: Client
-    mapReader
+    mapReader: MapReader
     refreshPosition = true;
     hashes = {};
     gmcpPosition: Position;
@@ -249,14 +249,13 @@ export default class MapHelper {
 
     handleNewLocation({room: room}) {
         this.client.FunctionalBind.clear();
-
-        if (room.userData?.bind) {
-            this.client.FunctionalBind.set(room.userData?.bind, () => Input.send(room.userData?.bind))
-        } else if (room.userData?.drinkable) {
-            this.client.FunctionalBind.set("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
-        }
-
-
+        this.client.addEventListener('output-sent', () => {
+            if (room.userData?.bind) {
+                this.client.FunctionalBind.set(room.userData?.bind, () => Input.send(room.userData?.bind))
+            } else if (room.userData?.drinkable) {
+                this.client.FunctionalBind.set("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
+            }
+        }, {once: true})
     }
 
 }
