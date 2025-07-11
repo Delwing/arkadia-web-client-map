@@ -24,6 +24,7 @@ export default class Client {
     ObjectManager = new ObjectManager(this)
     inlineCompassRose = new InlineCompassRose(this)
     panel = document.getElementById("panel_buttons_bottom")
+    contentWidth = 0
     sounds: Record<string, Howl> = {
         beep: new Howl({
             src: beepSound,
@@ -39,6 +40,10 @@ export default class Client {
                 this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
             }
         })
+
+        this.updateContentWidth()
+        window.addEventListener('resize', () => this.updateContentWidth())
+        this.addEventListener('uiSettings', () => this.updateContentWidth())
 
 
         Object.values(this.sounds).forEach((sound) => sound.load())
@@ -205,5 +210,22 @@ export default class Client {
 
     prefix(rawLine: string, prefix: string) {
         return prefix + rawLine;
+    }
+
+    updateContentWidth() {
+        const content = document.getElementById('main_text_output_msg_wrapper') as HTMLElement | null
+        const measure = document.getElementById('content-width-measure') as HTMLElement | null
+        if (!content || !measure) {
+            return
+        }
+        const style = window.getComputedStyle(content)
+        measure.style.fontFamily = style.fontFamily
+        measure.style.fontSize = style.fontSize
+        const charWidth = measure.getBoundingClientRect().width
+        const width = content.clientWidth
+        if (charWidth > 0 && width > 0) {
+            this.contentWidth = Math.floor(width / charWidth)
+            this.sendEvent('contentWidth', this.contentWidth)
+        }
     }
 }

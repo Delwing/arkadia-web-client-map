@@ -53,6 +53,7 @@ beforeEach(() => {
   document.body.innerHTML = '<div id="panel_buttons_bottom"></div><iframe id="cm-frame"></iframe>';
   (window as any).Output = { flush_buffer: jest.fn(), send: jest.fn() };
   (window as any).Text = { parse_patterns: jest.fn((v: any) => v) };
+  (window as any).postMessage = jest.fn();
 });
 
 test('createEvent returns object with type and data', () => {
@@ -202,5 +203,19 @@ test('playSound restarts sound when called twice', () => {
 
   expect(sound.stop).toHaveBeenCalledTimes(2);
   expect(sound.play).toHaveBeenCalledTimes(2);
+});
+
+test('updateContentWidth measures characters per line', () => {
+  document.body.innerHTML =
+    '<div id="panel_buttons_bottom"></div>' +
+    '<div id="main_text_output_msg_wrapper"></div>' +
+    '<span id="content-width-measure">M</span>';
+  const wrapper = document.getElementById('main_text_output_msg_wrapper')!;
+  Object.defineProperty(wrapper, 'clientWidth', { value: 100, configurable: true });
+  const measure = document.getElementById('content-width-measure')!;
+  (measure as any).getBoundingClientRect = jest.fn(() => ({ width: 10 }));
+  const client = new Client();
+  client.updateContentWidth();
+  expect(client.contentWidth).toBe(10);
 });
 
