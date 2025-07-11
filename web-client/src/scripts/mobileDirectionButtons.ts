@@ -44,7 +44,7 @@ export default class MobileDirectionButtons {
         });
 
         // Listen for settings changes
-        this.client.addEventListener("settings", (event: CustomEvent) => {
+        this.client.addEventListener("uiSettings", (event: CustomEvent) => {
             const detail = event.detail || {};
             if (!Object.prototype.hasOwnProperty.call(detail, "mobileDirectionButtons")) {
                 return;

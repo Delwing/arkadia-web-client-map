@@ -50,7 +50,7 @@ function apply(settings: UiSettings) {
     }
     if ((window as any).clientExtension?.eventTarget) {
         (window as any).clientExtension.eventTarget.dispatchEvent(
-            new CustomEvent('settings', { detail: { mobileDirectionButtons: settings.showButtons } })
+            new CustomEvent('uiSettings', { detail: { mobileDirectionButtons: settings.showButtons } })
         );
     }
 }
