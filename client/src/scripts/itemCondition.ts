@@ -42,7 +42,7 @@ export function processItemCondition(rawLine: string, phrase: string): string {
 }
 
 export default function initItemCondition(client: Client) {
-    const pattern = /^(?:.* jest |Wyglada na to, ze jest )(.+)$/;
+    const pattern = /^(?:.* jest |Wyglada na to, ze (?:sa |jest )?)(.+)$/;
     client.Triggers.registerTrigger(pattern, (raw, _line, m) => {
         const phrase = m[1];
         return processItemCondition(raw, phrase);
