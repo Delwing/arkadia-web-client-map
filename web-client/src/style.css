@@ -386,9 +386,15 @@ button:focus-visible {
   overflow-y: auto;
 }
 
+.debug-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
 #options-modal .modal-dialog,
 #docs-modal .modal-dialog,
-#login-modal .modal-dialog {
+#login-modal .modal-dialog,
+#debug-modal .modal-dialog {
   margin-top: 5vh;
   margin-bottom: 5vh;
 }
