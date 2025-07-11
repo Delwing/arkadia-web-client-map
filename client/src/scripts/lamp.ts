@@ -4,8 +4,8 @@ import { takeFromBag } from "./bagManager";
 export default function initLamp(client: Client) {
     const tag = "lamp";
     const DEFAULT_TIME = 300; // seconds
-    const WARNING_TIMES = [180, 90, 60];
-    const BEEP_TIMES = [60, 30, 10, 5, 4, 3, 2, 1];
+    const WARNING_TIMES = [120, 60, 30, 10];
+    const BEEP_TIMES = [10];
 
     let seconds = DEFAULT_TIME;
     let timer: number | null = null;
