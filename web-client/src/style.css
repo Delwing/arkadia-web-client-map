@@ -57,6 +57,28 @@ h1 {
   font-family: monospace;
   font-size: 0.775rem;
   overflow-wrap: break-word;
+  position: relative;
+}
+
+#scroll-area {
+  display: flex;
+  flex-direction: column;
+}
+
+#split-bottom {
+  position: sticky;
+  bottom: 0;
+  background-color: inherit;
+}
+
+#split-bottom.split-hidden {
+  display: none;
+}
+
+#split-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 4px 0;
 }
 
 #char-state {
@@ -275,6 +297,7 @@ button:focus-visible {
     padding: 1.5vh 2vw;
     font-size: 0.8rem;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    position: relative;
   }
 
   #input-area {

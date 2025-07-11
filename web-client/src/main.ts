@@ -75,6 +75,29 @@ const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 
 progressContainer.style.display = 'none';
 
+const outputWrapper = document.getElementById('main_text_output_msg_wrapper') as HTMLElement;
+const scrollArea = document.getElementById('scroll-area') as HTMLElement;
+const splitBottom = document.getElementById('split-bottom') as HTMLElement;
+const stickyArea = document.getElementById('sticky-area') as HTMLElement;
+let isSplitView = false;
+
+function checkSplitView() {
+    if (outputWrapper.scrollTop + outputWrapper.clientHeight >= outputWrapper.scrollHeight - 1) {
+        if (isSplitView) {
+            isSplitView = false;
+            splitBottom.classList.add('split-hidden');
+            stickyArea.innerHTML = '';
+        }
+    } else {
+        if (!isSplitView) {
+            isSplitView = true;
+            splitBottom.classList.remove('split-hidden');
+        }
+    }
+}
+
+outputWrapper.addEventListener('scroll', checkSplitView);
+
 function updateProgress(p: number, loaded?: number, total?: number) {
     progressContainer.style.display = 'block';
     progressBar.style.width = `${p}%`;
@@ -116,34 +139,36 @@ Promise.all([mapDataPromise, colorsPromise])
 
 // Set up message event listener for UI updates
 client.on('message', (message: string, type?: string) => {
-    const contentArea = document.getElementById('main_text_output_msg_wrapper');
-    if (contentArea) {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('output_msg');
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('output_msg');
 
-        // Add GMCP message type as class if provided
-        if (type) {
-            wrapper.classList.add(type);
+    if (type) {
+        wrapper.classList.add(type);
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.innerHTML = message;
+    messageDiv.classList.add('output_msg_text');
+    messageDiv.style.borderRadius = '4px';
+    messageDiv.style.whiteSpace = 'pre-wrap';
+
+    wrapper.appendChild(messageDiv);
+    scrollArea.appendChild(wrapper);
+
+    const maxElements = 1000;
+    while (scrollArea.childElementCount > maxElements) {
+        const first = scrollArea.firstElementChild;
+        if (first) {
+            scrollArea.removeChild(first);
+        } else {
+            break;
         }
+    }
 
-        const messageDiv = document.createElement('div');
-        messageDiv.innerHTML = message;
-        messageDiv.classList.add('output_msg_text');
-        messageDiv.style.borderRadius = '4px';
-        messageDiv.style.whiteSpace = 'pre-wrap';
-
-        wrapper.appendChild(messageDiv);
-        contentArea.appendChild(wrapper);
-        const maxElements = 1000;
-        while (contentArea.childElementCount > maxElements) {
-            const first = contentArea.firstElementChild;
-            if (first) {
-                contentArea.removeChild(first);
-            } else {
-                break;
-            }
-        }
-        contentArea.scrollTop = contentArea.scrollHeight;
+    if (isSplitView) {
+        stickyArea.appendChild(wrapper.cloneNode(true));
+    } else {
+        outputWrapper.scrollTop = outputWrapper.scrollHeight;
     }
 });
 
@@ -404,10 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll to bottom when input field is focused
     messageInput.addEventListener('focus', () => {
-        const contentArea = document.getElementById('main_text_output_msg_wrapper');
-        if (contentArea) {
-            contentArea.scrollTop = contentArea.scrollHeight;
-        }
+        outputWrapper.scrollTop = outputWrapper.scrollHeight;
     });
 
     // Handle connect/disconnect button click
