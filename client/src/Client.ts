@@ -30,6 +30,7 @@ export default class Client {
             preload: true,
         })
     }
+    inLineProcess = false //TODO figure out something else
 
     constructor() {
         attachGmcpListener(this);
@@ -88,6 +89,7 @@ export default class Client {
     }
 
     onLine(line: string, type: string) {
+        this.inLineProcess = true
         this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT));
         const buffer: { out: string, type?: string }[] = [];
         const originalOutputSend = Output.send;
@@ -99,9 +101,11 @@ export default class Client {
             }
         };
 
-        this.addEventListener('output-sent', () => {
-            buffer.forEach(item => Output.send(item.out, item.type));
-            this.sendEvent('output-sent', buffer.length)
+        this.addEventListener('line-sent', () => {
+            if (buffer.length > 0) {
+                buffer.forEach(item => Output.send(item.out, item.type));
+                this.sendEvent('buffer-sent', buffer.length)
+            }
         }, {once: true});
 
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
@@ -133,6 +137,7 @@ export default class Client {
         let index = 0
         result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
         Output.send = originalOutputSend;
+        this.inLineProcess = false
         return result
     }
 
@@ -160,7 +165,9 @@ export default class Client {
         // @ts-ignore
         const text = Text.parse_patterns(printable)
         Output.send(text)
-        setTimeout(() => this.sendEvent('output-sent', 1), 0)
+        if (!this.inLineProcess) {
+            this.sendEvent('output-sent', 1)
+        }
     }
 
     println(printable: string) {

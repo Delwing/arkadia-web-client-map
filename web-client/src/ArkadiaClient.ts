@@ -221,6 +221,7 @@ class ArkadiaClient {
                     gmcp.text = btoa(text)
                     window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${gmcp.type}`, gmcp), {once: true})
                     Output.send(parseAnsiPatterns(text), gmcp.type);
+                    window.clientExtension.sendEvent('line-sent')
                     this.linesProcessed++;
                 }
             } catch (error) {
