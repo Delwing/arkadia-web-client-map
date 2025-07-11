@@ -3,8 +3,8 @@ import { takeFromBag } from "./bagManager";
 
 export default function initLamp(client: Client) {
     const tag = "lamp";
-    const DEFAULT_TIME = 3600; // seconds
-    const WARNING_TIMES = [1800, 900, 600, 300];
+    const DEFAULT_TIME = 300; // seconds
+    const WARNING_TIMES = [180, 90, 60];
     const BEEP_TIMES = [60, 30, 10, 5, 4, 3, 2, 1];
 
     let seconds = DEFAULT_TIME;
@@ -18,6 +18,7 @@ export default function initLamp(client: Client) {
 
     function processCounter() {
         seconds -= 1;
+        console.log(seconds);
         if (WARNING_TIMES.includes(seconds)) {
             client.println(` >> W lampie zostalo oleju na ${secondsToClock(seconds)}.`);
         }
