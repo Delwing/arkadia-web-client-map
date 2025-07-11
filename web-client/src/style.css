@@ -68,7 +68,8 @@ h1 {
 #split-bottom {
   position: sticky;
   bottom: 0;
-  background-color: inherit;
+  background-color: #242424;
+  z-index: 1;
 }
 
 #split-bottom.split-hidden {
@@ -79,6 +80,12 @@ h1 {
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin: 4px 0;
+}
+
+#sticky-area {
+  display: flex;
+  flex-direction: column;
+  background-color: inherit;
 }
 
 #char-state {

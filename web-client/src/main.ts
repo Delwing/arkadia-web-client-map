@@ -80,18 +80,24 @@ const scrollArea = document.getElementById('scroll-area') as HTMLElement;
 const splitBottom = document.getElementById('split-bottom') as HTMLElement;
 const stickyArea = document.getElementById('sticky-area') as HTMLElement;
 let isSplitView = false;
+const STICKY_LINES = 10;
 
 function checkSplitView() {
-    if (outputWrapper.scrollTop + outputWrapper.clientHeight >= outputWrapper.scrollHeight - 1) {
+    const atBottom = outputWrapper.scrollTop + outputWrapper.clientHeight >= outputWrapper.scrollHeight - 1;
+    if (atBottom) {
         if (isSplitView) {
             isSplitView = false;
             splitBottom.classList.add('split-hidden');
             stickyArea.innerHTML = '';
         }
-    } else {
-        if (!isSplitView) {
-            isSplitView = true;
-            splitBottom.classList.remove('split-hidden');
+    } else if (!isSplitView) {
+        isSplitView = true;
+        splitBottom.classList.remove('split-hidden');
+        stickyArea.innerHTML = '';
+        const nodes = Array.from(scrollArea.children);
+        const start = Math.max(0, nodes.length - STICKY_LINES);
+        for (let i = start; i < nodes.length; i++) {
+            stickyArea.appendChild(nodes[i].cloneNode(true));
         }
     }
 }
@@ -167,6 +173,14 @@ client.on('message', (message: string, type?: string) => {
 
     if (isSplitView) {
         stickyArea.appendChild(wrapper.cloneNode(true));
+        while (stickyArea.childElementCount > STICKY_LINES) {
+            const firstSticky = stickyArea.firstElementChild;
+            if (firstSticky) {
+                stickyArea.removeChild(firstSticky);
+            } else {
+                break;
+            }
+        }
     } else {
         outputWrapper.scrollTop = outputWrapper.scrollHeight;
     }
