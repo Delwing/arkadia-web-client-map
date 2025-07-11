@@ -80,7 +80,7 @@ function setAll(bag: string, client: Client) {
     saveConfig(client);
 }
 
-function containerAction(
+export function containerAction(
     client: Client,
     type: keyof ContainerConfig,
     action: "put" | "take",
@@ -105,6 +105,14 @@ function containerAction(
         )
     );
     Input.send(`zamknij ${forms.pronoun_b} ${forms.biernik}`);
+}
+
+export function takeFromBag(
+    client: Client,
+    item: string,
+    type: keyof ContainerConfig = "other"
+) {
+    containerAction(client, type, "take", item);
 }
 
 function showConfig(client: Client) {

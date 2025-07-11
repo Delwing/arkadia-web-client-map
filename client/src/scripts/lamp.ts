@@ -1,0 +1,102 @@
+import Client from "../Client";
+import { takeFromBag } from "./bagManager";
+
+export default function initLamp(client: Client) {
+    const tag = "lamp";
+    const DEFAULT_TIME = 3600; // seconds
+    const WARNING_TIMES = [1800, 900, 600, 300];
+    const BEEP_TIMES = [60, 30, 10, 5, 4, 3, 2, 1];
+
+    let seconds = DEFAULT_TIME;
+    let timer: number | null = null;
+
+    function secondsToClock(sec: number) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function processCounter() {
+        seconds -= 1;
+        if (WARNING_TIMES.includes(seconds)) {
+            client.println(` >> W lampie zostalo oleju na ${secondsToClock(seconds)}.`);
+        }
+        if (BEEP_TIMES.includes(seconds)) {
+            client.playSound("beep");
+        }
+        if (seconds <= 0) {
+            stopTimer();
+        }
+    }
+
+    function startTimer() {
+        stopTimer();
+        seconds = DEFAULT_TIME;
+        timer = window.setInterval(processCounter, 1000);
+        processCounter();
+    }
+
+    function stopTimer() {
+        if (timer != null) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    function resetTimer() {
+        seconds = DEFAULT_TIME;
+        processCounter();
+    }
+
+    function takeBottle() {
+        takeFromBag(client, "olej");
+        Input.send("napelnij lampe olejem");
+    }
+
+    function emptyBottle() {
+        Input.send("odloz olej");
+        takeFromBag(client, "olej");
+        Input.send("napelnij lampe olejem");
+    }
+
+    const startPattern = /^[ >]*Zapalasz(?: [a-z ]+)? lampe/;
+    const offPatterns = [
+        /^Gasisz(?: [a-z ]+)? lampe/,
+        /nie jest zapalona\.$/,
+        /^[ >]*Probujesz zapalic [a-z ]+ jest wyczerpana\.$/,
+        /(?<!fajka) wypala sie i gasnie\.$/,
+        /^Woda szybko gasi .* lampe\.$/,
+    ];
+    const refillPattern = /^[ >]*Dopelniasz(?: [a-z ]+)? [a-z]+ oleju/;
+    const emptyPatterns = [
+        /oprozniajac zupelnie(?: [a-z ]+)? [a-z]+ oleju\./,
+        /utelka oleju jest pusta\./,
+        /utla oleju jest pusta\./,
+    ];
+    const noBottlePattern = /^Czym chcesz napelnic(?: [a-z ]+)? lampe/;
+
+    client.Triggers.registerTrigger(startPattern, () => {
+        startTimer();
+        return undefined;
+    }, tag);
+
+    offPatterns.forEach(p => client.Triggers.registerTrigger(p, () => {
+        stopTimer();
+        return undefined;
+    }, tag));
+
+    client.Triggers.registerTrigger(refillPattern, () => {
+        resetTimer();
+        return undefined;
+    }, tag);
+
+    emptyPatterns.forEach(p => client.Triggers.registerTrigger(p, () => {
+        client.FunctionalBind.set(" >> Odloz olej, wez butelke do reki i napelnij lampe", emptyBottle);
+        return undefined;
+    }, tag));
+
+    client.Triggers.registerTrigger(noBottlePattern, () => {
+        client.FunctionalBind.set(" >> Wez butelke do reki.", takeBottle);
+        return undefined;
+    }, tag);
+}

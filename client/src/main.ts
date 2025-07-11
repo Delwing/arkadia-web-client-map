@@ -146,11 +146,13 @@ import initShips from "./scripts/ships"
 import initBuses from "./scripts/buses"
 import initGates from "./scripts/gates"
 import initAttackBeep from "./scripts/attackBeep"
+import initLamp from "./scripts/lamp"
 
 initShips(client)
 initBuses(client)
 initGates(client)
 initAttackBeep(client)
+initLamp(client)
 
 import initKillTrigger from "./scripts/kill"
 initKillTrigger(client, aliases)
