@@ -5,6 +5,7 @@ import "./plugin.ts"
 import { Modal, Dropdown } from 'bootstrap';
 import CharState from "./CharState";
 import ObjectList from "./ObjectList";
+import LampTimer from "./LampTimer";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
@@ -421,8 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize button state
     updateConnectButtons();
 
-    // Display character state
+    // Display character state and lamp timer
     new CharState(client);
+    new LampTimer(client);
     new ObjectList(window.clientExtension as any);
 
     // Initialize mobile direction buttons
