@@ -86,6 +86,9 @@
                     <button class="w-100 p-1" id="docs-button">Docs</button>
                 </li>
                 <li>
+                    <button class="w-100 p-1" id="debug-button">Debug</button>
+                </li>
+                <li>
                     <button class="w-100 p-1" id="fullscreen-button" title="Fullscreen">⛶</button>
                 </li>
                 <li>
@@ -155,6 +158,18 @@
         </div>
     </div>
 
+    <div id="debug-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Debug Log</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="debug-content" class="debug-content modal-body overflow-auto"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Direction Buttons (hidden by default) -->
     <div id="mobile-direction-buttons" class="mobile-direction-buttons">
         <div class="mobile-top-buttons">
@@ -187,5 +202,6 @@
 <script type="module" src="/src/plugin.ts"></script>
 <script type="module" src="/src/main.ts"></script>
 <script type="module" src="/src/docs.ts"></script>
+<script type="module" src="/src/debug.ts"></script>
 </body>
 </html>
