@@ -113,37 +113,72 @@ Promise.all([mapDataPromise, colorsPromise])
     });
 
 
-// Set up message event listener for UI updates
-client.on('message', (message: string, type?: string) => {
-    const contentArea = document.getElementById('main_text_output_msg_wrapper');
-    if (contentArea) {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('output_msg');
+const contentArea = document.getElementById('main_text_output_msg_wrapper');
+const historyArea = contentArea?.querySelector('#output-history') as HTMLElement | null;
+const liveArea = contentArea?.querySelector('#output-live') as HTMLElement | null;
+let splitActive = false;
 
-        // Add GMCP message type as class if provided
-        if (type) {
-            wrapper.classList.add(type);
+function maintainLimit() {
+    const maxElements = 1000;
+    while ((historyArea?.childElementCount || 0) + (liveArea?.childElementCount || 0) > maxElements) {
+        if (historyArea && historyArea.firstElementChild) {
+            historyArea.removeChild(historyArea.firstElementChild);
+        } else if (liveArea && liveArea.firstElementChild) {
+            liveArea.removeChild(liveArea.firstElementChild);
+        } else {
+            break;
         }
+    }
+}
 
-        const messageDiv = document.createElement('div');
-        messageDiv.innerHTML = message;
-        messageDiv.classList.add('output_msg_text');
-        messageDiv.style.borderRadius = '4px';
-        messageDiv.style.whiteSpace = 'pre-wrap';
-
-        wrapper.appendChild(messageDiv);
-        contentArea.appendChild(wrapper);
-        const maxElements = 1000;
-        while (contentArea.childElementCount > maxElements) {
-            const first = contentArea.firstElementChild;
-            if (first) {
-                contentArea.removeChild(first);
-            } else {
-                break;
-            }
-        }
+function appendMessage(wrapper: HTMLElement) {
+    if (!historyArea || !contentArea || !liveArea) return;
+    if (splitActive) {
+        liveArea.appendChild(wrapper);
+    } else {
+        historyArea.appendChild(wrapper);
         contentArea.scrollTop = contentArea.scrollHeight;
     }
+    maintainLimit();
+}
+
+if (contentArea) {
+    contentArea.addEventListener('scroll', () => {
+        if (!contentArea) return;
+        const atBottom = contentArea.scrollHeight - contentArea.scrollTop - contentArea.clientHeight < 5;
+        if (atBottom && splitActive) {
+            splitActive = false;
+            contentArea.classList.remove('split-active');
+            while (liveArea?.firstChild) {
+                historyArea?.appendChild(liveArea.firstChild);
+            }
+            contentArea.scrollTop = contentArea.scrollHeight;
+        } else if (!atBottom && !splitActive) {
+            splitActive = true;
+            contentArea.classList.add('split-active');
+        }
+    });
+}
+
+// Set up message event listener for UI updates
+client.on('message', (message: string, type?: string) => {
+    if (!contentArea) return;
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('output_msg');
+
+    // Add GMCP message type as class if provided
+    if (type) {
+        wrapper.classList.add(type);
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.innerHTML = message;
+    messageDiv.classList.add('output_msg_text');
+    messageDiv.style.borderRadius = '4px';
+    messageDiv.style.whiteSpace = 'pre-wrap';
+
+    wrapper.appendChild(messageDiv);
+    appendMessage(wrapper);
 });
 
 // Track connection state
@@ -403,9 +438,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll to bottom when input field is focused
     messageInput.addEventListener('focus', () => {
-        const contentArea = document.getElementById('main_text_output_msg_wrapper');
-        if (contentArea) {
-            contentArea.scrollTop = contentArea.scrollHeight;
+        const area = document.getElementById('main_text_output_msg_wrapper');
+        if (area) {
+            area.scrollTop = area.scrollHeight;
+            if (splitActive) {
+                splitActive = false;
+                area.classList.remove('split-active');
+                while (liveArea?.firstChild) {
+                    historyArea?.appendChild(liveArea.firstChild);
+                }
+            }
         }
     });
 

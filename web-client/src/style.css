@@ -57,6 +57,26 @@ h1 {
   font-family: monospace;
   font-size: 0.775rem;
   overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+#output-history {
+  display: flex;
+  flex-direction: column;
+}
+
+#output-live {
+  display: none;
+  flex-direction: column;
+  position: sticky;
+  bottom: 0;
+  background-color: inherit;
+}
+
+#main_text_output_msg_wrapper.split-active #output-live {
+  display: flex;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #char-state {
@@ -259,6 +279,10 @@ button:focus-visible {
     padding: 1.5vh 2vw;
     font-size: 0.8rem;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  #output-live {
+    bottom: 0;
   }
 
   #input-area {

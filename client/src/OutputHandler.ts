@@ -4,6 +4,8 @@ export default class OutputHandler {
 
     client: Client
     output = document.getElementById("main_text_output_msg_wrapper")
+    history = this.output?.querySelector('#output-history') as HTMLElement | null
+    live = this.output?.querySelector('#output-live') as HTMLElement | null
     clickerCallbacks: Function[] = [];
 
     constructor(clientExtension: Client) {
@@ -18,11 +20,20 @@ export default class OutputHandler {
     }
 
     private processOutput(event: CustomEvent) {
-        if (!this.output.children) {
+        if (!this.output) {
             return
         }
-        for (let i = 0; i < event.detail; i++) {
-            const element = this.output.children[this.output.children.length - 1 - i]
+
+        const historyChildren = this.history ? Array.from(this.history.children) : []
+        const liveChildren = this.live ? Array.from(this.live.children) : []
+        let all = historyChildren.concat(liveChildren)
+        if (all.length === 0) {
+            all = Array.from(this.output.children)
+        }
+
+        const count = event.detail ?? 1
+        for (let i = 0; i < count; i++) {
+            const element = all[all.length - 1 - i]
             if (!element) {
                 return;
             }

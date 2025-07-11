@@ -123,6 +123,7 @@ test('onLine sends printed messages after line and restores Output.send', () => 
 
   originalOutputSend(result);
   client.sendEvent('output-sent');
+  client.sendEvent('line-sent');
 
   expect(originalOutputSend).toHaveBeenNthCalledWith(1, 'processed');
   expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
