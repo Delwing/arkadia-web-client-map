@@ -18,7 +18,7 @@ export default function initLamp(client: Client) {
 
     function processCounter() {
         seconds -= 1;
-        console.log(seconds);
+        client.sendEvent('lampTimer', seconds);
         if (WARNING_TIMES.includes(seconds)) {
             client.println(` >> W lampie zostalo oleju na ${secondsToClock(seconds)}.`);
         }
@@ -41,6 +41,7 @@ export default function initLamp(client: Client) {
         if (timer != null) {
             clearInterval(timer);
             timer = null;
+            client.sendEvent('lampTimer', null);
         }
     }
 

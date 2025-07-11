@@ -41,6 +41,7 @@ const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
 export default class CharState {
   private client: typeof ArkadiaClient;
   private container: HTMLElement | null;
+  private text: HTMLElement | null;
   private config: Record<keyof CharStateData, CharStateConfig>;
   private state: Partial<CharStateData> = {};
 
@@ -52,6 +53,7 @@ export default class CharState {
   ) {
     this.client = client;
     this.container = document.getElementById("char-state");
+    this.text = document.getElementById("char-state-text");
 
     this.config = { ...DEFAULT_CONFIG };
 
@@ -75,7 +77,7 @@ export default class CharState {
   }
 
   private update(partialState: Partial<CharStateData>) {
-    if (!this.container) return;
+    if (!this.container || !this.text) return;
 
     this.state = { ...this.state, ...partialState };
 
@@ -84,7 +86,7 @@ export default class CharState {
         this.config[key].default === undefined ||
         this.state[key] !== this.config[key].default,
     );
-    this.container.textContent = entries
+    this.text.textContent = entries
       .map((key) => {
         let value = this.state[key] as number;
         const { max, label, transform } = this.config[key];
