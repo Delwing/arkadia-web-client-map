@@ -27,7 +27,7 @@ describe('attack beep triggers', () => {
   test('beeps and highlights on attack', () => {
     const result = parse('Wojownik atakuje cie!');
     expect(client.playSound).toHaveBeenCalledTimes(1);
-    const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000') + 1}m`;
+    const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000')}m`;
     expect(result.startsWith(prefix)).toBe(true);
     expect(result).toContain('Wojownik ATAKUJE CIE!');
     expect(result.endsWith('\x1B[0m')).toBe(true);
@@ -42,7 +42,7 @@ describe('attack beep triggers', () => {
   test('does not beep on plain phrase trigger', () => {
     const result = parse('atakuje cie!');
     expect(client.playSound).not.toHaveBeenCalled();
-    const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000') + 1}m`;
+    const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000')}m`;
     expect(result.startsWith(prefix)).toBe(true);
     expect(result).toContain('ATAKUJE CIE');
     expect(result.includes('\x1B[0m')).toBe(true);
