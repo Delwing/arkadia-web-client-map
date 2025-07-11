@@ -14,6 +14,7 @@ import containersDemo from "./scenario/containers-demo.ts";
 import inventoryDemo from "./scenario/inventory-demo.ts";
 import lvlCalcDemo from "./scenario/lvl-calc-demo.ts";
 import attackBeepDemo from "./scenario/attack-beep-demo.ts";
+import lampDemo from "./scenario/lamp-demo.ts";
 import depositDemo from "./scenario/deposit-demo.ts";
 import stunDemo from "./scenario/stun-demo.ts";
 import inviteDemo from "./scenario/invite-demo.ts";
@@ -32,6 +33,7 @@ export const demoMap = {
     'inventoryDemo': inventoryDemo,
     'lvlCalcDemo': lvlCalcDemo,
     'attackBeepDemo': attackBeepDemo,
+    'lampDemo': lampDemo,
     'depositDemo': depositDemo,
     'stunDemo': stunDemo,
     'inviteDemo': inviteDemo
@@ -129,6 +131,13 @@ export function Controls() {
                         onClick={() => runDemo('attackBeepDemo')}
                     >
                         Attack Beep Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => runDemo('lampDemo')}
+                    >
+                        Lamp Demo
                     </Button>
                     <Button
                         size="sm"
