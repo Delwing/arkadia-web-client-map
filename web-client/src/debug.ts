@@ -10,8 +10,8 @@ function initDebug() {
 
   const methods: Array<keyof Console> = ["log", "error", "warn", "info"];
   methods.forEach((m) => {
-    const original = console[m].bind(console);
-    console[m] = (...args: unknown[]) => {
+    const original = (console as any)[m].bind(console);
+    (console as any)[m] = (...args: unknown[]) => {
       const msg = args
         .map((a) => {
           if (typeof a === "object") {
