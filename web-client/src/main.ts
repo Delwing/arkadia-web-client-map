@@ -133,6 +133,15 @@ client.on('message', (message: string, type?: string) => {
 
         wrapper.appendChild(messageDiv);
         contentArea.appendChild(wrapper);
+        const maxElements = 1000;
+        while (contentArea.childElementCount > maxElements) {
+            const first = contentArea.firstElementChild;
+            if (first) {
+                contentArea.removeChild(first);
+            } else {
+                break;
+            }
+        }
         contentArea.scrollTop = contentArea.scrollHeight;
     }
 });
