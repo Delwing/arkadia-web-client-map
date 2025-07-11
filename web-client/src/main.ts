@@ -93,7 +93,7 @@ function checkSplitView() {
         isSplitView = true;
         splitBottom.classList.remove('split-hidden');
         stickyArea.innerHTML = '';
-        const nodes = Array.from(outputWrapper.children);
+        const nodes = Array.from(outputWrapper.children).filter(n => n !== splitBottom);
         const start = Math.max(0, nodes.length - STICKY_LINES);
         for (let i = start; i < nodes.length; i++) {
             stickyArea.appendChild(nodes[i].cloneNode(true));
@@ -161,9 +161,16 @@ client.on('message', (message: string, type?: string) => {
     outputWrapper.appendChild(wrapper);
 
     const maxElements = 1000;
-    while (outputWrapper.childElementCount > maxElements) {
+    while (outputWrapper.childElementCount - 1 > maxElements) {
         const first = outputWrapper.firstElementChild;
-        if (first) {
+        if (first === splitBottom) {
+            const second = first.nextElementSibling;
+            if (second) {
+                outputWrapper.removeChild(second);
+            } else {
+                break;
+            }
+        } else if (first) {
             outputWrapper.removeChild(first);
         } else {
             break;
