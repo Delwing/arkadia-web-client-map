@@ -44,6 +44,12 @@ function apply(settings: UiSettings) {
         btn.style.height = baseSize * settings.buttonSize + 'px';
         btn.style.fontSize = baseFont * settings.buttonSize + 'px';
     });
+
+    // Adjust grid row size for dynamically created Z buttons
+    document.querySelectorAll<HTMLDivElement>('.mobile-z-buttons').forEach(div => {
+        const baseRow = 36; // default row height in px
+        div.style.gridAutoRows = baseRow * settings.buttonSize + 'px';
+    });
     if ((window as any).embedded?.renderer?.controls) {
         (window as any).embedded.setZoom?.(settings.mapScale);
         (window as any).embedded.refresh();
