@@ -92,7 +92,7 @@ function updateLastLines() {
 
 function checkSplit() {
     if (!historyArea) return;
-    const atBottom = Math.abs(historyArea.scrollHeight - historyArea.scrollTop - historyArea.clientHeight) < 1;
+    const atBottom = historyArea.scrollTop + historyArea.clientHeight >= historyArea.scrollHeight - 1;
     if (!atBottom && !splitActive) {
         splitActive = true;
         outputContainer?.classList.add('split');
@@ -110,6 +110,7 @@ function checkSplit() {
             lastLines.innerHTML = '';
         }
         historyArea.style.paddingBottom = '';
+        historyArea.scrollTop = historyArea.scrollHeight;
     }
 }
 
@@ -186,6 +187,7 @@ client.on('message', (message: string, type?: string) => {
         } else {
             updateLastLines();
         }
+        checkSplit();
     }
 });
 
@@ -289,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     historyArea = document.getElementById('main_text_output_msg_wrapper');
     lastLines = document.getElementById('output-last-lines');
     historyArea?.addEventListener('scroll', checkSplit);
+    checkSplit();
 
     // Initialize Bootstrap modal
     const optionsModalElement = document.getElementById('options-modal');
