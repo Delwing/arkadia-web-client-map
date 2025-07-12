@@ -440,3 +440,24 @@ button:focus-visible {
   display: none;
 }
 
+#history-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  overflow-y: auto;
+  display: none;
+  pointer-events: none;
+  z-index: 998;
+}
+
+#history-divider {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: none;
+  z-index: 999;
+}
+

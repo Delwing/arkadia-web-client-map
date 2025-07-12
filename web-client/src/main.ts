@@ -19,6 +19,9 @@ import { createElement } from 'react'
 import { createRoot} from 'react-dom/client'
 import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
+import HistoryOverlay from "./historyOverlay"
+
+let historyOverlay: HistoryOverlay | null = null;
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
@@ -143,6 +146,9 @@ client.on('message', (message: string, type?: string) => {
                 break;
             }
         }
+        if (historyOverlay) {
+            historyOverlay.update();
+        }
         contentArea.scrollTop = contentArea.scrollHeight;
     }
 });
@@ -230,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
         preventTabSleep();
         console.log('Tab sleep prevention activated for mobile device');
     }
+
+    historyOverlay = new HistoryOverlay();
 
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
