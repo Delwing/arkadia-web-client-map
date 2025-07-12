@@ -1,5 +1,6 @@
 import Client from "@client/src/Client";
-import {client} from "@client/src/main.ts";
+import { client } from "@client/src/main.ts";
+import { formatLabel } from "@client/src/scripts/functionalBind";
 
 export default class MobileDirectionButtons {
     private client: Client;
@@ -10,6 +11,11 @@ export default class MobileDirectionButtons {
     private readonly zasList: HTMLDivElement | null = null;
     private readonly zToggle: HTMLButtonElement | null = null;
     private readonly zasToggle: HTMLButtonElement | null = null;
+    private readonly bracketRightButton: HTMLButtonElement | null = null;
+    private boundKey = 'BracketRight';
+    private boundCtrl = false;
+    private boundAlt = false;
+    private boundShift = false;
     private enabled = false;
     private isMobile = false;
 
@@ -34,6 +40,7 @@ export default class MobileDirectionButtons {
         this.zasList = document.getElementById('zas-buttons-list') as HTMLDivElement;
         this.zToggle = document.getElementById('z-list-toggle') as HTMLButtonElement;
         this.zasToggle = document.getElementById('zas-list-toggle') as HTMLButtonElement;
+        this.bracketRightButton = document.getElementById('bracket-right-button') as HTMLButtonElement;
 
         if (!this.container) {
             console.error('Mobile direction buttons container not found');
@@ -41,6 +48,7 @@ export default class MobileDirectionButtons {
         }
 
         this.setupEventHandlers();
+        this.updateBracketRightButton();
         this.setupDraggable();
         this.checkMobile();
         this.setupKeyboardHandlers();
@@ -51,7 +59,7 @@ export default class MobileDirectionButtons {
             this.scrollToBottom();
         });
 
-        // Listen for settings changes
+        // Listen for UI settings changes
         this.client.addEventListener("uiSettings", (event: CustomEvent) => {
             const detail = event.detail || {};
             if (!Object.prototype.hasOwnProperty.call(detail, "mobileDirectionButtons")) {
@@ -63,6 +71,18 @@ export default class MobileDirectionButtons {
                 this.disable();
             } else {
                 this.enable();
+            }
+        });
+
+        // Listen for bind settings changes
+        this.client.addEventListener('settings', (ev: CustomEvent) => {
+            const bind = ev.detail?.binds?.main;
+            if (bind) {
+                this.boundKey = bind.key;
+                this.boundCtrl = !!bind.ctrl;
+                this.boundAlt = !!bind.alt;
+                this.boundShift = !!bind.shift;
+                this.updateBracketRightButton();
             }
         });
 
@@ -84,15 +104,14 @@ export default class MobileDirectionButtons {
 
     private setupEventHandlers() {
         // Setup bracket right button
-        const bracketRightButton = document.getElementById('bracket-right-button');
-        if (bracketRightButton) {
-            bracketRightButton.addEventListener('click', () => {
-                // Simulate ] key press
+        if (this.bracketRightButton) {
+            this.bracketRightButton.addEventListener('click', () => {
                 const event = new KeyboardEvent('keydown', {
-                    key: ']',
-                    code: 'BracketRight',
-                    keyCode: 221,
-                    which: 221,
+                    code: this.boundKey,
+                    key: this.boundKey,
+                    ctrlKey: this.boundCtrl,
+                    altKey: this.boundAlt,
+                    shiftKey: this.boundShift,
                     bubbles: true,
                     cancelable: true
                 });
@@ -495,6 +514,16 @@ export default class MobileDirectionButtons {
             btn.style.height = styles.height;
             btn.style.fontSize = styles.fontSize;
         }
+    }
+
+    private updateBracketRightButton() {
+        if (!this.bracketRightButton) return;
+        this.bracketRightButton.textContent = formatLabel({
+            key: this.boundKey,
+            ctrl: this.boundCtrl,
+            alt: this.boundAlt,
+            shift: this.boundShift,
+        });
     }
 
     private renderZList() {
