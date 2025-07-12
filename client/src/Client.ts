@@ -115,7 +115,9 @@ export default class Client {
 
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        rawInputSend(this.Map.parseCommand(command))
+        command.split(/[#;]/).forEach(part => {
+            rawInputSend(this.Map.parseCommand(part))
+        })
     }
 
     onLine(line: string, type: string) {
