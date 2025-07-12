@@ -16,7 +16,8 @@ class FakeClient {
 
 describe('OutputHandler clickable text', () => {
   test('handles clicks without span elements', () => {
-    document.body.innerHTML = '<div id="main_text_output_msg_wrapper"></div>';
+    document.body.innerHTML =
+      '<div id="main_text_output_msg_wrapper"><div id="split-bottom"><div id="sticky-area"></div></div></div>';
     const client = new FakeClient();
     const handler = new OutputHandler((client as unknown) as any);
     const wrapper = document.getElementById('main_text_output_msg_wrapper')!;
@@ -27,7 +28,8 @@ describe('OutputHandler clickable text', () => {
     const cb = jest.fn();
     msg.textContent = handler.makeClickable('Click', 'Click', cb);
     div.appendChild(msg);
-    wrapper.appendChild(div);
+    const split = document.getElementById('split-bottom')!;
+    wrapper.insertBefore(div, split);
 
     client.dispatch('output-sent', 1);
 
