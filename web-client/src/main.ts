@@ -240,6 +240,7 @@ function updateConnectButtons() {
 client.on('client.connect', () => {
     isConnected = true;
     updateConnectButtons();
+    window.clientExtension.sendEvent('refreshPositionWhenAble');
     console.log('Client connected to Arkadia server.');
 });
 
