@@ -121,6 +121,13 @@ class ArkadiaClient {
     }
 
     /**
+     * Manually set the stored password for automatic credential sending
+     */
+    setStoredPassword(password: string | null): void {
+        this.passwordCommand = password;
+    }
+
+    /**
      * Send a message through the WebSocket
      */
     send(message: string): void {

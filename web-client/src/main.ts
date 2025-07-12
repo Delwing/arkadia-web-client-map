@@ -13,6 +13,7 @@ import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
+import { savePassword, getPassword, clearPassword } from "./passwordStore";
 const client = ArkadiaClient
 
 import { createElement } from 'react'
@@ -318,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
+    const rememberPassword = document.getElementById('login-remember-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
 
     if (menuButton) {
@@ -370,11 +372,18 @@ document.addEventListener('DOMContentLoaded', () => {
             loginModal.show();
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const character = loginCharacter?.value || '';
             const password = loginPassword?.value || '';
             loginModal.hide();
+
+            if (rememberPassword && rememberPassword.checked && password) {
+                try { await savePassword(password); } catch {}
+            } else {
+                try { await clearPassword(); } catch {}
+            }
+            client.setStoredPassword(password || null);
 
             const sendCreds = () => {
                 if (character) Input.send(character);
@@ -482,7 +491,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (reconnectButton) {
-        reconnectButton.addEventListener('click', () => {
+        reconnectButton.addEventListener('click', async () => {
+            try {
+                const stored = await getPassword();
+                if (stored) {
+                    client.setStoredPassword(stored);
+                }
+            } catch {}
             client.connect(false);
         });
     }
