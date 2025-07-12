@@ -19,6 +19,7 @@ import { createElement } from 'react'
 import { createRoot} from 'react-dom/client'
 import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
+import Aliases from "@options/src/Aliases.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
@@ -241,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
+    const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
@@ -250,6 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionsModal = optionsModalElement ? new Modal(optionsModalElement) : null;
     const bindsModalElement = document.getElementById('binds-modal');
     const bindsModal = bindsModalElement ? new Modal(bindsModalElement) : null;
+    const aliasesModalElement = document.getElementById('aliases-modal');
+    const aliasesModal = aliasesModalElement ? new Modal(aliasesModalElement) : null;
     const npcModalElement = document.getElementById('npc-modal');
     const npcModal = npcModalElement ? new Modal(npcModalElement) : null;
     const loginModalElement = document.getElementById('login-modal');
@@ -269,6 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (bindsModal) {
             bindsModal.hide();
         }
+        if (aliasesModal) {
+            aliasesModal.hide();
+        }
         if (npcModal) {
             npcModal.hide();
         }
@@ -284,6 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bindsButton && bindsModal) {
         bindsButton.addEventListener('click', () => {
             bindsModal.show();
+        });
+    }
+
+    if (aliasesButton && aliasesModal) {
+        aliasesButton.addEventListener('click', () => {
+            aliasesModal.show();
         });
     }
 
@@ -459,6 +472,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const npcRoot = document.getElementById('npc-options');
     if (npcRoot) {
         createRoot(npcRoot).render(createElement(Npc));
+    }
+
+    const aliasesRoot = document.getElementById('aliases-options');
+    if (aliasesRoot) {
+        createRoot(aliasesRoot).render(createElement(Aliases));
     }
 });
 
