@@ -37,7 +37,10 @@ export default class HistoryOverlay {
 
     private show() {
         this.visible = true;
-        this.overlay.innerHTML = this.contentArea.innerHTML;
+        // Clone the current output so styles match exactly
+        this.overlay.replaceChildren(
+            ...Array.from(this.contentArea.children).map(c => c.cloneNode(true) as Node)
+        );
         this.updateBottomHeight();
         this.overlay.style.display = 'block';
         this.divider.style.display = 'block';
@@ -73,7 +76,9 @@ export default class HistoryOverlay {
 
     public update() {
         if (this.visible) {
-            this.overlay.innerHTML = this.contentArea.innerHTML;
+            this.overlay.replaceChildren(
+                ...Array.from(this.contentArea.children).map(c => c.cloneNode(true) as Node)
+            );
             this.updateBottomHeight();
         }
     }
