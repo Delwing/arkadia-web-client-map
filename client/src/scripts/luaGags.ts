@@ -183,6 +183,19 @@ function createLuaEnv() {
             }
             gags.gag_prefix(null, prefix, "moje_spece")
         },
+        gag_spec: (_, prefix: string, power: string, maxPower: string, type: string) => {
+            let ownPrefix = prefix == "" ? "" : prefix + " "
+            gags.gag_prefix(null, `${ownPrefix}${power}/${maxPower}`, type)
+        },
+        attacker_target: (_, value: string) => {
+            const totalPower= value ?? "6";
+            const target = gags.who_hits()
+            gags.gag(null, value, totalPower, target)
+        },
+        attacker_target_fin: () => {
+            const target = gags.who_hits()
+            gags.gag_prefix(null, gags.fin_prefix, target)
+        },
         delete_line: () => {
             return false
         },
