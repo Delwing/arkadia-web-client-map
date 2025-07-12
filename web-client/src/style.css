@@ -360,6 +360,13 @@ button:focus-visible {
   margin-bottom: 5px;
 }
 
+.mobile-attack-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
 .mobile-direction-main {
   display: flex;
 }
@@ -422,7 +429,7 @@ button:focus-visible {
 .mobile-z-buttons {
   position: absolute;
   right: 100%;
-  top: 0;
+  top: 82px;
   display: none;
   flex-direction: column;
   gap: 3px;
