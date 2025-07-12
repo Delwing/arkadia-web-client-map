@@ -69,6 +69,9 @@ loadNpcData().then(npc => {
 
 const port = new MockPort();
 window.clientExtension.connect(port as any, true);
+window.clientExtension.addEventListener('lampTimer', (ev: CustomEvent<number | null>) => {
+    client.emit('lampTimer', ev.detail);
+});
 
 const progressContainer = document.getElementById('map-progress-container')!;
 const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
