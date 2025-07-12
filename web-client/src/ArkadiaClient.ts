@@ -21,8 +21,6 @@ class ArkadiaClient {
     private events: EventMap = {};
     private receivedFirstGmcp: boolean = false;
     private linesProcessed = 0
-    private shouldAutoReconnect = false;
-    private reconnectTimeout?: number;
     private userCommand: string | null = null;
     private passwordCommand: string | null = null;
     private lastConnectManual = true;
@@ -64,9 +62,6 @@ class ArkadiaClient {
         try {
             // Reset the flag when connecting
             this.receivedFirstGmcp = false;
-            if (manual) {
-                this.shouldAutoReconnect = true;
-            }
             this.lastConnectManual = manual;
             this.socket = new WebSocket(WEBSOCKET_URL, []);
             this.socket.onmessage = (event: MessageEvent<string>) => {
@@ -85,14 +80,9 @@ class ArkadiaClient {
             this.socket.onclose = (event: CloseEvent) => {
                 this.emit('close', event);
                 this.emit('client.disconnect');
-                if (this.shouldAutoReconnect) {
-                    clearTimeout(this.reconnectTimeout);
-                    this.reconnectTimeout = window.setTimeout(() => this.connect(false), 1000);
-                }
             };
 
             this.socket.onopen = (event: Event) => {
-                clearTimeout(this.reconnectTimeout);
                 this.emit('open', event);
                 this.emit('client.connect');
                 if (!this.lastConnectManual && this.userCommand && this.passwordCommand) {
@@ -145,9 +135,6 @@ class ArkadiaClient {
                 this.userCommand = message;
             }
             this.passwordCommand = message;
-        }
-        if (trimmed === 'zakoncz') {
-            this.shouldAutoReconnect = false;
         }
 
         try {
