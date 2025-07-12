@@ -22,7 +22,7 @@ export default class OutputHandler {
             return
         }
         for (let i = 0; i < event.detail; i++) {
-            const element = this.output.children[this.output.children.length - 1 - i]
+            const element = this.output.children[this.output.children.length - 2 - i]
             if (!element) {
                 return;
             }

@@ -26,7 +26,7 @@ export interface CharStateConfig {
 
 const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
   hp: { label: "HP", max: 6, transform: (value, max) => ({ value: value + 1, max: max + 1 }) },
-  fatigue: { label: "ZM", max: 8 },
+  fatigue: { label: "ZM", max: 9 },
   stuffed: { label: "GLO", max: 3, default: 3 },
   encumbrance: { label: "OBC", max: 6, default: 0 },
   soaked: { label: "PRA", max: 3, default: 3 },

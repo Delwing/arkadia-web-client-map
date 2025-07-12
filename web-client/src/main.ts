@@ -95,7 +95,7 @@ function processSticky(count: number) {
 }
 
 function checkSplitView() {
-    const atBottom = outputWrapper.scrollTop + outputWrapper.clientHeight >= outputWrapper.scrollHeight - 1;
+    const atBottom = outputWrapper.scrollTop + outputWrapper.clientHeight + splitBottom.clientHeight >= outputWrapper.scrollHeight - 1;
     if (atBottom) {
         if (isSplitView) {
             isSplitView = false;
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new MobileDirectionButtons(window.clientExtension);
 
     initUiSettings();
-  
+
     const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement | null;
     if (fullscreenButton) {
         fullscreenButton.addEventListener('click', () => {
