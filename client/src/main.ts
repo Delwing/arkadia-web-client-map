@@ -157,12 +157,14 @@ import initBuses from './scripts/buses'
 import initGates from './scripts/gates'
 import initAttackBeep from './scripts/attackBeep'
 import initLamp from './scripts/lamp'
+import initBinds from './scripts/binds'
 
 initShips(client)
 initBuses(client)
 initGates(client)
 initAttackBeep(client)
 initLamp(client)
+initBinds(client, aliases)
 
 import initKillTrigger from './scripts/kill'
 initKillTrigger(client, aliases)
