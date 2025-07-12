@@ -13,7 +13,7 @@ import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
-import { savePassword, getPassword, clearPassword } from "./passwordStore";
+import { savePassword, getPassword, clearPassword, saveCharacter, getCharacter, clearCharacter } from "./passwordStore";
 const client = ArkadiaClient
 
 import { createElement } from 'react'
@@ -379,11 +379,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loginModal.hide();
 
             if (rememberPassword && rememberPassword.checked && password) {
-                try { await savePassword(password); } catch {}
+                try { await savePassword(password); await saveCharacter(character); } catch {}
             } else {
-                try { await clearPassword(); } catch {}
+                try { await clearPassword(); await clearCharacter(); } catch {}
             }
             client.setStoredPassword(password || null);
+            client.setStoredCharacter(character || null);
 
             const sendCreds = () => {
                 if (character) Input.send(character);
@@ -493,9 +494,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reconnectButton) {
         reconnectButton.addEventListener('click', async () => {
             try {
-                const stored = await getPassword();
-                if (stored) {
-                    client.setStoredPassword(stored);
+                const storedPass = await getPassword();
+                const storedChar = await getCharacter();
+                if (storedPass) {
+                    client.setStoredPassword(storedPass);
+                }
+                if (storedChar) {
+                    client.setStoredCharacter(storedChar);
                 }
             } catch {}
             client.connect(false);
