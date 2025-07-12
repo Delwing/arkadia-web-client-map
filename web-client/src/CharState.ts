@@ -86,15 +86,18 @@ export default class CharState {
         this.config[key].default === undefined ||
         this.state[key] !== this.config[key].default,
     );
-    this.text.textContent = entries
+    this.text.innerHTML = entries
       .map((key) => {
         let value = this.state[key] as number;
-        const { max, label, transform } = this.config[key];
+        const { max, label, transform, default: def } = this.config[key];
         let maxValue = max;
         if (transform && typeof value === "number") {
           ({ value, max: maxValue } = transform(value, maxValue));
         }
-        return `${label}: [${value}/${maxValue}]`;
+        const opposite = def !== undefined ? (def > 0 ? 0 : maxValue) : null;
+        const highlight = opposite !== null && value === opposite;
+        const text = `${label}: [${value}/${maxValue}]`;
+        return highlight ? `<span style="color:tomato">${text}</span>` : text;
       })
       .join(" ");
   }
