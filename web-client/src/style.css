@@ -52,6 +52,9 @@ h1 {
 
 #main_text_output_msg_wrapper {
   flex: 1;
+}
+
+.scroll-output {
   overflow-y: auto;
   padding: 2vh 2vw;
   font-family: monospace;
@@ -271,7 +274,7 @@ button:focus-visible {
     max-height: 25vh;
   }
 
-  #main_text_output_msg_wrapper {
+  .scroll-output {
     padding: 1.5vh 2vw;
     font-size: 0.8rem;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
@@ -445,11 +448,6 @@ button:focus-visible {
   left: 0;
   right: 0;
   top: 0;
-  overflow-y: auto;
-  padding: 2vh 2vw;
-  font-family: monospace;
-  font-size: 0.775rem;
-  overflow-wrap: break-word;
   display: none;
   pointer-events: none;
   z-index: 998;
