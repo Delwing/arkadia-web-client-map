@@ -82,7 +82,7 @@ const outputWrapper = document.getElementById('main_text_output_msg_wrapper') as
 const splitBottom = document.getElementById('split-bottom') as HTMLElement;
 const stickyArea = document.getElementById('sticky-area') as HTMLElement;
 let isSplitView = false;
-const STICKY_LINES = 10;
+const STICKY_LINES = 15;
 
 function processSticky(count: number) {
     const handler: any = (window as any).clientExtension?.OutputHandler;
