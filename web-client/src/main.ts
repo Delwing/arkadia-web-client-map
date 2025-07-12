@@ -78,6 +78,45 @@ const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 
 progressContainer.style.display = 'none';
 
+const outputWrapper = document.getElementById('main_text_output_msg_wrapper') as HTMLElement;
+const splitBottom = document.getElementById('split-bottom') as HTMLElement;
+const stickyArea = document.getElementById('sticky-area') as HTMLElement;
+let isSplitView = false;
+const STICKY_LINES = 10;
+
+function processSticky(count: number) {
+    const handler: any = (window as any).clientExtension?.OutputHandler;
+    if (handler && typeof handler.processOutput === 'function') {
+        const prev = handler.output;
+        handler.output = stickyArea;
+        handler.processOutput(new CustomEvent('output-sent', { detail: count }));
+        handler.output = prev;
+    }
+}
+
+function checkSplitView() {
+    const atBottom = outputWrapper.scrollTop + outputWrapper.clientHeight + splitBottom.clientHeight >= outputWrapper.scrollHeight - 1;
+    if (atBottom) {
+        if (isSplitView) {
+            isSplitView = false;
+            splitBottom.classList.add('split-hidden');
+            stickyArea.innerHTML = '';
+        }
+    } else if (!isSplitView) {
+        isSplitView = true;
+        splitBottom.classList.remove('split-hidden');
+        stickyArea.innerHTML = '';
+        const nodes = Array.from(outputWrapper.children).filter(n => n !== splitBottom);
+        const start = Math.max(0, nodes.length - STICKY_LINES);
+        for (let i = start; i < nodes.length; i++) {
+            stickyArea.appendChild(nodes[i].cloneNode(true));
+        }
+        processSticky(nodes.length - start);
+    }
+}
+
+outputWrapper.addEventListener('scroll', checkSplitView);
+
 function updateProgress(p: number, loaded?: number, total?: number) {
     progressContainer.style.display = 'block';
     progressBar.style.width = `${p}%`;
@@ -119,34 +158,52 @@ Promise.all([mapDataPromise, colorsPromise])
 
 // Set up message event listener for UI updates
 client.on('message', (message: string, type?: string) => {
-    const contentArea = document.getElementById('main_text_output_msg_wrapper');
-    if (contentArea) {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('output_msg');
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('output_msg');
 
-        // Add GMCP message type as class if provided
-        if (type) {
-            wrapper.classList.add(type);
+    if (type) {
+        wrapper.classList.add(type);
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.innerHTML = message;
+    messageDiv.classList.add('output_msg_text');
+    messageDiv.style.borderRadius = '4px';
+    messageDiv.style.whiteSpace = 'pre-wrap';
+
+    wrapper.appendChild(messageDiv);
+    outputWrapper.insertBefore(wrapper, splitBottom);
+
+    const maxElements = 1000;
+    while (outputWrapper.childElementCount - 1 > maxElements) {
+        const first = outputWrapper.firstElementChild;
+        if (first === splitBottom) {
+            const second = first.nextElementSibling;
+            if (second) {
+                outputWrapper.removeChild(second);
+            } else {
+                break;
+            }
+        } else if (first) {
+            outputWrapper.removeChild(first);
+        } else {
+            break;
         }
+    }
 
-        const messageDiv = document.createElement('div');
-        messageDiv.innerHTML = message;
-        messageDiv.classList.add('output_msg_text');
-        messageDiv.style.borderRadius = '4px';
-        messageDiv.style.whiteSpace = 'pre-wrap';
-
-        wrapper.appendChild(messageDiv);
-        contentArea.appendChild(wrapper);
-        const maxElements = 1000;
-        while (contentArea.childElementCount > maxElements) {
-            const first = contentArea.firstElementChild;
-            if (first) {
-                contentArea.removeChild(first);
+    if (isSplitView) {
+        stickyArea.appendChild(wrapper.cloneNode(true));
+        processSticky(1);
+        while (stickyArea.childElementCount > STICKY_LINES) {
+            const firstSticky = stickyArea.firstElementChild;
+            if (firstSticky) {
+                stickyArea.removeChild(firstSticky);
             } else {
                 break;
             }
         }
-        contentArea.scrollTop = contentArea.scrollHeight;
+    } else {
+        outputWrapper.scrollTop = outputWrapper.scrollHeight;
     }
 });
 
@@ -407,10 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll to bottom when input field is focused
     messageInput.addEventListener('focus', () => {
-        const contentArea = document.getElementById('main_text_output_msg_wrapper');
-        if (contentArea) {
-            contentArea.scrollTop = contentArea.scrollHeight;
-        }
+        outputWrapper.scrollTop = outputWrapper.scrollHeight;
     });
 
     // Handle connect/disconnect button click
@@ -434,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new MobileDirectionButtons(window.clientExtension);
 
     initUiSettings();
-  
+
     const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement | null;
     if (fullscreenButton) {
         fullscreenButton.addEventListener('click', () => {
