@@ -84,6 +84,16 @@ const stickyArea = document.getElementById('sticky-area') as HTMLElement;
 let isSplitView = false;
 const STICKY_LINES = 10;
 
+function processSticky(count: number) {
+    const handler: any = (window as any).clientExtension?.OutputHandler;
+    if (handler && typeof handler.processOutput === 'function') {
+        const prev = handler.output;
+        handler.output = stickyArea;
+        handler.processOutput(new CustomEvent('output-sent', { detail: count }));
+        handler.output = prev;
+    }
+}
+
 function checkSplitView() {
     const atBottom = outputWrapper.scrollTop + outputWrapper.clientHeight >= outputWrapper.scrollHeight - 1;
     if (atBottom) {
@@ -101,6 +111,7 @@ function checkSplitView() {
         for (let i = start; i < nodes.length; i++) {
             stickyArea.appendChild(nodes[i].cloneNode(true));
         }
+        processSticky(nodes.length - start);
     }
 }
 
@@ -182,6 +193,7 @@ client.on('message', (message: string, type?: string) => {
 
     if (isSplitView) {
         stickyArea.appendChild(wrapper.cloneNode(true));
+        processSticky(1);
         while (stickyArea.childElementCount > STICKY_LINES) {
             const firstSticky = stickyArea.firstElementChild;
             if (firstSticky) {
