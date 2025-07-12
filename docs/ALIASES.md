@@ -28,3 +28,5 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/za _skrot_** - wykonuje polecenie `zaslon` na obiekcie o podanym skrócie.
 - **/z** - atakuje cel oznaczony jako cel ataku.
 - **/za** - zasłania cel oznaczony jako cel obrony.
+- **/zap** - wykonuje polecenie `zapal lampe`.
+- **/zg** - wykonuje polecenie `zgas lampe`.

@@ -11,10 +11,12 @@ interface Bind {
 
 interface BindSettings {
     main: Bind;
+    lamp: Bind;
 }
 
 const defaultBinds: BindSettings = {
     main: { key: 'BracketRight' },
+    lamp: { key: 'Digit4', ctrl: true },
 };
 
 function label(bind: Bind) {
@@ -39,6 +41,7 @@ function Binds() {
             setBinds({
                 ...defaultBinds,
                 main: res.settings?.binds?.main || defaultBinds.main,
+                lamp: res.settings?.binds?.lamp || defaultBinds.lamp,
             });
         });
     }, []);
@@ -51,7 +54,7 @@ function Binds() {
 
     function save() {
             storage.getItem('settings').then(res => {
-                const settings = { ...(res.settings || {}), binds: { main: binds.main } };
+                const settings = { ...(res.settings || {}), binds: { main: binds.main, lamp: binds.lamp } };
                 storage.setItem('settings', settings).then(() => {
                     if (chrome.runtime) {
                         window.close();
@@ -73,6 +76,17 @@ function Binds() {
                     className="w-40"
                     value={label(binds.main)}
                     onKeyDown={ev => handleCapture('main', ev)}
+                />
+            </Form.Group>
+            <Form.Group className="d-flex align-items-center gap-2">
+                <Form.Label className="w-32 mb-0">Napełnij lampę</Form.Label>
+                <Form.Control
+                    type="text"
+                    readOnly
+                    size="sm"
+                    className="w-40"
+                    value={label(binds.lamp)}
+                    onKeyDown={ev => handleCapture('lamp', ev)}
                 />
             </Form.Group>
             <Button className="mt-2 w-auto" onClick={save}>Zapisz</Button>

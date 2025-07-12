@@ -14,11 +14,14 @@ Gmcp.parse_option_subnegotiation = (match) => {
     const postfix = match.substring(match.length - 2)
     const message = match.substring(2, match.length - 2)
     if (message.substring(0, 1) === 'É') {
-        const [type, data] = [message.substring(1, message.indexOf(" ")), message.substring(message.indexOf(" "))]
+        const [type, data] = [
+            message.substring(1, message.indexOf(' ')),
+            message.substring(message.indexOf(' '))
+        ]
         const parsed = JSON.parse(data)
         client.sendEvent('gmcp', { path: type, value: parsed })
         client.sendEvent(`gmcp.${type}`, parsed)
-        if (type === "gmcp_msgs") {
+        if (type === 'gmcp_msgs') {
             let text = atob(parsed.text)
             text = client.onLine(text, parsed.type)
             parsed.text = btoa(text)
@@ -29,61 +32,69 @@ Gmcp.parse_option_subnegotiation = (match) => {
     gmcpParseOption(match)
 }
 Input.send = (command?: string) => {
-    const cmd = command ?? ""
-    const isAlias = aliases.find(alias => {
+    const cmd = command ?? ''
+    const isAlias = client.aliases.find(alias => {
         const matches = cmd.match(alias.pattern)
         if (matches) {
-            Output.send("→ " + cmd, "command")
-            alias.callback(matches);
-            return true;
+            Output.send('→ ' + cmd, 'command')
+            alias.callback(matches)
+            return true
         }
         return false
     })
     if (!isAlias) {
         cmd.split(/[#;]/).forEach(subcommand => {
-            client.sendCommand(subcommand);
+            client.sendCommand(subcommand)
         })
     }
 }
 
-const aliases = [
+const aliases = client.aliases
+aliases.push(
     {
-        pattern: /\/fake (.*)/, callback: (matches: RegExpMatchArray) => {
+        pattern: /\/fake (.*)/,
+        callback: (matches: RegExpMatchArray) => {
             // @ts-ignore
-            return Output.send(Text.parse_patterns(client.onLine(matches[1])));
+            return Output.send(Text.parse_patterns(client.onLine(matches[1])))
         }
     },
     {
-        pattern: /\/cofnij$/, callback: () => {
-            client.Map.moveBack();
+        pattern: /\/cofnij$/,
+        callback: () => {
+            client.Map.moveBack()
         }
     },
     {
-        pattern: /\/move (.*)$/, callback: (matches: RegExpMatchArray) => {
-            client.Map.move(matches[1]);
+        pattern: /\/move (.*)$/,
+        callback: (matches: RegExpMatchArray) => {
+            client.Map.move(matches[1])
         }
     },
     {
-        pattern: /\/ustaw (.*)$/, callback: (matches: RegExpMatchArray) => {
-            client.Map.setMapRoomById(parseInt(matches[1]));
+        pattern: /\/ustaw (.*)$/,
+        callback: (matches: RegExpMatchArray) => {
+            client.Map.setMapRoomById(parseInt(matches[1]))
         }
     },
     {
-        pattern: /\/prowadz (.*)$/, callback: (matches: RegExpMatchArray) => {
-            client.sendEvent('leadTo', matches[1]);
+        pattern: /\/prowadz (.*)$/,
+        callback: (matches: RegExpMatchArray) => {
+            client.sendEvent('leadTo', matches[1])
         }
     },
     {
-        pattern: /\/prowadz-$/, callback: () => {
-            client.sendEvent('leadTo');
+        pattern: /\/prowadz-$/,
+        callback: () => {
+            client.sendEvent('leadTo')
         }
     },
     {
-        pattern: /\/zlok$/, callback: () => {
-            client.Map.refresh();
+        pattern: /\/zlok$/,
+        callback: () => {
+            client.Map.refresh()
         }
     }
-]
+)
 
 //TODO to be extracted
 function backgroundConnector() {
@@ -111,7 +122,7 @@ blockers.forEach(blocker => {
     let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
     client.Triggers.registerTrigger(blockerPattern, (): undefined => {
         client.Map.moveBack()
-    }, "blocker")
+    }, 'blocker')
 })
 
 /*
@@ -134,19 +145,18 @@ follows.forEach(follow => {
     client.Triggers.registerTrigger(follow, (_rawLine, line): undefined => {
         const matches = line.match(follow)
         client.sendEvent('move', matches[3])
-    }, "follow")
+    }, 'follow')
 })
 
 client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
     client.sendEvent('refreshPositionWhenAble')
 })
 
-
-import initShips from "./scripts/ships"
-import initBuses from "./scripts/buses"
-import initGates from "./scripts/gates"
-import initAttackBeep from "./scripts/attackBeep"
-import initLamp from "./scripts/lamp"
+import initShips from './scripts/ships'
+import initBuses from './scripts/buses'
+import initGates from './scripts/gates'
+import initAttackBeep from './scripts/attackBeep'
+import initLamp from './scripts/lamp'
 
 initShips(client)
 initBuses(client)
@@ -154,51 +164,51 @@ initGates(client)
 initAttackBeep(client)
 initLamp(client)
 
-import initKillTrigger from "./scripts/kill"
+import initKillTrigger from './scripts/kill'
 initKillTrigger(client, aliases)
 
-import ItemCollector from "./scripts/itemCollector"
+import ItemCollector from './scripts/itemCollector'
 
-const itemCollector = new ItemCollector(client);
-(client as any).ItemCollector = itemCollector;
+const itemCollector = new ItemCollector(client)
+(client as any).ItemCollector = itemCollector
 
 aliases.push({
     pattern: /\/zbieraj_extra(.*)/,
     callback: (matches: RegExpMatchArray) => {
-        const strTrim = (matches[1] || "").trim();
-        itemCollector.addExtra(strTrim);
-    },
-});
+        const strTrim = (matches[1] || '').trim()
+        itemCollector.addExtra(strTrim)
+    }
+})
 
 aliases.push({
     pattern: /\/nie_zbieraj_extra(.*)/,
     callback: (matches: RegExpMatchArray) => {
-        const strTrim = (matches[1] || "").trim();
-        if (strTrim !== "") {
-            itemCollector.removeExtra(strTrim, false);
+        const strTrim = (matches[1] || '').trim()
+        if (strTrim !== '') {
+            itemCollector.removeExtra(strTrim, false)
         } else {
-            itemCollector.removeExtra("", true);
+            itemCollector.removeExtra('', true)
         }
-    },
-});
+    }
+})
 
-import initContainers from "./scripts/prettyContainers"
+import initContainers from './scripts/prettyContainers'
 
 initContainers(client)
 
-import initBagManager from "./scripts/bagManager"
-import initDeposits from "./scripts/deposits"
+import initBagManager from './scripts/bagManager'
+import initDeposits from './scripts/deposits'
 
 initBagManager(client, aliases)
 initDeposits(client, aliases)
 
-import initLvlCalc from "./scripts/lvlCalc"
-import initItemCondition from "./scripts/itemCondition"
-import initInvite from "./scripts/invite"
-import initObjectAliases from "./scripts/objectAliases"
-import initMagicKeys from "./scripts/magicKeys"
-import initMagics from "./scripts/magics"
-import registerGagTriggers from "./scripts/gags";
+import initLvlCalc from './scripts/lvlCalc'
+import initItemCondition from './scripts/itemCondition'
+import initInvite from './scripts/invite'
+import initObjectAliases from './scripts/objectAliases'
+import initMagicKeys from './scripts/magicKeys'
+import initMagics from './scripts/magics'
+import registerGagTriggers from './scripts/gags'
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
@@ -207,4 +217,4 @@ initObjectAliases(client, aliases)
 initMagicKeys(client)
 initMagics(client)
 
-window["clientExtension"] = client
+window['clientExtension'] = client
