@@ -510,7 +510,7 @@ export default class MobileDirectionButtons {
             this.applyButtonSize(b);
             b.textContent = n;
             b.addEventListener('click', () => {
-                this.client.sendCommand(`/z ${n}`);
+                window.Input.send(`/z ${n}`);
                 this.hideLists();
             });
             this.zList!.appendChild(b);
@@ -530,7 +530,7 @@ export default class MobileDirectionButtons {
             this.applyButtonSize(b);
             b.textContent = l;
             b.addEventListener('click', () => {
-                this.client.sendCommand(`/zas ${l}`);
+                window.Input.send(`/zas ${l}`);
                 this.hideLists();
             });
             this.zasList!.appendChild(b);
