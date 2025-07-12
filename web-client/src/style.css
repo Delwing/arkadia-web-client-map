@@ -365,7 +365,6 @@ button:focus-visible {
   justify-content: flex-start;
   gap: 5px;
   margin-bottom: 5px;
-  position: relative;
 }
 
 .mobile-direction-main {
@@ -430,9 +429,9 @@ button:focus-visible {
 .mobile-z-buttons {
   position: absolute;
   right: 100%;
-  top: calc(100% + 5px);
+  top: 0;
   display: none;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 36px;
   gap: 5px;
 }
