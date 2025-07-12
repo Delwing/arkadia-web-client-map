@@ -125,8 +125,9 @@ export default class Client {
             return false
         })
         if (!isAlias) {
+            command = this.Map.parseCommand(command)
             command.split(/[#;]/).forEach(part => {
-                rawInputSend(this.Map.parseCommand(part))
+                rawInputSend(this.Map.move(part))
             })
         }
     }
