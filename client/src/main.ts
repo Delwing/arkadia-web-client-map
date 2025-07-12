@@ -169,8 +169,8 @@ initKillTrigger(client, aliases)
 
 import ItemCollector from './scripts/itemCollector'
 
-const itemCollector = new ItemCollector(client)
-(client as any).ItemCollector = itemCollector
+const itemCollector = new ItemCollector(client);
+(client as any).ItemCollector = itemCollector;
 
 aliases.push({
     pattern: /\/zbieraj_extra(.*)/,
