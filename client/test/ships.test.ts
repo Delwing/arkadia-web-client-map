@@ -6,6 +6,7 @@ class FakeClient {
   FunctionalBind = { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() };
   playSound = jest.fn();
   sendEvent = jest.fn();
+  sendCommand = jest.fn();
 }
 
 describe('ships triggers', () => {
@@ -27,10 +28,10 @@ describe('ships triggers', () => {
     const [label, callback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
     expect(label).toBe('wem;kup bilet;wsiadz na statek;wlm');
     callback();
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(1, 'wem');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(2, 'kup bilet');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(3, 'wsiadz na statek');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(4, 'wlm');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(1, 'wem');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(2, 'kup bilet');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(3, 'wsiadz na statek');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(4, 'wlm');
   });
 
   test('statki trigger binds without beep', () => {
@@ -41,10 +42,10 @@ describe('ships triggers', () => {
     const [label, callback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
     expect(label).toBe('wem;kup bilet;wsiadz na statek;wlm');
     callback();
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(1, 'wem');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(2, 'kup bilet');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(3, 'wsiadz na statek');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(4, 'wlm');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(1, 'wem');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(2, 'kup bilet');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(3, 'wsiadz na statek');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(4, 'wlm');
   });
 
   test('disembark trigger sends command and event', () => {
@@ -52,8 +53,8 @@ describe('ships triggers', () => {
     const [label, callback] = client.FunctionalBind.set.mock.calls.pop()!;
     expect(label).toBe('zejdz ze statku');
     callback();
-    expect((global as any).Input.send).toHaveBeenCalledTimes(1);
-    expect((global as any).Input.send).toHaveBeenCalledWith('zejdz ze statku');
+    expect(client.sendCommand).toHaveBeenCalledTimes(1);
+    expect(client.sendCommand).toHaveBeenCalledWith('zejdz ze statku');
     expect(client.sendEvent).toHaveBeenCalledWith('refreshPositionWhenAble');
   });
 

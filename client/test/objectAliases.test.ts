@@ -8,6 +8,7 @@ class FakeClient {
     getAttackTargetId: jest.fn(() => undefined),
     getDefenseTargetId: jest.fn(() => undefined),
   };
+  sendCommand = jest.fn();
 }
 
 describe('object aliases', () => {
@@ -31,24 +32,24 @@ describe('object aliases', () => {
   test('kill alias sends zabij with object number', () => {
     client.ObjectManager.getObjectsOnLocation.mockReturnValue([{ num: 5, shortcut: '1' }]);
     kill(['', '1'] as unknown as RegExpMatchArray);
-    expect((global as any).Input.send).toHaveBeenCalledWith('zabij ob_5');
+    expect(client.sendCommand).toHaveBeenCalledWith('zabij ob_5');
   });
 
   test('zaslon alias sends zaslon with object number', () => {
     client.ObjectManager.getObjectsOnLocation.mockReturnValue([{ num: 7, shortcut: 'A' }]);
     shield(['', 'A'] as unknown as RegExpMatchArray);
-    expect((global as any).Input.send).toHaveBeenCalledWith('zaslon ob_7');
+    expect(client.sendCommand).toHaveBeenCalledWith('zaslon ob_7');
   });
 
   test('/z alias attacks attack target', () => {
     client.TeamManager.getAttackTargetId.mockReturnValue('10');
     killTarget();
-    expect((global as any).Input.send).toHaveBeenCalledWith('zabij ob_10');
+    expect(client.sendCommand).toHaveBeenCalledWith('zabij ob_10');
   });
 
   test('/za alias covers defense target', () => {
     client.TeamManager.getDefenseTargetId.mockReturnValue('15');
     shieldTarget();
-    expect((global as any).Input.send).toHaveBeenCalledWith('zaslon ob_15');
+    expect(client.sendCommand).toHaveBeenCalledWith('zaslon ob_15');
   });
 });

@@ -96,15 +96,15 @@ export function containerAction(
         .split(",")
         .map((i) => i.trim())
         .filter((i) => i.length);
-    Input.send(`otworz ${forms.pronoun_b} ${forms.biernik}`);
+    client.sendCommand(`otworz ${forms.pronoun_b} ${forms.biernik}`);
     items.forEach((it) =>
-        Input.send(
+        client.sendCommand(
             action === "put"
                 ? `wloz ${it} do ${forms.pronoun_d} ${forms.dopelniacz}`
                 : `wez ${it} ze ${forms.pronoun_d} ${forms.dopelniacz}`
         )
     );
-    Input.send(`zamknij ${forms.pronoun_b} ${forms.biernik}`);
+    client.sendCommand(`zamknij ${forms.pronoun_b} ${forms.biernik}`);
 }
 
 export function takeFromBag(

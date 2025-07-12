@@ -32,21 +32,7 @@ Gmcp.parse_option_subnegotiation = (match) => {
     gmcpParseOption(match)
 }
 Input.send = (command?: string) => {
-    const cmd = command ?? ''
-    const isAlias = client.aliases.find(alias => {
-        const matches = cmd.match(alias.pattern)
-        if (matches) {
-            Output.send('→ ' + cmd, 'command')
-            alias.callback(matches)
-            return true
-        }
-        return false
-    })
-    if (!isAlias) {
-        cmd.split(/[#;]/).forEach(subcommand => {
-            client.sendCommand(subcommand)
-        })
-    }
+    client.sendCommand(command ?? '')
 }
 
 const aliases = client.aliases

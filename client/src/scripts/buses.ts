@@ -14,7 +14,7 @@ function bindBus(client: Client, commands: string[], label: string, beep: boolea
         client.playSound("beep");
     }
     client.FunctionalBind.set(label, () => {
-        commands.forEach(cmd => Input.send(cmd));
+        commands.forEach(cmd => client.sendCommand(cmd));
     });
 }
 

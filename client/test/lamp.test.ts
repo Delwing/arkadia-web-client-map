@@ -12,6 +12,7 @@ class FakeClient {
   playSound = jest.fn();
   println = jest.fn();
   aliases: { pattern: RegExp; callback: Function }[] = [];
+  sendCommand = jest.fn();
 }
 
 describe('lamp triggers', () => {
@@ -32,9 +33,9 @@ describe('lamp triggers', () => {
     const [label, callback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
     expect(label).toBe(' >> Odloz olej, wez butelke do reki i napelnij lampe');
     callback();
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(1, 'odloz olej');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(1, 'odloz olej');
     expect(takeFromBag).toHaveBeenCalledWith(client, 'olej');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(2, 'napelnij lampe olejem');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(2, 'napelnij lampe olejem');
   });
 
   test('binds bottle taking', () => {
@@ -44,6 +45,6 @@ describe('lamp triggers', () => {
     expect(label).toBe(' >> Wez butelke do reki.');
     callback();
     expect(takeFromBag).toHaveBeenCalledWith(client, 'olej');
-    expect((global as any).Input.send).toHaveBeenCalledWith('napelnij lampe olejem');
+    expect(client.sendCommand).toHaveBeenCalledWith('napelnij lampe olejem');
   });
 });

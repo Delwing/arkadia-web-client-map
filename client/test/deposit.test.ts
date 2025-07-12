@@ -15,6 +15,7 @@ class FakeClient {
   println = jest.fn();
   print = jest.fn();
   port = { postMessage: jest.fn() } as any;
+  sendCommand = jest.fn();
 
   addEventListener(event: string, cb: any) {
     this.emitter.on(event, cb);
@@ -48,7 +49,7 @@ describe('deposits', () => {
 
   test('refresh command sends query', () => {
     refresh();
-    expect((global as any).Input.send).toHaveBeenCalledWith('przejrzyj depozyt');
+    expect(client.sendCommand).toHaveBeenCalledWith('przejrzyj depozyt');
   });
 
   test('parses deposit contents', () => {

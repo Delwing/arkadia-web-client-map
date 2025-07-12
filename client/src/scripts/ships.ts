@@ -21,7 +21,7 @@ function bindShip(client: Client, commands: string[], label: string, beep: boole
         } else {
             onShip = true;
         }
-        commands.forEach(cmd => Input.send(cmd));
+        commands.forEach(cmd => client.sendCommand(cmd));
     });
 }
 
