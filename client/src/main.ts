@@ -196,11 +196,13 @@ import initLvlCalc from "./scripts/lvlCalc"
 import initItemCondition from "./scripts/itemCondition"
 import initInvite from "./scripts/invite"
 import initObjectAliases from "./scripts/objectAliases"
+import initMagicKeys from "./scripts/magicKeys"
 import registerGagTriggers from "./scripts/gags";
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
 initInvite(client)
 initObjectAliases(client, aliases)
+initMagicKeys(client)
 
 window["clientExtension"] = client
