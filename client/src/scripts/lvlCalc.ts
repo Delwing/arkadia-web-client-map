@@ -246,7 +246,7 @@ export default function initLvlCalc(client: Client, aliases?: { pattern: RegExp;
             client.Triggers.removeByTag(tag);
             isRunning = false;
         }, tag);
-        client.sendCommand("cechy");
+        client.send("cechy");
         setTimeout(() => {
             client.Triggers.removeByTag(tag);
             isRunning = false;

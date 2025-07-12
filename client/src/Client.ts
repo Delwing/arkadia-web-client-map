@@ -113,6 +113,10 @@ export default class Client {
         this.eventTarget.removeEventListener(event, listener)
     }
 
+    send(command: string) {
+        rawInputSend(command)
+    }
+
     sendCommand(command: string) {
         this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
         const isAlias = this.aliases.find(alias => {
