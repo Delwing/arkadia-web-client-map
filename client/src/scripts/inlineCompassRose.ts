@@ -97,8 +97,8 @@ export default class InlineCompassRose {
     }
 
     private printExit(short: string): string {
-        const label = this.hasExit(short) ? short.toUpperCase() : " ".repeat(short.length);
-        return color(SPRING_GREEN) + label + RESET;
+        if (!this.hasExit(short)) return " ".repeat(short.length);
+        return color(SPRING_GREEN) + short.toUpperCase() + RESET;
     }
 
     private showCompassRose() {
