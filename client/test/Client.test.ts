@@ -92,11 +92,13 @@ test('createButton creates button attached to panel', () => {
   expect(panel?.contains(button)).toBe(true);
 });
 
-test('sendCommand dispatches event and sends parsed command', () => {
+test('sendCommand dispatches event and splits commands', () => {
   const client = new Client();
-  client.sendCommand('test');
-  expect(parseCommand).toHaveBeenCalledWith('test');
-  expect((window as any).Input.send).toHaveBeenCalledWith('parsed:test');
+  client.sendCommand('foo#bar');
+  expect(parseCommand).toHaveBeenNthCalledWith(1, 'foo');
+  expect(parseCommand).toHaveBeenNthCalledWith(2, 'bar');
+  expect((window as any).Input.send).toHaveBeenNthCalledWith(1, 'parsed:foo');
+  expect((window as any).Input.send).toHaveBeenNthCalledWith(2, 'parsed:bar');
 });
 
 test('sendCommand allows empty command', () => {
