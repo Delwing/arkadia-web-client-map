@@ -10,6 +10,7 @@ const defaultSettings = {
     guilds: [],
     packageHelper: true,
     inlineCompassRose: true,
+    emojiLabels: false,
     prettyContainers: true,
     containerColumns: 2,
     collectMode: 3,

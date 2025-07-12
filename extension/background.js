@@ -1,5 +1,6 @@
 const defaultSettings = {
     prettyContainers: true,
+    emojiLabels: false,
     collectMode: 3,
     collectMoneyType: 1,
     collectExtra: [],
@@ -77,6 +78,7 @@ function loadIframe(tabId) {
         func: async () => {
             const defaultSettings = {
                 prettyContainers: true,
+                emojiLabels: false,
                 collectMode: 3,
                 collectMoneyType: 1,
                 collectExtra: [],

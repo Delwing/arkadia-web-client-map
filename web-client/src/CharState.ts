@@ -24,18 +24,46 @@ export interface CharStateConfig {
   ) => { value: number; max: number };
 }
 
+const TEXT_LABELS: Record<keyof CharStateData, string> = {
+  hp: "HP",
+  fatigue: "ZM",
+  stuffed: "GLO",
+  encumbrance: "OBC",
+  soaked: "PRA",
+  mana: "MANA",
+  improve: "POS",
+  form: "FOR",
+  intox: "UPI",
+  headache: "KAC",
+  panic: "PAN",
+};
+
+const EMOJI_LABELS: Record<keyof CharStateData, string> = {
+  hp: "❤",
+  fatigue: "💤",
+  stuffed: "🍞",
+  encumbrance: "🎒",
+  soaked: "💧",
+  mana: "🔮",
+  improve: "⭐",
+  form: "💪",
+  intox: "🍺",
+  headache: "🤕",
+  panic: "😱",
+};
+
 const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
-  hp: { label: "HP", max: 6, transform: (value, max) => ({ value: value + 1, max: max + 1 }) },
-  fatigue: { label: "ZM", max: 9 },
-  stuffed: { label: "GLO", max: 3, default: 3 },
-  encumbrance: { label: "OBC", max: 6, default: 0 },
-  soaked: { label: "PRA", max: 3, default: 3 },
-  mana: { label: "MANA", max: 8, default: 8 },
-  improve: { label: "POS", max: 15, default: 0 },
-  form: { label: "FOR", max: 3, default: 3 },
-  intox: { label: "UPI", max: 9, default: 0 },
-  headache: { label: "KAC", max: 6, default: 0 },
-  panic: { label: "PAN", max: 4, default: 0 },
+  hp: { label: TEXT_LABELS.hp, max: 6, transform: (value, max) => ({ value: value + 1, max: max + 1 }) },
+  fatigue: { label: TEXT_LABELS.fatigue, max: 9 },
+  stuffed: { label: TEXT_LABELS.stuffed, max: 3, default: 3 },
+  encumbrance: { label: TEXT_LABELS.encumbrance, max: 6, default: 0 },
+  soaked: { label: TEXT_LABELS.soaked, max: 3, default: 3 },
+  mana: { label: TEXT_LABELS.mana, max: 8, default: 8 },
+  improve: { label: TEXT_LABELS.improve, max: 15, default: 0 },
+  form: { label: TEXT_LABELS.form, max: 3, default: 3 },
+  intox: { label: TEXT_LABELS.intox, max: 9, default: 0 },
+  headache: { label: TEXT_LABELS.headache, max: 6, default: 0 },
+  panic: { label: TEXT_LABELS.panic, max: 4, default: 0 },
 };
 
 export default class CharState {
@@ -44,6 +72,16 @@ export default class CharState {
   private text: HTMLElement | null;
   private config: Record<keyof CharStateData, CharStateConfig>;
   private state: Partial<CharStateData> = {};
+  private useEmoji = false;
+
+  private applyLabelMode(useEmoji: boolean) {
+    this.useEmoji = useEmoji;
+    const labels = useEmoji ? EMOJI_LABELS : TEXT_LABELS;
+    (Object.keys(this.config) as (keyof CharStateData)[]).forEach((key) => {
+      this.config[key].label = labels[key];
+    });
+    this.update({});
+  }
 
   constructor(
     client: typeof ArkadiaClient,
@@ -68,7 +106,17 @@ export default class CharState {
         const attr = this.container!.getAttribute(`data-label-${key}`);
         if (attr) this.config[key].label = attr;
       });
+      const emojiAttr = this.container.getAttribute('data-emoji-labels');
+      if (emojiAttr) {
+        this.applyLabelMode(emojiAttr === 'true' || emojiAttr === '1');
+      }
     }
+
+    this.client.on('settings', (ev: any) => {
+      if (typeof ev.detail?.emojiLabels === 'boolean') {
+        this.applyLabelMode(ev.detail.emojiLabels);
+      }
+    });
 
     this.client.on(
       "gmcp.char.state",
