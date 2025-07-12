@@ -78,6 +78,41 @@ const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 
 progressContainer.style.display = 'none';
 
+let splitActive = false;
+let historyArea: HTMLElement | null = null;
+let lastLines: HTMLElement | null = null;
+let outputContainer: HTMLElement | null = null;
+
+function updateLastLines() {
+    if (!splitActive || !historyArea || !lastLines) return;
+    const lines = Array.from(historyArea.children).slice(-10);
+    lastLines.innerHTML = '';
+    lines.forEach(line => lastLines.appendChild(line.cloneNode(true)));
+}
+
+function checkSplit() {
+    if (!historyArea) return;
+    const atBottom = Math.abs(historyArea.scrollHeight - historyArea.scrollTop - historyArea.clientHeight) < 1;
+    if (!atBottom && !splitActive) {
+        splitActive = true;
+        outputContainer?.classList.add('split');
+        const lh = parseFloat(getComputedStyle(historyArea).lineHeight || '16');
+        const height = lh * 10;
+        if (lastLines) {
+            lastLines.style.height = height + 'px';
+        }
+        historyArea.style.paddingBottom = height + 'px';
+        updateLastLines();
+    } else if (atBottom && splitActive) {
+        splitActive = false;
+        outputContainer?.classList.remove('split');
+        if (lastLines) {
+            lastLines.innerHTML = '';
+        }
+        historyArea.style.paddingBottom = '';
+    }
+}
+
 function updateProgress(p: number, loaded?: number, total?: number) {
     progressContainer.style.display = 'block';
     progressBar.style.width = `${p}%`;
@@ -146,7 +181,11 @@ client.on('message', (message: string, type?: string) => {
                 break;
             }
         }
-        contentArea.scrollTop = contentArea.scrollHeight;
+        if (!splitActive) {
+            contentArea.scrollTop = contentArea.scrollHeight;
+        } else {
+            updateLastLines();
+        }
     }
 });
 
@@ -244,6 +283,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
+
+
+    outputContainer = document.getElementById('output-container');
+    historyArea = document.getElementById('main_text_output_msg_wrapper');
+    lastLines = document.getElementById('output-last-lines');
+    historyArea?.addEventListener('scroll', checkSplit);
 
     // Initialize Bootstrap modal
     const optionsModalElement = document.getElementById('options-modal');
