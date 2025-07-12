@@ -2,36 +2,46 @@ import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
-import {Howl} from "howler"
-import {FunctionalBind, LINE_START_EVENT, formatLabel} from "./scripts/functionalBind";
+import { Howl } from "howler";
+import {
+    FunctionalBind,
+    LINE_START_EVENT,
+    formatLabel,
+} from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
-import {rawInputSend, rawOutputSend} from "./main";
+import { rawInputSend, rawOutputSend } from "./main";
 import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
-import {beepSound} from "./sounds";
+import { beepSound } from "./sounds";
 import { attachGmcpListener } from "./gmcp";
 
 export default class Client {
-
     port: chrome.runtime.Port;
-    eventTarget = new EventTarget()
-    FunctionalBind = new FunctionalBind(this)
-    Triggers = new Triggers(this)
-    packageHelper = new PackageHelper(this)
-    Map = new MapHelper(this)
-    OutputHandler = new OutputHandler(this)
-    TeamManager = new TeamManager(this)
-    ObjectManager = new ObjectManager(this)
-    inlineCompassRose = new InlineCompassRose(this)
-    panel = document.getElementById("panel_buttons_bottom")
-    contentWidth = 0
+    eventTarget = new EventTarget();
+    FunctionalBind = new FunctionalBind(this);
+    Triggers = new Triggers(this);
+    packageHelper = new PackageHelper(this);
+    Map = new MapHelper(this);
+    OutputHandler = new OutputHandler(this);
+    TeamManager = new TeamManager(this);
+    ObjectManager = new ObjectManager(this);
+    inlineCompassRose = new InlineCompassRose(this);
+    panel = document.getElementById("panel_buttons_bottom");
+    contentWidth = 0;
     sounds: Record<string, Howl> = {
         beep: new Howl({
             src: beepSound,
             preload: true,
-        })
-    }
-    inLineProcess = false //TODO figure out something else
+        }),
+    };
+    aliases: { pattern: RegExp; callback: Function }[] = [];
+    lampBind = { key: "Digit4", ctrl: true } as {
+        key: string;
+        ctrl?: boolean;
+        alt?: boolean;
+        shift?: boolean;
+    };
+    inLineProcess = false; //TODO figure out something else
 
     constructor() {
         attachGmcpListener(this);
@@ -45,8 +55,19 @@ export default class Client {
         window.addEventListener('resize', () => this.updateContentWidth())
         this.addEventListener('uiSettings', () => this.updateContentWidth())
 
-
         Object.values(this.sounds).forEach((sound) => sound.load())
+
+        window.addEventListener('keydown', (ev) => {
+            if (
+                (ev.code === this.lampBind.key || ev.key === this.lampBind.key) &&
+                !!this.lampBind.ctrl === ev.ctrlKey &&
+                !!this.lampBind.alt === ev.altKey &&
+                !!this.lampBind.shift === ev.shiftKey
+            ) {
+                this.sendCommand('napelnij lampe olejem')
+                ev.preventDefault()
+            }
+        })
 
         this.addEventListener('settings', (ev: CustomEvent) => {
             const bind = ev.detail?.binds?.main
@@ -58,6 +79,10 @@ export default class Client {
                     shift: bind.shift,
                     label: formatLabel(bind)
                 })
+            }
+            const lamp = ev.detail?.binds?.lamp
+            if (lamp) {
+                this.lampBind = { ...lamp }
             }
         })
     }
@@ -74,7 +99,7 @@ export default class Client {
             port.postMessage({type: 'GET_STORAGE', key: 'containers'})
             port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
         }
-        this.port = port;
+        this.port = port
         console.log("Client connected to background service.")
     }
 
@@ -95,23 +120,23 @@ export default class Client {
 
     onLine(line: string, type: string) {
         this.inLineProcess = true
-        this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT));
-        const buffer: { out: string, type?: string }[] = [];
-        const originalOutputSend = Output.send;
+        this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT))
+        const buffer: { out: string, type?: string }[] = []
+        const originalOutputSend = Output.send
         Output.send = (out: string, outputType?: string): any => {
             if (out) {
-                buffer.push({out, type: outputType});
+                buffer.push({out, type: outputType})
             } else {
                 rawOutputSend()
             }
-        };
+        }
 
         this.addEventListener('line-sent', () => {
             if (buffer.length > 0) {
-                buffer.forEach(item => Output.send(item.out, item.type));
+                buffer.forEach(item => Output.send(item.out, item.type))
                 this.sendEvent('buffer-sent', buffer.length)
             }
-        }, {once: true});
+        }, {once: true})
 
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         const ansiRegex = /\x1b\[[0-9;]*m/g
@@ -141,25 +166,25 @@ export default class Client {
         })
         let index = 0
         result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
-        Output.send = originalOutputSend;
+        Output.send = originalOutputSend
         this.inLineProcess = false
         return result
     }
 
     sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
-        const frame = document.getElementById('cm-frame') as HTMLIFrameElement;
+        const frame = document.getElementById('cm-frame') as HTMLIFrameElement
         if (frame) {
-            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*');
+            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*')
         } else {
-            window.postMessage(this.createEvent(type, payload));
+            window.postMessage(this.createEvent(type, payload))
         }
     }
 
     createEvent(type, payload) {
         return {
             type: type,
-            data: payload
+            data: payload,
         }
     }
 
@@ -176,9 +201,9 @@ export default class Client {
     }
 
     println(printable: string) {
-        this.print("\n")
+        this.print('\n')
         this.print(printable)
-        this.print("\n")
+        this.print('\n')
     }
 
     createButton(name: string, callback: () => void) {
@@ -209,7 +234,7 @@ export default class Client {
     }
 
     prefix(rawLine: string, prefix: string) {
-        return prefix + rawLine;
+        return prefix + rawLine
     }
 
     updateContentWidth() {
