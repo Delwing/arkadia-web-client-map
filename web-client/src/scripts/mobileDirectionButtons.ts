@@ -487,6 +487,16 @@ export default class MobileDirectionButtons {
         if (this.zasList) this.zasList.style.display = 'none';
     }
 
+    private applyButtonSize(btn: HTMLButtonElement) {
+        const ref = this.container.querySelector('.mobile-button') as HTMLButtonElement | null;
+        if (ref) {
+            const styles = window.getComputedStyle(ref);
+            btn.style.width = styles.width;
+            btn.style.height = styles.height;
+            btn.style.fontSize = styles.fontSize;
+        }
+    }
+
     private renderZList() {
         if (!this.zList) return;
         this.zList.innerHTML = '';
@@ -497,6 +507,7 @@ export default class MobileDirectionButtons {
         nums.forEach((n: string) => {
             const b = document.createElement('button');
             b.className = 'mobile-button';
+            this.applyButtonSize(b);
             b.textContent = n;
             b.addEventListener('click', () => {
                 this.client.sendCommand(`/z ${n}`);
@@ -516,6 +527,7 @@ export default class MobileDirectionButtons {
         letters.forEach((l: string) => {
             const b = document.createElement('button');
             b.className = 'mobile-button';
+            this.applyButtonSize(b);
             b.textContent = l;
             b.addEventListener('click', () => {
                 this.client.sendCommand(`/zas ${l}`);
