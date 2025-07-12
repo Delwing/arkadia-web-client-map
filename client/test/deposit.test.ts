@@ -1,5 +1,11 @@
+jest.mock('../src/scripts/prettyContainers', () => {
+  const actual = jest.requireActual('../src/scripts/prettyContainers');
+  return { ...actual, prettyPrintContainer: jest.fn(() => 'table') };
+});
+
 import initDeposits, { deposits } from '../src/scripts/deposits';
 import Triggers, { stripAnsiCodes } from '../src/Triggers';
+import { prettyPrintContainer } from '../src/scripts/prettyContainers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -115,5 +121,11 @@ describe('deposits', () => {
     const printed = stripAnsiCodes(client.println.mock.calls[0][0]);
     expect(printed).toContain('  5 | mieczy');
     expect(printed).toContain('wie | monet');
+  });
+
+  test('uses column setting for pretty print', () => {
+    client.dispatch('settings', { containerColumns: 3 });
+    parse('Twoj depozyt zawiera miecz.');
+    expect(prettyPrintContainer).toHaveBeenCalledWith(expect.anything(), 3, 'DEPOZYT', 5);
   });
 });
