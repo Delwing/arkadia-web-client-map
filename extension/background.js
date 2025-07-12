@@ -9,6 +9,7 @@ const defaultSettings = {
     mapHeight: null,
     binds: {
         main: { key: 'BracketRight' },
+        lamp: { key: 'Digit4', ctrl: true },
         gates: { key: 'Digit2', ctrl: true },
         collector: { key: 'Digit3', ctrl: true }
     }
@@ -85,6 +86,7 @@ function loadIframe(tabId) {
                 mapHeight: null,
                 binds: {
                     main: { key: 'BracketRight' },
+                    lamp: { key: 'Digit4', ctrl: true },
                     gates: { key: 'Digit2', ctrl: true },
                     collector: { key: 'Digit3', ctrl: true }
                 }

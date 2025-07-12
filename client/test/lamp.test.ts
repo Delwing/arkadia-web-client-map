@@ -11,6 +11,7 @@ class FakeClient {
   FunctionalBind = { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() };
   playSound = jest.fn();
   println = jest.fn();
+  aliases: { pattern: RegExp; callback: Function }[] = [];
 }
 
 describe('lamp triggers', () => {
