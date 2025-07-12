@@ -62,11 +62,13 @@ h1 {
 
 #split-bottom {
   position: sticky;
-  bottom: 0;
+  bottom: -1px;
   background-color: var(--bs-body-bg);
   z-index: 1;
   height: 15rem;
   max-height: 25vh;
+  overflow: hidden;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 #split-bottom.split-hidden {
@@ -79,7 +81,6 @@ h1 {
   background-color: inherit;
   position: absolute;
   bottom: 0;
-  border-top: 2px solid rgba(255, 255, 255, 0.6);
   width: 100%;
 }
 
