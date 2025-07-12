@@ -360,6 +360,13 @@ button:focus-visible {
   margin-bottom: 5px;
 }
 
+.mobile-attack-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
 .mobile-direction-main {
   display: flex;
 }
@@ -417,6 +424,16 @@ button:focus-visible {
 /* Disable button clicks during dragging */
 .mobile-button.no-click {
   pointer-events: none; /* Disable click events */
+}
+
+.mobile-z-buttons {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  display: none;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 36px;
+  gap: 5px;
 }
 
 #map-progress-container {
