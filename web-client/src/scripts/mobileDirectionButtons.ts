@@ -6,6 +6,10 @@ export default class MobileDirectionButtons {
     private readonly container: HTMLDivElement;
     private readonly messageInput: HTMLInputElement | null = null;
     private readonly contentArea: HTMLElement | null = null;
+    private readonly zList: HTMLDivElement | null = null;
+    private readonly zasList: HTMLDivElement | null = null;
+    private readonly zToggle: HTMLButtonElement | null = null;
+    private readonly zasToggle: HTMLButtonElement | null = null;
     private enabled = false;
     private isMobile = false;
 
@@ -26,6 +30,10 @@ export default class MobileDirectionButtons {
         this.container = document.getElementById('mobile-direction-buttons') as HTMLDivElement;
         this.messageInput = document.getElementById('message-input') as HTMLInputElement;
         this.contentArea = document.getElementById('main_text_output_msg_wrapper');
+        this.zList = document.getElementById('z-buttons-list') as HTMLDivElement;
+        this.zasList = document.getElementById('zas-buttons-list') as HTMLDivElement;
+        this.zToggle = document.getElementById('z-list-toggle') as HTMLButtonElement;
+        this.zasToggle = document.getElementById('zas-list-toggle') as HTMLButtonElement;
 
         if (!this.container) {
             console.error('Mobile direction buttons container not found');
@@ -116,6 +124,30 @@ export default class MobileDirectionButtons {
             button3.addEventListener('click', () => {
                 if (window.clientExtension.TeamManager.getAttackTargetId()) {
                     client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
+                }
+            });
+        }
+
+        if (this.zToggle) {
+            this.zToggle.addEventListener('click', () => {
+                if (this.zList && this.zList.style.display === 'flex') {
+                    this.hideLists();
+                } else {
+                    this.hideLists();
+                    this.renderZList();
+                    if (this.zList) this.zList.style.display = 'flex';
+                }
+            });
+        }
+
+        if (this.zasToggle) {
+            this.zasToggle.addEventListener('click', () => {
+                if (this.zasList && this.zasList.style.display === 'flex') {
+                    this.hideLists();
+                } else {
+                    this.hideLists();
+                    this.renderZasList();
+                    if (this.zasList) this.zasList.style.display = 'flex';
                 }
             });
         }
@@ -448,5 +480,48 @@ export default class MobileDirectionButtons {
                 this.contentArea.scrollTop = this.contentArea.scrollHeight;
             }
         }, 100);
+    }
+
+    private hideLists() {
+        if (this.zList) this.zList.style.display = 'none';
+        if (this.zasList) this.zasList.style.display = 'none';
+    }
+
+    private renderZList() {
+        if (!this.zList) return;
+        this.zList.innerHTML = '';
+        const objects = (window as any).clientExtension?.ObjectManager?.getObjectsOnLocation?.() || [];
+        const nums = Array.from(new Set(objects
+            .filter((o: any) => /^[0-9]+$/.test(o.shortcut))
+            .map((o: any) => o.shortcut)));
+        nums.forEach((n: string) => {
+            const b = document.createElement('button');
+            b.className = 'mobile-button';
+            b.textContent = n;
+            b.addEventListener('click', () => {
+                this.client.sendCommand(`/z ${n}`);
+                this.hideLists();
+            });
+            this.zList!.appendChild(b);
+        });
+    }
+
+    private renderZasList() {
+        if (!this.zasList) return;
+        this.zasList.innerHTML = '';
+        const objects = (window as any).clientExtension?.ObjectManager?.getObjectsOnLocation?.() || [];
+        const letters = Array.from(new Set(objects
+            .filter((o: any) => /^[A-Z]$/.test(o.shortcut))
+            .map((o: any) => o.shortcut)));
+        letters.forEach((l: string) => {
+            const b = document.createElement('button');
+            b.className = 'mobile-button';
+            b.textContent = l;
+            b.addEventListener('click', () => {
+                this.client.sendCommand(`/zas ${l}`);
+                this.hideLists();
+            });
+            this.zasList!.appendChild(b);
+        });
     }
 }

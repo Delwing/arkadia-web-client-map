@@ -419,6 +419,15 @@ button:focus-visible {
   pointer-events: none; /* Disable click events */
 }
 
+.mobile-z-buttons {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+}
+
 #map-progress-container {
   pointer-events: none;
 }
