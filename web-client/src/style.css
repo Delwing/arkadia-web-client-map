@@ -65,7 +65,8 @@ h1 {
   bottom: 0;
   background-color: var(--bs-body-bg);
   z-index: 1;
-  height: 10rem;
+  height: 15rem;
+  max-height: 25vh;
 }
 
 #split-bottom.split-hidden {
