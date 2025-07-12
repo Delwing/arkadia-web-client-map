@@ -30,3 +30,4 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/za** - zasłania cel oznaczony jako cel obrony.
 - **/zap** - wykonuje polecenie `zapal lampe`.
 - **/zg** - wykonuje polecenie `zgas lampe`.
+- **/binds** - wyświetla aktualnie ustawione skróty klawiaturowe.
