@@ -101,46 +101,20 @@ export default class MapHelper {
         if (command === "zerknij" || command === "spojrz" || command === "sp") {
             this.refreshPosition = true;
         }
-
-        const specials = this.currentRoom?.specialExits ?? {};
-
-        if (this.pendingSpecial.length) {
-            const combined = [...this.pendingSpecial, command].join("#");
-            if (specials[combined]) {
-                this.move(combined);
-                this.pendingSpecial = [];
-                return command;
-            }
-
-            const further = Object.keys(specials).some(k => k.startsWith(combined + "#"));
-            if (further) {
-                this.pendingSpecial.push(command);
-                return command;
-            } else {
-                this.pendingSpecial = [];
+        if (this.currentRoom) {
+            if (this.currentRoom.userData.dir_bind) {
+                const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map((item: string) => item.split("=")))
+                if (dirBinds[getLongDir(command)]) {
+                    return dirBinds[getLongDir(command)]
+                }
             }
         }
-
-        const start = Object.keys(specials).some(k => k.startsWith(command + "#"));
-        if (start) {
-            this.pendingSpecial = [command];
-            return command;
-        }
-
-        this.pendingSpecial = [];
-        return this.move(command) ?? command;
+        return command
     }
 
     move(direction: string) {
         let actualDirection = direction
         if (this.currentRoom) {
-            if (this.currentRoom.userData.dir_bind) {
-                const dirBinds = Object.fromEntries(this.currentRoom.userData.dir_bind.split("&").map((item: string) => item.split("=")))
-                if (dirBinds[getLongDir(actualDirection)]) {
-                    direction = dirBinds[getLongDir(actualDirection)]
-                    return this.move(direction)
-                }
-            }
             const allExits = Object.assign(
                 {},
                 this.currentRoom.exits ?? {},
@@ -251,9 +225,9 @@ export default class MapHelper {
         this.client.FunctionalBind.clear();
         this.client.addEventListener('output-sent', () => {
             if (room.userData?.bind) {
-                this.client.FunctionalBind.set(room.userData?.bind, () => Input.send(room.userData?.bind))
+                this.client.FunctionalBind.set(room.userData?.bind, () => this.client.sendCommand(room.userData?.bind))
             } else if (room.userData?.drinkable) {
-                this.client.FunctionalBind.set("napij sie do syta wody", () => Input.send("napij sie do syta wody"))
+                this.client.FunctionalBind.set("napij sie do syta wody", () => this.client.sendCommand("napij sie do syta wody"))
             }
         }, {once: true})
     }

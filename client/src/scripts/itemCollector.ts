@@ -54,19 +54,19 @@ export default class ItemCollector {
         if (this.checkBody || force) {
             if ([1, 3, 4, 6].includes(this.currentMode)) {
                 if (this.moneyType === 1) {
-                    Input.send(`wez monety z ${from}`);
+                    this.client.sendCommand(`wez monety z ${from}`);
                 } else if (this.moneyType === 2) {
-                    Input.send(`wez srebrne monety z ${from}`);
-                    Input.send(`wez zlote monety z ${from}`);
+                    this.client.sendCommand(`wez srebrne monety z ${from}`);
+                    this.client.sendCommand(`wez zlote monety z ${from}`);
                 } else if (this.moneyType === 3) {
-                    Input.send(`wez zlote monety z ${from}`);
+                    this.client.sendCommand(`wez zlote monety z ${from}`);
                 }
             }
             if ([2, 3, 5, 6].includes(this.currentMode)) {
-                Input.send(`wez kamienie z ${from}`);
-                Input.send("ocen kamienie");
+                this.client.sendCommand(`wez kamienie z ${from}`);
+                this.client.sendCommand("ocen kamienie");
             }
-            this.extra.forEach((it) => Input.send(`wez ${it} z ${from}`));
+            this.extra.forEach((it) => this.client.sendCommand(`wez ${it} z ${from}`));
             this.checkBody = false;
         }
     }

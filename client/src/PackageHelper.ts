@@ -99,7 +99,7 @@ export default class PackageHelper {
             this.packages.push({name: name, time: matches.groups.time})
             const colorCode = this.npc[name] ? KNOWN_NPC_COLOR : UNKNOWN_NPC_COLOR;
             return this.client.OutputHandler.makeClickable(colorStringInLine(rawLine, name, colorCode), name, () => {
-                Input.send("wybierz paczke " + index)
+                this.client.sendCommand("wybierz paczke " + index)
             }, "wybierz paczke " + index)
         };
     }
@@ -117,7 +117,7 @@ export default class PackageHelper {
                 this.client.removeEventListener('enterLocation', this.locationListener)
                 this.client.addEventListener('gmcp.objects.data', () => {
                     this.client.FunctionalBind.set('oddaj paczke', () => {
-                        return Input.send('oddaj paczke');
+                        return this.client.sendCommand('oddaj paczke');
                     })
                 }, {once: true})
             }

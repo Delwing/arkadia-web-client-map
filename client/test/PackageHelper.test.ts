@@ -25,6 +25,7 @@ describe('PackageHelper', () => {
       Map: { currentRoom: { id: 123 } },
       port: { postMessage: jest.fn() },
       FunctionalBind: { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() },
+      sendCommand: jest.fn(),
     };
     helper = new PackageHelper(client);
   });
@@ -47,7 +48,7 @@ describe('PackageHelper', () => {
     expect(call[1]).toBe('Bob');
     expect(call[3]).toBe('wybierz paczke 1');
     call[2]();
-    expect((global as any).Input.send).toHaveBeenCalledWith('wybierz paczke 1');
+    expect(client.sendCommand).toHaveBeenCalledWith('wybierz paczke 1');
   });
 
   test('handleCommand ignores commands without pick', () => {

@@ -2,7 +2,7 @@ import Client from "../Client";
 
 export default function initGates(client: Client) {
     const knock = () => {
-        Input.send("zastukaj we wrota");
+        client.sendCommand("zastukaj we wrota");
     };
     client.FunctionalBind.set(null, knock);
 

@@ -52,13 +52,13 @@ export default function initLamp(client: Client) {
 
     function takeBottle() {
         takeFromBag(client, 'olej')
-        Input.send('napelnij lampe olejem')
+        client.sendCommand('napelnij lampe olejem')
     }
 
     function emptyBottle() {
-        Input.send('odloz olej')
+        client.sendCommand('odloz olej')
         takeFromBag(client, 'olej')
-        Input.send('napelnij lampe olejem')
+        client.sendCommand('napelnij lampe olejem')
     }
 
     const startPattern = /^[ >]*Zapalasz(?: [a-z ]+)? lampe/
@@ -104,10 +104,10 @@ export default function initLamp(client: Client) {
 
     client.aliases.push({
         pattern: /^\/zap$/,
-        callback: () => Input.send('zapal lampe')
+        callback: () => client.sendCommand('zapal lampe')
     })
     client.aliases.push({
         pattern: /^\/zg$/,
-        callback: () => Input.send('zgas lampe')
+        callback: () => client.sendCommand('zgas lampe')
     })
 }

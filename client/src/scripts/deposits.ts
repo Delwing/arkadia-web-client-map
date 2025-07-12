@@ -104,7 +104,7 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     }
 
     if (aliases) {
-        aliases.push({ pattern: /\/depozyt$/, callback: () => Input.send("przejrzyj depozyt") });
+        aliases.push({ pattern: /\/depozyt$/, callback: () => client.sendCommand("przejrzyj depozyt") });
         aliases.push({ pattern: /\/depozyty$/, callback: printDeposits });
     }
 

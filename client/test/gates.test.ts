@@ -6,6 +6,7 @@ class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   FunctionalBind = { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() };
   addEventListener = jest.fn();
+  sendCommand = jest.fn();
 }
 
 describe('gates triggers', () => {
@@ -24,14 +25,14 @@ describe('gates triggers', () => {
     expect(client.FunctionalBind.set).toHaveBeenCalledTimes(1);
     const initCb = (client.FunctionalBind.set as jest.Mock).mock.calls[0][1];
     initCb();
-    expect((global as any).Input.send).toHaveBeenCalledWith('zastukaj we wrota');
+    expect(client.sendCommand).toHaveBeenCalledWith('zastukaj we wrota');
 
     parse('Probujesz otworzyc masywne wrota.');
     expect(client.FunctionalBind.set).toHaveBeenCalledTimes(2);
     const [label, cb] = (client.FunctionalBind.set as jest.Mock).mock.calls[1];
     expect(label).toBe('zastukaj we wrota');
     cb();
-    expect((global as any).Input.send).toHaveBeenCalledTimes(2);
+    expect(client.sendCommand).toHaveBeenCalledTimes(2);
   });
 
   test('niewielka furtka pattern', () => {

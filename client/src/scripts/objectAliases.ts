@@ -15,7 +15,7 @@ export default function initObjectAliases(
     function exec(short: string, command: string) {
         const obj = findByShortcut(short);
         if (obj) {
-            Input.send(`${command} ob_${obj.num}`);
+            client.sendCommand(`${command} ob_${obj.num}`);
         }
     }
 
@@ -33,7 +33,7 @@ export default function initObjectAliases(
             callback: () => {
                 const id = client.TeamManager.getAttackTargetId();
                 if (id) {
-                    Input.send(`zabij ob_${id}`);
+                    client.sendCommand(`zabij ob_${id}`);
                 }
             }
         });
@@ -42,7 +42,7 @@ export default function initObjectAliases(
             callback: () => {
                 const id = client.TeamManager.getDefenseTargetId();
                 if (id) {
-                    Input.send(`zaslon ob_${id}`);
+                    client.sendCommand(`zaslon ob_${id}`);
                 }
             }
         });

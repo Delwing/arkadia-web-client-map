@@ -5,6 +5,7 @@ class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
   FunctionalBind = { set: jest.fn(), clear: jest.fn(), newMessage: jest.fn() };
   playSound = jest.fn();
+  sendCommand = jest.fn();
 }
 
 describe('buses triggers', () => {
@@ -26,7 +27,7 @@ describe('buses triggers', () => {
     const [label, callback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
     expect(label).toBe('wyjscie');
     callback();
-    expect((global as any).Input.send).toHaveBeenCalledWith('wyjscie');
+    expect(client.sendCommand).toHaveBeenCalledWith('wyjscie');
   });
 
   test('boarding trigger binds commands', () => {
@@ -36,9 +37,9 @@ describe('buses triggers', () => {
     const [label, callback] = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
     expect(label).toBe('wem;wsiadz do dylizansu;wlm');
     callback();
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(1, 'wem');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(2, 'wsiadz do dylizansu');
-    expect((global as any).Input.send).toHaveBeenNthCalledWith(3, 'wlm');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(1, 'wem');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(2, 'wsiadz do dylizansu');
+    expect(client.sendCommand).toHaveBeenNthCalledWith(3, 'wlm');
   });
 
   test('woz z plandeka triggers once', () => {

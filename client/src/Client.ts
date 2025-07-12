@@ -114,10 +114,22 @@ export default class Client {
     }
 
     sendCommand(command: string) {
-        this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
-        command.split(/[#;]/).forEach(part => {
-            rawInputSend(this.Map.parseCommand(part))
+        this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
+        const isAlias = this.aliases.find(alias => {
+            const matches = command.match(alias.pattern)
+            if (matches) {
+                Output.send('→ ' + command, 'command')
+                alias.callback(matches)
+                return true
+            }
+            return false
         })
+        if (!isAlias) {
+            command = this.Map.parseCommand(command)
+            command.split(/[#;]/).forEach(part => {
+                rawInputSend(this.Map.move(part))
+            })
+        }
     }
 
     onLine(line: string, type: string) {
