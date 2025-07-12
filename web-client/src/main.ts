@@ -158,7 +158,7 @@ client.on('message', (message: string, type?: string) => {
     messageDiv.style.whiteSpace = 'pre-wrap';
 
     wrapper.appendChild(messageDiv);
-    outputWrapper.appendChild(wrapper);
+    outputWrapper.insertBefore(wrapper, splitBottom);
 
     const maxElements = 1000;
     while (outputWrapper.childElementCount - 1 > maxElements) {
