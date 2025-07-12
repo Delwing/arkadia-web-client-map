@@ -430,6 +430,7 @@ button:focus-visible {
   position: absolute;
   right: 100%;
   top: 4px;
+  margin-right: 5px;
   display: none;
   grid-template-columns: 1fr;
   grid-auto-rows: 36px;
