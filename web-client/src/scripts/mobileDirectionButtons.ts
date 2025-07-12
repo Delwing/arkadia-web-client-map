@@ -130,24 +130,24 @@ export default class MobileDirectionButtons {
 
         if (this.zToggle) {
             this.zToggle.addEventListener('click', () => {
-                if (this.zList && this.zList.style.display === 'flex') {
+                if (this.zList && this.zList.style.display === 'grid') {
                     this.hideLists();
                 } else {
                     this.hideLists();
                     this.renderZList();
-                    if (this.zList) this.zList.style.display = 'flex';
+                    if (this.zList) this.zList.style.display = 'grid';
                 }
             });
         }
 
         if (this.zasToggle) {
             this.zasToggle.addEventListener('click', () => {
-                if (this.zasList && this.zasList.style.display === 'flex') {
+                if (this.zasList && this.zasList.style.display === 'grid') {
                     this.hideLists();
                 } else {
                     this.hideLists();
                     this.renderZasList();
-                    if (this.zasList) this.zasList.style.display = 'flex';
+                    if (this.zasList) this.zasList.style.display = 'grid';
                 }
             });
         }

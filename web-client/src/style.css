@@ -362,7 +362,7 @@ button:focus-visible {
 
 .mobile-attack-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 5px;
   margin-bottom: 5px;
 }
@@ -429,10 +429,10 @@ button:focus-visible {
 .mobile-z-buttons {
   position: absolute;
   right: 100%;
-  top: 82px;
+  top: 0;
   display: none;
-  flex-direction: column;
-  gap: 3px;
+  grid-auto-rows: 36px;
+  gap: 5px;
 }
 
 #map-progress-container {
