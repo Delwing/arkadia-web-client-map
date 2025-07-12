@@ -33,6 +33,11 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         client.port?.postMessage({ type: "SET_STORAGE", key: STORAGE_KEY, value: deposits });
     };
 
+    let columns = 1;
+    client.addEventListener('settings', (ev: CustomEvent) => {
+        columns = ev.detail.containerColumns ?? columns;
+    });
+
     function update(items: ContainerItem[] | null) {
         const room = client.Map.currentRoom as any;
         if (!isBankRoom(room)) {
@@ -63,8 +68,7 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         const text = (m.groups?.content || m[1]).replace(/\.$/, "");
         const items = parseItems(text);
         update(items);
-        //todo should follow pretty containers settings
-        client.print(prettyPrintContainer(m as RegExpMatchArray, 1, 'DEPOZYT', 5));
+        client.print(prettyPrintContainer(m as RegExpMatchArray, columns, 'DEPOZYT', 5));
         return undefined;
     });
     client.Triggers.registerTrigger(matchEmpty, () => { update([] as ContainerItem[]); return undefined; });
