@@ -128,6 +128,13 @@ class ArkadiaClient {
     }
 
     /**
+     * Manually set the stored character for automatic credential sending
+     */
+    setStoredCharacter(character: string | null): void {
+        this.userCommand = character;
+    }
+
+    /**
      * Send a message through the WebSocket
      */
     send(message: string): void {
