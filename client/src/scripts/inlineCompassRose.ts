@@ -109,7 +109,7 @@ export default class InlineCompassRose {
                 `       ${this.printExit("w")}${this.hasExit("w") ? "---" : "   "}${color(DIM_GRAY)}X${RESET}${this.hasExit("e") ? "---" : "   "}${this.printExit("e")}       ${this.hasExit("d") || this.hasExit("u") ? "o" : ""}`,
                 `         ${this.hasExit("sw") ? "/" : " "} ${this.hasExit("s") ? "|" : " "} ${this.hasExit("se") ? "\\" : " "}         ${this.hasExit("d") ? "|" : ""}`,
                 `       ${this.printExit("sw")}  ${this.printExit("s")}  ${this.printExit("se")}    ${this.printExit("d")}`,
-            ].join("\n")
+            ].filter(item => item.trim().length == 0).join("\n")
         );
     }
 }
