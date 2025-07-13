@@ -7,6 +7,15 @@ class EmbeddedMap {
     constructor(mapData, colors) {
         this.destinations = []
         this.map = document.querySelector("#map");
+        this.map.style.touchAction = 'none'
+        this._touchStartDistance = null
+        this._pinchZoom = this._pinchZoom.bind(this)
+        this._onTouchStart = this._onTouchStart.bind(this)
+        this._onTouchEnd = this._onTouchEnd.bind(this)
+        this.map.addEventListener('touchstart', this._onTouchStart, {passive: false})
+        this.map.addEventListener('touchmove', this._pinchZoom, {passive: false})
+        this.map.addEventListener('touchend', this._onTouchEnd)
+        this.map.addEventListener('touchcancel', this._onTouchEnd)
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
@@ -27,6 +36,40 @@ class EmbeddedMap {
         this.zoom = zoom
 
         this.renderRoomById(1)
+    }
+
+    _onTouchStart(ev) {
+        if (ev.touches.length === 2) {
+            const [t1, t2] = ev.touches
+            this._touchStartDistance = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY)
+        }
+    }
+
+    _onTouchEnd(ev) {
+        if (ev.touches.length < 2) {
+            this._touchStartDistance = null
+        }
+    }
+
+    _pinchZoom(ev) {
+        if (ev.touches.length === 2 && this._touchStartDistance !== null) {
+            ev.preventDefault()
+            const [t1, t2] = ev.touches
+            const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY)
+            const delta = dist / this._touchStartDistance
+            this._touchStartDistance = dist
+            this.setZoom(this.zoom * delta)
+            this._saveZoom()
+        }
+    }
+
+    _saveZoom() {
+        try {
+            const raw = localStorage.getItem('uiSettings')
+            const parsed = raw ? JSON.parse(raw) : {}
+            parsed.mapScale = this.zoom
+            localStorage.setItem('uiSettings', JSON.stringify(parsed))
+        } catch {}
     }
 
     handleMessage({type, data}) {
