@@ -28,7 +28,7 @@ export default function initArmorShop(client: Client) {
     client.Triggers.registerTrigger(headerReg, () => {
         if (width >= NORMAL_WIDTH) return undefined;
         const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
-        const numbers = '| Mithryl Zloto Srebro Miedz |';
+        const numbers = `| ${pad('Mithryl Zloto Srebro Miedz', width - 3)} |`;
         const padded = numbers + ' '.repeat(Math.max(0, width - numbers.length));
         return nameLine + '\n' + padded;
     }, 'armor-shop');
