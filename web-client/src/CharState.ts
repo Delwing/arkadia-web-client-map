@@ -118,6 +118,15 @@ export default class CharState {
       }
     });
 
+    const ext: any = (window as any).clientExtension;
+    if (ext?.addEventListener) {
+      ext.addEventListener('uiSettings', (ev: CustomEvent) => {
+        if (typeof ev.detail?.emojiLabels === 'boolean') {
+          this.applyLabelMode(ev.detail.emojiLabels);
+        }
+      });
+    }
+
     this.client.on(
       "gmcp.char.state",
       (state: Partial<CharStateData>) => this.update(state),
