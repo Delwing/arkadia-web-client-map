@@ -164,6 +164,13 @@ class ArkadiaClient {
     }
 
     /**
+     * Compatibility wrapper matching old client API
+     */
+    sendCommand(command: string): void {
+        this.send(command);
+    }
+
+    /**
      * Process incoming WebSocket data by removing telnet options
      */
     private processIncomingData(data: string) {
