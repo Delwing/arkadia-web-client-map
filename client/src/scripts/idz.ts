@@ -12,7 +12,7 @@ export default function initIdz(client: Client, aliases?: { pattern: RegExp; cal
             const exitDirs = Object.keys(allExits);
             if (exitDirs.length === 0) return;
 
-            let dir = exitDirs[0];
+            let dir: string;
             if (exitDirs.length === 2 && client.Map.locationHistory.length >= 2) {
                 const prevId = client.Map.locationHistory[client.Map.locationHistory.length - 2];
                 const cameFrom = exitDirs.find(d => allExits[d] === prevId);
@@ -20,8 +20,8 @@ export default function initIdz(client: Client, aliases?: { pattern: RegExp; cal
                 if (alt) {
                     dir = alt;
                 }
+                client.sendCommand(longToShort[dir] ?? dir);
             }
-            client.sendCommand(longToShort[dir] ?? dir);
         }
     });
 }
