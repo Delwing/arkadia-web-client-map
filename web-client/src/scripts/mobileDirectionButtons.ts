@@ -284,7 +284,7 @@ export default class MobileDirectionButtons {
             try {
                 const { x, y } = JSON.parse(savedPosition);
                 this.container.style.right = `${x}px`;
-                this.container.style.bottom = `${y}px`;
+                this.container.style.top = `${y}px`;
             } catch (e) {
                 console.error('Error parsing saved position:', e);
             }
@@ -352,7 +352,7 @@ export default class MobileDirectionButtons {
             // Get current container position
             const rect = this.container.getBoundingClientRect();
             this.offsetX = window.innerWidth - rect.right;
-            this.offsetY = window.innerHeight - rect.bottom;
+            this.offsetY = rect.top;
 
             // Add visual feedback for dragging state
             this.container.style.opacity = '0.8';
@@ -375,16 +375,16 @@ export default class MobileDirectionButtons {
         this.currentX = touch.clientX;
         this.currentY = touch.clientY;
 
-        // Calculate new position (from right and bottom)
+        // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
         const deltaY = this.initialY - this.currentY;
 
         const newRight = this.offsetX + deltaX;
-        const newBottom = this.offsetY + deltaY;
+        const newTop = this.offsetY + deltaY;
 
         // Apply new position
         this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.bottom = `${Math.max(5, newBottom)}px`;
+        this.container.style.top = `${Math.max(5, newTop)}px`;
     }
 
     private handleTouchEnd(e: TouchEvent) {
@@ -399,7 +399,7 @@ export default class MobileDirectionButtons {
             const rect = this.container.getBoundingClientRect();
             const position = {
                 x: window.innerWidth - rect.right,
-                y: window.innerHeight - rect.bottom
+                y: rect.top
             };
             localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
 
@@ -437,7 +437,7 @@ export default class MobileDirectionButtons {
             // Get current container position
             const rect = this.container.getBoundingClientRect();
             this.offsetX = window.innerWidth - rect.right;
-            this.offsetY = window.innerHeight - rect.bottom;
+            this.offsetY = rect.top;
 
             // Add visual feedback for dragging state
             this.container.style.opacity = '0.8';
@@ -456,16 +456,16 @@ export default class MobileDirectionButtons {
         this.currentX = e.clientX;
         this.currentY = e.clientY;
 
-        // Calculate new position (from right and bottom)
+        // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
         const deltaY = this.initialY - this.currentY;
 
         const newRight = this.offsetX + deltaX;
-        const newBottom = this.offsetY + deltaY;
+        const newTop = this.offsetY + deltaY;
 
         // Apply new position
         this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.bottom = `${Math.max(5, newBottom)}px`;
+        this.container.style.top = `${Math.max(5, newTop)}px`;
     }
 
     private handleMouseUp(e: MouseEvent) {
@@ -480,7 +480,7 @@ export default class MobileDirectionButtons {
             const rect = this.container.getBoundingClientRect();
             const position = {
                 x: window.innerWidth - rect.right,
-                y: window.innerHeight - rect.bottom
+                y: rect.top
             };
             localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
 
