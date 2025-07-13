@@ -17,9 +17,6 @@ export function color(colorCode:number) {
     return `\x1B[22;38;5;${colorCode}m`
 }
 
-// A single reset is enough here. When the output processor rewrites
-// "\x1b[0m" to the last color code, the ANSI parser detects this and closes
-// the current span so the color does not leak beyond the string.
 export function colorString(string: string, colorCode: number) {
     return color(colorCode) + string + RESET;
 }
