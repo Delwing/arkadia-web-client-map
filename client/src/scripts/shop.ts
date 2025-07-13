@@ -63,16 +63,16 @@ export default function initShop(client: Client, opts: ShopOptions) {
 
     client.Triggers.registerTrigger(opts.splitReg, () => {
         if (width >= opts.normalWidth) return undefined;
-        return opts.makeSplit(width);
+        return opts.makeSplit(width - 2);
     }, opts.tag);
 
     client.Triggers.registerTrigger(opts.headerReg, () => {
         if (width >= opts.normalWidth) return undefined;
-        return opts.makeHeader(width, pad);
+        return opts.makeHeader(width - 2, pad);
     }, opts.tag);
 
     client.Triggers.registerTrigger(opts.itemReg, (_raw, _line, m) => {
         if (width >= opts.normalWidth) return undefined;
-        return opts.makeItem(width, pad, m);
+        return opts.makeItem(width - 2, pad, m);
     }, opts.tag);
 }
