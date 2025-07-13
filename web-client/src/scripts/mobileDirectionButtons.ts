@@ -377,7 +377,7 @@ export default class MobileDirectionButtons {
 
         // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
-        const deltaY = this.initialY - this.currentY;
+        const deltaY = this.currentY - this.initialY;
 
         const newRight = this.offsetX + deltaX;
         const newTop = this.offsetY + deltaY;
@@ -458,7 +458,7 @@ export default class MobileDirectionButtons {
 
         // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
-        const deltaY = this.initialY - this.currentY;
+        const deltaY = this.currentY - this.initialY;
 
         const newRight = this.offsetX + deltaX;
         const newTop = this.offsetY + deltaY;
