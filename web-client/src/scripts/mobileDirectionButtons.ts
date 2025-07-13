@@ -12,6 +12,7 @@ export default class MobileDirectionButtons {
     private readonly zToggle: HTMLButtonElement | null = null;
     private readonly zasToggle: HTMLButtonElement | null = null;
     private readonly bracketRightButton: HTMLButtonElement | null = null;
+    private readonly toggleButton: HTMLButtonElement | null = null;
     private boundKey = 'BracketRight';
     private boundCtrl = false;
     private boundAlt = false;
@@ -30,6 +31,7 @@ export default class MobileDirectionButtons {
     private offsetY = 0;
     private isScrolling = false;
     private lastScrollTop = 0;
+    private collapsed = false;
 
     constructor(client: Client) {
         this.client = client;
@@ -41,6 +43,7 @@ export default class MobileDirectionButtons {
         this.zToggle = document.getElementById('z-list-toggle') as HTMLButtonElement;
         this.zasToggle = document.getElementById('zas-list-toggle') as HTMLButtonElement;
         this.bracketRightButton = document.getElementById('bracket-right-button') as HTMLButtonElement;
+        this.toggleButton = document.getElementById('buttons-toggle') as HTMLButtonElement;
 
         if (!this.container) {
             console.error('Mobile direction buttons container not found');
@@ -49,6 +52,7 @@ export default class MobileDirectionButtons {
 
         this.setupEventHandlers();
         this.updateBracketRightButton();
+        this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
         this.setupKeyboardHandlers();
@@ -116,6 +120,12 @@ export default class MobileDirectionButtons {
                     cancelable: true
                 });
                 document.dispatchEvent(event);
+            });
+        }
+
+        if (this.toggleButton) {
+            this.toggleButton.addEventListener('click', () => {
+                this.toggleVisibility();
             });
         }
 
@@ -524,6 +534,22 @@ export default class MobileDirectionButtons {
             alt: this.boundAlt,
             shift: this.boundShift,
         });
+    }
+
+    private updateToggleButton() {
+        if (!this.toggleButton) return;
+        this.toggleButton.textContent = this.collapsed ? '⇧' : '⇩';
+    }
+
+    private toggleVisibility() {
+        if (!this.container) return;
+        this.collapsed = !this.collapsed;
+        if (this.collapsed) {
+            this.container.classList.add('collapsed');
+        } else {
+            this.container.classList.remove('collapsed');
+        }
+        this.updateToggleButton();
     }
 
     private renderZList() {
