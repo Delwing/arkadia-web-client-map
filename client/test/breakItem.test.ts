@@ -37,10 +37,10 @@ describe('break item triggers', () => {
     const line = 'Miecz bojowy peka!';
     parse(line);
     const call = (client.FunctionalBind.set as jest.Mock).mock.calls[0];
-    expect(call[0]).toContain('odloz zniszczona bron');
+    expect(call[0]).toContain('odloz zlamana bron');
     const cb = call[1] as Function;
     cb();
-    expect(client.sendCommand).toHaveBeenCalledWith('odloz zniszczona bron');
+    expect(client.sendCommand).toHaveBeenCalledWith('odloz zlamana bron');
   });
 
   test('binds armor command', () => {
