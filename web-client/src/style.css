@@ -110,6 +110,12 @@ h1 {
   color: tomato;
 }
 
+#break-item-warning {
+  display: none;
+  color: tomato;
+  cursor: pointer;
+}
+
 #objects-list {
   position: absolute;
   top: 0;

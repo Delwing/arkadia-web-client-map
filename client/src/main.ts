@@ -186,9 +186,11 @@ initContainers(client)
 
 import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
+import initHerbShop from './scripts/herbShop'
 
 initBagManager(client, aliases)
 initDeposits(client, aliases)
+initHerbShop(client)
 
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
@@ -198,6 +200,7 @@ import initMagicKeys from './scripts/magicKeys'
 import initMagics from './scripts/magics'
 import registerGagTriggers from './scripts/gags'
 import initLeaderAttackWarning from './scripts/leaderAttackWarning'
+import initBreakItem from './scripts/breakItem'
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
@@ -206,5 +209,6 @@ initObjectAliases(client, aliases)
 initMagicKeys(client)
 initMagics(client)
 initLeaderAttackWarning(client)
+initBreakItem(client)
 
 window['clientExtension'] = client

@@ -6,6 +6,7 @@ import { Modal, Dropdown } from 'bootstrap';
 import CharState from "./CharState";
 import ObjectList from "./ObjectList";
 import LampTimer from "./LampTimer";
+import BreakItemWarning from "./BreakItemWarning";
 
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
@@ -72,6 +73,9 @@ const port = new MockPort();
 window.clientExtension.connect(port as any, true);
 window.clientExtension.addEventListener('lampTimer', (ev: CustomEvent<number | null>) => {
     client.emit('lampTimer', ev.detail);
+});
+window.clientExtension.addEventListener('breakItem', (ev: CustomEvent<any>) => {
+    client.emit('breakItem', ev.detail);
 });
 
 const progressContainer = document.getElementById('map-progress-container')!;
@@ -534,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Display character state and lamp timer
     new CharState(client);
     new LampTimer(client);
+    new BreakItemWarning(client);
     new ObjectList(window.clientExtension as any);
 
     // Initialize mobile direction buttons

@@ -18,6 +18,7 @@ import lampDemo from "./scenario/lamp-demo.ts";
 import depositDemo from "./scenario/deposit-demo.ts";
 import stunDemo from "./scenario/stun-demo.ts";
 import inviteDemo from "./scenario/invite-demo.ts";
+import breakItemDemo from "./scenario/break-item-demo.ts";
 
 // Demo mapping for localStorage persistence
 export const demoMap = {
@@ -36,7 +37,8 @@ export const demoMap = {
     'lampDemo': lampDemo,
     'depositDemo': depositDemo,
     'stunDemo': stunDemo,
-    'inviteDemo': inviteDemo
+    'inviteDemo': inviteDemo,
+    'breakItemDemo': breakItemDemo
 };
 
 function runDemo(demoName: string) {
@@ -138,6 +140,13 @@ export function Controls() {
                         onClick={() => runDemo('lampDemo')}
                     >
                         Lamp Demo
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => runDemo('breakItemDemo')}
+                    >
+                        Break Item Demo
                     </Button>
                     <Button
                         size="sm"
