@@ -186,9 +186,11 @@ initContainers(client)
 
 import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
+import initHerbShop from './scripts/herbShop'
 
 initBagManager(client, aliases)
 initDeposits(client, aliases)
+initHerbShop(client)
 
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
