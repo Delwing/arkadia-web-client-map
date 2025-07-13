@@ -45,4 +45,18 @@ describe('Triggers', () => {
     expect(cb).toHaveBeenCalledTimes(1);
     expect(result).toBe('changed');
   });
+
+  test('trigger stays open for specified lines enabling children', () => {
+    const triggers = new Triggers({} as any);
+    const parent = triggers.registerTrigger(/start/, undefined, undefined, { stayOpenLines: 2 });
+    const childCb = jest.fn();
+    parent.registerChild(/child/, childCb);
+
+    triggers.parseLine('start', '');
+    triggers.parseLine('child', '');
+    triggers.parseLine('child', '');
+    triggers.parseLine('child', '');
+
+    expect(childCb).toHaveBeenCalledTimes(2);
+  });
 });

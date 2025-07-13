@@ -19,24 +19,31 @@ type TriggerMatchFunction = (
 
 type TriggerPattern = string | RegExp | TriggerMatchFunction;
 
+export interface TriggerOptions {
+    stayOpenLines?: number;
+}
+
 export class Trigger {
     id = crypto.randomUUID();
     children: Map<string, Trigger> = new Map();
+    private openInstances: number[] = [];
 
     constructor(
         private manager: Triggers,
         public pattern: TriggerPattern,
         public callback?: TriggerCallback,
         public tag?: string,
-        public parent?: Trigger
+        public parent?: Trigger,
+        private options: TriggerOptions = {}
     ) {}
 
     registerChild(
         pattern: TriggerPattern,
         callback?: TriggerCallback,
-        tag?: string
+        tag?: string,
+        options?: TriggerOptions
     ) {
-        const child = new Trigger(this.manager, pattern, callback, tag, this);
+        const child = new Trigger(this.manager, pattern, callback, tag, this, options);
         this.children.set(child.id, child);
         return child;
     }
@@ -44,7 +51,8 @@ export class Trigger {
     registerOneTimeChild(
         pattern: TriggerPattern,
         callback: TriggerCallback,
-        tag?: string
+        tag?: string,
+        options?: TriggerOptions
     ) {
         const child = this.registerChild(
             pattern,
@@ -52,13 +60,15 @@ export class Trigger {
                 this.manager.removeTrigger(child);
                 return callback(rawLine, line, matches, type);
             },
-            tag
+            tag,
+            options
         );
         return child;
     }
 
     execute(rawLine: string, type: string) {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
+        this.openInstances = this.openInstances.map(v => v - 1).filter(v => v > 0);
         let matches: RegExpMatchArray | undefined;
         if (this.pattern instanceof RegExp) {
             matches = line.match(this.pattern);
@@ -71,8 +81,17 @@ export class Trigger {
         } else if (typeof this.pattern === "function") {
             matches = this.pattern(rawLine, line, undefined, type);
         }
+        let matched = false;
         if (matches) {
-            if (this.callback) {
+            matched = true;
+            if (this.options.stayOpenLines && this.options.stayOpenLines > 0) {
+                this.openInstances.push(this.options.stayOpenLines + 1);
+            }
+        } else if (this.openInstances.length > 0) {
+            matched = true;
+        }
+        if (matched) {
+            if (matches && this.callback) {
                 rawLine = this.callback(rawLine, line, matches, type) ?? rawLine;
             }
             this.children.forEach(child => {
@@ -103,38 +122,40 @@ export default class Triggers {
         });
     }
 
-    registerTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string) {
-        const trigger = new Trigger(this, pattern, callback, tag);
+    registerTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string, options?: TriggerOptions) {
+        const trigger = new Trigger(this, pattern, callback, tag, undefined, options);
         this.triggers.set(trigger.id, trigger);
         return trigger;
     }
 
-    registerMultilineTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string) {
-        const trigger = new Trigger(this, pattern, callback, tag);
+    registerMultilineTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string, options?: TriggerOptions) {
+        const trigger = new Trigger(this, pattern, callback, tag, undefined, options);
         this.multilineTriggers.set(trigger.id, trigger);
         return trigger;
     }
 
-    registerOneTimeTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string) {
+    registerOneTimeTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string, options?: TriggerOptions) {
         const trigger = this.registerTrigger(
             pattern,
             (rawLine, line, matches, type) => {
                 this.removeTrigger(trigger);
                 return callback(rawLine, line, matches, type);
             },
-            tag
+            tag,
+            options
         );
         return trigger;
     }
 
-    registerOneTimeMultilineTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string) {
+    registerOneTimeMultilineTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string, options?: TriggerOptions) {
         const trigger = this.registerMultilineTrigger(
             pattern,
             (rawLine, line, matches, type) => {
                 this.removeTrigger(trigger);
                 return callback(rawLine, line, matches, type);
             },
-            tag
+            tag,
+            options
         );
         return trigger;
     }
