@@ -1,5 +1,5 @@
 import initHerbShop from '../src/scripts/herbShop';
-import Triggers from '../src/Triggers';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -45,6 +45,14 @@ describe('herb shop width adjustments', () => {
     const it = parse(item).split('\n');
     expect(it[0]).toMatch(/jaskier/);
     expect(it[1]).toMatch(/\//);
+  });
+
+  test('keeps item on one line when there is room', () => {
+    client.contentWidth = 70;
+    client.dispatch('contentWidth', 70);
+    const result = parse(item);
+    expect(result).not.toMatch(/\n/);
+    expect(stripAnsiCodes(result)).toMatch(/Ilosc/);
   });
 
   test('leaves lines unchanged when wide enough', () => {

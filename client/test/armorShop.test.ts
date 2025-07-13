@@ -1,5 +1,5 @@
 import initArmorShop from '../src/scripts/armorShop';
-import Triggers from '../src/Triggers';
+import Triggers, { stripAnsiCodes } from '../src/Triggers';
 import { EventEmitter } from 'events';
 
 class FakeClient {
@@ -45,6 +45,14 @@ describe('armor shop width adjustments', () => {
     const it = parse(item).split('\n');
     expect(it[0]).toMatch(/rycerska/);
     expect(it[1]).toMatch(/\//);
+  });
+
+  test('keeps item on one line when there is room', () => {
+    client.contentWidth = 50;
+    client.dispatch('contentWidth', 50);
+    const result = parse(item);
+    expect(result).not.toMatch(/\n/);
+    expect(stripAnsiCodes(result)).toMatch(/0\/2\/7\/6/);
   });
 
   test('leaves lines unchanged when wide enough', () => {
