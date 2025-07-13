@@ -142,6 +142,10 @@ client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
     client.sendEvent('refreshPositionWhenAble')
 })
 
+client.Triggers.registerTrigger('ENTER przy przejsc dalej', (): undefined => {
+    client.sendCommand('')
+})
+
 import initShips from './scripts/ships'
 import initBuses from './scripts/buses'
 import initGates from './scripts/gates'
