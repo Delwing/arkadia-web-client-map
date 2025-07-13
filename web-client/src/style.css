@@ -474,6 +474,11 @@ button:focus-visible {
   z-index: 1011;
 }
 
+#connecting-spinner {
+  display: none;
+  margin-bottom: 1vh;
+}
+
 #auth-overlay {
   position: fixed;
   inset: 0;

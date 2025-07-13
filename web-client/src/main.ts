@@ -210,35 +210,48 @@ client.on('message', (message: string, type?: string) => {
 
 // Track connection state
 let isConnected = false;
+let isConnecting = false;
 
 // Function to update the connect button state
 function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     const reconnectButton = document.getElementById('reconnect-button') as HTMLButtonElement | null;
+    const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const authOverlay = document.getElementById('auth-overlay') as HTMLElement | null;
+    const spinner = document.getElementById('connecting-spinner') as HTMLElement | null;
+
     if (connectButton) {
-        if (isConnected) {
-            connectButton.style.display = 'none'; // Hide button when connected
+        if (isConnected || isConnecting) {
+            connectButton.style.display = 'none';
         } else {
-            connectButton.style.display = ''; // Show button when disconnected
+            connectButton.style.display = '';
             connectButton.textContent = 'Connect';
             connectButton.classList.add('disconnected');
             connectButton.classList.remove('connected');
         }
     }
+
     if (reconnectButton) {
-        reconnectButton.style.display = isConnected ? 'none' : '';
+        reconnectButton.style.display = (!isConnected && !isConnecting) ? '' : 'none';
     }
-    const displayValue = connectButton.style.display;
-    document.getElementById('login-button').style.display = displayValue;
+
+    if (loginButton) {
+        loginButton.style.display = (!isConnected && !isConnecting) ? '' : 'none';
+    }
+
+    if (spinner) {
+        spinner.style.display = isConnecting ? 'block' : 'none';
+    }
+
     if (authOverlay) {
-        authOverlay.style.display = isConnected ? 'none' : 'block';
+        authOverlay.style.display = isConnected ? 'none' : (isConnecting ? 'none' : 'block');
     }
 }
 
 // Handle client connect event
 client.on('client.connect', () => {
     isConnected = true;
+    isConnecting = false;
     updateConnectButtons();
     window.clientExtension.sendEvent('refreshPositionWhenAble');
     console.log('Client connected to Arkadia server.');
@@ -247,6 +260,7 @@ client.on('client.connect', () => {
 // Handle client disconnect event
 client.on('client.disconnect', () => {
     isConnected = false;
+    isConnecting = false;
     updateConnectButtons();
     console.log('Client disconnected from Arkadia server.');
 });
@@ -395,6 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!isConnected) {
                 client.on('client.connect', sendCreds);
+                isConnecting = true;
+                updateConnectButtons();
                 client.connect();
             } else {
                 sendCreds();
@@ -488,6 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isConnected) {
             client.disconnect();
         } else {
+            isConnecting = true;
+            updateConnectButtons();
             client.connect();
         }
     });
@@ -504,6 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     client.setStoredCharacter(storedChar);
                 }
             } catch {}
+            isConnecting = true;
+            updateConnectButtons();
             client.connect(false);
         });
     }
