@@ -1,4 +1,4 @@
-import {colorStringInLine, findClosestColor} from "./Colors";
+import {colorStringInLine, findClosestColor, RESET} from "./Colors";
 import Client from "./Client";
 import { Trigger } from "./Triggers";
 
@@ -133,9 +133,9 @@ export default class PackageHelper {
                             this.client.sendCommand('wybierz paczke ' + index);
                         },
                         'wybierz paczke ' + index
-                    );
-                    const time = matches.groups.time ? matches.groups.time : 'nieogr.';
-                    const second = `  ${matches.groups.gold}/${matches.groups.silver}/${matches.groups.copper} ${time}`;
+                    ) + RESET   ;
+                    const time = matches.groups.time ? matches.groups.time + ' godz.' : 'nieogr.';
+                    const second = `   ${matches.groups.gold}/${matches.groups.silver}/${matches.groups.copper} ${time}`;
                     out.push(clickable, second);
                 });
                 return out.join('\n');
