@@ -66,7 +66,7 @@ function applyColorSpans(
  * Parse ANSI color patterns and convert them to HTML spans
  */
 export function parseAnsiPatterns(input: string): string {
-    const activeColors: string[] = [];
+    const activeColors: string[] =[];
     const spanStartIndices: number[] = [];
     const spanEndIndices: number[] = [];
     let offset = 0;

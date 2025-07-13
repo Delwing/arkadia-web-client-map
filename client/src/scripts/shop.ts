@@ -35,10 +35,10 @@ export function formatItem(
     const costs = match.slice(2, 6);
     const amount = typeof amountIndex === 'number' ? match[amountIndex] : undefined;
 
-    const coloredCosts = costs.map((c, i) => colorString(c, colors[i])).join('/');
+    const coloredCosts = costs.map((c, i) => colorString(c === "" ? "0" : c, colors[i])).join('/');
 
     const numbersContent = amount && amount !== '1'
-        ? `${coloredCosts} Ilosc ${amount}`
+        ? `${coloredCosts} Ilosc: ${amount}`
         : coloredCosts;
 
     const nameLine = `| ${pad(name, width - 3)}|`;
