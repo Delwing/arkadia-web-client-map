@@ -12,6 +12,7 @@ export default class MobileDirectionButtons {
     private readonly zToggle: HTMLButtonElement | null = null;
     private readonly zasToggle: HTMLButtonElement | null = null;
     private readonly bracketRightButton: HTMLButtonElement | null = null;
+    private readonly toggleButton: HTMLButtonElement | null = null;
     private boundKey = 'BracketRight';
     private boundCtrl = false;
     private boundAlt = false;
@@ -30,6 +31,7 @@ export default class MobileDirectionButtons {
     private offsetY = 0;
     private isScrolling = false;
     private lastScrollTop = 0;
+    private collapsed = false;
 
     constructor(client: Client) {
         this.client = client;
@@ -41,6 +43,7 @@ export default class MobileDirectionButtons {
         this.zToggle = document.getElementById('z-list-toggle') as HTMLButtonElement;
         this.zasToggle = document.getElementById('zas-list-toggle') as HTMLButtonElement;
         this.bracketRightButton = document.getElementById('bracket-right-button') as HTMLButtonElement;
+        this.toggleButton = document.getElementById('buttons-toggle') as HTMLButtonElement;
 
         if (!this.container) {
             console.error('Mobile direction buttons container not found');
@@ -49,6 +52,7 @@ export default class MobileDirectionButtons {
 
         this.setupEventHandlers();
         this.updateBracketRightButton();
+        this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
         this.setupKeyboardHandlers();
@@ -116,6 +120,12 @@ export default class MobileDirectionButtons {
                     cancelable: true
                 });
                 document.dispatchEvent(event);
+            });
+        }
+
+        if (this.toggleButton) {
+            this.toggleButton.addEventListener('click', () => {
+                this.toggleVisibility();
             });
         }
 
@@ -274,7 +284,7 @@ export default class MobileDirectionButtons {
             try {
                 const { x, y } = JSON.parse(savedPosition);
                 this.container.style.right = `${x}px`;
-                this.container.style.bottom = `${y}px`;
+                this.container.style.top = `${y}px`;
             } catch (e) {
                 console.error('Error parsing saved position:', e);
             }
@@ -342,7 +352,7 @@ export default class MobileDirectionButtons {
             // Get current container position
             const rect = this.container.getBoundingClientRect();
             this.offsetX = window.innerWidth - rect.right;
-            this.offsetY = window.innerHeight - rect.bottom;
+            this.offsetY = rect.top;
 
             // Add visual feedback for dragging state
             this.container.style.opacity = '0.8';
@@ -365,16 +375,16 @@ export default class MobileDirectionButtons {
         this.currentX = touch.clientX;
         this.currentY = touch.clientY;
 
-        // Calculate new position (from right and bottom)
+        // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
         const deltaY = this.initialY - this.currentY;
 
         const newRight = this.offsetX + deltaX;
-        const newBottom = this.offsetY + deltaY;
+        const newTop = this.offsetY + deltaY;
 
         // Apply new position
         this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.bottom = `${Math.max(5, newBottom)}px`;
+        this.container.style.top = `${Math.max(5, newTop)}px`;
     }
 
     private handleTouchEnd(e: TouchEvent) {
@@ -389,7 +399,7 @@ export default class MobileDirectionButtons {
             const rect = this.container.getBoundingClientRect();
             const position = {
                 x: window.innerWidth - rect.right,
-                y: window.innerHeight - rect.bottom
+                y: rect.top
             };
             localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
 
@@ -427,7 +437,7 @@ export default class MobileDirectionButtons {
             // Get current container position
             const rect = this.container.getBoundingClientRect();
             this.offsetX = window.innerWidth - rect.right;
-            this.offsetY = window.innerHeight - rect.bottom;
+            this.offsetY = rect.top;
 
             // Add visual feedback for dragging state
             this.container.style.opacity = '0.8';
@@ -446,16 +456,16 @@ export default class MobileDirectionButtons {
         this.currentX = e.clientX;
         this.currentY = e.clientY;
 
-        // Calculate new position (from right and bottom)
+        // Calculate new position (from right and top)
         const deltaX = this.initialX - this.currentX;
         const deltaY = this.initialY - this.currentY;
 
         const newRight = this.offsetX + deltaX;
-        const newBottom = this.offsetY + deltaY;
+        const newTop = this.offsetY + deltaY;
 
         // Apply new position
         this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.bottom = `${Math.max(5, newBottom)}px`;
+        this.container.style.top = `${Math.max(5, newTop)}px`;
     }
 
     private handleMouseUp(e: MouseEvent) {
@@ -470,7 +480,7 @@ export default class MobileDirectionButtons {
             const rect = this.container.getBoundingClientRect();
             const position = {
                 x: window.innerWidth - rect.right,
-                y: window.innerHeight - rect.bottom
+                y: rect.top
             };
             localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
 
@@ -524,6 +534,22 @@ export default class MobileDirectionButtons {
             alt: this.boundAlt,
             shift: this.boundShift,
         });
+    }
+
+    private updateToggleButton() {
+        if (!this.toggleButton) return;
+        this.toggleButton.textContent = this.collapsed ? '⇧' : '⇩';
+    }
+
+    private toggleVisibility() {
+        if (!this.container) return;
+        this.collapsed = !this.collapsed;
+        if (this.collapsed) {
+            this.container.classList.add('collapsed');
+        } else {
+            this.container.classList.remove('collapsed');
+        }
+        this.updateToggleButton();
     }
 
     private renderZList() {

@@ -339,7 +339,7 @@ button:focus-visible {
   display: none; /* Hidden by default */
   position: fixed;
   right: 5px;
-  bottom: 160px; /* Position closer to bottom but leave space for ~7 lines of text */
+  top: 160px; /* Position relative to top */
   flex-direction: column;
   z-index: 1000;
   gap: 3px;
@@ -358,6 +358,14 @@ button:focus-visible {
   justify-content: center;
   gap: 5px;
   margin-bottom: 5px;
+}
+
+.mobile-direction-buttons.collapsed .mobile-attack-buttons > button:not(#buttons-toggle),
+.mobile-direction-buttons.collapsed .mobile-top-buttons,
+.mobile-direction-buttons.collapsed .mobile-direction-main,
+.mobile-direction-buttons.collapsed #z-buttons-list,
+.mobile-direction-buttons.collapsed #zas-buttons-list {
+  display: none;
 }
 
 .mobile-attack-buttons {
