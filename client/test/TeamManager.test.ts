@@ -173,4 +173,5 @@ describe('TeamManager', () => {
     expect(manager.getAttackTargetId()).toBe('1');
     expect(manager.getDefenseTargetId()).toBe('2');
   });
+
 });
