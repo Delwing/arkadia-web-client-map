@@ -11,6 +11,8 @@ describe('escape triggers', () => {
   let parse: (line: string) => string;
   const color = findClosestColor('#6a5acd');
   const prefix = `\x1B[22;38;5;${color}m`;
+  const panicColor = findClosestColor('#ff8c00');
+  const panicPrefix = `\x1B[22;38;5;${panicColor}m`;
   const suffix = '\x1B[0m';
 
   beforeEach(() => {
@@ -36,7 +38,7 @@ describe('escape triggers', () => {
     parse('Baz uciekl ci.');
     const result = parse('Baz w panice ucieka na polnoc.');
     expect(stripAnsiCodes(result)).toBe('Baz w panice ucieka na polnoc. ↑');
-    expect(result.startsWith(prefix)).toBe(true);
+    expect(result.startsWith(panicPrefix)).toBe(true);
     expect(result.endsWith(suffix)).toBe(true);
   });
 });
