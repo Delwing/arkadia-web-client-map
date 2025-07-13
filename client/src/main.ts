@@ -164,7 +164,9 @@ initBinds(client, aliases)
 initIdz(client, aliases)
 
 import initKillTrigger from './scripts/kill'
+import initEscape from './scripts/escape'
 initKillTrigger(client, aliases)
+initEscape(client)
 
 import ItemCollector from './scripts/itemCollector'
 
