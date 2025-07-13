@@ -2,6 +2,7 @@ import { marked } from "marked";
 import Modal from "bootstrap/js/dist/modal";
 import aliasesMd from "../../docs/ALIASES.md?raw";
 import bagManagerMd from "../../docs/BAG_MANAGER.md?raw";
+import bindsMd from "../../docs/BINDS.md?raw";
 
 interface DocDef {
   key: string;
@@ -10,7 +11,8 @@ interface DocDef {
 }
 const docs: DocDef[] = [
   { key: "aliases", title: "Aliasy", md: aliasesMd },
-  { key: "bag", title: "Mened\u017cer pojemnik\u00f3w", md: bagManagerMd }
+  { key: "bag", title: "Mened\u017cer pojemnik\u00f3w", md: bagManagerMd },
+  { key: "binds", title: "Bindowanie", md: bindsMd }
 ];
 
 function createModal() {
