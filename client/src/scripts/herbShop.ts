@@ -22,7 +22,7 @@ export default function initHerbShop(client: Client) {
     client.Triggers.registerTrigger(headerReg, () => {
         if (width >= NORMAL_WIDTH) return undefined;
         const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
-        const numbers = '| mt | zl | sr | md | Ilosc |';
+        const numbers = '| mt zl sr md Ilosc |';
         const padded = numbers + ' '.repeat(Math.max(0, width - numbers.length));
         return nameLine + '\n' + padded;
     }, 'herb-shop');
@@ -36,7 +36,7 @@ export default function initHerbShop(client: Client) {
         const md = m[5];
         const amount = m[6];
         const nameLine = `| ${pad(name, width - 3)}|`;
-        const numbersBase = `| ${mt.padStart(2, ' ')} | ${zl.padStart(2, ' ')} | ${sr.padStart(2, ' ')} | ${md.padStart(2, ' ')} | ${amount.padStart(5, ' ')} |`;
+        const numbersBase = `| mt ${mt} zl ${zl} sr ${sr} md ${md} Ilosc ${amount} |`;
         const numbersLine = numbersBase + ' '.repeat(Math.max(0, width - numbersBase.length));
         return nameLine + '\n' + numbersLine;
     }, 'herb-shop');
