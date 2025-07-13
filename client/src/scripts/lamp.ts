@@ -47,7 +47,6 @@ export default function initLamp(client: Client) {
 
     function resetTimer() {
         seconds = DEFAULT_TIME
-        processCounter()
     }
 
     function takeBottle() {
