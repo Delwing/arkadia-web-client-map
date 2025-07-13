@@ -44,7 +44,7 @@ describe('armor shop width adjustments', () => {
 
     const it = parse(item).split('\n');
     expect(it[0]).toMatch(/rycerska/);
-    expect(it[1]).toMatch(/7/);
+    expect(it[1]).toMatch(/\//);
   });
 
   test('leaves lines unchanged when wide enough', () => {

@@ -1,5 +1,11 @@
 import Client from "../Client";
+import { colorString, findClosestColor } from "../Colors";
 import { stripAnsiCodes } from "../Triggers";
+
+const MITHRIL_COLOR = findClosestColor('#afeeee');
+const GOLD_COLOR = findClosestColor('#FFD700');
+const SILVER_COLOR = findClosestColor('#C0C0C0');
+const COPPER_COLOR = findClosestColor('#8B4513');
 
 export default function initHerbShop(client: Client) {
     let width = client.contentWidth;
@@ -22,7 +28,7 @@ export default function initHerbShop(client: Client) {
     client.Triggers.registerTrigger(headerReg, () => {
         if (width >= NORMAL_WIDTH) return undefined;
         const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
-        const numbersLine = `| ${pad('mt zl sr md Ilosc', width - 3)}|`;
+        const numbersLine = `| ${pad('mt/zl/sr/md Ilosc', width - 3)}|`;
         return nameLine + '\n' + numbersLine;
     }, 'herb-shop');
 
@@ -35,7 +41,13 @@ export default function initHerbShop(client: Client) {
         const md = m[5];
         const amount = m[6];
         const nameLine = `| ${pad(name, width - 3)}|`;
-        const numbersContent = `mt ${mt} zl ${zl} sr ${sr} md ${md} Ilosc ${amount}`;
+        const cost = [
+            colorString(mt, MITHRIL_COLOR),
+            colorString(zl, GOLD_COLOR),
+            colorString(sr, SILVER_COLOR),
+            colorString(md, COPPER_COLOR)
+        ].join('/')
+        const numbersContent = `${cost} Ilosc ${amount}`;
         const numbersLine = `| ${pad(numbersContent, width - 3)}|`;
         return nameLine + '\n' + numbersLine;
     }, 'herb-shop');
