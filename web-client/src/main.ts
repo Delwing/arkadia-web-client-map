@@ -14,7 +14,7 @@ import NoSleep from 'nosleep.js';
 import { loadMapData, loadColors } from "./mapDataLoader.ts";
 import { loadNpcData } from "./npcDataLoader.ts";
 import "@map/embedded.js"
-import { savePassword, getPassword, clearPassword, saveCharacter, getCharacter, clearCharacter } from "./passwordStore";
+// Password storage functionality removed
 const client = ArkadiaClient
 
 import { createElement } from 'react'
@@ -338,7 +338,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
-    const rememberPassword = document.getElementById('login-remember-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
 
     if (menuButton) {
@@ -397,11 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = loginPassword?.value || '';
             loginModal.hide();
 
-            if (rememberPassword && rememberPassword.checked && password) {
-                try { await savePassword(password); await saveCharacter(character); } catch {}
-            } else {
-                try { await clearPassword(); await clearCharacter(); } catch {}
-            }
+            // Password persistence removed
             client.setStoredPassword(password || null);
             client.setStoredCharacter(character || null);
 
@@ -517,16 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (reconnectButton) {
         reconnectButton.addEventListener('click', async () => {
-            try {
-                const storedPass = await getPassword();
-                const storedChar = await getCharacter();
-                if (storedPass) {
-                    client.setStoredPassword(storedPass);
-                }
-                if (storedChar) {
-                    client.setStoredCharacter(storedChar);
-                }
-            } catch {}
             isConnecting = true;
             updateConnectButtons();
             client.connect(false);
