@@ -12,6 +12,7 @@ function toTitleCase(str) {
 const tag = "packageHelper";
 const pickCommand = "wybierz paczke"
 const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr|(?<time>\d+))/
+const packageTableRegex = /Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:[\s\S]*?Symbolem \* oznaczono przesylki ciezkie\./
 
 const KNOWN_NPC_COLOR = findClosestColor('#63ba41');
 const UNKNOWN_NPC_COLOR = findClosestColor('#aaaaaa');
@@ -53,19 +54,13 @@ export default class PackageHelper {
         this.client.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
             this.leadToPackage(toTitleCase(matches[1]));
         }, tag)
-        this.client.Triggers.registerTrigger(/Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac/, (): undefined => {
-            this.onPackageList();
-        })
+        this.client.Triggers.registerMultilineTrigger(packageTableRegex, this.packageTableCallback(), tag)
     }
 
     private onPackageList() {
         this.packages = []
-        const packageLineTrigger = this.client.Triggers.registerTrigger(packageLineRegex, this.packageLineCallback())
         this.remover();
         this.remover = this.client.addEventListener("command", ({detail: command}) => this.handleCommand(command));
-        this.client.Triggers.registerOneTimeTrigger(/Symbolem \* oznaczono przesylki ciezkie/, (): undefined => {
-            this.client.Triggers.removeTrigger(packageLineTrigger)
-        })
     }
 
     private handleCommand(command: string) {
@@ -101,6 +96,23 @@ export default class PackageHelper {
             return this.client.OutputHandler.makeClickable(colorStringInLine(rawLine, name, colorCode), name, () => {
                 this.client.sendCommand("wybierz paczke " + index)
             }, "wybierz paczke " + index)
+        };
+    }
+
+    private packageTableCallback() {
+        const lineCallback = this.packageLineCallback();
+        return (raw: string): string => {
+            this.onPackageList();
+            return raw
+                .split('\n')
+                .map(line => {
+                    const matches = line.match(packageLineRegex);
+                    if (matches) {
+                        return lineCallback(line, '', matches) || line;
+                    }
+                    return line;
+                })
+                .join('\n');
         };
     }
 
