@@ -153,6 +153,7 @@ import initGates from './scripts/gates'
 import initAttackBeep from './scripts/attackBeep'
 import initLamp from './scripts/lamp'
 import initBinds from './scripts/binds'
+import initIdz from './scripts/idz'
 
 initShips(client)
 initBuses(client)
@@ -160,6 +161,7 @@ initGates(client)
 initAttackBeep(client)
 initLamp(client)
 initBinds(client, aliases)
+initIdz(client, aliases)
 
 import initKillTrigger from './scripts/kill'
 initKillTrigger(client, aliases)
