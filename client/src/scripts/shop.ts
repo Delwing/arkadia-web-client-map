@@ -45,8 +45,8 @@ export function formatItem(
     const strippedLen = stripAnsiCodes(combined).length;
     const fitsSingleLine = strippedLen <= width - 4;
     if (fitsSingleLine) {
-        const spaces = " ".repeat(Math.max(0, width - 3 - strippedLen - 1));
-        return `| ${namePart} ${numbersContent}${spaces} |`;
+        const spaces = ".".repeat(Math.max(0, width - 3 - strippedLen - 2));
+        return `| ${namePart} ${spaces} ${numbersContent} |`;
     }
 
     const nameLine = `| ${pad(namePart, width - 3)}|`;
