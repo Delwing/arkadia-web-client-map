@@ -17,6 +17,7 @@ describe('object aliases', () => {
   let shield: (m: RegExpMatchArray) => void;
   let killTarget: () => void;
   let shieldTarget: () => void;
+  let invite: (m: RegExpMatchArray) => void;
 
   beforeEach(() => {
     client = new FakeClient();
@@ -26,6 +27,7 @@ describe('object aliases', () => {
     shield = aliases[1].callback as any;
     killTarget = aliases[2].callback as any;
     shieldTarget = aliases[3].callback as any;
+    invite = aliases[4].callback as any;
     (global as any).Input = { send: jest.fn() };
   });
 
@@ -51,5 +53,11 @@ describe('object aliases', () => {
     client.TeamManager.getDefenseTargetId.mockReturnValue('15');
     shieldTarget();
     expect(client.sendCommand).toHaveBeenCalledWith('zaslon ob_15');
+  });
+
+  test('zap alias sends zapros with object number', () => {
+    client.ObjectManager.getObjectsOnLocation.mockReturnValue([{ num: 8, shortcut: '2' }]);
+    invite(['', '2'] as unknown as RegExpMatchArray);
+    expect(client.sendCommand).toHaveBeenCalledWith('zapros ob_8');
   });
 });

@@ -29,5 +29,6 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/z** - atakuje cel oznaczony jako cel ataku.
 - **/za** - zasłania cel oznaczony jako cel obrony.
 - **/zap** - wykonuje polecenie `zapal lampe`.
+- **/zap _numer_** - zaprasza do drużyny obiekt o podanym numerze.
 - **/zg** - wykonuje polecenie `zgas lampe`.
 - **/binds** - wyświetla aktualnie ustawione skróty klawiaturowe.

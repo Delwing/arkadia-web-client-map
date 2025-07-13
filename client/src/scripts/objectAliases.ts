@@ -46,5 +46,9 @@ export default function initObjectAliases(
                 }
             }
         });
+        aliases.push({
+            pattern: /\/zap ([0-9]+)$/,
+            callback: (m: RegExpMatchArray) => exec(m[1], "zapros")
+        });
     }
 }
