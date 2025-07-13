@@ -1,6 +1,7 @@
 import Client from "./Client";
 import People from "./People";
 import registerLuaGagTriggers from "./scripts/./luaGags";
+import { stripPolishCharacters } from "./stripPolishCharacters";
 import Port = chrome.runtime.Port;
 
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
@@ -32,6 +33,9 @@ Gmcp.parse_option_subnegotiation = (match) => {
     gmcpParseOption(match)
 }
 Input.send = (command?: string) => {
+    if (command) {
+        command = stripPolishCharacters(command)
+    }
     client.sendCommand(command ?? '')
 }
 
