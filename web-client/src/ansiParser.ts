@@ -88,6 +88,9 @@ export function parseAnsiPatterns(input: string): string {
                     activeColors.splice(currentSpanCount, 1);
                     spanStartIndices.splice(currentSpanCount, 1);
                 }
+            } else {
+                activeColors.push("inherit");
+                spanStartIndices.push(matchPos);
             }
         } else if (ansiSequence.startsWith("22;38;5;")) {
             // 256-color mode
