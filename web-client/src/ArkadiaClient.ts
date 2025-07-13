@@ -147,7 +147,6 @@ class ArkadiaClient {
             return;
         }
 
-        const trimmed = message.trim().toLowerCase();
         if (recordCredentials && !this.receivedFirstGmcp) {
             if (!this.userCommand) {
                 this.userCommand = message;
@@ -184,7 +183,7 @@ class ArkadiaClient {
     private startPing() {
         this.stopPing();
         this.sendGmcp('core.ping');
-        this.pingTimer = window.setInterval(() => this.sendGmcp('core.ping'), 3600 * 1000);
+        this.pingTimer = window.setInterval(() => this.sendGmcp('core.ping'), 30000);
     }
 
     private stopPing() {
