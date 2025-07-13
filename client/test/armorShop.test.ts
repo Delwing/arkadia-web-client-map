@@ -29,6 +29,7 @@ describe('armor shop width adjustments', () => {
   });
 
   const split = '---------------------------------------------------------------------------';
+  const closing = '---------------------------------------------------------------------------/';
   const header = '|               Nazwa towaru              |Mithryl| Zloto | Srebro| Miedz |';
   const item = '| Stara rycerska para naudziakow          |       |   2   |   7   |   6   |';
 
@@ -36,6 +37,11 @@ describe('armor shop width adjustments', () => {
     const result = parse(split);
     expect(result).toBe('-'.repeat(client.contentWidth));
   });
+  test('adjusts closing line', () => {
+    const result = parse(closing);
+    expect(result).toBe('-'.repeat(client.contentWidth - 1) + '/');
+  });
+
 
   test('splits header and item lines when narrow', () => {
     const h = parse(header).split('\n');

@@ -9,6 +9,7 @@ export default function initArmorShop(client: Client) {
 
     const NORMAL_WIDTH = 75;
     const splitReg = /^-{75}$/;
+    const closingReg = /^-{75}\/$/;
     const headerReg = /^\|\s*Nazwa towaru\s*\|\s*Mithryl\s*\|\s*Zloto\s*\|\s*Srebro\s*\|\s*Miedz\s*\|$/;
     const itemReg = /^\|\s*(.+?)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|$/;
 
@@ -17,6 +18,11 @@ export default function initArmorShop(client: Client) {
     client.Triggers.registerTrigger(splitReg, () => {
         if (width >= NORMAL_WIDTH) return undefined;
         return "-".repeat(Math.max(0, width));
+    }, 'armor-shop');
+
+    client.Triggers.registerTrigger(closingReg, () => {
+        if (width >= NORMAL_WIDTH) return undefined;
+        return "-".repeat(Math.max(0, width - 1)) + "/";
     }, 'armor-shop');
 
     client.Triggers.registerTrigger(headerReg, () => {
