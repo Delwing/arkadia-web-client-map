@@ -1,53 +1,22 @@
 import Client from "../Client";
-import { colorString, findClosestColor } from "../Colors";
-import { stripAnsiCodes } from "../Triggers";
-
-const MITHRIL_COLOR = findClosestColor('#afeeee');
-const GOLD_COLOR = findClosestColor('#FFD700');
-const SILVER_COLOR = findClosestColor('#C0C0C0');
-const COPPER_COLOR = findClosestColor('#8B4513');
+import initShop, { ShopOptions, formatItem } from "./shop";
 
 export default function initArmorShop(client: Client) {
-    let width = client.contentWidth;
-    client.addEventListener('contentWidth', (ev: CustomEvent) => {
-        width = ev.detail;
-    });
+    const options: ShopOptions = {
+        normalWidth: 75,
+        tag: 'armor-shop',
+        splitReg: /^-{75}$/,
+        headerReg: /^\|\s*Nazwa towaru\s*\|\s*Mithryl\s*\|\s*Zloto\s*\|\s*Srebro\s*\|\s*Miedz\s*\|$/,
+        itemReg: /^\|\s*(.+?)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|$/,
+        makeSplit: (width) => "-".repeat(Math.max(0, width)),
+        makeHeader: (width, pad) => {
+            const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
+            const numbers = `| ${pad('Mithryl Zloto Srebro Miedz', width - 3)} |`;
+            const padded = numbers + ' '.repeat(Math.max(0, width - numbers.length));
+            return nameLine + '\n' + padded;
+        },
+        makeItem: (width, pad, m) => formatItem(width, pad, m)
+    };
 
-    const NORMAL_WIDTH = 75;
-    const splitReg = /^-{75}$/;
-    const headerReg = /^\|\s*Nazwa towaru\s*\|\s*Mithryl\s*\|\s*Zloto\s*\|\s*Srebro\s*\|\s*Miedz\s*\|$/;
-    const itemReg = /^\|\s*(.+?)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|\s*(\d*)\s*\|$/;
-
-    const pad = (str: string, len: number) => str + " ".repeat(Math.max(0, len - stripAnsiCodes(str).length));
-
-    client.Triggers.registerTrigger(splitReg, () => {
-        if (width >= NORMAL_WIDTH) return undefined;
-        return "-".repeat(Math.max(0, width));
-    }, 'armor-shop');
-
-    client.Triggers.registerTrigger(headerReg, () => {
-        if (width >= NORMAL_WIDTH) return undefined;
-        const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
-        const numbers = `| ${pad('Mithryl Zloto Srebro Miedz', width - 3)} |`;
-        const padded = numbers + ' '.repeat(Math.max(0, width - numbers.length));
-        return nameLine + '\n' + padded;
-    }, 'armor-shop');
-
-    client.Triggers.registerTrigger(itemReg, (_raw, _line, m) => {
-        if (width >= NORMAL_WIDTH) return undefined;
-        const name = m[1];
-        const mith = m[2];
-        const zloto = m[3];
-        const srebro = m[4];
-        const miedz = m[5];
-        const nameLine = `| ${pad(name, width - 3)}|`;
-        const cost = [
-            colorString(mith, MITHRIL_COLOR),
-            colorString(zloto, GOLD_COLOR),
-            colorString(srebro, SILVER_COLOR),
-            colorString(miedz, COPPER_COLOR)
-        ].join('/')
-        const numbersLine = `| ${pad(cost, width - 3)}|`;
-        return nameLine + '\n' + numbersLine;
-    }, 'armor-shop');
+    initShop(client, options);
 }
