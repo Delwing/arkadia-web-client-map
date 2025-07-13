@@ -219,7 +219,6 @@ let isConnecting = false;
 // Function to update the connect button state
 function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
-    const reconnectButton = document.getElementById('reconnect-button') as HTMLButtonElement | null;
     const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const authOverlay = document.getElementById('auth-overlay') as HTMLElement | null;
     const spinner = document.getElementById('connecting-spinner') as HTMLElement | null;
@@ -235,9 +234,6 @@ function updateConnectButtons() {
         }
     }
 
-    if (reconnectButton) {
-        reconnectButton.style.display = (!isConnected && !isConnecting) ? '' : 'none';
-    }
 
     if (loginButton) {
         loginButton.style.display = (!isConnected && !isConnecting) ? '' : 'none';
@@ -318,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
-    const reconnectButton = document.getElementById('reconnect-button') as HTMLButtonElement | null;
     const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
@@ -510,13 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    if (reconnectButton) {
-        reconnectButton.addEventListener('click', async () => {
-            isConnecting = true;
-            updateConnectButtons();
-            client.connect(false);
-        });
-    }
 
     // Initialize button state
     updateConnectButtons();
