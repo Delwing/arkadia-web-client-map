@@ -165,33 +165,33 @@ h1 {
 }
 
 #input-area button {
-    padding: 0 2vh;
-    background: #3e3f3a;
-    border-color: rgba(255, 255, 255, 0.2);
+  padding: 0 2vh;
+  background: #3e3f3a;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 #menu-button {
-    height: 100%;
+  height: 100%;
 }
 
 #input-area .dropdown-menu {
-    display: none;
-    flex-direction: column;
-    gap: 0.5vh;
-    padding: 0.5vh;
+  display: none;
+  flex-direction: column;
+  gap: 0.5vh;
+  padding: 0.5vh;
 }
 
 #input-area .dropdown-menu.show {
-    display: flex;
+  display: flex;
 }
 
 #input-area .dropdown-menu .dropdown-item {
-    width: 100%;
-    text-align: left;
+  width: 100%;
+  text-align: left;
 }
 
 #input-area button:hover {
-    border-color: #fff;
+  border-color: #fff;
 }
 
 #send-button {
@@ -255,14 +255,14 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+  color: #213547;
+  background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+  color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
   }
 }
 
@@ -287,50 +287,50 @@ button:focus-visible {
 /* Mobile-specific styles */
 @media (max-width: 768px) {
   body {
-    min-width: unset;
-    width: 100%;
+  min-width: unset;
+  width: 100%;
   }
 
   #iframe-container {
-    height: 25vh;
-    max-height: 25vh;
+  height: 25vh;
+  max-height: 25vh;
   }
 
   #main_text_output_msg_wrapper {
-    margin: 1.5vh 2vw;
-    font-size: 0.8rem;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    position: relative;
+  margin: 1.5vh 2vw;
+  font-size: 0.8rem;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  position: relative;
   }
 
   #input-area {
-    padding: 0.75vh 2vw;
-    position: sticky;
-    bottom: 0;
-    z-index: 1102;
+  padding: 0.75vh 2vw;
+  position: sticky;
+  bottom: 0;
+  z-index: 1102;
   }
 
   #message-input {
-    padding: 0.75vh;
-    font-size: 1rem; /* Prevents iOS zoom on focus */
+  padding: 0.75vh;
+  font-size: 1rem; /* Prevents iOS zoom on focus */
   }
 
   #send-button {
-    padding: 0.75vh 2vw;
-    min-height: 8vmin; /* Minimum touch target size */
-    min-width: 8vmin;
+  padding: 0.75vh 2vw;
+  min-height: 8vmin; /* Minimum touch target size */
+  min-width: 8vmin;
   }
 
   button {
-    min-height: 8vmin; /* Minimum touch target size */
-    min-width: 8vmin;
+  min-height: 8vmin; /* Minimum touch target size */
+  min-width: 8vmin;
   }
 
   /* Fix for virtual keyboard pushing content */
   @supports (-webkit-touch-callout: none) {
-    #main-container {
-      height: -webkit-fill-available;
-    }
+  #main-container {
+    height: -webkit-fill-available;
+  }
   }
 }
 
@@ -388,6 +388,8 @@ button:focus-visible {
 .mobile-button {
   width: 36px;
   height: 36px;
+  min-width: 0;
+  min-height: 0;
   padding: 0;
   font-size: 14px;
   border: 1px solid #a0d0e0;
