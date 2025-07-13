@@ -24,6 +24,7 @@ class ArkadiaClient {
     private userCommand: string | null = null;
     private passwordCommand: string | null = null;
     private lastConnectManual = true;
+    private pingTimer: number | null = null;
 
 
     /**
@@ -80,11 +81,13 @@ class ArkadiaClient {
             this.socket.onclose = (event: CloseEvent) => {
                 this.emit('close', event);
                 this.emit('client.disconnect');
+                this.stopPing();
             };
 
             this.socket.onopen = (event: Event) => {
                 this.emit('open', event);
                 this.emit('client.connect');
+                this.startPing();
                 if (!this.lastConnectManual && this.userCommand && this.passwordCommand) {
                     this.send(this.userCommand, false);
                     if (this.passwordCommand !== this.userCommand) {
@@ -104,6 +107,7 @@ class ArkadiaClient {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.close();
         }
+        this.stopPing();
     }
 
     /**
@@ -160,6 +164,33 @@ class ArkadiaClient {
         } catch (error) {
             console.error('Error sending message:', error);
             this.emit('error', error);
+        }
+    }
+
+    sendGmcp(path: string, payload: any = {}): void {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+        try {
+            const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+            const gmcpMessage = `\xFF\xFA${String.fromCharCode(GMCP_COMMAND_CODE)}${path} ${data}\xFF\xF0`;
+            this.socket.send(btoa(gmcpMessage));
+        } catch (error) {
+            console.error('Error sending GMCP message:', error);
+            this.emit('error', error);
+        }
+    }
+
+    private startPing() {
+        this.stopPing();
+        this.sendGmcp('core.ping');
+        this.pingTimer = window.setInterval(() => this.sendGmcp('core.ping'), 3600 * 1000);
+    }
+
+    private stopPing() {
+        if (this.pingTimer !== null) {
+            clearInterval(this.pingTimer);
+            this.pingTimer = null;
         }
     }
 
