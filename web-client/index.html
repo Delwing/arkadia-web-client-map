@@ -108,31 +108,17 @@
         </div>
     </div>
 
-    <div id="auth-overlay"></div>
-    <div id="auth-buttons">
-        <div id="connecting-spinner" class="spinner-border text-light" role="status"></div>
-        <button id="login-button">Login</button>
-        <button id="connect-button">Connect</button>
-    </div>
-
-    <div id="login-modal" class="modal fade" tabindex="-1">
-        <form id="login-form">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Login</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body d-flex flex-column gap-2">
-                        <input id="login-character" class="form-control" placeholder="Character">
-                        <input id="login-password" type="password" class="form-control" placeholder="Password">
-                    </div>
-                    <div class="modal-footer">
-                        <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
-                    </div>
-                </div>
-            </div>
-        </form>
+    <div id="auth-overlay">
+        <div id="auth-panel">
+            <div id="connecting-spinner" class="spinner-border text-light" role="status"></div>
+            <button id="connect-button">Connect</button>
+            <div class="auth-or">- OR -</div>
+            <form id="login-form" class="d-flex flex-column gap-2">
+                <input id="login-character" class="form-control" placeholder="Character">
+                <input id="login-password" type="password" class="form-control" placeholder="Password">
+                <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
+            </form>
+        </div>
     </div>
 
     <div id="ui-settings-modal" class="modal fade" tabindex="-1">

@@ -474,7 +474,6 @@ button:focus-visible {
 
 #options-modal .modal-dialog,
 #docs-modal .modal-dialog,
-#login-modal .modal-dialog,
 #debug-modal .modal-dialog {
   margin-top: 5vh;
   margin-bottom: 5vh;
@@ -484,14 +483,11 @@ button:focus-visible {
   max-height: 85%;
 }
 
-#auth-buttons {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+#auth-panel {
   display: flex;
   flex-direction: column;
   gap: 1vw;
+  align-items: center;
   z-index: 1011;
 }
 
@@ -508,5 +504,19 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(2px);
   z-index: 1010;
   display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  width: 200px;
+}
+
+.auth-or {
+  color: #fff;
+  text-align: center;
 }
 
