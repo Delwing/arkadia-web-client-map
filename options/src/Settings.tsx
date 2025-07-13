@@ -28,7 +28,6 @@ interface Settings {
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
-    emojiLabels: boolean;
     prettyContainers: boolean;
     containerColumns: number;
     collectMode: number;
@@ -44,7 +43,6 @@ function SettingsForm() {
         packageHelper: false,
         replaceMap: false,
         inlineCompassRose: false,
-        emojiLabels: false,
         prettyContainers: true,
         containerColumns: 2,
         collectMode: 3,
@@ -188,14 +186,6 @@ function SettingsForm() {
                         label="Róża wiatrów"
                         checked={settings.inlineCompassRose}
                         onChange={e => onChangeSetting(s => s.inlineCompassRose = e.target.checked)}
-                        className="me-2"
-                    />
-                    <Form.Check
-                        type="checkbox"
-                        id="emojiLabels"
-                        label="Emoji w stanie postaci"
-                        checked={settings.emojiLabels}
-                        onChange={e => onChangeSetting(s => s.emojiLabels = e.target.checked)}
                         className="me-2"
                     />
                 </div>
