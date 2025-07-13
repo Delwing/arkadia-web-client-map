@@ -360,8 +360,8 @@ button:focus-visible {
   margin-bottom: 5px;
 }
 
-.mobile-direction-buttons.collapsed .mobile-top-buttons > button:not(#buttons-toggle),
-.mobile-direction-buttons.collapsed .mobile-attack-buttons,
+.mobile-direction-buttons.collapsed .mobile-attack-buttons > button:not(#buttons-toggle),
+.mobile-direction-buttons.collapsed .mobile-top-buttons,
 .mobile-direction-buttons.collapsed .mobile-direction-main,
 .mobile-direction-buttons.collapsed #z-buttons-list,
 .mobile-direction-buttons.collapsed #zas-buttons-list {
