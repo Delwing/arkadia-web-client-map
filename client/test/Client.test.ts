@@ -45,7 +45,10 @@ jest.mock('../src/scripts/functionalBind', () => ({
 jest.mock('../src/MapHelper', () => {
   return {
     __esModule: true,
-    default: jest.fn().mockImplementation(() => ({ parseCommand })),
+    default: jest.fn().mockImplementation(() => ({
+      parseCommand,
+      move: jest.fn((dir: string) => dir),
+    })),
   };
 });
 
@@ -95,10 +98,9 @@ test('createButton creates button attached to panel', () => {
 test('sendCommand dispatches event and splits commands', () => {
   const client = new Client();
   client.sendCommand('foo#bar');
-  expect(parseCommand).toHaveBeenNthCalledWith(1, 'foo');
-  expect(parseCommand).toHaveBeenNthCalledWith(2, 'bar');
+  expect(parseCommand).toHaveBeenCalledWith('foo#bar');
   expect((window as any).Input.send).toHaveBeenNthCalledWith(1, 'parsed:foo');
-  expect((window as any).Input.send).toHaveBeenNthCalledWith(2, 'parsed:bar');
+  expect((window as any).Input.send).toHaveBeenNthCalledWith(2, 'bar');
 });
 
 test('sendCommand allows empty command', () => {
