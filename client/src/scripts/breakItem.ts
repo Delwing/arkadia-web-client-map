@@ -22,6 +22,7 @@ export default function initBreakItem(client: Client) {
     entries.forEach(({ pattern, command }) => {
         client.Triggers.registerTrigger(pattern, (_raw, line) => {
             client.playSound("beep");
+            client.sendEvent('breakItem', { text: line, command });
             const label = command ? ` >> ${command}` : " >> Sprzet zniszczony";
             client.FunctionalBind.set(label, () => {
                 if (command) {

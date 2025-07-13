@@ -7,6 +7,7 @@ class FakeClient {
   FunctionalBind = { set: jest.fn() } as any;
   playSound = jest.fn();
   sendCommand = jest.fn();
+  sendEvent = jest.fn();
   prefix = (line: string, prefix: string) => prefix + line;
 }
 
@@ -25,6 +26,7 @@ describe('break item triggers', () => {
     const line = 'Nagle topor rozpruwa sie.';
     const result = parse(line);
     expect(client.playSound).toHaveBeenCalledTimes(1);
+    expect(client.sendEvent).toHaveBeenCalledWith('breakItem', { text: line, command: undefined });
     const color = findClosestColor('#ff6347');
     const expected = `\n\n${client.prefix(line, colorString('[  SPRZET  ] ', color))}\n\n`;
     expect(result).toBe(expected);
