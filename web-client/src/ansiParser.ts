@@ -29,22 +29,7 @@ function handleColorChange(
     }
 
     if (colorIndex >= 0 && colorIndex < palette.length) {
-        const color = palette[colorIndex];
-        const lastColor =
-            spanStartIndices.length === currentSpanCount + 1
-                ? activeColors[currentSpanCount]
-                : undefined;
-
-        if (lastColor === color) {
-            // A reset with no previous color gets rewritten to the same color.
-            // Close the current span and do not reopen a new one so the color
-            // is cleared.
-            activeColors.splice(currentSpanCount, 1);
-            spanStartIndices.splice(currentSpanCount, 1);
-            return;
-        }
-
-        activeColors.push(color);
+        activeColors.push(palette[colorIndex]);
         spanStartIndices.push(matchPos);
     }
 }
