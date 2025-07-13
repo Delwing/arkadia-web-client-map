@@ -86,9 +86,9 @@ class ArkadiaClient {
                 this.emit('open', event);
                 this.emit('client.connect');
                 if (!this.lastConnectManual && this.userCommand && this.passwordCommand) {
-                    this.send(this.userCommand);
+                    this.send(this.userCommand, false);
                     if (this.passwordCommand !== this.userCommand) {
-                        this.send(this.passwordCommand);
+                        this.send(this.passwordCommand, false);
                     }
                 }
             };
@@ -137,14 +137,14 @@ class ArkadiaClient {
     /**
      * Send a message through the WebSocket
      */
-    send(message: string): void {
+    send(message: string, recordCredentials: boolean = true): void {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error('WebSocket is not connected');
             return;
         }
 
         const trimmed = message.trim().toLowerCase();
-        if (!this.receivedFirstGmcp) {
+        if (recordCredentials && !this.receivedFirstGmcp) {
             if (!this.userCommand) {
                 this.userCommand = message;
             }
