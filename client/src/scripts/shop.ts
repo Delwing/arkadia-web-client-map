@@ -40,7 +40,6 @@ export function formatItem(
     const amountPrefix = amount ? `${amount.padStart(3)}| ` : "";
     const namePart = `${amountPrefix}${name}`;
     const numbersContent = coloredCosts;
-
     const combined = `${namePart} ${numbersContent}`;
     const strippedLen = stripAnsiCodes(combined).length;
     const fitsSingleLine = strippedLen <= width - 4;

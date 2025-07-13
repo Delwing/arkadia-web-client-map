@@ -6,7 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="theme-color" content="#000000" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <title>Arkadia</title>
 </head>
 <body>
@@ -110,7 +113,6 @@
         <div id="connecting-spinner" class="spinner-border text-light" role="status"></div>
         <button id="login-button">Login</button>
         <button id="connect-button">Connect</button>
-        <button id="reconnect-button">Reconnect</button>
     </div>
 
     <div id="login-modal" class="modal fade" tabindex="-1">
@@ -124,10 +126,6 @@
                     <div class="modal-body d-flex flex-column gap-2">
                         <input id="login-character" class="form-control" placeholder="Character">
                         <input id="login-password" type="password" class="form-control" placeholder="Password">
-                        <label class="form-label">
-                            <input id="login-remember-password" type="checkbox" class="form-check-input me-2">
-                            Remember credentials (stored locally, may be insecure)
-                        </label>
                     </div>
                     <div class="modal-footer">
                         <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
