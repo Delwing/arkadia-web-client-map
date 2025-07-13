@@ -1,4 +1,5 @@
 import Client from "../Client";
+import {longToShort} from "../MapHelper";
 
 export default function initIdz(client: Client, aliases?: { pattern: RegExp; callback: Function }[]) {
     if (!aliases) return;
@@ -20,7 +21,7 @@ export default function initIdz(client: Client, aliases?: { pattern: RegExp; cal
                     dir = alt;
                 }
             }
-            client.sendCommand(dir);
+            client.sendCommand(longToShort[dir] ?? dir);
         }
     });
 }

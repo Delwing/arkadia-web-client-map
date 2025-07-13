@@ -17,7 +17,7 @@ const polishToEnglish = {
     ["gora"]: "up",
     ["gore"]: "up"
 };
-const longToShort = {
+export const longToShort = {
     north: "n",
     south: "s",
     east: "e",
