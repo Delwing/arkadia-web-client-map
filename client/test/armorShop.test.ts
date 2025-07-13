@@ -34,7 +34,7 @@ describe('armor shop width adjustments', () => {
 
   test('adjusts split line', () => {
     const result = parse(split);
-    expect(result).toBe('-'.repeat(client.contentWidth));
+    expect(result).toBe('-'.repeat(client.contentWidth - 2));
   });
 
   test('splits header and item lines when narrow', () => {

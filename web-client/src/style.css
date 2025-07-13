@@ -206,6 +206,7 @@ h1 {
 
 #connect-button {
   white-space: nowrap;
+  width: 100%;
 }
 
 #connect-button.connected {
@@ -515,8 +516,13 @@ button:focus-visible {
   width: 200px;
 }
 
+#login-submit {
+  width: 100%;
+}
+
 .auth-or {
   color: #fff;
   text-align: center;
+  margin: 2vh 0;
 }
 
