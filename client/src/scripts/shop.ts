@@ -41,6 +41,12 @@ export function formatItem(
         ? `${coloredCosts} Ilosc: ${amount}`
         : coloredCosts;
 
+    const combined = `${name} ${numbersContent}`;
+    const fitsSingleLine = stripAnsiCodes(combined).length <= width - 3;
+    if (fitsSingleLine) {
+        return `| ${pad(combined, width - 3)}|`;
+    }
+
     const nameLine = `| ${pad(name, width - 3)}|`;
     const numbersLine = `| ${pad(numbersContent, width - 3)}|`;
     return nameLine + '\n' + numbersLine;
