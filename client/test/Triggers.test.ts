@@ -34,4 +34,15 @@ describe('Triggers', () => {
     triggers.parseLine('child', '');
     expect(childCb).not.toHaveBeenCalled();
   });
+
+  test('parseMultiline executes registered multiline trigger', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn(() => 'changed');
+    triggers.registerMultilineTrigger(/foo\nbar/, cb);
+
+    const result = triggers.parseMultiline('foo\nbar', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+    expect(result).toBe('changed');
+  });
 });

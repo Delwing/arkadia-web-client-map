@@ -156,6 +156,7 @@ export default class Client {
             }
         }, {once: true})
 
+        line = this.Triggers.parseMultiline(line, type)
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         const ansiRegex = /\x1b\[[0-9;]*m/g
         const restore: string[] = []

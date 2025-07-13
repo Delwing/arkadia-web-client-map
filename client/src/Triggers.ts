@@ -87,6 +87,7 @@ export default class Triggers {
 
     clientExtension: Client;
     triggers: Map<string, Trigger> = new Map();
+    multilineTriggers: Map<string, Trigger> = new Map();
 
     constructor(clientExtension: Client) {
         this.clientExtension = clientExtension;
@@ -108,6 +109,12 @@ export default class Triggers {
         return trigger;
     }
 
+    registerMultilineTrigger(pattern: TriggerPattern, callback?: TriggerCallback, tag?: string) {
+        const trigger = new Trigger(this, pattern, callback, tag);
+        this.multilineTriggers.set(trigger.id, trigger);
+        return trigger;
+    }
+
     registerOneTimeTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string) {
         const trigger = this.registerTrigger(
             pattern,
@@ -120,8 +127,21 @@ export default class Triggers {
         return trigger;
     }
 
+    registerOneTimeMultilineTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string) {
+        const trigger = this.registerMultilineTrigger(
+            pattern,
+            (rawLine, line, matches, type) => {
+                this.removeTrigger(trigger);
+                return callback(rawLine, line, matches, type);
+            },
+            tag
+        );
+        return trigger;
+    }
+
     removeByTag(tag: string) {
         this.removeByTagRecursive(tag, this.triggers);
+        this.removeByTagRecursive(tag, this.multilineTriggers);
     }
 
     removeTrigger(trigger: Trigger) {
@@ -129,11 +149,19 @@ export default class Triggers {
             trigger.parent.children.delete(trigger.id);
         } else {
             this.triggers.delete(trigger.id);
+            this.multilineTriggers.delete(trigger.id);
         }
     }
 
     parseLine(rawLine: string, type: string) {
         this.triggers.forEach(trigger => {
+            rawLine = trigger.execute(rawLine, type);
+        });
+        return rawLine;
+    }
+
+    parseMultiline(rawLine: string, type: string) {
+        this.multilineTriggers.forEach(trigger => {
             rawLine = trigger.execute(rawLine, type);
         });
         return rawLine;

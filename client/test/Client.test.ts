@@ -30,7 +30,13 @@ jest.mock('howler', () => {
   return { Howl: jest.fn(() => instance) };
 });
 
-jest.mock('../src/Triggers', () => ({ __esModule: true, default: jest.fn().mockImplementation(() => ({ parseLine: jest.fn((l: string) => l) })) }));
+jest.mock('../src/Triggers', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    parseLine: jest.fn((l: string) => l),
+    parseMultiline: jest.fn((l: string) => l),
+  })),
+}));
 jest.mock('../src/PackageHelper', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/OutputHandler', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../src/scripts/functionalBind', () => ({
