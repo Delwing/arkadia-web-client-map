@@ -43,6 +43,7 @@ describe('herb shop width adjustments', () => {
     expect(h[1]).toMatch(/mt/);
 
     const it = parse(item).split('\n');
+    expect(it[0]).toMatch(/\|\s*100\|/);
     expect(it[0]).toMatch(/jaskier/);
     expect(it[1]).toMatch(/\//);
   });
@@ -52,7 +53,9 @@ describe('herb shop width adjustments', () => {
     client.dispatch('contentWidth', 70);
     const result = parse(item);
     expect(result).not.toMatch(/\n/);
-    expect(stripAnsiCodes(result)).toMatch(/Ilosc/);
+    const stripped = stripAnsiCodes(result);
+    expect(stripped).toMatch(/^\|\s*100\|/);
+    expect(stripped).toMatch(/0\/0\/6\/2\s*\|$/);
   });
 
   test('leaves lines unchanged when wide enough', () => {

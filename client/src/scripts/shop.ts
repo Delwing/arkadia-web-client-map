@@ -37,17 +37,18 @@ export function formatItem(
 
     const coloredCosts = costs.map((c, i) => colorString(c === "" ? "0" : c, colors[i])).join('/');
 
-    const numbersContent = amount && amount !== '1'
-        ? `${coloredCosts} Ilosc: ${amount}`
-        : coloredCosts;
-
-    const combined = `${name} ${numbersContent}`;
-    const fitsSingleLine = stripAnsiCodes(combined).length <= width - 3;
+    const amountPrefix = amount ? `${amount.padStart(3)}| ` : "";
+    const namePart = `${amountPrefix}${name}`;
+    const numbersContent = coloredCosts;
+    const combined = `${namePart} ${numbersContent}`;
+    const strippedLen = stripAnsiCodes(combined).length;
+    const fitsSingleLine = strippedLen <= width - 4;
     if (fitsSingleLine) {
-        return `| ${pad(combined, width - 3)}|`;
+        const spaces = ".".repeat(Math.max(0, width - 3 - strippedLen - 2));
+        return `| ${namePart} ${spaces} ${numbersContent} |`;
     }
 
-    const nameLine = `| ${pad(name, width - 3)}|`;
+    const nameLine = `| ${pad(namePart, width - 3)}|`;
     const numbersLine = `| ${pad(numbersContent, width - 3)}|`;
     return nameLine + '\n' + numbersLine;
 }
