@@ -11,7 +11,7 @@ function toTitleCase(str) {
 
 const tag = "packageHelper";
 const pickCommand = "wybierz paczke"
-const packageLineRegex = /^ \|.*?(?<number>\d+)?\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr|(?<time>\d+))/
+const packageLineRegex = /^ \|\s*(?<heavy>\*)?\s*(?<number>\d+)\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr\.|(?<time>\d+))/
 const packageTableRegex = /Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:[\s\S]*?Symbolem \* oznaczono przesylki ciezkie\./
 
 const KNOWN_NPC_COLOR = findClosestColor('#63ba41');
@@ -101,10 +101,39 @@ export default class PackageHelper {
 
     private packageTableCallback() {
         const lineCallback = this.packageLineCallback();
+        const widthLimit = 78;
         return (raw: string): string => {
             this.onPackageList();
-            return raw
-                .split('\n')
+            const lines = raw.split('\n');
+            if (this.client.contentWidth && this.client.contentWidth < widthLimit) {
+                return lines
+                    .map(line => {
+                        const matches = line.match(packageLineRegex);
+                        if (!matches) {
+                            return line;
+                        }
+                        const index = matches.groups.number;
+                        const name = matches.groups.name;
+                        const city = matches.groups.city ? `, ${matches.groups.city}` : '';
+                        const heavy = matches.groups.heavy ? '* ' : '';
+                        const first = `${heavy}${index}. ${name}${city}`;
+                        const colorCode = this.npc[name] ? KNOWN_NPC_COLOR : UNKNOWN_NPC_COLOR;
+                        this.packages.push({ name, time: matches.groups.time });
+                        const clickable = this.client.OutputHandler.makeClickable(
+                            colorStringInLine(first, name, colorCode),
+                            name,
+                            () => {
+                                this.client.sendCommand('wybierz paczke ' + index);
+                            },
+                            'wybierz paczke ' + index
+                        );
+                        const time = matches.groups.time ? matches.groups.time : 'nieogr.';
+                        const second = `  ${matches.groups.gold}/${matches.groups.silver}/${matches.groups.copper} ${time}`;
+                        return `${clickable}\n${second}`;
+                    })
+                    .join('\n');
+            }
+            return lines
                 .map(line => {
                     const matches = line.match(packageLineRegex);
                     if (matches) {
