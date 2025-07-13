@@ -92,9 +92,9 @@ describe('PackageHelper', () => {
     const lines = result.split('\n').map(l => l.replace(/\x1B\[[0-9;]*m/g, ''));
     expect(lines[0]).toBe('Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:');
     expect(lines[1]).toBe('1. Bob');
-    expect(lines[2]).toBe('  0/1/2 nieogr.');
+    expect(lines[2]).toBe('   0/1/2 nieogr.');
     expect(lines[3]).toBe('* 2. Tom, Foo');
-    expect(lines[4]).toBe('  1/2/3 5');
+    expect(lines[4]).toBe('   1/2/3 5 godz.');
     expect(helper['packages']).toEqual([
       { name: 'Bob', time: undefined },
       { name: 'Tom', time: '5' },
