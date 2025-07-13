@@ -32,3 +32,4 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/zap _numer_** - zaprasza do drużyny obiekt o podanym numerze.
 - **/zg** - wykonuje polecenie `zgas lampe`.
 - **/binds** - wyświetla aktualnie ustawione skróty klawiaturowe.
+- **/idz** - wybiera przeciwne wyjście w pomieszczeniu.
