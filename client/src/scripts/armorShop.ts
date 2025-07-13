@@ -1,5 +1,11 @@
 import Client from "../Client";
+import { colorString, findClosestColor } from "../Colors";
 import { stripAnsiCodes } from "../Triggers";
+
+const MITHRIL_COLOR = findClosestColor('#afeeee');
+const GOLD_COLOR = findClosestColor('#FFD700');
+const SILVER_COLOR = findClosestColor('#C0C0C0');
+const COPPER_COLOR = findClosestColor('#8B4513');
 
 export default function initArmorShop(client: Client) {
     let width = client.contentWidth;
@@ -35,8 +41,13 @@ export default function initArmorShop(client: Client) {
         const srebro = m[4];
         const miedz = m[5];
         const nameLine = `| ${pad(name, width - 3)}|`;
-        const numbersBase = `| Mithryl ${mith} Zloto ${zloto} Srebro ${srebro} Miedz ${miedz} |`;
-        const numbersLine = numbersBase + ' '.repeat(Math.max(0, width - numbersBase.length));
+        const cost = [
+            colorString(mith, MITHRIL_COLOR),
+            colorString(zloto, GOLD_COLOR),
+            colorString(srebro, SILVER_COLOR),
+            colorString(miedz, COPPER_COLOR)
+        ].join('/')
+        const numbersLine = `| ${pad(cost, width - 3)}|`;
         return nameLine + '\n' + numbersLine;
     }, 'armor-shop');
 }

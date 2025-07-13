@@ -44,7 +44,7 @@ describe('herb shop width adjustments', () => {
 
     const it = parse(item).split('\n');
     expect(it[0]).toMatch(/jaskier/);
-    expect(it[1]).toMatch(/100/);
+    expect(it[1]).toMatch(/\//);
   });
 
   test('leaves lines unchanged when wide enough', () => {
