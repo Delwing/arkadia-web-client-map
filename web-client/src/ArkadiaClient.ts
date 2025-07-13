@@ -86,9 +86,9 @@ class ArkadiaClient {
                 this.emit('open', event);
                 this.emit('client.connect');
                 if (!this.lastConnectManual && this.userCommand && this.passwordCommand) {
-                    this.send(this.userCommand);
+                    this.sendRaw(this.userCommand);
                     if (this.passwordCommand !== this.userCommand) {
-                        this.send(this.passwordCommand);
+                        this.sendRaw(this.passwordCommand);
                     }
                 }
             };
@@ -154,6 +154,26 @@ class ArkadiaClient {
         try {
             this.socket.send(btoa(message + "\r\n"));
             // Only echo commands if we've received the first GMCP event
+            if (this.receivedFirstGmcp && message) {
+                Output.send("-> " + message);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            this.emit('error', error);
+        }
+    }
+
+    /**
+     * Send a message without updating stored credentials
+     */
+    private sendRaw(message: string): void {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            console.error('WebSocket is not connected');
+            return;
+        }
+
+        try {
+            this.socket.send(btoa(message + "\r\n"));
             if (this.receivedFirstGmcp && message) {
                 Output.send("-> " + message);
             }
