@@ -498,9 +498,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Scroll to bottom when input field is focused
+    // Scroll to bottom and select text when input field is focused
     messageInput.addEventListener('focus', () => {
         outputWrapper.scrollTop = outputWrapper.scrollHeight;
+        messageInput.select();
     });
 
     // Handle connect/disconnect button click

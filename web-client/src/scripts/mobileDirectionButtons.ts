@@ -254,9 +254,10 @@ export default class MobileDirectionButtons {
     private setupKeyboardHandlers() {
         if (!this.messageInput || !this.contentArea) return;
 
-        // Scroll to bottom when input is focused (keyboard appears)
+        // Scroll to bottom and select text when input is focused (keyboard appears)
         this.messageInput.addEventListener('focusin', () => {
             this.scrollToBottom();
+            this.messageInput!.select();
 
             // Add a small delay to ensure scrolling happens after keyboard appears
             setTimeout(() => this.scrollToBottom(), 300);
