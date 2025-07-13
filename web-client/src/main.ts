@@ -219,7 +219,7 @@ let isConnecting = false;
 // Function to update the connect button state
 function updateConnectButtons() {
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
-    const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
+    const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
     const authOverlay = document.getElementById('auth-overlay') as HTMLElement | null;
     const spinner = document.getElementById('connecting-spinner') as HTMLElement | null;
 
@@ -235,8 +235,8 @@ function updateConnectButtons() {
     }
 
 
-    if (loginButton) {
-        loginButton.style.display = (!isConnected && !isConnecting) ? '' : 'none';
+    if (loginForm) {
+        loginForm.style.display = (!isConnected && !isConnecting) ? 'flex' : 'none';
     }
 
     if (spinner) {
@@ -244,7 +244,7 @@ function updateConnectButtons() {
     }
 
     if (authOverlay) {
-        authOverlay.style.display = isConnected ? 'none' : (isConnecting ? 'none' : 'block');
+        authOverlay.style.display = isConnected ? 'none' : 'flex';
     }
 }
 
@@ -314,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
-    const loginButton = document.getElementById('login-button') as HTMLButtonElement | null;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
@@ -329,8 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bindsModal = bindsModalElement ? new Modal(bindsModalElement) : null;
     const npcModalElement = document.getElementById('npc-modal');
     const npcModal = npcModalElement ? new Modal(npcModalElement) : null;
-    const loginModalElement = document.getElementById('login-modal');
-    const loginModal = loginModalElement ? new Modal(loginModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
@@ -380,16 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (loginButton && loginModal && loginForm) {
-        loginButton.addEventListener('click', () => {
-            loginModal.show();
-        });
-
+    if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const character = loginCharacter?.value || '';
             const password = loginPassword?.value || '';
-            loginModal.hide();
 
             // Password persistence removed
             client.setStoredPassword(password || null);
