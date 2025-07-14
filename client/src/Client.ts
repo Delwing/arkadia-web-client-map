@@ -98,6 +98,7 @@ export default class Client {
             port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
             port.postMessage({type: 'GET_STORAGE', key: 'containers'})
             port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
+            port.postMessage({type: 'GET_STORAGE', key: 'scripts'})
         }
         this.port = port
         console.log("Client connected to background service.")

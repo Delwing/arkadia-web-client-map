@@ -27,6 +27,4 @@ export default function initExternalScripts(client: Client) {
             apply(ev.detail.value || []);
         }
     });
-
-    client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
 }
