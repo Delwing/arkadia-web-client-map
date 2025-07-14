@@ -209,10 +209,8 @@ class ArkadiaClient {
         }
 
         this.linesProcessed = 0
-        const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this));
-        if (leftOver.length > 2) {
-            this.emit('message', leftOver.substring(2, leftOver.length - 2));
-        }
+        const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this)).trim();
+        this.emit('message', leftOver.substring(leftOver.length));
         window.clientExtension.sendEvent('output-sent', this.linesProcessed)
     }
 
@@ -220,7 +218,11 @@ class ArkadiaClient {
      * Parse telnet option from incoming data
      */
     private parseTelnetOption(optionData: string): string {
-        this.parseTelnetSubnegotiation(optionData.substring(2, optionData.length - 2));
+        if (optionData.length === 3) {
+
+        } else {
+            this.parseTelnetSubnegotiation(optionData.substring(2, optionData.length - 2));
+        }
         return "";
     }
 
@@ -249,7 +251,7 @@ class ArkadiaClient {
 
             try {
                 const gmcp = JSON.parse(payload);
-                this.receivedFirstGmcp = this.receivedFirstGmcp  || type === "char.info";
+                this.receivedFirstGmcp = this.receivedFirstGmcp || type === "char.info";
                 window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
                 window.clientExtension.sendEvent('gmcp', { path: type, value: gmcp })
                 this.emit(`gmcp.${type}`, gmcp);
