@@ -17,6 +17,8 @@ import "@map/embedded.js"
 // Password storage functionality removed
 const client = ArkadiaClient
 
+
+
 import { createElement } from 'react'
 import { createRoot} from 'react-dom/client'
 import Binds from "@options/src/Binds.tsx"
