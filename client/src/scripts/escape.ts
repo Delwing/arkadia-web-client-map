@@ -21,20 +21,20 @@ export default function initEscape(client: Client) {
     const tag = 'escape';
     const parent = client.Triggers.registerTrigger(
         /(.*) uciekl.* ci\.$/,
-        (raw) => colorString(raw, COLOR),
+        (_, line) => colorString(line, COLOR),
         tag,
-        { stayOpenLines: 1 }
+        { stayOpenLines: 20 }
     );
 
-    parent.registerChild(/(.*) podaza(?:ja)? na ([a-z-]+)\.$/, (raw, _line, m) => {
+    parent.registerChild(/(.*) podaza(?:ja)? na ([a-z-]+)\.$/, (_, line, m) => {
         const dir = m[2];
         const arrow = ARROWS[dir] ? ` ${ARROWS[dir]}` : '';
-        return colorString(raw + arrow, COLOR);
+        return colorString(line + arrow, COLOR);
     });
 
-    parent.registerChild(/(.*) w panice .* na ([a-z-]+)\.$/, (raw, _line, m) => {
+    parent.registerChild(/(.*) w panice .* na ([a-z-]+)\.$/, (_, line, m) => {
         const dir = m[2];
         const arrow = ARROWS[dir] ? ` ${ARROWS[dir]}` : '';
-        return colorString(raw + arrow, PANIC_COLOR);
+        return colorString(line + arrow, PANIC_COLOR);
     });
 }
