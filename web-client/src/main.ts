@@ -24,6 +24,7 @@ import { createRoot} from 'react-dom/client'
 import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
 import Scripts from "@options/src/Scripts.tsx"
+import Aliases from "@options/src/Aliases.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
@@ -322,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
     const scriptsButton = document.getElementById('scripts-button') as HTMLButtonElement | null;
+    const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
 
@@ -334,6 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const npcModal = npcModalElement ? new Modal(npcModalElement) : null;
     const scriptsModalElement = document.getElementById('scripts-modal');
     const scriptsModal = scriptsModalElement ? new Modal(scriptsModalElement) : null;
+    const aliasesModalElement = document.getElementById('aliases-modal');
+    const aliasesModal = aliasesModalElement ? new Modal(aliasesModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
@@ -354,6 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (scriptsModal) {
             scriptsModal.hide();
+        }
+        if (aliasesModal) {
+            aliasesModal.hide();
         }
     });
 
@@ -379,6 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scriptsButton && scriptsModal) {
         scriptsButton.addEventListener('click', () => {
             scriptsModal.show();
+        });
+    }
+
+    if (aliasesButton && aliasesModal) {
+        aliasesButton.addEventListener('click', () => {
+            aliasesModal.show();
         });
     }
 
@@ -557,6 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const scriptsRoot = document.getElementById('scripts-options');
     if (scriptsRoot) {
         createRoot(scriptsRoot).render(createElement(Scripts));
+    }
+
+    const aliasesRoot = document.getElementById('aliases-options');
+    if (aliasesRoot) {
+        createRoot(aliasesRoot).render(createElement(Aliases));
     }
 });
 

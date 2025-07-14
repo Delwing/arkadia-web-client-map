@@ -218,6 +218,7 @@ import registerGagTriggers from './scripts/gags'
 import initLeaderAttackWarning from './scripts/leaderAttackWarning'
 import initBreakItem from './scripts/breakItem'
 import initExternalScripts from './scripts/externalScripts'
+import initUserAliases from './scripts/userAliases'
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
@@ -228,4 +229,5 @@ initMagics(client)
 initLeaderAttackWarning(client)
 initBreakItem(client)
 initExternalScripts(client)
+initUserAliases(client, aliases)
 
