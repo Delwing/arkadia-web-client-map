@@ -216,6 +216,7 @@ import initMagics from './scripts/magics'
 import registerGagTriggers from './scripts/gags'
 import initLeaderAttackWarning from './scripts/leaderAttackWarning'
 import initBreakItem from './scripts/breakItem'
+import initExternalScripts from './scripts/externalScripts'
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
@@ -225,5 +226,6 @@ initMagicKeys(client)
 initMagics(client)
 initLeaderAttackWarning(client)
 initBreakItem(client)
+initExternalScripts(client)
 
 window['clientExtension'] = client
