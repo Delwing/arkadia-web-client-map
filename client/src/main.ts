@@ -129,13 +129,13 @@ registerLuaGagTriggers(client)
 
 const follows = [
     /^.*[pP]odazasz (|skradajac sie )za (.* na (.*?))(?:,.*)?\.$/,
-    /^Wraz z ([a-zA-Z ,]*) podazasz za (.* na (.*?))(?:,.*)?\.$/
+    /^Wraz z ([A-Za-z ,'-]*) podazasz za (.* na (.*?))(?:,.*)?\.$/
 ]
 
 follows.forEach(follow => {
     client.Triggers.registerTrigger(follow, (_rawLine, line): undefined => {
         const matches = line.match(follow)
-        client.sendEvent('move', matches[3])
+        client.Map.move(matches[3])
     }, 'follow')
 })
 
