@@ -53,10 +53,5 @@ export default function initExternalScripts(client: Client) {
         }
     });
 
-    client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
-    if (!param) {
-        // ensure scripts are applied even if storage event doesn't fire
-        apply([]);
-    }
     checkParam();
 }
