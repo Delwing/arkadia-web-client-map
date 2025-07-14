@@ -473,9 +473,22 @@ button:focus-visible {
   overflow-y: auto;
 }
 
+.alias-form-group {
+  flex-wrap: wrap;
+}
+
+.alias-list-item {
+  flex-wrap: wrap;
+}
+
+.alias-list-item span {
+  word-break: break-word;
+}
+
 #options-modal .modal-dialog,
 #docs-modal .modal-dialog,
-#debug-modal .modal-dialog {
+#debug-modal .modal-dialog,
+#aliases-modal .modal-dialog {
   margin-top: 5vh;
   margin-bottom: 5vh;
 }
