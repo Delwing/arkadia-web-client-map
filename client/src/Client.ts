@@ -101,6 +101,7 @@ export default class Client {
             port.postMessage({type: 'GET_STORAGE', key: 'scripts'})
         }
         this.port = port
+        this.eventTarget.dispatchEvent(new CustomEvent('port-connected'))
         console.log("Client connected to background service.")
     }
 

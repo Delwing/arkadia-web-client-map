@@ -49,9 +49,10 @@ export default function initExternalScripts(client: Client) {
         if (ev.detail.key === STORAGE_KEY) {
             known = Array.isArray(ev.detail.value) ? ev.detail.value : [];
             apply(known);
-            checkParam();
         }
     });
 
-    checkParam();
+    client.addEventListener("port-connected", () => {
+        checkParam();
+    })
 }
