@@ -25,9 +25,9 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/nie_zbieraj_extra [_przedmiot_]** - usuwa wskazany przedmiot z listy ekstra lub bez parametru czyści całą listę.
 - **/cechy** - uruchamia licznik poziomowania i wyświetla postępy.
 - **/z _skrot_** - wykonuje polecenie `zabij` na obiekcie o podanym skrócie.
-- **/za _skrot_** - wykonuje polecenie `zaslon` na obiekcie o podanym skrócie.
+- **/zas _skrot_** - zasłania obiekt o podanym skrócie; jeśli nie jest w drużynie używa komendy `zaslon przed`.
 - **/z** - atakuje cel oznaczony jako cel ataku.
-- **/za** - zasłania cel oznaczony jako cel obrony.
+- **/zas** - zasłania cel oznaczony jako cel obrony lub `zaslon przed`, gdy cel nie jest w drużynie.
 - **/zap** - wykonuje polecenie `zapal lampe`.
 - **/zap _numer_** - zaprasza do drużyny obiekt o podanym numerze.
 - **/zg** - wykonuje polecenie `zgas lampe`.

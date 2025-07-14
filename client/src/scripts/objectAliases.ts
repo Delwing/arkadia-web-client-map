@@ -19,14 +19,24 @@ export default function initObjectAliases(
         }
     }
 
+    function shield(short: string) {
+        const obj = findByShortcut(short);
+        if (obj) {
+            const data = client.TeamManager.getAccumulatedObjectsData?.();
+            const isTeam = data && data[obj.num]?.team;
+            const cmd = isTeam ? `zaslon ob_${obj.num}` : `zaslon przed ob_${obj.num}`;
+            client.sendCommand(cmd);
+        }
+    }
+
     if (aliases) {
         aliases.push({
             pattern: /\/z ([A-Za-z0-9@]+)$/,
             callback: (m: RegExpMatchArray) => exec(m[1], "zabij")
         });
         aliases.push({
-            pattern: /\/za ([A-Za-z0-9@]+)$/,
-            callback: (m: RegExpMatchArray) => exec(m[1], "zaslon")
+            pattern: /\/zas ([A-Za-z0-9@]+)$/,
+            callback: (m: RegExpMatchArray) => shield(m[1])
         });
         aliases.push({
             pattern: /^\/z$/,
@@ -38,11 +48,14 @@ export default function initObjectAliases(
             }
         });
         aliases.push({
-            pattern: /^\/za$/,
+            pattern: /^\/zas$/,
             callback: () => {
                 const id = client.TeamManager.getDefenseTargetId();
                 if (id) {
-                    client.sendCommand(`zaslon ob_${id}`);
+                    const data = client.TeamManager.getAccumulatedObjectsData?.();
+                    const isTeam = data && data[id]?.team;
+                    const cmd = isTeam ? `zaslon ob_${id}` : `zaslon przed ob_${id}`;
+                    client.sendCommand(cmd);
                 }
             }
         });
