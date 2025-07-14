@@ -9,6 +9,7 @@ export const rawOutputSend = Output.send
 export const rawInputSend = Input.send
 
 export const client = new Client()
+window['clientExtension'] = client
 
 Gmcp.parse_option_subnegotiation = (match) => {
     const prefix = match.substring(0, 2)
@@ -228,4 +229,3 @@ initLeaderAttackWarning(client)
 initBreakItem(client)
 initExternalScripts(client)
 
-window['clientExtension'] = client
