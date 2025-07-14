@@ -5,10 +5,11 @@ import SettingsForm from "./Settings.tsx";
 import Npc from "./Npc.tsx";
 import SettingsFile from "./SettingsFile";
 import Binds from "./Binds";
+import Scripts from "./Scripts";
 
 
 function App() {
-    const [tab, setTab] = useState<'settings' | 'npc' | 'file' | 'binds'>('settings')
+    const [tab, setTab] = useState<'settings' | 'npc' | 'file' | 'binds' | 'scripts'>('settings')
 
     return (
         <div className="p-2 d-flex flex-column h-100">
@@ -24,6 +25,9 @@ function App() {
                 </Tab>
                 <Tab eventKey="binds" title="Bindowanie">
                     <Binds />
+                </Tab>
+                <Tab eventKey="scripts" title="Skrypty">
+                    <Scripts />
                 </Tab>
             </Tabs>
         </div>
