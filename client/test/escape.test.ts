@@ -4,6 +4,7 @@ import { findClosestColor } from '../src/Colors';
 
 class FakeClient {
   Triggers = new Triggers(({} as unknown) as any);
+  print = jest.fn();
 }
 
 describe('escape triggers', () => {
@@ -29,16 +30,36 @@ describe('escape triggers', () => {
   test('highlights follow line with arrow', () => {
     parse('Baz uciekl ci.');
     const result = parse('Baz podaza na wschod.');
-    expect(stripAnsiCodes(result)).toBe('Baz podaza na wschod. →');
+    expect(stripAnsiCodes(result)).toBe('Baz podaza na wschod.');
     expect(result.startsWith(prefix)).toBe(true);
     expect(result.endsWith(suffix)).toBe(true);
+    const printed = client.print.mock.calls.map(c => stripAnsiCodes(c[0]));
+    expect(printed).toEqual([
+      '\n',
+      '                  #',
+      '                   #',
+      '              #######',
+      '                   #',
+      '                  #',
+      '\n'
+    ]);
   });
 
   test('highlights panic line with arrow', () => {
     parse('Baz uciekl ci.');
     const result = parse('Baz w panice ucieka na polnoc.');
-    expect(stripAnsiCodes(result)).toBe('Baz w panice ucieka na polnoc. ↑');
+    expect(stripAnsiCodes(result)).toBe('Baz w panice ucieka na polnoc.');
     expect(result.startsWith(panicPrefix)).toBe(true);
     expect(result.endsWith(suffix)).toBe(true);
+    const printed = client.print.mock.calls.map(c => stripAnsiCodes(c[0]));
+    expect(printed).toEqual([
+      '\n',
+      '                  #',
+      '                 ###',
+      '                # # #',
+      '                  #',
+      '                  #',
+      '\n'
+    ]);
   });
 });
