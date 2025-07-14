@@ -105,9 +105,9 @@ export default class InlineCompassRose {
         this.client.println(
             [
                 `       ${this.printExit("nw")}  ${this.printExit("n")}  ${this.printExit("ne")}    ${this.printExit("u")}`,
-                `         ${this.hasExit("nw") ? "\\" : " "} ${this.hasExit("n") ? "|" : " "} ${this.hasExit("ne") ? "/" : " "}         ${this.hasExit("u") ? "|" : ""}`,
-                `       ${this.printExit("w")}${this.hasExit("w") ? "---" : "   "}${color(DIM_GRAY)}X${RESET}${this.hasExit("e") ? "---" : "   "}${this.printExit("e")}       ${this.hasExit("d") || this.hasExit("u") ? "o" : ""}`,
-                `         ${this.hasExit("sw") ? "/" : " "} ${this.hasExit("s") ? "|" : " "} ${this.hasExit("se") ? "\\" : " "}         ${this.hasExit("d") ? "|" : ""}`,
+                `         ${this.hasExit("nw") ? "\\" : " "} ${this.hasExit("n") ? "|" : " "} ${this.hasExit("ne") ? "/" : " "}      ${this.hasExit("u") ? "|" : ""}`,
+                `       ${this.printExit("w")}${this.hasExit("w") ? "---" : "   "}${color(DIM_GRAY)}X${RESET}${this.hasExit("e") ? "---" : "   "}${this.printExit("e")}    ${this.hasExit("d") || this.hasExit("u") ? "o" : ""}`,
+                `         ${this.hasExit("sw") ? "/" : " "} ${this.hasExit("s") ? "|" : " "} ${this.hasExit("se") ? "\\" : " "}      ${this.hasExit("d") ? "|" : ""}`,
                 `       ${this.printExit("sw")}  ${this.printExit("s")}  ${this.printExit("se")}    ${this.printExit("d")}`,
             ].filter(item => item.trim().length != 0).join("\n")
         );

@@ -210,7 +210,7 @@ class ArkadiaClient {
 
         this.linesProcessed = 0
         const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this)).trim();
-        this.emit('message', leftOver.substring(leftOver.length));
+        this.emit('message', leftOver.replace(/[ÿù]/g, ""))
         window.clientExtension.sendEvent('output-sent', this.linesProcessed)
     }
 
