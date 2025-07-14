@@ -1,21 +1,8 @@
 import Client from "../Client";
-import { colorString, findClosestColor } from "../Colors";
+import {colorString, findClosestColor} from "../Colors";
 
 const COLOR = findClosestColor('#6a5acd');
 const PANIC_COLOR = findClosestColor('#ff8c00');
-
-const ARROWS: Record<string, string> = {
-    'wschod': '→',
-    'zachod': '←',
-    'polnoc': '↑',
-    'poludnie': '↓',
-    'polnocny-wschod': '↗',
-    'polnocny-zachod': '↖',
-    'poludniowy-wschod': '↘',
-    'poludniowy-zachod': '↙',
-    'gora': '↑',
-    'dol': '↓',
-};
 
 export default function initEscape(client: Client) {
     const tag = 'escape';
@@ -23,18 +10,94 @@ export default function initEscape(client: Client) {
         /(.*) uciekl.* ci\.$/,
         (_, line) => colorString(line, COLOR),
         tag,
-        { stayOpenLines: 20 }
+        {stayOpenLines: 20}
     );
 
     parent.registerChild(/(.*) podaza(?:ja)? na ([a-z-]+)\.$/, (_, line, m) => {
         const dir = m[2];
-        const arrow = ARROWS[dir] ? ` ${ARROWS[dir]}` : '';
-        return colorString(line + arrow, COLOR);
+        printArrow(dir, COLOR);
+        return colorString(line, COLOR);
     });
 
     parent.registerChild(/(.*) w panice .* na ([a-z-]+)\.$/, (_, line, m) => {
         const dir = m[2];
-        const arrow = ARROWS[dir] ? ` ${ARROWS[dir]}` : '';
-        return colorString(line + arrow, PANIC_COLOR);
+        printArrow(dir, PANIC_COLOR);
+        return colorString(line, PANIC_COLOR);
     });
+
+    function printArrow(dir, color) {
+        if (dir === "poludnie") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                  #`, color));
+            client.print(colorString(`                  #`, color));
+            client.print(colorString(`                # # #`, color));
+            client.print(colorString(`                 ###`, color));
+            client.print(colorString(`                  #`, color));
+        } else if (dir === "polnoc") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                  #`, color));
+            client.print(colorString(`                 ###`, color));
+            client.print(colorString(`                # # #`, color));
+            client.print(colorString(`                  #`, color));
+            client.print(colorString(`                  #`, color));
+        } else if (dir === "wschod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                  #`, color));
+            client.print(colorString(`                   #`, color));
+            client.print(colorString(`              #######`, color));
+            client.print(colorString(`                   #`, color));
+            client.print(colorString(`                  #`, color));
+        } else if (dir === "zachod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                #`, color));
+            client.print(colorString(`               #`, color));
+            client.print(colorString(`              #######`, color));
+            client.print(colorString(`               #`, color));
+            client.print(colorString(`                #`, color));
+        } else if (dir === "poludniowy-wschod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`               #`, color));
+            client.print(colorString(`                 #`, color));
+            client.print(colorString(`                   #   #`, color));
+            client.print(colorString(`                     # #`, color));
+            client.print(colorString(`                   # # #`, color));
+        } else if (dir === "poludniowy-zachod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                       #`, color));
+            client.print(colorString(`                     #`, color));
+            client.print(colorString(`               #   #`, color));
+            client.print(colorString(`               # #`, color));
+            client.print(colorString(`               # # #`, color));
+        } else if (dir === "polnocny-wschod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`                   # # #`, color));
+            client.print(colorString(`                     # #`, color));
+            client.print(colorString(`                   #   #`, color));
+            client.print(colorString(`                 #`, color));
+            client.print(colorString(`               #`, color));
+        } else if (dir === "polnocny-zachod") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`               # # #`, color));
+            client.print(colorString(`               # #`, color));
+            client.print(colorString(`               #   #`, color));
+            client.print(colorString(`                     #`, color));
+            client.print(colorString(`                       #`, color));
+        } else if (dir === "dol") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`            ###`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            ###`, color));
+        } else if (dir === "gore") {
+            client.print(colorString(`\n`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`            #  #`, color));
+            client.print(colorString(`             ## `, color));
+        }
+        client.print(`\n`);
+    }
 }
+
