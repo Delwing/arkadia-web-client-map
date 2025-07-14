@@ -67,7 +67,7 @@ function Aliases() {
 
     return (
         <div className="m-2 d-flex flex-column gap-2">
-            <Form.Group className="d-flex align-items-center gap-2">
+            <Form.Group className="d-flex flex-column flex-sm-row align-items-center gap-2 alias-form-group">
                 <Form.Control
                     type="text"
                     size="sm"
@@ -91,7 +91,7 @@ function Aliases() {
             </Form.Group>
             <ul className="list-unstyled ms-3">
                 {aliases.map((a, i) => (
-                    <li key={i} className="d-flex align-items-center gap-2">
+                    <li key={i} className="d-flex align-items-center gap-2 alias-list-item">
                         <span>{a.pattern}</span>
                         <span className="text-secondary">→</span>
                         <span>{a.command}</span>
