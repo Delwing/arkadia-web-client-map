@@ -107,6 +107,7 @@ export default class Triggers {
     clientExtension: Client;
     triggers: Map<string, Trigger> = new Map();
     multilineTriggers: Map<string, Trigger> = new Map();
+    private tokenTriggers: { words: string[]; trigger: Trigger }[] = [];
 
     constructor(clientExtension: Client) {
         this.clientExtension = clientExtension;
@@ -147,6 +148,16 @@ export default class Triggers {
         return trigger;
     }
 
+    registerTokenTrigger(token: string, callback?: TriggerCallback, tag?: string, options?: TriggerOptions) {
+        const words = token
+            .toLowerCase()
+            .split(/[ \n\t.,!?*()\/\[\]]+/)
+            .filter(w => w.length > 0);
+        const trigger = new Trigger(this, token, callback, tag, undefined, options);
+        this.tokenTriggers.push({ words, trigger });
+        return trigger;
+    }
+
     registerOneTimeMultilineTrigger(pattern: TriggerPattern, callback: TriggerCallback, tag?: string, options?: TriggerOptions) {
         const trigger = this.registerMultilineTrigger(
             pattern,
@@ -163,6 +174,7 @@ export default class Triggers {
     removeByTag(tag: string) {
         this.removeByTagRecursive(tag, this.triggers);
         this.removeByTagRecursive(tag, this.multilineTriggers);
+        this.tokenTriggers = this.tokenTriggers.filter(t => t.trigger.tag !== tag);
     }
 
     removeTrigger(trigger: Trigger) {
@@ -171,10 +183,33 @@ export default class Triggers {
         } else {
             this.triggers.delete(trigger.id);
             this.multilineTriggers.delete(trigger.id);
+            this.tokenTriggers = this.tokenTriggers.filter(t => t.trigger.id !== trigger.id);
         }
     }
 
     parseLine(rawLine: string, type: string) {
+        const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
+        const tokens = line
+            .split(/[ \n\t.,!?*()\/\[\]]+/)
+            .filter(t => t.length > 0)
+            .map(t => t.toLowerCase());
+
+        this.tokenTriggers.forEach(({ words, trigger }) => {
+            for (let i = 0; i <= tokens.length - words.length; i++) {
+                let found = true;
+                for (let j = 0; j < words.length; j++) {
+                    if (tokens[i + j] !== words[j]) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    rawLine = trigger.execute(rawLine, type);
+                    break;
+                }
+            }
+        });
+
         this.triggers.forEach(trigger => {
             rawLine = trigger.execute(rawLine, type);
         });
