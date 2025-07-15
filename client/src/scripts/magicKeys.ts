@@ -2,14 +2,14 @@ import Client from "../Client";
 import { colorStringInLine, findClosestColor } from "../Colors";
 import loadMagicKeys from "./magicKeyLoader";
 
+export const KEYS_COLOR = findClosestColor("#00ff7f");
 export default async function initMagicKeys(client: Client) {
     const tag = "magicKeys";
     try {
         const keys = await loadMagicKeys();
-        const colorCode = findClosestColor("#00ff7f");
         keys.forEach((pattern: string) => {
             client.Triggers.registerTrigger(pattern, (raw) => {
-                return colorStringInLine(raw, pattern, colorCode);
+                return colorStringInLine(raw, pattern, KEYS_COLOR);
             }, tag);
         });
     } catch (e) {

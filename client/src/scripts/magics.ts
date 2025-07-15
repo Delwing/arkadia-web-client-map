@@ -2,14 +2,14 @@ import Client from "../Client";
 import { colorStringInLine, findClosestColor } from "../Colors";
 import loadMagics from "./magicsLoader";
 
+export const MAGICS_COLOR = findClosestColor('#cc3c3c');
 export default async function initMagics(client: Client) {
     const tag = "magics";
     try {
         const magics = await loadMagics();
-        const colorCode = findClosestColor('#B22222');
         magics.forEach((pattern: string) => {
             client.Triggers.registerTrigger(pattern, (raw) => {
-                return colorStringInLine(raw, pattern, colorCode);
+                return colorStringInLine(raw, pattern, MAGICS_COLOR);
             }, tag);
         });
     } catch (e) {

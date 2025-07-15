@@ -2,7 +2,7 @@ import 'bootswatch/dist/darkly/bootstrap.min.css';
 import './style.css'
 import ArkadiaClient from "./ArkadiaClient.ts";
 import "./plugin.ts"
-import { Modal, Dropdown } from 'bootstrap';
+import {Modal, Dropdown} from 'bootstrap';
 import CharState from "./CharState";
 import ObjectList from "./ObjectList";
 import LampTimer from "./LampTimer";
@@ -11,16 +11,15 @@ import BreakItemWarning from "./BreakItemWarning";
 import "@client/src/main.ts"
 import MockPort from "./MockPort.ts";
 import NoSleep from 'nosleep.js';
-import { loadMapData, loadColors } from "./mapDataLoader.ts";
-import { loadNpcData } from "./npcDataLoader.ts";
+import {loadMapData, loadColors} from "./mapDataLoader.ts";
+import {loadNpcData} from "./npcDataLoader.ts";
 import "@map/embedded.js"
 // Password storage functionality removed
 const client = ArkadiaClient
 
 
-
-import { createElement } from 'react'
-import { createRoot} from 'react-dom/client'
+import {createElement} from 'react'
+import {createRoot} from 'react-dom/client'
 import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
 import Scripts from "@options/src/Scripts.tsx"
@@ -55,8 +54,8 @@ function preventTabSleep() {
         updateWakeLockButton();
     };
 
-    document.addEventListener('touchstart', enableNoSleep, { once: true });
-    document.addEventListener('click', enableNoSleep, { once: true });
+    document.addEventListener('touchstart', enableNoSleep, {once: true});
+    document.addEventListener('click', enableNoSleep, {once: true});
 }
 
 function disableTabSleepPrevention() {
@@ -98,7 +97,7 @@ function processSticky(count: number) {
     if (handler && typeof handler.processOutput === 'function') {
         const prev = handler.output;
         handler.output = stickyArea;
-        handler.processOutput(new CustomEvent('output-sent', { detail: count }));
+        handler.processOutput(new CustomEvent('output-sent', {detail: count}));
         handler.output = prev;
     }
 }
@@ -280,17 +279,17 @@ document.addEventListener('visibilitychange', () => {
 
 // Numpad key mapping for directions (standard orientation)
 const numpadDirections: { [key: string]: string } = {
-    'Numpad8': 'n',      // North
-    'Numpad2': 's',      // South
-    'Numpad4': 'w',      // West
-    'Numpad6': 'e',      // East
-    'Numpad7': 'nw',     // Northwest
-    'Numpad9': 'ne',     // Northeast
-    'Numpad1': 'sw',     // Southwest
-    'Numpad3': 'se',     // Southeast
-    'NumpadMultiply': 'u',   // Up (unchanged)
-    'NumpadSubtract': '',
-    'Numpad5': 'zerknij'  // Look (unchanged)
+    'Numpad8': 'n',
+    'Numpad2': 's',
+    'Numpad4': 'w',
+    'Numpad6': 'e',
+    'Numpad7': 'nw',
+    'Numpad9': 'ne',
+    'Numpad1': 'sw',
+    'Numpad3': 'se',
+    'NumpadMultiply': 'u',
+    'NumpadSubtract': 'd',
+    'Numpad5': 'zerknij'
 };
 
 // Add global keydown event listener for numpad directions
@@ -303,8 +302,6 @@ document.addEventListener('keydown', (e) => {
         // Send the direction command
         const direction = numpadDirections[e.code];
         Input.send(direction);
-
-        console.log(`Numpad direction sent: ${direction}`);
     }
 });
 

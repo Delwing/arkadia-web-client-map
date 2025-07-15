@@ -1,6 +1,10 @@
 import Client from "../Client";
 import {colorString, findClosestColor} from "../Colors";
 import {stripAnsiCodes} from "../Triggers";
+import loadMagicKeys from "./magicKeyLoader";
+import {KEYS_COLOR} from "./magicKeys";
+import loadMagics from "./magicsLoader";
+import {MAGICS_COLOR} from "./magics";
 
 const GROUP_NAME_COLOR = findClosestColor('#557C99');
 const MITHRIL_COLOR = findClosestColor('#afeeee');
@@ -89,6 +93,10 @@ const polishNumberPattern = Object.keys(polishNumbers)
     .map(num => num.replace(/\s+/g, '\\s+')) // Allow flexible whitespace
     .join('|');
 
+const defaultFilter: (item: ContainerItem) => boolean = () => true;
+let filter = defaultFilter;
+let magicAndKeysFilter = defaultFilter;
+
 export function parseItems(content: string): ContainerItem[] {
     let rest = content.trim();
     rest = rest.replace(/\s+i\s+([^,]+)(\.)?$/, ', $1');
@@ -125,7 +133,7 @@ export function parseContainer(line: string | RegExpMatchArray): ParsedContainer
     if (matches && (matches.groups?.content || matches.groups?.container)) {
         const container = matches.groups?.container?.trim() ?? '';
         const content = matches.groups?.content ?? '';
-        return {container, items: parseItems(content)};
+        return {container, items: parseItems(content).filter(filter)};
     }
     return null;
 }
@@ -174,14 +182,14 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
 
     const allLines = entries.flatMap(([name, items]) => {
         const itemTexts = items.map(it => {
-            let text = `${String(it.count).padStart(3, ' ')} | ${it.name}`;
+            let name = it.name;
             for (const tr of activeTransforms) {
                 if (tr.check(it.name, it.count, name)) {
-                    text = tr.transform(text);
+                    name = tr.transform(name);
                     break;
                 }
             }
-            return text;
+            return `${String(it.count).padStart(3, ' ')} | ${name}`;
         });
         return [name, ...itemTexts];
     });
@@ -215,15 +223,16 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             for (let c = 0; c < columns; c++) {
                 const grp = pair[c];
                 const item = grp && grp[1][i];
-                let text = item ? `${String(item.count).padStart(3, ' ')} | ${item.name}` : '';
+                let name = item ? item.name : '';
                 if (item && grp) {
                     for (const tr of activeTransforms) {
                         if (tr.check(item.name, item.count, grp[0])) {
-                            text = tr.transform(text);
+                            name = tr.transform(name);
                             break;
                         }
                     }
                 }
+                let text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
@@ -247,6 +256,7 @@ export function prettyPrintContainer(
     if (!parsed) return '';
     const categorized = categorizeItems(parsed.items, defs);
     const tableTitle = title || parsed.container;
+    filter = defaultFilter
     return formatTable(tableTitle, categorized, {columns, padding});
 }
 
@@ -255,6 +265,20 @@ const defaultContainerPatterns: RegExp[] = [
     /^Otwart(?:y|a|e) (?<container>.+? (?:plecak|torba|sakwa|sakiewka|szkatulka|wor|worek))(?: z .*?)? zawiera (?<content>.*)\.$/i,
     /^Otwarty .+? (?<container>kosz(?:|yk)) zawiera (?<content>.*)\.$/i,
     /^Otwierasz na chwile (?<container>.+? (?:plecak|torba|sakwa|sakiewka|szkatulka|wor|worek)), sprawdzajac zawartosc\. W srodku dostrzegasz (?<content>.*)\.$/i,
+    /^Uwaznie ogladasz zawartosc (?<container>.+?)\. W srodku dostrzegasz (?<content>.*)\.$/,
+    /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojej (?<container>.+? sakiewki).+?\. W srodku dostrzegasz (?<content>.*)\.$/,
+    /^W (?<container>skrzyniach) zauwazasz miedzy innymi (?<content>.*)\.$/,
+    /^W .+? (?<container>skrzyni|kufrze|skrzynce) zauwazasz miedzy innymi (?<content>.*)\.$/,
+    /^Otwarty .+? (?<container>kosz(?:|yk)) zawiera (?<content>.*)\.$/,
+    /^Na (?<container>stojakach) zauwazasz miedzy innymi (?<content>.*)\.$/,
+    /^Debowy wysoki (?<container>sekretarzyk) zawiera (?<content>.*)\.$/,
+    /^(?<container>.+? (?:skrzynia|kufer|komoda|stojak|biblioteczka|kuferek|skrzynka|regal|szkatula))(?:| z okuciami| depozytowa) zawiera (?<content>.*)\.$/,
+    /^Wsrod pedantycznego porzadku w (?<container>szafie) zauwazasz miedzy innymi (?<content>.*)\.$/,
+    /^Otwart[ay] (?<container>[a-z- ]+ (?:koszyk|szafa|sejf|misa|sarkofag|sarkofag z kamiennych plyt)) zawiera (?<content>.*)\.$/,
+    /^Narozna (?<container>etazerka) zawiera: (?<content>.*)\.$/,
+    /^Dostrzegasz na (?:nim|niej) jeszcze (?<content>.*)\.$/,
+    /^Drewniany okuty (?<container>stelaz) zawiera (?<content>.*)\.$/,
+    /^Dwukonny czerwony (?<container>powoz) porzucony na poboczu zawiera (?<content>.*)\.$/,
 ];
 
 const weapons = ["darda", "dardy", "multon", "kord", "puginal", "gladius", "topor", "berdysz", "siekier", "czekan",
@@ -310,9 +334,31 @@ const defs = [
 const defaultTransforms: TransformDefinition[] = [
     { check: (item: string) => item.match("mithryl\\w+ monet") != null, transform: (item) => colorString(item, MITHRIL_COLOR)},
     { check: (item: string) => item.match("zlot\\w+ monet") != null, transform: (item) => colorString(item, GOLD_COLOR)},
-    { check: (item: string) => item.match("srebrn\\w+") != null, transform: (item) => colorString(item, SILVER_COLOR)},
+    { check: (item: string) => item.match("srebrn\\w+ monet") != null, transform: (item) => colorString(item, SILVER_COLOR)},
     { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => colorString(item, COPPER_COLOR)}
 ]
+
+
+const keyRegexp = loadMagicKeys().then(keys => {
+    const keyRegexp = createRegexpFilter(keys)
+    defs.push({name: "klucze", filter: keyRegexp})
+    defaultTransforms.push({
+        check: keyRegexp, transform: (item) => colorString(item, KEYS_COLOR)
+    })
+    return keyRegexp
+})
+
+const magicRegexp = loadMagics().then(magics => {
+    const magicRegexp = createRegexpFilter(magics)
+    defaultTransforms.push({
+        check: magicRegexp, transform: (item) => colorString(item, MAGICS_COLOR)
+    })
+    return magicRegexp
+})
+
+Promise.all([keyRegexp, magicRegexp]).then(([keyTest, magicTest]) => {
+    magicAndKeysFilter = (item: ContainerItem) => keyTest(item.name) || magicTest(item.name)
+})
 
 
 export default function initContainers(client: Client) {
@@ -340,4 +386,11 @@ export default function initContainers(client: Client) {
             enabled = false;
         }
     });
+
+    client.aliases.push({
+        pattern: /\/przejrzyj/, callback: () => {
+            filter = magicAndKeysFilter
+            client.send("ob skrzynie");
+        }
+    })
 }

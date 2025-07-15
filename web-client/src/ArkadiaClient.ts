@@ -20,11 +20,11 @@ class ArkadiaClient {
     private socket!: WebSocket;
     private events: EventMap = {};
     private receivedFirstGmcp: boolean = false;
-    private linesProcessed = 0
     private userCommand: string | null = null;
     private passwordCommand: string | null = null;
     private lastConnectManual = true;
     private pingTimer: number | null = null;
+    private messageBuffer: {text: string, type: string}[] = []
 
 
     /**
@@ -208,10 +208,11 @@ class ArkadiaClient {
             return
         }
 
-        this.linesProcessed = 0
+        data.match(TELNET_OPTION_REGEX)?.forEach(optionData => {})
+
         const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this)).trim();
+        this.flushMessageBuffer()
         this.emit('message', leftOver.replace(/[ÿù]/g, ""))
-        window.clientExtension.sendEvent('output-sent', this.linesProcessed)
     }
 
     /**
@@ -247,22 +248,17 @@ class ArkadiaClient {
             if (type === "gmcp_msgs") {
                 payload = payload.replace(//g, "\\u001B");
             }
-            //this.emit(type, payload);
 
             try {
                 const gmcp = JSON.parse(payload);
                 this.receivedFirstGmcp = this.receivedFirstGmcp || type === "char.info";
-                window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
-                window.clientExtension.sendEvent('gmcp', { path: type, value: gmcp })
-                this.emit(`gmcp.${type}`, gmcp);
                 if (type === "gmcp_msgs") {
                     let text = atob(gmcp.text)
-                    text = window.clientExtension.onLine(text, gmcp.type)
-                    gmcp.text = btoa(text)
-                    window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${gmcp.type}`, gmcp), {once: true})
-                    Output.send(parseAnsiPatterns(text), gmcp.type);
-                    window.clientExtension.sendEvent('line-sent')
-                    this.linesProcessed++;
+                    this.messageBuffer.push({text, type: gmcp.type})
+                } else {
+                    window.clientExtension.sendEvent(`gmcp.${type}`, gmcp)
+                    window.clientExtension.sendEvent('gmcp', { path: type, value: gmcp })
+                    this.emit(`gmcp.${type}`, gmcp);
                 }
             } catch (error) {
                 console.error('Error parsing GMCP JSON:', error);
@@ -270,6 +266,28 @@ class ArkadiaClient {
         }
     }
 
+    flushMessageBuffer() {
+        let processed = [];
+        this.messageBuffer.forEach((message, i) => {
+           if (processed[processed.length - 1]?.type === message.type) {
+               processed[processed.length - 1].text += message.text
+           } else {
+               processed.push(message)
+           }
+        })
+        processed.forEach((message, i) => {
+            this.sendLine(message.text, message.type, i)
+        })
+        window.clientExtension.sendEvent('output-sent', processed.length)
+        this.messageBuffer = []
+    }
+
+    private sendLine(text: string, type: string, i: number) {
+        text = window.clientExtension.onLine(text, type)
+        window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${type}`, text), {once: true})
+        Output.send(parseAnsiPatterns(text), type);
+        window.clientExtension.sendEvent('line-sent')
+    }
 }
 
 export default new ArkadiaClient();
