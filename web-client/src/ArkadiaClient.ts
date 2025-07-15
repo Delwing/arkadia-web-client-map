@@ -265,8 +265,6 @@ class ArkadiaClient {
             // Handle special case for gmcp_msgs
             if (type === "gmcp_msgs") {
                 payload = payload.replace(//g, "\\u001B");
-            } else {
-                console.log(type, payload)
             }
 
             try {

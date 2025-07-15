@@ -17,16 +17,22 @@ export default class TeamManager {
     private client: Client;
     private members: Set<string> = new Set();
     private leader?: string;
+    private leaderId?: string;
     private tag = 'teamManager';
     private accumulatedObjectsData = {}
+    private playerNum?: string = "3601228"
+    private leaderAttackTargetId?: string
+    private avatarAttackTargetId?: string
     private attackTargetId?: string
     private defenseTargetId?: string
-    private leaderTargetNotifiedNum?: string
 
     constructor(client: Client) {
         this.client = client;
         this.client.addEventListener('gmcp.objects.data', (e: CustomEvent) => {
             this.handleObjectsData(e.detail);
+        });
+        this.client.addEventListener('gmcp.char.info', (e: CustomEvent) => {
+            this.playerNum = String(e.detail.object_num);
         });
         if (typeof (this.client as any).Triggers?.registerTrigger === 'function') {
             this.registerTriggers();
@@ -54,7 +60,18 @@ export default class TeamManager {
             }
 
             this.checkTeam(obj, id);
+            if (id === this.leaderId && obj.attack_num !== undefined) {
+                this.leaderAttackTargetId = typeof obj.attack_num == "boolean" ? undefined : String(obj.attack_num)
+            }
+            if (id === this.playerNum && obj.attack_num !== undefined) {
+                this.avatarAttackTargetId = typeof obj.attack_num == "boolean" ? undefined : String(obj.attack_num)
+            }
         });
+        if (this.avatarAttackTargetId && this.leaderAttackTargetId && this.avatarAttackTargetId !== this.leaderAttackTargetId) {
+            this.client.sendEvent('teamLeaderTargetNoAvatar', this.leaderAttackTargetId);
+        } else  {
+            this.client.sendEvent('teamLeaderTargetAvatar');
+        }
     }
 
     private checkTeam(obj: ObjectData, id: string) {
@@ -69,23 +86,8 @@ export default class TeamManager {
         this.members.add(name);
 
         if (obj.team_leader) {
-            if (this.leader !== name) {
-                this.leaderTargetNotifiedNum = undefined;
-            }
             this.leader = name;
-
-            if (obj.attack_target) {
-                if (obj.avatar_target !== true) {
-                    if (this.leaderTargetNotifiedNum !== id) {
-                        this.client.sendEvent('teamLeaderTargetNoAvatar');
-                        this.leaderTargetNotifiedNum = id;
-                    }
-                } else {
-                    this.leaderTargetNotifiedNum = undefined;
-                }
-            } else {
-                this.leaderTargetNotifiedNum = undefined;
-            }
+            this.leaderId = id
         }
     }
 
