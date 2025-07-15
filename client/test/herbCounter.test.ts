@@ -52,7 +52,6 @@ describe('herb counter', () => {
     parse('Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego woreczka. W srodku dostrzegasz zolty jasny kwiat.');
     const printed = client.println.mock.calls[0][0];
     expect(printed).toMatch(/3/);
-    expect(printed).toMatch(/zolty jasny kwiat/);
     expect(printed).toMatch(/deliona/);
   });
 });

@@ -104,16 +104,15 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             client.println(lastSummary.join('\n'));
         } else {
             const lines: string[] = [];
-            lines.push('------+--------------------+-------------------------+-----------------------------------------------');
-            lines.push('  ile |        klucz       |        nazwa            |              dzialanie                        ');
-            lines.push('------+--------------------+-------------------------+-----------------------------------------------');
+            lines.push('------+--------------------+-----------------------------------------------');
+            lines.push('  ile |        nazwa       |              dzialanie                        ');
+            lines.push('------+--------------------+-----------------------------------------------');
             entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
-                const name = herbs?.herb_id_to_odmiana[id]?.biernik || id;
                 const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
-                const row = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | ${name.padEnd(23, ' ')} | ${uses}`;
+                const row = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | ${uses}`;
                 lines.push(row);
             });
-            lines.push('----------------------------------------------------------------------------------------------------');
+            lines.push('--------------------------------------------------------------------------');
             lastSummary = lines;
             client.println(lastSummary.join('\n'));
         }
