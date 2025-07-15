@@ -128,14 +128,15 @@ test('onLine sends printed messages after line and restores Output.send', () => 
 
   const result = client.onLine('line', '');
 
-  expect(result).toBe('\x1b[22;38;5;255mprocessed');
+  const expected = '\x1b[22;38;5;255mprocessed';
+  expect(result).toBe(expected);
   expect((window as any).Output.send).toBe(originalOutputSend);
   expect(originalOutputSend).not.toHaveBeenCalled();
 
   originalOutputSend(result);
   client.sendEvent('line-sent');
 
-  expect(originalOutputSend).toHaveBeenNthCalledWith(1, '\x1b[22;38;5;255mprocessed');
+  expect(originalOutputSend).toHaveBeenNthCalledWith(1, expected);
   expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
 });
 
