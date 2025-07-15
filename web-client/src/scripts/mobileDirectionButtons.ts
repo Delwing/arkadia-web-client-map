@@ -387,9 +387,13 @@ export default class MobileDirectionButtons {
         const newRight = this.offsetX + deltaX;
         const newTop = this.offsetY + deltaY;
 
+        const maxRight = window.innerWidth - this.container.offsetWidth - 5;
+        const clampedRight = Math.min(maxRight, Math.max(5, newRight));
+        const clampedTop = Math.max(5, newTop);
+
         // Apply new position
-        this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.top = `${Math.max(5, newTop)}px`;
+        this.container.style.right = `${clampedRight}px`;
+        this.container.style.top = `${clampedTop}px`;
     }
 
     private handleTouchEnd(e: TouchEvent) {
@@ -418,6 +422,8 @@ export default class MobileDirectionButtons {
             buttons.forEach(button => {
                 button.classList.remove('no-click');
             });
+
+            this.clampToViewport();
 
             // Prevent any click events immediately after dragging ends
             e.preventDefault();
@@ -468,9 +474,13 @@ export default class MobileDirectionButtons {
         const newRight = this.offsetX + deltaX;
         const newTop = this.offsetY + deltaY;
 
+        const maxRight = window.innerWidth - this.container.offsetWidth - 5;
+        const clampedRight = Math.min(maxRight, Math.max(5, newRight));
+        const clampedTop = Math.max(5, newTop);
+
         // Apply new position
-        this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.top = `${Math.max(5, newTop)}px`;
+        this.container.style.right = `${clampedRight}px`;
+        this.container.style.top = `${clampedTop}px`;
     }
 
     private handleMouseUp(e: MouseEvent) {
@@ -499,6 +509,8 @@ export default class MobileDirectionButtons {
             buttons.forEach(button => {
                 button.classList.remove('no-click');
             });
+
+            this.clampToViewport();
 
             // Prevent any click events immediately after dragging ends
             e.preventDefault();

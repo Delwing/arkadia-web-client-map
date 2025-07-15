@@ -61,8 +61,11 @@ export default class ObjectList {
         const deltaY = e.clientY - this.startY;
         const newRight = this.offsetRight + deltaX;
         const newTop = this.offsetTop + deltaY;
-        this.container.style.right = `${Math.max(0, newRight)}px`;
-        this.container.style.top = `${Math.max(0, newTop)}px`;
+        const maxRight = window.innerWidth - this.container.offsetWidth;
+        const clampedRight = Math.min(maxRight, Math.max(0, newRight));
+        const clampedTop = Math.max(0, newTop);
+        this.container.style.right = `${clampedRight}px`;
+        this.container.style.top = `${clampedTop}px`;
     };
 
     private onPointerUp = (e: PointerEvent) => {
@@ -75,6 +78,7 @@ export default class ObjectList {
             y: rect.top,
         };
         localStorage.setItem("objectsListPosition", JSON.stringify(position));
+        this.clampToViewport();
     };
 
     private clampToViewport = () => {
@@ -94,8 +98,11 @@ export default class ObjectList {
         if (rect.top < 0) {
             newTop = 0;
         }
-        this.container.style.right = `${Math.max(0, newRight)}px`;
-        this.container.style.top = `${Math.max(0, newTop)}px`;
+        const maxRight = window.innerWidth - this.container.offsetWidth;
+        newRight = Math.min(maxRight, Math.max(0, newRight));
+        newTop = Math.max(0, newTop);
+        this.container.style.right = `${newRight}px`;
+        this.container.style.top = `${newTop}px`;
     };
 
     private render() {
