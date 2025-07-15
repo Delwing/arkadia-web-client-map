@@ -129,7 +129,14 @@ function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
                 try {
                     luaEnv.parse(tr.script).exec()
                 } catch (e) {
-                    global.line = global.line + "\n" + "Zglos blad w powyzszej lini: " + e.message
+                    const warn = `Zglos blad w powyzszej lini: ${e.message}`
+                    const clickable = client.OutputHandler.makeClickable(
+                        warn,
+                        warn,
+                        () => navigator.clipboard.writeText(rawLine),
+                        'Kopiuj linie'
+                    )
+                    global.line = global.line + "\n" + clickable
 
                 }
                 rawLine = global.line
