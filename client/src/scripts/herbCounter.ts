@@ -3,6 +3,8 @@ import {parseItems} from "./prettyContainers";
 import loadHerbs, {HerbsData} from "./herbsLoader";
 import {stripAnsiCodes} from "../Triggers";
 
+const STORAGE_KEY = "herb_summary";
+
 
 const polishNumbers: Record<string, number> = {
     'jeden': 1, 'jedna': 1, 'jedno': 1,
@@ -80,6 +82,13 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     client.addEventListener('contentWidth', (ev: CustomEvent) => {
         width = ev.detail;
     });
+    let lastSummary: string[] = [];
+    client.addEventListener('storage', (ev: CustomEvent) => {
+        if (ev.detail.key === STORAGE_KEY) {
+            lastSummary = Array.isArray(ev.detail.value) ? ev.detail.value : [];
+        }
+    });
+    client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
 
     async function ensureData() {
         if (!herbs) {
@@ -108,7 +117,6 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     let awaiting = false;
     let left = 0;
     const totals: Record<string, number> = {};
-    let lastSummary: string[] = [];
 
     function finish() {
         const entries = Object.entries(totals);
@@ -153,6 +161,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             lastSummary = lines;
             client.println(lastSummary.join('\n'));
         }
+        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: lastSummary });
         awaiting = false;
         left = 0;
         Object.keys(totals).forEach(k => delete totals[k]);
@@ -198,11 +207,19 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         aliases.push({pattern: /\/ziola_buduj$/, callback: start});
         aliases.push({
             pattern: /\/ziola_pokaz$/, callback: () => {
-                if (lastSummary.length > 0) {
-                    client.println(lastSummary.join('\n'));
-                } else {
-                    client.println('Brak podsumowania.');
-                }
+                const listener = (ev: CustomEvent) => {
+                    if (ev.detail.key === STORAGE_KEY) {
+                        const summary = Array.isArray(ev.detail.value) ? ev.detail.value : [];
+                        if (summary.length > 0) {
+                            client.println(summary.join('\n'));
+                        } else {
+                            client.println('Brak podsumowania.');
+                        }
+                        client.removeEventListener('storage', listener);
+                    }
+                };
+                client.addEventListener('storage', listener);
+                client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
             }
         });
     }

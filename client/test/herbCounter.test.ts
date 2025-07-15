@@ -98,4 +98,13 @@ describe('herb counter', () => {
       expect(l.length).toBeLessThanOrEqual(client.contentWidth);
     });
   });
+
+  test('prints summary from storage', () => {
+    const aliases: { pattern: RegExp; callback: () => void }[] = [];
+    initHerbCounter((client as unknown) as any, aliases);
+    const show = aliases[1].callback as any;
+    show();
+    client.dispatch('storage', { key: 'herb_summary', value: ['line1', 'line2'] });
+    expect(client.println).toHaveBeenCalledWith('line1\nline2');
+  });
 });
