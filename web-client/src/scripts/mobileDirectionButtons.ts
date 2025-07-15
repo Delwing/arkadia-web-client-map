@@ -612,21 +612,28 @@ export default class MobileDirectionButtons {
     private clampToViewport = () => {
         if (!this.container) return;
         const rect = this.container.getBoundingClientRect();
-        let newRight = window.innerWidth - rect.right;
-        let newTop = rect.top;
+        const styles = window.getComputedStyle(this.container);
+        let newRight = parseFloat(styles.right || "5");
+        let newTop = parseFloat(styles.top || "5");
+
+        const margin = 5;
+        const maxRight = window.innerWidth - this.container.offsetWidth - margin;
+
         if (rect.right > window.innerWidth) {
-            newRight = 5;
+            newRight = margin;
+        } else if (rect.left < 0) {
+            newRight = maxRight;
         }
-        if (rect.left < 0) {
-            newRight = window.innerWidth - this.container.offsetWidth - 5;
-        }
+
         if (rect.bottom > window.innerHeight) {
-            newTop = window.innerHeight - this.container.offsetHeight - 5;
+            newTop = window.innerHeight - this.container.offsetHeight - margin;
+        } else if (rect.top < 0) {
+            newTop = margin;
         }
-        if (rect.top < 0) {
-            newTop = 5;
-        }
-        this.container.style.right = `${Math.max(5, newRight)}px`;
-        this.container.style.top = `${Math.max(5, newTop)}px`;
+
+        newRight = Math.min(maxRight, Math.max(margin, newRight));
+        newTop = Math.max(margin, newTop);
+        this.container.style.right = `${newRight}px`;
+        this.container.style.top = `${newTop}px`;
     };
 }
