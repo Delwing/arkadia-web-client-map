@@ -59,4 +59,44 @@ describe('Triggers', () => {
 
     expect(childCb).toHaveBeenCalledTimes(2);
   });
+
+  test('token trigger matches whole words', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn();
+    triggers.registerTokenTrigger('hello', cb);
+
+    triggers.parseLine('say hello there', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  test('token trigger ignores partial matches', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn();
+    triggers.registerTokenTrigger('hell', cb);
+
+    triggers.parseLine('shell', '');
+
+    expect(cb).not.toHaveBeenCalled();
+  });
+
+  test('token trigger matches multi word tokens', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn();
+    triggers.registerTokenTrigger('hello world', cb);
+
+    triggers.parseLine('say hello world there', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  test('token trigger matches three word tokens', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn();
+    triggers.registerTokenTrigger('one two three', cb);
+
+    triggers.parseLine('prefix one two three suffix', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
 });
