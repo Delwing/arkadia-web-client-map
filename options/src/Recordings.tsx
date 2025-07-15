@@ -32,6 +32,17 @@ function Recordings() {
         }
     }
 
+    async function handlePlayTimed(name: string) {
+        if (window.client) {
+            await window.client.loadRecording(name);
+            window.client.replayRecordedMessagesTimed();
+        } else {
+            const events = await getRecording(name);
+            if (!events) return;
+            activeTabAction({ type: 'PLAY_RECORDING_TIMED', events });
+        }
+    }
+
     async function handleDelete(name: string) {
         if (window.client) {
             await window.client.deleteRecording(name);
@@ -91,6 +102,7 @@ function Recordings() {
                         <td>{n}</td>
                         <td className="d-flex gap-2">
                             <Button size="sm" onClick={() => handlePlay(n)}>Play</Button>
+                            <Button size="sm" onClick={() => handlePlayTimed(n)}>Play timed</Button>
                             <Button size="sm" variant="danger" onClick={() => handleDelete(n)}>Delete</Button>
                         </td>
                     </tr>

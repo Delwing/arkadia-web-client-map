@@ -120,6 +120,19 @@ if (chrome.runtime && chrome.runtime.onMessage) {
                     client.print(ev.message);
                 }
             });
+        } else if (msg.type === 'PLAY_RECORDING_TIMED' && Array.isArray(msg.events)) {
+            const events = msg.events as RecordedEvent[];
+            const start = events[0]?.timestamp || 0;
+            events.forEach(ev => {
+                const delay = ev.timestamp - start;
+                setTimeout(() => {
+                    if (ev.direction === 'out') {
+                        client.sendCommand(ev.message);
+                    } else {
+                        client.print(ev.message);
+                    }
+                }, delay);
+            });
         }
     });
 }

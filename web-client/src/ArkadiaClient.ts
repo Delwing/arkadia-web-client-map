@@ -333,6 +333,10 @@ class ArkadiaClient {
         return this.recordedMessages.slice();
     }
 
+    setRecordedMessages(events: RecordedEvent[]) {
+        this.recordedMessages = events.slice();
+    }
+
     replayRecordedMessages() {
         this.recordedMessages.forEach(ev => {
             if (ev.direction === 'in') {
@@ -340,6 +344,21 @@ class ArkadiaClient {
             } else {
                 Output.send('-> ' + ev.message);
             }
+        });
+    }
+
+    replayRecordedMessagesTimed() {
+        if (this.recordedMessages.length === 0) return;
+        const start = this.recordedMessages[0].timestamp;
+        this.recordedMessages.forEach(ev => {
+            const delay = ev.timestamp - start;
+            setTimeout(() => {
+                if (ev.direction === 'in') {
+                    this.processIncomingData(ev.message);
+                } else {
+                    this.sendCommand(ev.message);
+                }
+            }, delay);
         });
     }
 }

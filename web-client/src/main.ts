@@ -642,6 +642,14 @@ if (chrome.runtime && chrome.runtime.onMessage) {
                 await client.loadRecording(msg.name);
                 client.replayRecordedMessages();
             }
+        } else if (msg.type === 'PLAY_RECORDING_TIMED') {
+            if (Array.isArray(msg.events)) {
+                client.setRecordedMessages(msg.events as any[]);
+                client.replayRecordedMessagesTimed();
+            } else if (typeof msg.name === 'string') {
+                await client.loadRecording(msg.name);
+                client.replayRecordedMessagesTimed();
+            }
         } else if (msg.type === 'START_RECORDING' && typeof msg.name === 'string') {
             client.startRecording(msg.name);
         } else if (msg.type === 'STOP_RECORDING') {
