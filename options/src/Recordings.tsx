@@ -13,6 +13,27 @@ function Recordings() {
 
     useEffect(load, []);
 
+    useEffect(() => {
+        if (!window.client) return;
+
+        const startHandler = (name: string) => {
+            setRecordingName(name);
+            setRecording(true);
+        };
+
+        const stopHandler = (save?: boolean) => {
+            setRecording(false);
+            if (save) load();
+        };
+
+        window.client.on('recording.start', startHandler);
+        window.client.on('recording.stop', stopHandler);
+        return () => {
+            window.client.off('recording.start', startHandler);
+            window.client.off('recording.stop', stopHandler);
+        };
+    }, []);
+
     function activeTabAction(msg: any) {
         chrome.tabs?.query({ active: true, currentWindow: true }, tabs => {
             if (tabs[0]?.id) {
