@@ -69,7 +69,7 @@ async function main() {
   await download(DB_URL, tmpPath);
   const rows = query(tmpPath);
   const data = transform(rows);
-  await fs.writeFile(OUT_FILE, JSON.stringify(data, null, 2));
+  await fs.writeFile(OUT_FILE, JSON.stringify(data));
 }
 
 main().catch(err => {
