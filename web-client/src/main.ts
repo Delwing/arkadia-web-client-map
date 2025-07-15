@@ -377,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playbackStop = document.getElementById('playback-stop') as HTMLButtonElement | null;
     const playbackInfo = document.getElementById('playback-info') as HTMLElement | null;
     const playbackReplay = document.getElementById('playback-replay') as HTMLButtonElement | null;
+    const playbackStepBack = document.getElementById('playback-step-back') as HTMLButtonElement | null;
     const playbackStep = document.getElementById('playback-step') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
@@ -485,6 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (playbackReplay) {
         playbackReplay.addEventListener('click', () => {
             client.replayLast();
+        });
+    }
+
+    if (playbackStepBack) {
+        playbackStepBack.addEventListener('click', () => {
+            client.stepBack();
         });
     }
 
