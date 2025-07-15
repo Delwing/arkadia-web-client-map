@@ -54,6 +54,8 @@ describe('herb counter', () => {
     const printed = client.println.mock.calls[0][0];
     expect(printed).toMatch(/3/);
     expect(printed).toMatch(/deliona/);
+    expect(printed).toMatch(/1\.\s+2 deliona/);
+    expect(printed).toMatch(/2\.\s+1 deliona/);
   });
 
   test('splits summary when width is limited', async () => {

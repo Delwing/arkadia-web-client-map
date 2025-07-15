@@ -117,6 +117,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     let awaiting = false;
     let left = 0;
     const totals: Record<string, number> = {};
+    const bagTotals: Record<number, Record<string, number>> = {};
+    let currentBag = 0;
 
     function finish() {
         const entries = Object.entries(totals);
@@ -158,6 +160,16 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             if (normal) {
                 lines.push('---------------------------------------------------------------');
             }
+            if (Object.keys(bagTotals).length > 0) {
+                lines.push('');
+                Object.entries(bagTotals).forEach(([num, contents]) => {
+                    const parts = Object.entries(contents)
+                        .sort((a, b) => a[0].localeCompare(b[0]))
+                        .map(([id, c]) => `${c} ${id}`)
+                        .join(', ');
+                    lines.push(`${num}. ${parts || '(pusty)'}`);
+                });
+            }
             lastSummary = lines;
             client.println(lastSummary.join('\n'));
         }
@@ -165,6 +177,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         awaiting = false;
         left = 0;
         Object.keys(totals).forEach(k => delete totals[k]);
+        currentBag = 0;
+        Object.keys(bagTotals).forEach(k => delete bagTotals[parseInt(k)]);
     }
 
     client.Triggers.registerTrigger(countRegex, (_r, _l, m) => {
@@ -178,12 +192,16 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
 
     client.Triggers.registerTrigger(contentRegex, (_r, _l, m) => {
         if (!awaiting) return undefined;
+        currentBag += 1;
         const items = parseItems(m.groups?.content || '');
+        const bag: Record<string, number> = {};
         items.forEach(it => {
             const key = herbMap[it.name.toLowerCase()] || it.name.toLowerCase();
             const count = typeof it.count === 'number' ? it.count : parseNumber(String(it.count));
             totals[key] = (totals[key] || 0) + count;
+            bag[key] = (bag[key] || 0) + count;
         });
+        bagTotals[currentBag] = bag;
         left -= 1;
         if (left <= 0) finish();
         return undefined;
@@ -191,6 +209,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
 
     client.Triggers.registerTrigger(emptyRegex, () => {
         if (!awaiting) return undefined;
+        currentBag += 1;
+        bagTotals[currentBag] = {};
         left -= 1;
         if (left <= 0) finish();
         return undefined;
@@ -200,6 +220,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         await ensureData();
         awaiting = true;
         lastSummary = [];
+        currentBag = 0;
+        Object.keys(bagTotals).forEach(k => delete bagTotals[parseInt(k)]);
         client.sendCommand('policz swoje woreczki');
     }
 
