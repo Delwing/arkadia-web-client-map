@@ -202,11 +202,13 @@ import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
 import initHerbShop from './scripts/herbShop'
 import initArmorShop from './scripts/armorShop'
+import initHerbCounter from './scripts/herbCounter'
 
 initBagManager(client, aliases)
 initDeposits(client, aliases)
 initHerbShop(client)
 initArmorShop(client)
+initHerbCounter(client, aliases)
 
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
