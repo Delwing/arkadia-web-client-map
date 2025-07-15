@@ -306,6 +306,7 @@ class ArkadiaClient {
         this.recordedMessages = [];
         this.currentRecordingName = name;
         this.isRecording = true;
+        this.emit('recording.start', name);
     }
 
     async stopRecording(save?: boolean) {
@@ -313,6 +314,7 @@ class ArkadiaClient {
         if (save && this.currentRecordingName) {
             await saveRecording(this.currentRecordingName, this.recordedMessages);
         }
+        this.emit('recording.stop', save);
         this.currentRecordingName = null;
     }
 
@@ -338,6 +340,8 @@ class ArkadiaClient {
     }
 
     replayRecordedMessages() {
+        if (this.recordedMessages.length === 0) return;
+        Output.send('== Playback start ==');
         this.recordedMessages.forEach(ev => {
             if (ev.direction === 'in') {
                 this.processIncomingData(ev.message);
@@ -345,11 +349,14 @@ class ArkadiaClient {
                 Output.send('-> ' + ev.message);
             }
         });
+        Output.send('== Playback end ==');
     }
 
     replayRecordedMessagesTimed() {
         if (this.recordedMessages.length === 0) return;
         const start = this.recordedMessages[0].timestamp;
+        const endDelay = this.recordedMessages[this.recordedMessages.length - 1].timestamp - start;
+        Output.send('== Playback start ==');
         this.recordedMessages.forEach(ev => {
             const delay = ev.timestamp - start;
             setTimeout(() => {
@@ -360,6 +367,7 @@ class ArkadiaClient {
                 }
             }, delay);
         });
+        setTimeout(() => Output.send('== Playback end =='), endDelay);
     }
 }
 

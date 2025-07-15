@@ -345,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scriptsButton = document.getElementById('scripts-button') as HTMLButtonElement | null;
     const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
     const recordingsButton = document.getElementById('recordings-button') as HTMLButtonElement | null;
+    const recordingButton = document.getElementById('recording-button') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
 
@@ -426,6 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
             recordingsModal.show();
         });
     }
+
+    if (recordingButton) {
+        recordingButton.addEventListener('click', () => {
+            client.stopRecording(true);
+        });
+    }
+
+    client.on('recording.start', () => {
+        if (recordingButton) recordingButton.style.display = 'block';
+    });
+    client.on('recording.stop', () => {
+        if (recordingButton) recordingButton.style.display = 'none';
+    });
 
     if (wakeLockButton) {
         wakeLockButton.addEventListener('click', () => {
