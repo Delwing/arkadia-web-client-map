@@ -53,5 +53,6 @@ describe('herb counter', () => {
     const printed = client.println.mock.calls[0][0];
     expect(printed).toMatch(/3/);
     expect(printed).toMatch(/zolty jasny kwiat/);
+    expect(printed).toMatch(/deliona/);
   });
 });

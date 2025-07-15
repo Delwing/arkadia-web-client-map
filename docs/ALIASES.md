@@ -35,3 +35,4 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/przejrzyj** - pokazuje zawartość skrzyń z kluczami i magicznymi przedmiotami.
 - **/idz** - wybiera przeciwne wyjście w pomieszczeniu.
 - **/ziola_buduj** - przegląda wszystkie woreczki z ziołami i podsumowuje ich zawartość.
+- **/ziola_pokaz** - wyświetla ostatnie podsumowanie ziół.

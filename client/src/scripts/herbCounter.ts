@@ -95,24 +95,27 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     let awaiting = false;
     let left = 0;
     const totals: Record<string, number> = {};
+    let lastSummary: string[] = [];
 
     function finish() {
         const entries = Object.entries(totals);
         if (entries.length === 0) {
-            client.println('Brak ziol.');
+            lastSummary = ['Brak ziol.'];
+            client.println(lastSummary.join('\n'));
         } else {
             const lines: string[] = [];
-            lines.push('------+-------------------------+-----------------------------------------------');
-            lines.push('  ile |        nazwa            |              dzialanie                        ');
-            lines.push('------+-------------------------+-----------------------------------------------');
+            lines.push('------+--------------------+-------------------------+-----------------------------------------------');
+            lines.push('  ile |        klucz       |        nazwa            |              dzialanie                        ');
+            lines.push('------+--------------------+-------------------------+-----------------------------------------------');
             entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
                 const name = herbs?.herb_id_to_odmiana[id]?.biernik || id;
                 const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
-                const row = `${String(c).padStart(5, ' ')} | ${name.padEnd(23, ' ')} | ${uses}`;
+                const row = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | ${name.padEnd(23, ' ')} | ${uses}`;
                 lines.push(row);
             });
-            lines.push('--------------------------------------------------------------------------------');
-            client.println(lines.join('\n'));
+            lines.push('----------------------------------------------------------------------------------------------------');
+            lastSummary = lines;
+            client.println(lastSummary.join('\n'));
         }
         awaiting = false;
         left = 0;
@@ -151,10 +154,18 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     async function start() {
         await ensureData();
         awaiting = true;
+        lastSummary = [];
         client.sendCommand('policz swoje woreczki');
     }
 
     if (aliases) {
         aliases.push({ pattern: /\/ziola_buduj$/, callback: start });
+        aliases.push({ pattern: /\/ziola_pokaz$/, callback: () => {
+            if (lastSummary.length > 0) {
+                client.println(lastSummary.join('\n'));
+            } else {
+                client.println('Brak podsumowania.');
+            }
+        } });
     }
 }
