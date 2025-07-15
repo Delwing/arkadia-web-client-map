@@ -1,5 +1,5 @@
-import initMagics from '../src/scripts/magics';
-import { colorStringInLine, findClosestColor } from '../src/Colors';
+import initMagics, { MAGICS_COLOR } from '../src/scripts/magics';
+import { colorStringInLine } from '../src/Colors';
 
 describe('magics', () => {
     beforeEach(() => {
@@ -19,7 +19,7 @@ describe('magics', () => {
         const call = client.Triggers.registerTrigger.mock.calls[0];
         const pattern = call[0];
         const callback = call[1];
-        const colored = colorStringInLine('alpha test', pattern, findClosestColor('#B22222'));
+        const colored = colorStringInLine('alpha test', pattern, MAGICS_COLOR);
         expect(callback('alpha test', 'alpha test', {} as any)).toBe(colored);
     });
 });
