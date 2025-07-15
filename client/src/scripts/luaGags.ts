@@ -10,6 +10,8 @@ import mudletColors from "../colors.json"
 import {LuaType} from "lua-in-js/dist/types/utils";
 import Client from "../Client";
 
+const ERROR_COLOR = findClosestColor('#ff0000');
+
 const gagColors = {
     "moje_ciosy": "#f0f8ff",
     "moje_spece": "#adff2f",
@@ -120,7 +122,7 @@ function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
     let container: Triggers | Trigger = parent;
     tr.patterns.forEach((pat) => {
         const pattern = toPattern(pat);
-        const callback = (rawLine: string, _, matches: RegExpMatchArray) => {
+        const callback = (rawLine: string, line: string, matches: RegExpMatchArray) => {
             if (tr.script != undefined) {
                 global.line = rawLine
                 global.matches = matches
@@ -133,10 +135,10 @@ function registerTrigger(parent: Triggers | Trigger, tr: GagTrigger) {
                     const clickable = client.OutputHandler.makeClickable(
                         warn,
                         warn,
-                        () => navigator.clipboard.writeText(rawLine),
+                        () => navigator.clipboard.writeText(line),
                         'Kopiuj linie'
                     )
-                    global.line = global.line + "\n" + clickable
+                    global.line = global.line + "\n" + colorString(clickable, ERROR_COLOR)
 
                 }
                 rawLine = global.line
@@ -246,6 +248,7 @@ function createLuaEnv() {
     const ateam = {
         may_setup_paralyzed_name: (_, name: string) => console.log("Ogluch " + name),
         may_setup_broken_defense: (_, name: string) => console.log("Przelamanie " + name),
+        //may_end_paralyzed_name: (_, name: string) => console.log("Koniec oglucha " + name),
     }
 
     const rex = {

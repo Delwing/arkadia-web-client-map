@@ -14,9 +14,7 @@ import NoSleep from 'nosleep.js';
 import {loadMapData, loadColors} from "./mapDataLoader.ts";
 import {loadNpcData} from "./npcDataLoader.ts";
 import "@map/embedded.js"
-// Password storage functionality removed
 const client = ArkadiaClient
-
 
 import {createElement} from 'react'
 import {createRoot} from 'react-dom/client'
@@ -25,6 +23,8 @@ import Npc from "@options/src/Npc.tsx"
 import Scripts from "@options/src/Scripts.tsx"
 import Aliases from "@options/src/Aliases.tsx"
 import Recordings from "@options/src/Recordings.tsx"
+
+window.clientExtension.sendGMCP = client.sendGmcp
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;

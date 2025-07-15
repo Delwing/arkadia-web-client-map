@@ -45,6 +45,7 @@ export default class Client {
     inLineProcess = false; //TODO figure out something else
     defaultColor = 255;
 
+
     constructor() {
         attachGmcpListener(this);
         window.addEventListener('message', ({data: data}) => {
@@ -143,6 +144,8 @@ export default class Client {
             })
         }
     }
+
+    sendGMCP(_: string, __?: any) {}
 
     onLine(line: string, type: string) {
         this.inLineProcess = true
