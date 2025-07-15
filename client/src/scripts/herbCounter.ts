@@ -1,7 +1,7 @@
 import Client from "../Client";
-import { parseItems } from "./prettyContainers";
-import loadHerbs, { HerbsData } from "./herbsLoader";
-import { stripAnsiCodes } from "../Triggers";
+import {parseItems} from "./prettyContainers";
+import loadHerbs, {HerbsData} from "./herbsLoader";
+import {stripAnsiCodes} from "../Triggers";
 
 
 const polishNumbers: Record<string, number> = {
@@ -134,14 +134,9 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
                         lines.push(' '.repeat(prefixWidth) + uses);
                     }
                 } else {
-                    const base = `${String(c)} ${id}`;
-                    const available = width - stripAnsiCodes(base).length - 1;
-                    if (available >= stripAnsiCodes(uses).length) {
-                        lines.push(`${base} ${uses}`);
-                    } else {
-                        lines.push(base);
-                        lines.push(' '.repeat(stripAnsiCodes(base).length + 1) + uses);
-                    }
+                    const base = `${String(c).padStart(3, ' ')} ${id}`;
+                    lines.push(base);
+                    lines.push(' '.repeat(4) + uses);
                 }
             });
             if (normal) {
@@ -192,13 +187,15 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     }
 
     if (aliases) {
-        aliases.push({ pattern: /\/ziola_buduj$/, callback: start });
-        aliases.push({ pattern: /\/ziola_pokaz$/, callback: () => {
-            if (lastSummary.length > 0) {
-                client.println(lastSummary.join('\n'));
-            } else {
-                client.println('Brak podsumowania.');
+        aliases.push({pattern: /\/ziola_buduj$/, callback: start});
+        aliases.push({
+            pattern: /\/ziola_pokaz$/, callback: () => {
+                if (lastSummary.length > 0) {
+                    client.println(lastSummary.join('\n'));
+                } else {
+                    client.println('Brak podsumowania.');
+                }
             }
-        } });
+        });
     }
 }
