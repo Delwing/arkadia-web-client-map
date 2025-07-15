@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Button, Table, Form } from 'react-bootstrap';
+/// <reference path="./types.d.ts" />
 import { getRecordingNames, deleteRecording, getRecording, saveRecording } from './recordingStorage';
 
 function Recordings() {
