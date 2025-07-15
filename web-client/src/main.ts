@@ -125,6 +125,28 @@ function checkSplitView() {
 
 outputWrapper.addEventListener('scroll', checkSplitView);
 
+function closeHistoryScrollback() {
+    outputWrapper.scrollTop = outputWrapper.scrollHeight;
+}
+
+outputWrapper.addEventListener('mouseup', (e) => {
+    if (e.button === 1) {
+        closeHistoryScrollback();
+    }
+});
+
+let lastTap = 0;
+outputWrapper.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+        e.preventDefault();
+        closeHistoryScrollback();
+    }
+    lastTap = now;
+});
+
+outputWrapper.addEventListener('dblclick', closeHistoryScrollback);
+
 function updateProgress(p: number, loaded?: number, total?: number) {
     progressContainer.style.display = 'block';
     progressBar.style.width = `${p}%`;
