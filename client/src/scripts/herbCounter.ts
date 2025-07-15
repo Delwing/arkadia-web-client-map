@@ -1,6 +1,7 @@
 import Client from "../Client";
 import { parseItems } from "./prettyContainers";
 import loadHerbs, { HerbsData } from "./herbsLoader";
+import { stripAnsiCodes } from "../Triggers";
 
 
 const polishNumbers: Record<string, number> = {
@@ -74,6 +75,10 @@ function parseNumber(str: string): number {
 export default async function initHerbCounter(client: Client, aliases?: { pattern: RegExp; callback: Function }[]) {
     let herbs: HerbsData | null = null;
     const herbMap: Record<string, string> = {};
+    let width = client.contentWidth;
+    client.addEventListener('contentWidth', (ev: CustomEvent) => {
+        width = ev.detail;
+    });
 
     async function ensureData() {
         if (!herbs) {
@@ -104,15 +109,44 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             client.println(lastSummary.join('\n'));
         } else {
             const lines: string[] = [];
-            lines.push('------+--------------------+-----------------------------------------------');
-            lines.push('  ile |        nazwa       |              dzialanie                        ');
-            lines.push('------+--------------------+-----------------------------------------------');
+            const normal = width >= 63;
+            if (normal) {
+                lines.push('------+--------------------+-----------------------------------');
+                lines.push('  ile |        nazwa       |              dzialanie            ');
+                lines.push('------+--------------------+-----------------------------------');
+            }
+
+            const prefixWidth = normal ? 28 : 0;
+
             entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
                 const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
-                const row = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | ${uses}`;
-                lines.push(row);
+
+                if (normal) {
+                    const base = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | `;
+                    const available = width - stripAnsiCodes(base).length;
+                    if (available >= stripAnsiCodes(uses).length) {
+                        lines.push(base + uses);
+                    } else if (available > 0) {
+                        lines.push(base + uses.slice(0, available));
+                        lines.push(' '.repeat(stripAnsiCodes(base).length) + uses.slice(available));
+                    } else {
+                        lines.push(`${String(c).padStart(5, ' ')} | ${id}`);
+                        lines.push(' '.repeat(prefixWidth) + uses);
+                    }
+                } else {
+                    const base = `${String(c)} ${id}`;
+                    const available = width - stripAnsiCodes(base).length - 1;
+                    if (available >= stripAnsiCodes(uses).length) {
+                        lines.push(`${base} ${uses}`);
+                    } else {
+                        lines.push(base);
+                        lines.push(' '.repeat(stripAnsiCodes(base).length + 1) + uses);
+                    }
+                }
             });
-            lines.push('--------------------------------------------------------------------------');
+            if (normal) {
+                lines.push('---------------------------------------------------------------');
+            }
             lastSummary = lines;
             client.println(lastSummary.join('\n'));
         }
