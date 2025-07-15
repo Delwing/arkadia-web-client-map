@@ -1,5 +1,4 @@
 import Client from "./Client";
-import {client} from "./main";
 
 interface ObjectData {
     attack_num: boolean | number
@@ -122,8 +121,8 @@ export default class TeamManager {
             }
         }, tag);
         triggers.registerTrigger(/^Dolaczasz do druzyny/, (): undefined => {
-            client.sendGMCP("objects.nums")
-            client.sendGMCP("objects.data")
+            this.client.sendGMCP("objects.nums")
+            this.client.sendGMCP("objects.data")
         })
     }
 
