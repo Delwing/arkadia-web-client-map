@@ -84,21 +84,24 @@ export default class ObjectList {
     private clampToViewport = () => {
         if (!this.container) return;
         const rect = this.container.getBoundingClientRect();
-        let newRight = window.innerWidth - rect.right;
-        let newTop = rect.top;
+        const styles = window.getComputedStyle(this.container);
+        let newRight = parseFloat(styles.right || "0");
+        let newTop = parseFloat(styles.top || "0");
+
+        const maxRight = window.innerWidth - this.container.offsetWidth;
+
         if (rect.right > window.innerWidth) {
             newRight = 0;
+        } else if (rect.left < 0) {
+            newRight = maxRight;
         }
-        if (rect.left < 0) {
-            newRight = window.innerWidth - this.container.offsetWidth;
-        }
+
         if (rect.bottom > window.innerHeight) {
             newTop = window.innerHeight - this.container.offsetHeight;
-        }
-        if (rect.top < 0) {
+        } else if (rect.top < 0) {
             newTop = 0;
         }
-        const maxRight = window.innerWidth - this.container.offsetWidth;
+
         newRight = Math.min(maxRight, Math.max(0, newRight));
         newTop = Math.max(0, newTop);
         this.container.style.right = `${newRight}px`;
