@@ -14,6 +14,7 @@ export default class ObjectList {
         this.client = client;
         this.container = document.getElementById("objects-list");
         this.setupDraggable();
+        window.addEventListener("resize", this.clampToViewport);
         this.client.addEventListener("gmcp.objects.nums", () => this.render());
         this.client.addEventListener("gmcp.objects.data", () => this.render());
         this.client.addEventListener("gmcp.char.state", () => this.render());
@@ -33,6 +34,7 @@ export default class ObjectList {
                 console.error("Error parsing saved objects list position", e);
             }
         }
+        this.clampToViewport();
 
         this.container.addEventListener("pointerdown", this.onPointerDown);
         window.addEventListener("pointermove", this.onPointerMove);
@@ -73,6 +75,27 @@ export default class ObjectList {
             y: rect.top,
         };
         localStorage.setItem("objectsListPosition", JSON.stringify(position));
+    };
+
+    private clampToViewport = () => {
+        if (!this.container) return;
+        const rect = this.container.getBoundingClientRect();
+        let newRight = window.innerWidth - rect.right;
+        let newTop = rect.top;
+        if (rect.right > window.innerWidth) {
+            newRight = 0;
+        }
+        if (rect.left < 0) {
+            newRight = window.innerWidth - this.container.offsetWidth;
+        }
+        if (rect.bottom > window.innerHeight) {
+            newTop = window.innerHeight - this.container.offsetHeight;
+        }
+        if (rect.top < 0) {
+            newTop = 0;
+        }
+        this.container.style.right = `${Math.max(0, newRight)}px`;
+        this.container.style.top = `${Math.max(0, newTop)}px`;
     };
 
     private render() {

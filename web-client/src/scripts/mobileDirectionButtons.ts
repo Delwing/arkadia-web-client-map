@@ -55,12 +55,14 @@ export default class MobileDirectionButtons {
         this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
+        this.clampToViewport();
         this.setupKeyboardHandlers();
 
         // Listen for window resize to check if mobile view
         window.addEventListener('resize', () => {
             this.checkMobile();
             this.scrollToBottom();
+            this.clampToViewport();
         });
 
         // Listen for UI settings changes
@@ -291,6 +293,7 @@ export default class MobileDirectionButtons {
                 console.error('Error parsing saved position:', e);
             }
         }
+        this.clampToViewport();
 
         // Add touch event listeners for long press and drag
         this.container.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
@@ -593,4 +596,25 @@ export default class MobileDirectionButtons {
             this.zasList!.appendChild(b);
         });
     }
+
+    private clampToViewport = () => {
+        if (!this.container) return;
+        const rect = this.container.getBoundingClientRect();
+        let newRight = window.innerWidth - rect.right;
+        let newTop = rect.top;
+        if (rect.right > window.innerWidth) {
+            newRight = 5;
+        }
+        if (rect.left < 0) {
+            newRight = window.innerWidth - this.container.offsetWidth - 5;
+        }
+        if (rect.bottom > window.innerHeight) {
+            newTop = window.innerHeight - this.container.offsetHeight - 5;
+        }
+        if (rect.top < 0) {
+            newTop = 5;
+        }
+        this.container.style.right = `${Math.max(5, newRight)}px`;
+        this.container.style.top = `${Math.max(5, newTop)}px`;
+    };
 }
