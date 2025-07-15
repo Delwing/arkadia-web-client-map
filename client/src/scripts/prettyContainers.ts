@@ -339,29 +339,30 @@ const defaultTransforms: TransformDefinition[] = [
 ]
 
 
-const keyRegexp = loadMagicKeys().then(keys => {
-    const keyRegexp = createRegexpFilter(keys)
-    defs.push({name: "klucze", filter: keyRegexp})
-    defaultTransforms.push({
-        check: keyRegexp, transform: (item) => colorString(item, KEYS_COLOR)
-    })
-    return keyRegexp
-})
-
-const magicRegexp = loadMagics().then(magics => {
-    const magicRegexp = createRegexpFilter(magics)
-    defaultTransforms.push({
-        check: magicRegexp, transform: (item) => colorString(item, MAGICS_COLOR)
-    })
-    return magicRegexp
-})
-
-Promise.all([keyRegexp, magicRegexp]).then(([keyTest, magicTest]) => {
-    magicAndKeysFilter = (item: ContainerItem) => keyTest(item.name) || magicTest(item.name)
-})
+async function loadMagicAndKeysFilter() {
+    try {
+        const [keys, magics] = await Promise.all([loadMagicKeys(), loadMagics()]);
+        const keyRegexp = createRegexpFilter(keys);
+        defs.push({ name: "klucze", filter: keyRegexp });
+        defaultTransforms.push({
+            check: keyRegexp,
+            transform: (item) => colorString(item, KEYS_COLOR),
+        });
+        const magicRegexp = createRegexpFilter(magics);
+        defaultTransforms.push({
+            check: magicRegexp,
+            transform: (item) => colorString(item, MAGICS_COLOR),
+        });
+        magicAndKeysFilter = (item: ContainerItem) =>
+            keyRegexp(item.name) || magicRegexp(item.name);
+    } catch (e) {
+        console.error('Failed to load magic keys or magics:', e);
+    }
+}
 
 
 export default function initContainers(client: Client) {
+    loadMagicAndKeysFilter();
     const tag = 'prettyContainers';
     let enabled = false;
     let columns = 1;
