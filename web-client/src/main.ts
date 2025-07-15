@@ -241,6 +241,7 @@ client.on('message', (message: string, type?: string) => {
 // Track connection state
 let isConnected = false;
 let isConnecting = false;
+let playbackMode = false;
 
 // Function to update the connect button state
 function updateConnectButtons() {
@@ -270,7 +271,7 @@ function updateConnectButtons() {
     }
 
     if (authOverlay) {
-        authOverlay.style.display = isConnected ? 'none' : 'flex';
+        authOverlay.style.display = (isConnected || playbackMode) ? 'none' : 'flex';
     }
 }
 
@@ -439,6 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     client.on('recording.stop', () => {
         if (recordingButton) recordingButton.style.display = 'none';
+    });
+
+    client.on('playback.start', () => {
+        playbackMode = true;
+        updateConnectButtons();
+    });
+
+    client.on('playback.stop', () => {
+        playbackMode = false;
+        updateConnectButtons();
     });
 
     if (wakeLockButton) {

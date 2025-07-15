@@ -24,6 +24,8 @@ class ArkadiaClient {
     private isRecording = false;
     private recordedMessages: RecordedEvent[] = [];
     private currentRecordingName: string | null = null;
+    private playbackTimeouts: number[] = [];
+    private isPlaying = false;
 
 
     /**
@@ -331,6 +333,17 @@ class ArkadiaClient {
         return deleteRecording(name);
     }
 
+    stopPlayback() {
+        if (this.playbackTimeouts.length) {
+            this.playbackTimeouts.forEach(t => clearTimeout(t));
+            this.playbackTimeouts = [];
+        }
+        if (this.isPlaying) {
+            this.isPlaying = false;
+            this.emit('playback.stop');
+        }
+    }
+
     getRecordedMessages() {
         return this.recordedMessages.slice();
     }
@@ -341,6 +354,9 @@ class ArkadiaClient {
 
     replayRecordedMessages() {
         if (this.recordedMessages.length === 0) return;
+        this.stopPlayback();
+        this.isPlaying = true;
+        this.emit('playback.start');
         Output.send('== Playback start ==');
         this.recordedMessages.forEach(ev => {
             if (ev.direction === 'in') {
@@ -350,24 +366,33 @@ class ArkadiaClient {
             }
         });
         Output.send('== Playback end ==');
+        this.stopPlayback();
     }
 
     replayRecordedMessagesTimed() {
         if (this.recordedMessages.length === 0) return;
+        this.stopPlayback();
+        this.isPlaying = true;
+        this.emit('playback.start');
         const start = this.recordedMessages[0].timestamp;
         const endDelay = this.recordedMessages[this.recordedMessages.length - 1].timestamp - start;
         Output.send('== Playback start ==');
         this.recordedMessages.forEach(ev => {
             const delay = ev.timestamp - start;
-            setTimeout(() => {
+            const id = window.setTimeout(() => {
                 if (ev.direction === 'in') {
                     this.processIncomingData(ev.message);
                 } else {
                     this.sendCommand(ev.message);
                 }
             }, delay);
+            this.playbackTimeouts.push(id);
         });
-        setTimeout(() => Output.send('== Playback end =='), endDelay);
+        const endId = window.setTimeout(() => {
+            Output.send('== Playback end ==');
+            this.stopPlayback();
+        }, endDelay);
+        this.playbackTimeouts.push(endId);
     }
 }
 
