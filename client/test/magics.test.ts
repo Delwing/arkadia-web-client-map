@@ -11,12 +11,12 @@ describe('magics', () => {
     });
 
     test('registers triggers from remote list', async () => {
-        const client = { Triggers: { registerTrigger: jest.fn() } } as any;
+        const client = { Triggers: { registerTokenTrigger: jest.fn() } } as any;
         await initMagics(client);
         expect(fetch).toHaveBeenCalled();
         expect(localStorage.getItem('magics')).not.toBeNull();
-        expect(client.Triggers.registerTrigger).toHaveBeenCalledTimes(2);
-        const call = client.Triggers.registerTrigger.mock.calls[0];
+        expect(client.Triggers.registerTokenTrigger).toHaveBeenCalledTimes(2);
+        const call = client.Triggers.registerTokenTrigger.mock.calls[0];
         const pattern = call[0];
         const callback = call[1];
         const colored = colorStringInLine('alpha test', pattern, MAGICS_COLOR);

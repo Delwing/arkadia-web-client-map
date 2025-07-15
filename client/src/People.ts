@@ -23,7 +23,7 @@ export default class People {
                 return
             }
             count++
-            this.client.Triggers.registerTrigger(replacement.description, (rawLine, _line, matches) => {
+            this.client.Triggers.registerTokenTrigger(replacement.description, (rawLine, _line, matches) => {
                 const index = matches.index
                 return rawLine.substring(0, index + replacement.description.length) + ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)` + rawLine.substring(index + replacement.description.length)
             }, this.tag)

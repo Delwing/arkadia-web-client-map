@@ -8,7 +8,7 @@ export default async function initMagicKeys(client: Client) {
     try {
         const keys = await loadMagicKeys();
         keys.forEach((pattern: string) => {
-            client.Triggers.registerTrigger(pattern, (raw) => {
+            client.Triggers.registerTokenTrigger(pattern, (raw) => {
                 return colorStringInLine(raw, pattern, KEYS_COLOR);
             }, tag);
         });
