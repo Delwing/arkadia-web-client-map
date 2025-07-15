@@ -228,8 +228,6 @@ class ArkadiaClient {
             return
         }
 
-        data.match(TELNET_OPTION_REGEX)?.forEach(optionData => {})
-
         const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this)).trim();
         this.flushMessageBuffer()
         this.emit('message', leftOver.replace(/[ÿù]/g, ""))
@@ -267,6 +265,8 @@ class ArkadiaClient {
             // Handle special case for gmcp_msgs
             if (type === "gmcp_msgs") {
                 payload = payload.replace(//g, "\\u001B");
+            } else {
+                console.log(type, payload)
             }
 
             try {
@@ -439,6 +439,7 @@ class ArkadiaClient {
         if (ev.direction === 'in') {
             this.processIncomingData(ev.message);
         } else {
+            window.clientExtension.sendCommand(ev.message)
             this.sendCommand(ev.message);
         }
     }

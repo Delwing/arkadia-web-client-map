@@ -95,6 +95,8 @@ export default class ObjectManager {
                 state: obj.state ?? obj.hp,
                 attack_num: obj.attack_num,
                 avatar_target: obj.avatar_target,
+                attack_target: obj.attack_target,
+                defense_target: obj.defense_target,
             } as Obj;
         };
 

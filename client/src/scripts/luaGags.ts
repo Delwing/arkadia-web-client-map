@@ -248,7 +248,8 @@ function createLuaEnv() {
     const ateam = {
         may_setup_paralyzed_name: (_, name: string) => console.log("Ogluch " + name),
         may_setup_broken_defense: (_, name: string) => console.log("Przelamanie " + name),
-        //may_end_paralyzed_name: (_, name: string) => console.log("Koniec oglucha " + name),
+        may_end_paralyzed_name: (_, name: string) => console.log("Koniec oglucha " + name),
+        team_names: new luainjs.Table(client.TeamManager.getTeamMembers())
     }
 
     const rex = {
@@ -351,13 +352,7 @@ function createLuaEnv() {
     return {global, luaEnv};
 }
 
-let {global, luaEnv} = createLuaEnv();
-// @ts-ignore
-const luaFiles = import.meta.glob("../lua/**/*.lua", {query: "?raw", eager: true});
-Object.values(luaFiles).forEach((file) => {
-    // @ts-ignore
-    luaEnv.parse(file.default).exec()
-});
+let global, luaEnv;
 
 
 function createMatches(matches: RegExpMatchArray) {
@@ -372,5 +367,15 @@ export default function registerLuaGagTriggers(client: Client) {
     client.addEventListener("playBeep", () => {
         client.playSound("beep")
     })
+
+    let result = createLuaEnv();
+    global = result.global;
+    luaEnv = result.luaEnv;
+    // @ts-ignore
+    const luaFiles = import.meta.glob("../lua/**/*.lua", {query: "?raw", eager: true});
+    Object.values(luaFiles).forEach((file) => {
+        // @ts-ignore
+        luaEnv.parse(file.default).exec()
+    });
 }
 

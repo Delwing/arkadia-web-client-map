@@ -98,24 +98,34 @@ function Recordings() {
     async function uploadRecordings(event: ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0];
         if (!file) return;
+        
         try {
             const text = await file.text();
             const data = JSON.parse(text);
-            if (typeof data !== 'object' || data === null) throw new Error();
-            const entries = Object.entries<Record<string, any[]>>(data as any);
+            if (typeof data !== 'object' || data === null) throw new Error('Invalid JSON structure');
+            
+            const entries = Object.entries<any[]>(data);
             for (const [name, events] of entries) {
                 if (Array.isArray(events)) {
-                    await saveRecording(name, events as any[]);
+                    await saveRecording(name, events);
                 }
             }
             setMessage('Nagrania wczytane');
             load();
         } catch (e) {
+            console.error('Error uploading recordings:', e);
             setMessage('Błędny plik');
         } finally {
-            if (fileInput.current) fileInput.current.value = '';
+            if (fileInput.current) {
+                fileInput.current.value = '';
+            }
         }
     }
+
+    // Function to trigger file input click
+    const triggerFileInput = () => {
+        fileInput.current?.click();
+    };
 
     function start() {
         const name = recordingName.trim();
@@ -175,13 +185,12 @@ function Recordings() {
             </Table>
             <div className="d-flex gap-2">
                 <Button size="sm" onClick={downloadRecordings}>Eksport</Button>
-                <Form.Label as={Button} size="sm" htmlFor="recordingsFile">Import</Form.Label>
-                <Form.Control
-                    id="recordingsFile"
+                <Button size="sm" onClick={triggerFileInput}>Import</Button>
+                <input
                     ref={fileInput}
                     type="file"
                     accept="application/json"
-                    className="d-none"
+                    style={{ display: 'none' }}
                     onChange={uploadRecordings}
                 />
             </div>

@@ -53,38 +53,40 @@ export default class TeamManager {
                 }
             }
 
-            Object.entries(data).forEach(([num, obj]) => {
-                if (!obj || !obj.living || !obj.team) {
-                    return;
-                }
-                const name = obj.desc;
-                if (!name) {
-                    return;
-                }
-
-                this.members.add(name);
-
-                if (obj.team_leader) {
-                    if (this.leader !== name) {
-                        this.leaderTargetNotifiedNum = undefined;
-                    }
-                    this.leader = name;
-
-                    if (obj.attack_target) {
-                        if (obj.avatar_target !== true) {
-                            if (this.leaderTargetNotifiedNum !== num) {
-                                this.client.sendEvent('teamLeaderTargetNoAvatar');
-                                this.leaderTargetNotifiedNum = num;
-                            }
-                        } else {
-                            this.leaderTargetNotifiedNum = undefined;
-                        }
-                    } else {
-                        this.leaderTargetNotifiedNum = undefined;
-                    }
-                }
-            });
+            this.checkTeam(obj, id);
         });
+    }
+
+    private checkTeam(obj: ObjectData, id: string) {
+        if (!obj || !obj.team) {
+            return;
+        }
+        const name = this.accumulatedObjectsData[id].desc;
+        if (!name) {
+            return;
+        }
+
+        this.members.add(name);
+
+        if (obj.team_leader) {
+            if (this.leader !== name) {
+                this.leaderTargetNotifiedNum = undefined;
+            }
+            this.leader = name;
+
+            if (obj.attack_target) {
+                if (obj.avatar_target !== true) {
+                    if (this.leaderTargetNotifiedNum !== id) {
+                        this.client.sendEvent('teamLeaderTargetNoAvatar');
+                        this.leaderTargetNotifiedNum = id;
+                    }
+                } else {
+                    this.leaderTargetNotifiedNum = undefined;
+                }
+            } else {
+                this.leaderTargetNotifiedNum = undefined;
+            }
+        }
     }
 
     private registerTriggers() {
