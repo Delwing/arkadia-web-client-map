@@ -349,11 +349,19 @@ function createLuaEnv() {
 }
 
 let {global, luaEnv} = createLuaEnv();
-// @ts-ignore
-const luaFiles = import.meta.glob("../lua/**/*.lua", {query: "?raw", eager: true});
-Object.values(luaFiles).forEach((file) => {
-    // @ts-ignore
-    luaEnv.parse(file.default).exec()
+// Load lua files using import.meta.glob in web-client, fall back to webpack in extension
+let luaSources: string[] = [];
+// @ts-ignore - vite replaces import.meta.glob
+if (import.meta && typeof (import.meta as any).glob === "function") {
+    // @ts-ignore - vite replaces import.meta.glob
+    const modules = import.meta.glob("../lua/**/*.lua", {query: "?raw", eager: true});
+    luaSources = Object.values(modules).map((m: any) => m.default);
+} else if (typeof (require as any).context === "function") {
+    const ctx = (require as any).context("../lua", true, /\.lua$/);
+    luaSources = ctx.keys().map((key: string) => ctx(key) as string);
+}
+luaSources.forEach((content) => {
+    luaEnv.parse(content).exec();
 });
 
 
