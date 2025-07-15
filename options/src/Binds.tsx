@@ -78,13 +78,13 @@ function Binds() {
         });
     }, []);
 
-    function handleCapture(name: keyof BindSettings, ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    function handleCapture(name: keyof BindSettings, ev: React.KeyboardEvent) {
         ev.preventDefault();
         const { code, ctrlKey, altKey, shiftKey } = ev;
         setBinds(prev => ({ ...prev, [name]: { key: code, ctrl: ctrlKey, alt: altKey, shift: shiftKey } }));
     }
 
-    function handleCaptureDir(dir: keyof DirectionBinds, ev: React.KeyboardEvent<HTMLInputElement>) {
+    function handleCaptureDir(dir: keyof DirectionBinds, ev: React.KeyboardEvent) {
         ev.preventDefault();
         const { code, ctrlKey, altKey, shiftKey } = ev;
         setBinds(prev => ({

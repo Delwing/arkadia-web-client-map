@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Table, Form } from 'react-bootstrap';
 import { getRecordingNames, deleteRecording, getRecording } from './recordingStorage';
+/// <reference path="./types.d.ts" />
 
 function Recordings() {
     const [names, setNames] = useState<string[]>([]);
