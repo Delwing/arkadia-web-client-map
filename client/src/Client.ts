@@ -160,6 +160,8 @@ export default class Client {
         }, {once: true})
 
         const ansiRegex =/\x1b\[[0-9;]*m/g
+        // Preserve the color already present at the beginning of the line so
+        // that trigger output keeps its original formatting
         const initialColor = line.substring(0, line.indexOf("m") + 1)
 
         line = this.Triggers.parseMultiline(line, type)
