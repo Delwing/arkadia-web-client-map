@@ -12,9 +12,6 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "types": [
-      "./src/types.d.ts"
-    ],
 
     /* Linting */
     "strict": true,
