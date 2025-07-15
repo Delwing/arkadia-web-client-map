@@ -20,7 +20,7 @@ export default class TeamManager {
     private leaderId?: string;
     private tag = 'teamManager';
     private accumulatedObjectsData = {}
-    private playerNum?: string = "3601228"
+    private playerNum?: string;
     private leaderAttackTargetId?: string
     private avatarAttackTargetId?: string
     private attackTargetId?: string
