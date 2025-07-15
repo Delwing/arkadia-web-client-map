@@ -133,6 +133,14 @@ h1 {
   min-width: 350px
 }
 
+#recording-button {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1012;
+  display: none;
+}
+
 #app {
   max-width: 90vw;
   margin: 0 auto;

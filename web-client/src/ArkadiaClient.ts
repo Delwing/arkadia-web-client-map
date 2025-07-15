@@ -1,13 +1,9 @@
 import { parseAnsiPatterns } from './ansiParser';
+import { saveRecording, getRecording, getRecordingNames, deleteRecording, RecordedEvent } from './recordingStorage';
 
 // Event emitter types
 type EventListener = (...args: any[]) => void;
 type EventMap = Record<string, EventListener[]>;
-
-export interface ClientMessageEvent {
-    message: string;
-    timestamp: Date;
-}
 
 // WebSocket configuration
 const WEBSOCKET_URL = 'wss://arkadia.rpg.pl/wss';
@@ -25,6 +21,11 @@ class ArkadiaClient {
     private lastConnectManual = true;
     private pingTimer: number | null = null;
     private messageBuffer: {text: string, type: string}[] = []
+    private isRecording = false;
+    private recordedMessages: RecordedEvent[] = [];
+    private currentRecordingName: string | null = null;
+    private playbackTimeouts: number[] = [];
+    private isPlaying = false;
 
 
     /**
@@ -68,6 +69,13 @@ class ArkadiaClient {
             this.socket.onmessage = (event: MessageEvent<string>) => {
                 try {
                     const decodedData = atob(event.data);
+                    if (this.isRecording) {
+                        this.recordedMessages.push({
+                            message: decodedData,
+                            timestamp: Date.now(),
+                            direction: 'in'
+                        });
+                    }
                     this.processIncomingData(decodedData);
                 } catch (error) {
                     console.error('Error processing incoming message:', error);
@@ -197,6 +205,13 @@ class ArkadiaClient {
      * Compatibility wrapper matching old client API
      */
     sendCommand(command: string): void {
+        if (this.isRecording) {
+            this.recordedMessages.push({
+                message: command,
+                timestamp: Date.now(),
+                direction: 'out'
+            });
+        }
         this.send(command);
     }
 
@@ -287,6 +302,97 @@ class ArkadiaClient {
         window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${type}`, text), {once: true})
         Output.send(parseAnsiPatterns(text), type);
         window.clientExtension.sendEvent('line-sent')
+    }
+
+    startRecording(name: string) {
+        this.recordedMessages = [];
+        this.currentRecordingName = name;
+        this.isRecording = true;
+        this.emit('recording.start', name);
+    }
+
+    async stopRecording(save?: boolean) {
+        this.isRecording = false;
+        if (save && this.currentRecordingName) {
+            await saveRecording(this.currentRecordingName, this.recordedMessages);
+        }
+        this.emit('recording.stop', save);
+        this.currentRecordingName = null;
+    }
+
+    async loadRecording(name: string) {
+        const data = await getRecording(name);
+        this.recordedMessages = data || [];
+    }
+
+    listRecordings() {
+        return getRecordingNames();
+    }
+
+    deleteRecording(name: string) {
+        return deleteRecording(name);
+    }
+
+    stopPlayback() {
+        if (this.playbackTimeouts.length) {
+            this.playbackTimeouts.forEach(t => clearTimeout(t));
+            this.playbackTimeouts = [];
+        }
+        if (this.isPlaying) {
+            this.isPlaying = false;
+            this.emit('playback.stop');
+        }
+    }
+
+    getRecordedMessages() {
+        return this.recordedMessages.slice();
+    }
+
+    setRecordedMessages(events: RecordedEvent[]) {
+        this.recordedMessages = events.slice();
+    }
+
+    replayRecordedMessages() {
+        if (this.recordedMessages.length === 0) return;
+        this.stopPlayback();
+        this.isPlaying = true;
+        this.emit('playback.start');
+        Output.send('== Playback start ==');
+        this.recordedMessages.forEach(ev => {
+            if (ev.direction === 'in') {
+                this.processIncomingData(ev.message);
+            } else {
+                Output.send('-> ' + ev.message);
+            }
+        });
+        Output.send('== Playback end ==');
+        this.stopPlayback();
+    }
+
+    replayRecordedMessagesTimed() {
+        if (this.recordedMessages.length === 0) return;
+        this.stopPlayback();
+        this.isPlaying = true;
+        this.emit('playback.start');
+        const start = this.recordedMessages[0].timestamp;
+        const endDelay = this.recordedMessages[this.recordedMessages.length - 1].timestamp - start;
+        Output.send('== Playback start ==');
+        this.recordedMessages.forEach(ev => {
+            const delay = ev.timestamp - start;
+            const id = window.setTimeout(() => {
+                if (ev.direction === 'in') {
+                    this.processIncomingData(ev.message);
+                } else {
+                    this.sendCommand(ev.message);
+                }
+            }, delay);
+            this.playbackTimeouts.push(id);
+        });
+        const endId = window.setTimeout(() => {
+            Output.send('== Playback end ==');
+            this.stopPlayback();
+        }, endDelay);
+        this.playbackTimeouts.push(endId);
     }
 }
 

@@ -37,6 +37,7 @@
         <span id="break-item-warning"></span>
     </div>
     <div id="objects-list"></div>
+    <button id="recording-button" class="btn btn-danger btn-sm" style="position:absolute;top:0.5rem;right:0.5rem;z-index:1012;display:none;">Stop &amp; Save</button>
     <span id="content-width-measure" style="visibility:hidden;position:absolute;white-space:pre">M</span>
     <div id="options-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -103,6 +104,19 @@
             </div>
         </div>
     </div>
+    <div id="recordings-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nagrania</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="recordings-options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="input-area">
         <input type="search" id="message-input" autocomplete="false" autocapitalize="off" spellcheck="false"/>
         <button id="send-button">➢</button>
@@ -126,6 +140,9 @@
                 </li>
                 <li>
                     <button class="w-100 p-1" id="aliases-button">Aliasy</button>
+                </li>
+                <li>
+                    <button class="w-100 p-1" id="recordings-button">Nagrania</button>
                 </li>
                 <li>
                     <button class="w-100 p-1" id="docs-button">Docs</button>

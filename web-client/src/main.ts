@@ -24,6 +24,7 @@ import Binds from "@options/src/Binds.tsx"
 import Npc from "@options/src/Npc.tsx"
 import Scripts from "@options/src/Scripts.tsx"
 import Aliases from "@options/src/Aliases.tsx"
+import Recordings from "@options/src/Recordings.tsx"
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
@@ -245,6 +246,7 @@ client.on('message', (message: string, type?: string) => {
 // Track connection state
 let isConnected = false;
 let isConnecting = false;
+let playbackMode = false;
 
 // Function to update the connect button state
 function updateConnectButtons() {
@@ -274,7 +276,7 @@ function updateConnectButtons() {
     }
 
     if (authOverlay) {
-        authOverlay.style.display = isConnected ? 'none' : 'flex';
+        authOverlay.style.display = (isConnected || playbackMode) ? 'none' : 'flex';
     }
 }
 
@@ -368,6 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
     const scriptsButton = document.getElementById('scripts-button') as HTMLButtonElement | null;
     const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
+    const recordingsButton = document.getElementById('recordings-button') as HTMLButtonElement | null;
+    const recordingButton = document.getElementById('recording-button') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
 
@@ -382,6 +386,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const scriptsModal = scriptsModalElement ? new Modal(scriptsModalElement) : null;
     const aliasesModalElement = document.getElementById('aliases-modal');
     const aliasesModal = aliasesModalElement ? new Modal(aliasesModalElement) : null;
+    const recordingsModalElement = document.getElementById('recordings-modal');
+    const recordingsModal = recordingsModalElement ? new Modal(recordingsModalElement) : null;
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
@@ -405,6 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (aliasesModal) {
             aliasesModal.hide();
+        }
+        if (recordingsModal) {
+            recordingsModal.hide();
         }
     });
 
@@ -438,6 +447,35 @@ document.addEventListener('DOMContentLoaded', () => {
             aliasesModal.show();
         });
     }
+
+    if (recordingsButton && recordingsModal) {
+        recordingsButton.addEventListener('click', () => {
+            recordingsModal.show();
+        });
+    }
+
+    if (recordingButton) {
+        recordingButton.addEventListener('click', () => {
+            client.stopRecording(true);
+        });
+    }
+
+    client.on('recording.start', () => {
+        if (recordingButton) recordingButton.style.display = 'block';
+    });
+    client.on('recording.stop', () => {
+        if (recordingButton) recordingButton.style.display = 'none';
+    });
+
+    client.on('playback.start', () => {
+        playbackMode = true;
+        updateConnectButtons();
+    });
+
+    client.on('playback.stop', () => {
+        playbackMode = false;
+        updateConnectButtons();
+    });
 
     if (wakeLockButton) {
         wakeLockButton.addEventListener('click', () => {
@@ -620,6 +658,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (aliasesRoot) {
         createRoot(aliasesRoot).render(createElement(Aliases));
     }
+
+    const recordingsRoot = document.getElementById('recordings-options');
+    if (recordingsRoot) {
+        createRoot(recordingsRoot).render(createElement(Recordings));
+    }
 });
 
 // Add resize event listener to check if device becomes mobile-sized
@@ -633,6 +676,32 @@ window.addEventListener('resize', () => {
 
 // @ts-ignore
 window.client = client
+
+if (chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener(async (msg) => {
+        if (msg.type === 'PLAY_RECORDING') {
+            if (Array.isArray(msg.events)) {
+                client.setRecordedMessages(msg.events as any[]);
+                client.replayRecordedMessages();
+            } else if (typeof msg.name === 'string') {
+                await client.loadRecording(msg.name);
+                client.replayRecordedMessages();
+            }
+        } else if (msg.type === 'PLAY_RECORDING_TIMED') {
+            if (Array.isArray(msg.events)) {
+                client.setRecordedMessages(msg.events as any[]);
+                client.replayRecordedMessagesTimed();
+            } else if (typeof msg.name === 'string') {
+                await client.loadRecording(msg.name);
+                client.replayRecordedMessagesTimed();
+            }
+        } else if (msg.type === 'START_RECORDING' && typeof msg.name === 'string') {
+            client.startRecording(msg.name);
+        } else if (msg.type === 'STOP_RECORDING') {
+            client.stopRecording(!!msg.save);
+        }
+    });
+}
 
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
 import Settings from "@options/src/Settings.tsx";

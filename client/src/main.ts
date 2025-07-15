@@ -4,6 +4,12 @@ import registerLuaGagTriggers from "./scripts/./luaGags";
 import { stripPolishCharacters } from "./stripPolishCharacters";
 import Port = chrome.runtime.Port;
 
+interface RecordedEvent {
+    message: string;
+    timestamp: number;
+    direction: 'in' | 'out';
+}
+
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
 export const rawOutputSend = Output.send
 export const rawInputSend = Input.send
@@ -103,6 +109,33 @@ function backgroundConnector() {
 }
 
 backgroundConnector();
+
+if (chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((msg) => {
+        if (msg.type === 'PLAY_RECORDING' && Array.isArray(msg.events)) {
+            (msg.events as RecordedEvent[]).forEach(ev => {
+                if (ev.direction === 'out') {
+                    client.sendCommand(ev.message);
+                } else {
+                    client.print(ev.message);
+                }
+            });
+        } else if (msg.type === 'PLAY_RECORDING_TIMED' && Array.isArray(msg.events)) {
+            const events = msg.events as RecordedEvent[];
+            const start = events[0]?.timestamp || 0;
+            events.forEach(ev => {
+                const delay = ev.timestamp - start;
+                setTimeout(() => {
+                    if (ev.direction === 'out') {
+                        client.sendCommand(ev.message);
+                    } else {
+                        client.print(ev.message);
+                    }
+                }, delay);
+            });
+        }
+    });
+}
 
 /*
     Blockers
