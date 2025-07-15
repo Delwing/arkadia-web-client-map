@@ -14,6 +14,7 @@ import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
 import { beepSound } from "./sounds";
 import { attachGmcpListener } from "./gmcp";
+import {color} from "./Colors";
 
 export default class Client {
     port: chrome.runtime.Port;
@@ -42,6 +43,7 @@ export default class Client {
         shift?: boolean;
     };
     inLineProcess = false; //TODO figure out something else
+    defaultColor = 255;
 
     constructor() {
         attachGmcpListener(this);
@@ -86,6 +88,9 @@ export default class Client {
             }
         })
 
+        this.addEventListener('gmcp.char.colors', (ev: CustomEvent) => {
+            this.defaultColor = ev.detail.text ?? 255
+        })
     }
 
     connect(port: chrome.runtime.Port, initial: boolean) {
@@ -160,14 +165,11 @@ export default class Client {
         }, {once: true})
 
         const ansiRegex =/\x1b\[[0-9;]*m/g
-        // Preserve the color already present at the beginning of the line so
-        // that trigger output keeps its original formatting
-        const initialColor = line.substring(0, line.indexOf("m") + 1)
 
         line = this.Triggers.parseMultiline(line, type)
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         if (!result.startsWith("\x1b")) {
-            result = initialColor + result
+            result = color(255) + result
         }
         const restore: string[] = []
         const stack: string[] = []
@@ -181,12 +183,12 @@ export default class Client {
                 if (isTrailing) {
                     restore.push('\x1b[0m')
                 } else {
-                    const current = stack.pop()
+                    stack.pop()
                     const prev = stack[stack.length - 1]
                     if (prev) {
                         restore.push(prev)
                     } else {
-                        restore.push(current || '\x1b[0m')
+                        restore.push(color(this.defaultColor) || '\x1b[0m')
                     }
                 }
             } else {
