@@ -372,6 +372,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
     const recordingsButton = document.getElementById('recordings-button') as HTMLButtonElement | null;
     const recordingButton = document.getElementById('recording-button') as HTMLButtonElement | null;
+    const playbackControls = document.getElementById('playback-controls') as HTMLElement | null;
+    const playbackPause = document.getElementById('playback-pause') as HTMLButtonElement | null;
+    const playbackStop = document.getElementById('playback-stop') as HTMLButtonElement | null;
+    const playbackInfo = document.getElementById('playback-info') as HTMLElement | null;
+    const playbackReplay = document.getElementById('playback-replay') as HTMLButtonElement | null;
+    const playbackStep = document.getElementById('playback-step') as HTMLButtonElement | null;
     wakeLockButton = document.getElementById('wake-lock-button') as HTMLButtonElement | null;
     updateWakeLockButton();
 
@@ -460,6 +466,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (playbackPause) {
+        playbackPause.addEventListener('click', () => {
+            if (playbackPause.textContent === 'Pause') {
+                client.pausePlayback();
+            } else {
+                client.resumePlayback();
+            }
+        });
+    }
+
+    if (playbackStop) {
+        playbackStop.addEventListener('click', () => {
+            client.stopPlayback();
+        });
+    }
+
+    if (playbackReplay) {
+        playbackReplay.addEventListener('click', () => {
+            client.replayLast();
+        });
+    }
+
+    if (playbackStep) {
+        playbackStep.addEventListener('click', () => {
+            client.stepForward();
+        });
+    }
+
     client.on('recording.start', () => {
         if (recordingButton) recordingButton.style.display = 'block';
     });
@@ -467,14 +501,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (recordingButton) recordingButton.style.display = 'none';
     });
 
-    client.on('playback.start', () => {
+    client.on('playback.start', (total: number) => {
         playbackMode = true;
+        if (playbackControls) playbackControls.style.display = 'flex';
+        if (playbackInfo) playbackInfo.textContent = `0 / ${total}`;
+        if (playbackPause) playbackPause.textContent = 'Pause';
         updateConnectButtons();
     });
 
     client.on('playback.stop', () => {
         playbackMode = false;
+        if (playbackControls) playbackControls.style.display = 'none';
         updateConnectButtons();
+    });
+
+    client.on('playback.pause', () => {
+        if (playbackPause) playbackPause.textContent = 'Resume';
+    });
+
+    client.on('playback.resume', () => {
+        if (playbackPause) playbackPause.textContent = 'Pause';
+    });
+
+    client.on('playback.index', (index: number, total: number) => {
+        if (playbackInfo) playbackInfo.textContent = `${index} / ${total}`;
     });
 
     if (wakeLockButton) {

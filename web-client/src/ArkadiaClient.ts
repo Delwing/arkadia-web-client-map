@@ -24,8 +24,13 @@ class ArkadiaClient {
     private isRecording = false;
     private recordedMessages: RecordedEvent[] = [];
     private currentRecordingName: string | null = null;
-    private playbackTimeouts: number[] = [];
+    private playbackTimeout: number | null = null;
+    private playbackIndex = 0;
+    private playbackDelay = 0;
+    private playbackStart = 0;
+    private pausedDelay = 0;
     private isPlaying = false;
+    private paused = false;
 
 
     /**
@@ -334,14 +339,48 @@ class ArkadiaClient {
     }
 
     stopPlayback() {
-        if (this.playbackTimeouts.length) {
-            this.playbackTimeouts.forEach(t => clearTimeout(t));
-            this.playbackTimeouts = [];
+        if (this.playbackTimeout !== null) {
+            clearTimeout(this.playbackTimeout);
+            this.playbackTimeout = null;
         }
-        if (this.isPlaying) {
-            this.isPlaying = false;
-            this.emit('playback.stop');
+        this.isPlaying = false;
+        this.paused = false;
+        this.playbackIndex = 0;
+        this.emit('playback.stop');
+    }
+
+    pausePlayback() {
+        if (!this.isPlaying || this.paused) return;
+        if (this.playbackTimeout !== null) {
+            clearTimeout(this.playbackTimeout);
+            this.playbackTimeout = null;
+            this.pausedDelay = Math.max(0, this.playbackDelay - (Date.now() - this.playbackStart));
         }
+        this.paused = true;
+        this.emit('playback.pause');
+    }
+
+    resumePlayback() {
+        if (!this.isPlaying || !this.paused) return;
+        this.paused = false;
+        this.scheduleNext(this.pausedDelay);
+        this.emit('playback.resume');
+    }
+
+    stepForward() {
+        if (!this.isPlaying) return;
+        if (this.playbackTimeout !== null) {
+            clearTimeout(this.playbackTimeout);
+            this.playbackTimeout = null;
+        }
+        this.paused = true;
+        this.executeCurrent();
+    }
+
+    replayLast() {
+        if (!this.isPlaying || this.playbackIndex === 0) return;
+        const ev = this.recordedMessages[this.playbackIndex - 1];
+        this.playEvent(ev);
     }
 
     getRecordedMessages() {
@@ -373,26 +412,51 @@ class ArkadiaClient {
         if (this.recordedMessages.length === 0) return;
         this.stopPlayback();
         this.isPlaying = true;
-        this.emit('playback.start');
-        const start = this.recordedMessages[0].timestamp;
-        const endDelay = this.recordedMessages[this.recordedMessages.length - 1].timestamp - start;
+        this.paused = false;
+        this.playbackIndex = 0;
+        this.emit('playback.start', this.recordedMessages.length);
         Output.send('== Playback start ==');
-        this.recordedMessages.forEach(ev => {
-            const delay = ev.timestamp - start;
-            const id = window.setTimeout(() => {
-                if (ev.direction === 'in') {
-                    this.processIncomingData(ev.message);
-                } else {
-                    this.sendCommand(ev.message);
-                }
-            }, delay);
-            this.playbackTimeouts.push(id);
-        });
-        const endId = window.setTimeout(() => {
+        this.emit('playback.index', 0, this.recordedMessages.length);
+        this.scheduleNext(0);
+    }
+
+    private playEvent(ev: RecordedEvent) {
+        if (ev.direction === 'in') {
+            this.processIncomingData(ev.message);
+        } else {
+            this.sendCommand(ev.message);
+        }
+    }
+
+    private executeCurrent() {
+        const ev = this.recordedMessages[this.playbackIndex];
+        if (!ev) {
             Output.send('== Playback end ==');
             this.stopPlayback();
-        }, endDelay);
-        this.playbackTimeouts.push(endId);
+            return;
+        }
+        this.playEvent(ev);
+        this.playbackIndex++;
+        this.emit('playback.index', this.playbackIndex, this.recordedMessages.length);
+    }
+
+    private scheduleNext(initialDelay: number) {
+        if (!this.isPlaying) return;
+        const ev = this.recordedMessages[this.playbackIndex];
+        if (!ev) {
+            Output.send('== Playback end ==');
+            this.stopPlayback();
+            return;
+        }
+        const delay = this.playbackIndex === 0 ? initialDelay :
+            this.recordedMessages[this.playbackIndex].timestamp - this.recordedMessages[this.playbackIndex - 1].timestamp;
+        this.playbackDelay = delay;
+        this.playbackStart = Date.now();
+        this.playbackTimeout = window.setTimeout(() => {
+            if (!this.isPlaying || this.paused) return;
+            this.executeCurrent();
+            this.scheduleNext(0);
+        }, delay);
     }
 }
 
