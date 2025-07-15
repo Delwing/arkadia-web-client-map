@@ -377,6 +377,21 @@ class ArkadiaClient {
         this.executeCurrent();
     }
 
+    stepBack() {
+        if (!this.isPlaying || this.playbackIndex === 0) return;
+        if (this.playbackTimeout !== null) {
+            clearTimeout(this.playbackTimeout);
+            this.playbackTimeout = null;
+        }
+        this.paused = true;
+        if (this.playbackIndex >= 2) {
+            this.playbackIndex -= 2;
+        } else {
+            this.playbackIndex = 0;
+        }
+        this.executeCurrent();
+    }
+
     replayLast() {
         if (!this.isPlaying || this.playbackIndex === 0) return;
         const ev = this.recordedMessages[this.playbackIndex - 1];

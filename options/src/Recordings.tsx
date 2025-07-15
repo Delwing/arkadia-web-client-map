@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Button, Table, Form } from 'react-bootstrap';
-import { getRecordingNames, deleteRecording, getRecording } from './recordingStorage';
 /// <reference path="./types.d.ts" />
+import { getRecordingNames, deleteRecording, getRecording, saveRecording } from './recordingStorage';
 
 function Recordings() {
     const [names, setNames] = useState<string[]>([]);
     const [recordingName, setRecordingName] = useState('');
     const [recording, setRecording] = useState(false);
+    const [message, setMessage] = useState('');
+    const fileInput = useRef<HTMLInputElement>(null);
 
     const load = () => {
         getRecordingNames().then(setNames).catch(() => setNames([]));
@@ -75,6 +77,46 @@ function Recordings() {
         }
     }
 
+    async function downloadRecordings() {
+        const all: Record<string, any[]> = {};
+        for (const name of await getRecordingNames()) {
+            const events = await getRecording(name);
+            if (events) {
+                all[name] = events;
+            }
+        }
+        const json = JSON.stringify(all, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'arkadia-recordings.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function uploadRecordings(event: ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            if (typeof data !== 'object' || data === null) throw new Error();
+            const entries = Object.entries<Record<string, any[]>>(data as any);
+            for (const [name, events] of entries) {
+                if (Array.isArray(events)) {
+                    await saveRecording(name, events as any[]);
+                }
+            }
+            setMessage('Nagrania wczytane');
+            load();
+        } catch (e) {
+            setMessage('Błędny plik');
+        } finally {
+            if (fileInput.current) fileInput.current.value = '';
+        }
+    }
+
     function start() {
         const name = recordingName.trim();
         if (!name) return;
@@ -131,6 +173,19 @@ function Recordings() {
                 ))}
                 </tbody>
             </Table>
+            <div className="d-flex gap-2">
+                <Button size="sm" onClick={downloadRecordings}>Eksport</Button>
+                <Form.Label as={Button} size="sm" htmlFor="recordingsFile">Import</Form.Label>
+                <Form.Control
+                    id="recordingsFile"
+                    ref={fileInput}
+                    type="file"
+                    accept="application/json"
+                    className="d-none"
+                    onChange={uploadRecordings}
+                />
+            </div>
+            {message && <div>{message}</div>}
         </div>
     );
 }
