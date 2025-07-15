@@ -38,6 +38,13 @@
     </div>
     <div id="objects-list"></div>
     <button id="recording-button" class="btn btn-danger btn-sm" style="position:absolute;top:0.5rem;right:0.5rem;z-index:1012;display:none;">Stop &amp; Save</button>
+    <div id="playback-controls" class="btn-group btn-group-sm" style="position:absolute;top:2.5rem;right:0.5rem;z-index:1013;display:none;">
+        <button id="playback-pause" class="btn btn-secondary">Pause</button>
+        <button id="playback-stop" class="btn btn-secondary">Stop</button>
+        <span id="playback-info" class="px-1 text-light"></span>
+        <button id="playback-replay" class="btn btn-secondary">Replay</button>
+        <button id="playback-step" class="btn btn-secondary">Step</button>
+    </div>
     <span id="content-width-measure" style="visibility:hidden;position:absolute;white-space:pre">M</span>
     <div id="options-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">

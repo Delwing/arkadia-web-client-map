@@ -141,6 +141,21 @@ h1 {
   display: none;
 }
 
+#playback-controls {
+  position: fixed;
+  top: 2.5rem;
+  right: 0.5rem;
+  z-index: 1013;
+  display: none;
+  gap: 0.25rem;
+}
+
+#playback-controls span {
+  align-self: center;
+  font-size: 0.8rem;
+  color: white;
+}
+
 #app {
   max-width: 90vw;
   margin: 0 auto;
