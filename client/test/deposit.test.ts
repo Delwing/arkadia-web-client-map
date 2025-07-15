@@ -16,6 +16,7 @@ class FakeClient {
   print = jest.fn();
   port = { postMessage: jest.fn() } as any;
   sendCommand = jest.fn();
+  contentWidth = 80;
 
   addEventListener(event: string, cb: any) {
     this.emitter.on(event, cb);
@@ -127,6 +128,6 @@ describe('deposits', () => {
   test('uses column setting for pretty print', () => {
     client.dispatch('settings', { containerColumns: 3 });
     parse('Twoj depozyt zawiera miecz.');
-    expect(prettyPrintContainer).toHaveBeenCalledWith(expect.anything(), 3, 'DEPOZYT', 5);
+    expect(prettyPrintContainer).toHaveBeenCalledWith(expect.anything(), 3, 'DEPOZYT', 5, client.contentWidth);
   });
 });

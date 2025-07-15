@@ -34,8 +34,12 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
     };
 
     let columns = 1;
+    let width = client.contentWidth;
     client.addEventListener('settings', (ev: CustomEvent) => {
         columns = ev.detail.containerColumns ?? columns;
+    });
+    client.addEventListener('contentWidth', (ev: CustomEvent) => {
+        width = ev.detail;
     });
 
     function update(items: ContainerItem[] | null) {
@@ -68,7 +72,7 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         const text = (m.groups?.content || m[1]).replace(/\.$/, "");
         const items = parseItems(text);
         update(items);
-        client.print(prettyPrintContainer(m as RegExpMatchArray, columns, 'DEPOZYT', 5));
+        client.print(prettyPrintContainer(m as RegExpMatchArray, columns, 'DEPOZYT', 5, width));
         return undefined;
     });
     client.Triggers.registerTrigger(matchEmpty, () => { update([] as ContainerItem[]); return undefined; });
