@@ -74,6 +74,7 @@ function parseNumber(str: string): number {
 
 export default async function initHerbCounter(client: Client, aliases?: { pattern: RegExp; callback: Function }[]) {
     let herbs: HerbsData | null = null;
+    let loading: Promise<void> | null = null;
     const herbMap: Record<string, string> = {};
     let width = client.contentWidth;
     client.addEventListener('contentWidth', (ev: CustomEvent) => {
@@ -82,13 +83,20 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
 
     async function ensureData() {
         if (!herbs) {
-            herbs = await loadHerbs();
-            if (herbs) {
-                Object.entries(herbs.herb_id_to_odmiana).forEach(([id, forms]) => {
-                    Object.values(forms).forEach(f => {
-                        herbMap[f.toLowerCase()] = id;
-                    });
-                });
+            if (!loading) {
+                loading = loadHerbs().then(data => {
+                    herbs = data;
+                    if (herbs) {
+                        Object.entries(herbs.herb_id_to_odmiana).forEach(([id, forms]) => {
+                            Object.values(forms).forEach(f => {
+                                herbMap[f.toLowerCase()] = id;
+                            });
+                        });
+                    }
+                }).finally(() => { loading = null; });
+            }
+            if (loading) {
+                await loading;
             }
         }
     }
@@ -198,4 +206,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             }
         });
     }
+
+    // load herb data in background so it's ready after refresh
+    ensureData().catch(() => {});
 }
