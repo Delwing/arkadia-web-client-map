@@ -14,7 +14,6 @@ import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
 import { beepSound } from "./sounds";
 import { attachGmcpListener } from "./gmcp";
-import {color} from "./Colors";
 
 export default class Client {
     port: chrome.runtime.Port;
@@ -165,11 +164,12 @@ export default class Client {
         }, {once: true})
 
         const ansiRegex =/\x1b\[[0-9;]*m/g
+        const initialColor = line.substring(0, line.indexOf("m") + 1)
 
         line = this.Triggers.parseMultiline(line, type)
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
         if (!result.startsWith("\x1b")) {
-            result = color(255) + result
+            result = initialColor + result
         }
         const restore: string[] = []
         const stack: string[] = []
@@ -183,12 +183,12 @@ export default class Client {
                 if (isTrailing) {
                     restore.push('\x1b[0m')
                 } else {
-                    stack.pop()
+                    const current = stack.pop()
                     const prev = stack[stack.length - 1]
                     if (prev) {
                         restore.push(prev)
                     } else {
-                        restore.push(color(this.defaultColor) || '\x1b[0m')
+                        restore.push(current || '\x1b[0m')
                     }
                 }
             } else {

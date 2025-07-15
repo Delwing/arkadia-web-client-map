@@ -1,10 +1,7 @@
 import Client from "../Client";
 import { parseItems } from "./prettyContainers";
 import loadHerbs, { HerbsData } from "./herbsLoader";
-import { colorString, findClosestColor } from "../Colors";
 
-const HEADER_COLOR = findClosestColor('#6a5acd');
-const ITEM_COLOR = findClosestColor('#00ff7f');
 
 const polishNumbers: Record<string, number> = {
     'jeden': 1, 'jedna': 1, 'jedno': 1,
@@ -105,11 +102,16 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             client.println('Brak ziol.');
         } else {
             const lines: string[] = [];
-            lines.push(colorString('Ziola', HEADER_COLOR));
+            lines.push('------+-------------------------+-----------------------------------------------');
+            lines.push('  ile |        nazwa            |              dzialanie                        ');
+            lines.push('------+-------------------------+-----------------------------------------------');
             entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
                 const name = herbs?.herb_id_to_odmiana[id]?.biernik || id;
-                lines.push(`  ${String(c).padStart(3, ' ')} | ${colorString(name, ITEM_COLOR)}`);
+                const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
+                const row = `${String(c).padStart(5, ' ')} | ${name.padEnd(23, ' ')} | ${uses}`;
+                lines.push(row);
             });
+            lines.push('--------------------------------------------------------------------------------');
             client.println(lines.join('\n'));
         }
         awaiting = false;
