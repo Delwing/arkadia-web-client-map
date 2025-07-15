@@ -656,13 +656,8 @@ if (chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener(async (msg) => {
         if (msg.type === 'PLAY_RECORDING') {
             if (Array.isArray(msg.events)) {
-                (msg.events as any[]).forEach(ev => {
-                    if (ev.direction === 'out') {
-                        client.sendCommand(ev.message);
-                    } else {
-                        client.processIncomingData(ev.message);
-                    }
-                });
+                client.setRecordedMessages(msg.events as any[]);
+                client.replayRecordedMessages();
             } else if (typeof msg.name === 'string') {
                 await client.loadRecording(msg.name);
                 client.replayRecordedMessages();
