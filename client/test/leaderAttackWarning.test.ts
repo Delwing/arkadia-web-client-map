@@ -4,11 +4,7 @@ import { EventEmitter } from 'events';
 
 class FakeClient {
   private emitter = new EventEmitter();
-  TeamManager = {
-    getAttackTargetId: jest.fn(),
-    getLeader: jest.fn(),
-    getAccumulatedObjectsData: jest.fn()
-  };
+  TeamManager = {} as any;
   println = jest.fn();
   addEventListener(event: string, cb: any) {
     this.emitter.on(event, cb);
@@ -26,39 +22,33 @@ describe('leader attack warning', () => {
 
   beforeEach(() => {
     client = new FakeClient();
+    jest.useFakeTimers();
     initLeaderAttackWarning((client as unknown) as any);
   });
 
-  test('prints warning when targets differ', () => {
-    client.TeamManager.getAttackTargetId.mockReturnValue('2');
-    client.TeamManager.getLeader.mockReturnValue('Leader');
-    client.TeamManager.getAccumulatedObjectsData.mockReturnValue({ '10': { desc: 'Leader', attack_num: '1' } });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('prints warning when event fired', () => {
     client.sendEvent('teamLeaderTargetNoAvatar');
     expect(client.println).toHaveBeenCalledTimes(1);
     const text = stripAnsiCodes(client.println.mock.calls[0][0]);
     expect(text).toContain('Atakujesz inny cel');
   });
 
-  test('does not print when targets match', () => {
-    client.TeamManager.getAttackTargetId.mockReturnValue('1');
-    client.TeamManager.getLeader.mockReturnValue('Leader');
-    client.TeamManager.getAccumulatedObjectsData.mockReturnValue({ '10': { desc: 'Leader', attack_num: '1' } });
+  test('does not print again while interval is active', () => {
     client.sendEvent('teamLeaderTargetNoAvatar');
-    expect(client.println).not.toHaveBeenCalled();
+    client.sendEvent('teamLeaderTargetNoAvatar');
+    expect(client.println).toHaveBeenCalledTimes(1);
   });
 
   test('prints again after state changes', () => {
-    client.TeamManager.getAttackTargetId.mockReturnValue('2');
-    client.TeamManager.getLeader.mockReturnValue('Leader');
-    client.TeamManager.getAccumulatedObjectsData.mockReturnValue({ '10': { desc: 'Leader', attack_num: '1' } });
     client.sendEvent('teamLeaderTargetNoAvatar');
     client.sendEvent('teamLeaderTargetNoAvatar');
-    expect(client.println).toHaveBeenCalledTimes(2);
-    client.TeamManager.getAttackTargetId.mockReturnValue('1');
+    expect(client.println).toHaveBeenCalledTimes(1);
+    client.sendEvent('teamLeaderTargetAvatar');
     client.sendEvent('teamLeaderTargetNoAvatar');
     expect(client.println).toHaveBeenCalledTimes(2);
-    client.TeamManager.getAttackTargetId.mockReturnValue('2');
-    client.sendEvent('teamLeaderTargetNoAvatar');
-    expect(client.println).toHaveBeenCalledTimes(3);
   });
 });

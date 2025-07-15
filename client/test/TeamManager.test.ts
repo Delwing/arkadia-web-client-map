@@ -24,6 +24,7 @@ describe('TeamManager', () => {
   beforeEach(() => {
     client = new FakeClient();
     manager = new TeamManager((client as unknown) as any);
+    client.sendEvent('gmcp.char.info', { object_num: '99' });
   });
 
   test('adds member from gmcp objects', () => {
@@ -57,7 +58,7 @@ describe('TeamManager', () => {
     expect(manager.isInTeam('Pablo')).toBe(true);
   });
 
-  test('emits event when leader target lacks avatar flag', () => {
+  test('emits event when leader attacks different target', () => {
     const callback = jest.fn();
     client.addEventListener('teamLeaderTargetNoAvatar', callback);
     client.sendEvent('gmcp.objects.data', {
@@ -66,27 +67,33 @@ describe('TeamManager', () => {
         living: true,
         team: true,
         team_leader: true,
-        attack_target: true,
+        attack_num: '3',
       },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  test('does not emit event when leader is not target', () => {
-    const callback = jest.fn();
-    client.addEventListener('teamLeaderTargetNoAvatar', callback);
+  test('does not emit event when targets match', () => {
+    const noAvatar = jest.fn();
+    const avatar = jest.fn();
+    client.addEventListener('teamLeaderTargetNoAvatar', noAvatar);
+    client.addEventListener('teamLeaderTargetAvatar', avatar);
     client.sendEvent('gmcp.objects.data', {
       '1': {
         desc: 'Eamon',
         living: true,
         team: true,
         team_leader: true,
+        attack_num: '2',
       },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
-    expect(callback).not.toHaveBeenCalled();
+    expect(noAvatar).not.toHaveBeenCalled();
+    expect(avatar).toHaveBeenCalledTimes(1);
   });
 
-  test('emits event only once while leader remains target', () => {
+  test('emits event on each gmcp update while mismatch persists', () => {
     const callback = jest.fn();
     client.addEventListener('teamLeaderTargetNoAvatar', callback);
     const data = {
@@ -94,49 +101,28 @@ describe('TeamManager', () => {
       living: true,
       team: true,
       team_leader: true,
-      attack_target: true,
+      attack_num: '3',
     };
-    client.sendEvent('gmcp.objects.data', { '1': data });
-    client.sendEvent('gmcp.objects.data', { '1': data });
-    expect(callback).toHaveBeenCalledTimes(1);
+    const player = { desc: 'You', living: true, team: true, attack_num: '2' };
+    client.sendEvent('gmcp.objects.data', { '1': data, '99': player });
+    client.sendEvent('gmcp.objects.data', { '1': data, '99': player });
+    expect(callback).toHaveBeenCalledTimes(2);
   });
 
   test('emits event again after target changes', () => {
     const callback = jest.fn();
     client.addEventListener('teamLeaderTargetNoAvatar', callback);
     client.sendEvent('gmcp.objects.data', {
-      '1': {
-        desc: 'Eamon',
-        living: true,
-        team: true,
-        team_leader: true,
-        attack_target: true,
-      },
+      '1': { desc: 'Eamon', living: true, team: true, team_leader: true, attack_num: '3' },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     client.sendEvent('gmcp.objects.data', {
-      '1': {
-        desc: 'Eamon',
-        living: true,
-        team: true,
-        team_leader: true,
-        attack_target: false,
-      },
-      '2': {
-        desc: 'Enemy',
-        living: true,
-        team: false,
-        team_leader: false,
-        attack_target: true,
-      },
+      '1': { desc: 'Eamon', living: true, team: true, team_leader: true, attack_num: '2' },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     client.sendEvent('gmcp.objects.data', {
-      '1': {
-        desc: 'Eamon',
-        living: true,
-        team: true,
-        team_leader: true,
-        attack_target: true,
-      },
+      '1': { desc: 'Eamon', living: true, team: true, team_leader: true, attack_num: '3' },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     expect(callback).toHaveBeenCalledTimes(2);
   });
@@ -145,22 +131,12 @@ describe('TeamManager', () => {
     const callback = jest.fn();
     client.addEventListener('teamLeaderTargetNoAvatar', callback);
     client.sendEvent('gmcp.objects.data', {
-      '1': {
-        desc: 'Eamon',
-        living: true,
-        team: true,
-        team_leader: true,
-        attack_target: true,
-      },
+      '1': { desc: 'Eamon', living: true, team: true, team_leader: true, attack_num: '3' },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     client.sendEvent('gmcp.objects.data', {
-      '2': {
-        desc: 'Eamon',
-        living: true,
-        team: true,
-        team_leader: true,
-        attack_target: true,
-      },
+      '2': { desc: 'Eamon', living: true, team: true, team_leader: true, attack_num: '3' },
+      '99': { desc: 'You', living: true, team: true, attack_num: '2' },
     });
     expect(callback).toHaveBeenCalledTimes(2);
   });
