@@ -351,12 +351,14 @@ function createLuaEnv() {
 let {global, luaEnv} = createLuaEnv();
 
 let luaFiles: Record<string, { default: string }> = {};
-// Attempt to use import.meta.glob (works in Vite). If unavailable, fall back to require.context
-try {
+// Use import.meta.glob when available (Vite). Otherwise fall back to webpack's require.context
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - import.meta may not have `glob` property in webpack builds
+if (typeof (import.meta as any).glob === "function") {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    luaFiles = import.meta.glob("../lua/**/*.lua", { query: "?raw", eager: true });
-} catch (e) {
+    // @ts-ignore - import.meta.glob is vite-only
+    luaFiles = (import.meta as any).glob("../lua/**/*.lua", { query: "?raw", eager: true });
+} else {
     // require.context is a webpack specific API
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const context = (require as any).context("../lua", true, /\.lua$/);
