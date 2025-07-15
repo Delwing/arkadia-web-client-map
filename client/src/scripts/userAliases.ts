@@ -34,5 +34,9 @@ export default function initUserAliases(client: Client, aliases?: { pattern: Reg
         }
     });
 
+    client.addEventListener('port-connected', () => {
+        client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
+    });
+
     client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
 }
