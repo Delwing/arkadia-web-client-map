@@ -170,12 +170,14 @@ export type FormatOptions = {
     columns?: number;
     padding?: number;
     transforms?: TransformDefinition[];
+    maxWidth?: number;
 };
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
-    const columns = opts.columns ?? 1;
+    let columns = opts.columns ?? 1;
     const padding = opts.padding ?? 1;
     const activeTransforms = opts.transforms ?? defaultTransforms;
+    const maxWidth = opts.maxWidth;
     const padSpace = ' '.repeat(padding);
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
@@ -194,9 +196,34 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         return [name, ...itemTexts];
     });
 
-    const colWidth = Math.max(title.length + padding * 2, ...allLines.map(l => l.length + padding * 2));
-    const cell = (text: string) => pad(`${padSpace}${text}${padSpace}`, colWidth);
-    const width = columns * colWidth + (columns - 1) * 3 + 2;
+    let colWidth = Math.max(title.length + padding * 2, ...allLines.map(l => l.length + padding * 2));
+
+    const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
+
+    if (maxWidth) {
+        if (calcWidth(colWidth) > maxWidth && columns > 1) {
+            columns = 1;
+        }
+        if (calcWidth(colWidth) > maxWidth) {
+            colWidth = Math.min(colWidth, maxWidth - 2);
+        }
+    }
+
+    const truncate = (text: string, len: number) => {
+        const plain = stripAnsiCodes(text);
+        if (plain.length <= len) return text;
+        const prefix = text.startsWith('\x1b') ? text.match(/^\x1b\[[0-9;]*m/)?.[0] || '' : '';
+        const suffix = text.endsWith('\x1b[0m') ? '\x1b[0m' : '';
+        return prefix + plain.slice(0, Math.max(0, len - 1)) + '…' + suffix;
+    };
+
+    const cell = (text: string) => {
+        const maxLen = colWidth - padding * 2;
+        text = truncate(text, maxLen);
+        return pad(`${padSpace}${text}${padSpace}`, colWidth);
+    };
+
+    const width = calcWidth(colWidth);
     const horiz = '-'.repeat(width - 2);
     const lines: string[] = [];
     lines.push(`/${horiz}\\`);
@@ -251,13 +278,14 @@ export function prettyPrintContainer(
     columns = 1,
     title = 'POJEMNIK',
     padding = 1,
+    maxWidth?: number,
 ) {
     const parsed = parseContainer(matches);
     if (!parsed) return '';
     const categorized = categorizeItems(parsed.items, defs);
     const tableTitle = title || parsed.container;
     filter = defaultFilter
-    return formatTable(tableTitle, categorized, {columns, padding});
+    return formatTable(tableTitle, categorized, {columns, padding, maxWidth});
 }
 
 
@@ -366,12 +394,17 @@ export default function initContainers(client: Client) {
     const tag = 'prettyContainers';
     let enabled = false;
     let columns = 1;
+    let width = client.contentWidth;
+
+    client.addEventListener('contentWidth', (ev: CustomEvent) => {
+        width = ev.detail;
+    });
 
     const register = () => {
         client.Triggers.removeByTag(tag);
         defaultContainerPatterns.forEach(pattern => {
             client.Triggers.registerTrigger(pattern, (_, __, matches): undefined => {
-                client.print(prettyPrintContainer(matches, columns, 'POJEMNIK', 5));
+                client.print(prettyPrintContainer(matches, columns, 'POJEMNIK', 5, width));
             }, tag);
         });
     };

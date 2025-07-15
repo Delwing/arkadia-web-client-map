@@ -141,4 +141,12 @@ describe('prettyContainers', () => {
     expect(parsed!.items[0]).toEqual({count: 25, name: 'monet'});
     expect(parsed!.items[1]).toEqual({count: 100, name: 'klejnotow'});
   });
+
+  test('formatTable obeys maxWidth', () => {
+    const parsed = parseContainer(input)!;
+    const cat = categorizeItems(parsed.items, groups);
+    const table = formatTable('POJEMNIK', cat, { columns: 2, maxWidth: 40 });
+    const lines = table.split('\n').map(l => l.replace(/\x1b\[[0-9;]*m/g, ''));
+    lines.forEach(l => expect(l.length).toBeLessThanOrEqual(40));
+  });
 });
