@@ -6,10 +6,11 @@ import Npc from "./Npc.tsx";
 import SettingsFile from "./SettingsFile";
 import Binds from "./Binds";
 import Scripts from "./Scripts";
+import Recordings from "./Recordings";
 
 
 function App() {
-    const [tab, setTab] = useState<'settings' | 'npc' | 'file' | 'binds' | 'scripts'>('settings')
+    const [tab, setTab] = useState<'settings' | 'npc' | 'file' | 'binds' | 'scripts' | 'recordings'>('settings')
 
     return (
         <div className="p-2 d-flex flex-column h-100">
@@ -28,6 +29,9 @@ function App() {
                 </Tab>
                 <Tab eventKey="scripts" title="Skrypty">
                     <Scripts />
+                </Tab>
+                <Tab eventKey="recordings" title="Nagrania">
+                    <Recordings />
                 </Tab>
             </Tabs>
         </div>
