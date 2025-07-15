@@ -128,14 +128,15 @@ test('onLine sends printed messages after line and restores Output.send', () => 
 
   const result = client.onLine('line', '');
 
-  expect(result).toBe('processed');
+  const expected = '\x1b[22;38;5;255mprocessed';
+  expect(result).toBe(expected);
   expect((window as any).Output.send).toBe(originalOutputSend);
   expect(originalOutputSend).not.toHaveBeenCalled();
 
   originalOutputSend(result);
   client.sendEvent('line-sent');
 
-  expect(originalOutputSend).toHaveBeenNthCalledWith(1, 'processed');
+  expect(originalOutputSend).toHaveBeenNthCalledWith(1, expected);
   expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
 });
 
@@ -146,7 +147,7 @@ test('onLine replaces reset sequences with preceding ANSI code', () => {
   const result = client.onLine(line, '');
 
   const expected =
-    '\x1b[22;38;5;1mRED\x1b[22;38;5;1m text \x1b[22;38;5;2mGREEN\x1b[22;38;5;2m';
+    '\x1b[22;38;5;1mRED\x1b[22;38;5;255m text \x1b[22;38;5;2mGREEN\x1b[22;38;5;255m';
   expect(result).toBe(expected);
 });
 
@@ -156,7 +157,7 @@ test('onLine keeps trailing resets without preceding color', () => {
 
   const result = client.onLine(line, '');
 
-  const expected = '\x1b[22;38;5;1mred\x1b[22;38;5;1m\x1b[0m';
+  const expected = '\x1b[22;38;5;1mred\x1b[22;38;5;255m\x1b[22;38;5;255m';
   expect(result).toBe(expected);
 });
 
