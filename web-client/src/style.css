@@ -208,10 +208,6 @@ h1 {
   width: 100%;
 }
 
-#sandbox-button {
-  width: 100%;
-}
-
 #connect-button.connected {
   background-color: #4CAF50;
   color: white;

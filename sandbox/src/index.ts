@@ -6,9 +6,6 @@ import { loadNpcData } from "./npcDataLoader.ts";
 import { fakeClient } from "./fakeClient.ts";
 import { demoMap } from "./Controls.tsx";
 
-// Use fresh storage each session
-localStorage.clear();
-
 const defaultSettings = {
     guilds: [],
     packageHelper: true,
