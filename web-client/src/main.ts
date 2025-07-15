@@ -80,6 +80,11 @@ window.clientExtension.addEventListener('lampTimer', (ev: CustomEvent<number | n
 window.clientExtension.addEventListener('breakItem', (ev: CustomEvent<any>) => {
     client.emit('breakItem', ev.detail);
 });
+window.clientExtension.addEventListener('settings', (ev: CustomEvent) => {
+    if (ev.detail?.binds?.directions) {
+        applyDirectionBinds(ev.detail.binds.directions);
+    }
+});
 
 const progressContainer = document.getElementById('map-progress-container')!;
 const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
@@ -311,19 +316,39 @@ const numpadDirections: { [key: string]: string } = {
     'Numpad3': 'se',
     'NumpadMultiply': 'u',
     'NumpadSubtract': 'd',
+    'NumpadDivide': 'd',
+    'Numpad0': 'special',
     'Numpad5': 'zerknij'
 };
 
+function applyDirectionBinds(dirs: any) {
+    Object.keys(numpadDirections).forEach(k => {
+        if (!['NumpadDivide', 'Numpad0', 'Numpad5'].includes(k)) delete numpadDirections[k];
+    });
+    Object.entries(dirs || {}).forEach(([dir, bind]: any) => {
+        if (bind && bind.key) {
+            numpadDirections[bind.key] = dir;
+        }
+    });
+    numpadDirections['NumpadDivide'] = 'd';
+    numpadDirections['Numpad0'] = 'special';
+    numpadDirections['Numpad5'] = 'zerknij';
+}
+
 // Add global keydown event listener for numpad directions
 document.addEventListener('keydown', (e) => {
-    // Check if the pressed key is a numpad direction key
-    if (numpadDirections[e.code]) {
-        // Prevent default behavior
+    const direction = numpadDirections[e.code];
+    if (direction) {
         e.preventDefault();
-
-        // Send the direction command
-        const direction = numpadDirections[e.code];
-        Input.send(direction);
+        if (direction === 'special') {
+            const exits = (window as any).clientExtension?.Map.currentRoom?.specialExits ?? {};
+            const first = Object.keys(exits)[0];
+            if (first) {
+                (window as any).clientExtension.sendCommand(first);
+            }
+        } else {
+            Input.send(direction);
+        }
     }
 });
 

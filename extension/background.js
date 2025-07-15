@@ -12,7 +12,20 @@ const defaultSettings = {
         main: { key: 'BracketRight' },
         lamp: { key: 'Digit4', ctrl: true },
         gates: { key: 'Digit2', ctrl: true },
-        collector: { key: 'Digit3', ctrl: true }
+        collector: { key: 'Digit3', ctrl: true },
+        directions: {
+            n: { key: 'Numpad8' },
+            s: { key: 'Numpad2' },
+            w: { key: 'Numpad4' },
+            e: { key: 'Numpad6' },
+            nw: { key: 'Numpad7' },
+            ne: { key: 'Numpad9' },
+            sw: { key: 'Numpad1' },
+            se: { key: 'Numpad3' },
+            u: { key: 'NumpadMultiply' },
+            d: { key: 'NumpadSubtract' },
+            special: { key: 'Numpad0' },
+        }
     }
 }
 
@@ -90,7 +103,20 @@ function loadIframe(tabId) {
                     main: { key: 'BracketRight' },
                     lamp: { key: 'Digit4', ctrl: true },
                     gates: { key: 'Digit2', ctrl: true },
-                    collector: { key: 'Digit3', ctrl: true }
+                    collector: { key: 'Digit3', ctrl: true },
+                    directions: {
+                        n: { key: 'Numpad8' },
+                        s: { key: 'Numpad2' },
+                        w: { key: 'Numpad4' },
+                        e: { key: 'Numpad6' },
+                        nw: { key: 'Numpad7' },
+                        ne: { key: 'Numpad9' },
+                        sw: { key: 'Numpad1' },
+                        se: { key: 'Numpad3' },
+                        u: { key: 'NumpadMultiply' },
+                        d: { key: 'NumpadSubtract' },
+                        special: { key: 'Numpad0' },
+                    }
                 }
             }
 
