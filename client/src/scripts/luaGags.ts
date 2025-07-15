@@ -219,6 +219,23 @@ function createLuaEnv() {
         }
     }
 
+    const gagColors = {
+        moje_ciosy:  "alice_blue",
+        moje_spece:  "green_yellow",
+        innych_ciosy:  "LightGrey",
+        innych_ciosy_we_mnie:  "LightGrey",
+        innych_spece:  "slate_grey",
+        moje_uniki:  "SteelBlue",
+        innych_uniki:  "dark_slate_grey",
+        moje_parowanie:  "SteelBlue",
+        innych_parowanie:  "dark_slate_gray",
+        zaslony_udane:  "deep_sky_blue",
+        zaslony_nieudane:  "dark_slate_blue",
+        bron:  "gold",
+        npc:  "floral_white",
+        npc_spece:  "floral_white"
+    }
+
     const ateam = {
         may_setup_paralyzed_name: (_, name: string) => console.log("Ogluch " + name),
         may_setup_broken_defense: (_, name: string) => console.log("Przelamanie " + name),
@@ -241,6 +258,7 @@ function createLuaEnv() {
 
     const scripts = {
         gags: new luainjs.Table(gags),
+        gag_colors: new luainjs.Table(gagColors),
         utils: new luainjs.Table({
             bind_functional: (string: string) => {
                 client.FunctionalBind.newMessage()
