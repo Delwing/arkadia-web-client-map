@@ -13,6 +13,13 @@
     "allowImportingTsExtensions": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "typeRoots": [
+      "../node_modules/@types",
+      "../options/src",
+      "../client/src/types",
+      "./src/types",
+      "node_modules/@types"
+    ],
   },
   "paths": {
     "@options/*": [
