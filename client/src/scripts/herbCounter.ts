@@ -72,8 +72,12 @@ const polishNumbers: Record<string, number> = {
   trzydziesci: 30,
 };
 
+function stripDiacritics(str: string): string {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 function parseNumber(str: string): number {
-  str = str.trim().toLowerCase();
+  str = stripDiacritics(str.trim().toLowerCase());
   if (/^\d+$/.test(str)) return parseInt(str, 10);
   str = str.replace(/\s+/g, " ");
   return polishNumbers[str] || 0;
@@ -134,7 +138,7 @@ export default async function initHerbCounter(
     }
   }
 
-  const countRegex = /^Doliczyl(?:es|as) sie (?<num>[0-9a-z ]+) sztuk\.$/;
+  const countRegex = /^Doliczyl(?:es|as) sie (?<num>[0-9a-z ]+) sztuk[ia]?\.$/;
   const contentRegex =
     /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W srodku dostrzegasz (?<content>.*)\.$/;
   const emptyRegex =
