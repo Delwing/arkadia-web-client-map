@@ -86,9 +86,6 @@ aliases.push(
     }
 )
 
-//TODO to be extracted
-// No background connection outside of the extension environment
-
 /*
     Blockers
  */
