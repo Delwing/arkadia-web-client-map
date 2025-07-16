@@ -65,7 +65,7 @@ beforeEach(() => {
   (window as any).Text = { parse_patterns: jest.fn((v: any) => v) };
   (window as any).dispatchEvent = jest.fn();
   (global as any).portMock = { onMessage: { addListener: jest.fn() }, postMessage: jest.fn() };
-  (global as any).clientAdapterMock = { send: jest.fn(), stop: jest.fn(), connect: jest.fn() };
+  (global as any).clientAdapterMock = { send: jest.fn(), stop: jest.fn(), connect: jest.fn(), output: jest.fn(), sendGmcp: jest.fn() };
 });
 
 test('createEvent returns object with type and data', () => {
@@ -108,15 +108,15 @@ test('sendCommand dispatches event and splits commands', () => {
   const client = new Client((global as any).clientAdapterMock as any, (global as any).portMock);
   client.sendCommand('foo#bar');
   expect(parseCommand).toHaveBeenCalledWith('foo#bar');
-  expect((window as any).Input.send).toHaveBeenNthCalledWith(1, 'parsed:foo');
-  expect((window as any).Input.send).toHaveBeenNthCalledWith(2, 'bar');
+  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(1, 'parsed:foo');
+  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(2, 'bar');
 });
 
 test('sendCommand allows empty command', () => {
   const client = new Client((global as any).clientAdapterMock as any, (global as any).portMock);
   client.sendCommand('');
   expect(parseCommand).toHaveBeenCalledWith('');
-  expect((window as any).Input.send).toHaveBeenCalledWith('parsed:');
+  expect((global as any).clientAdapterMock.send).toHaveBeenCalledWith('parsed:');
 });
 
 test('onLine sends printed messages after line and restores Output.send', () => {
@@ -124,7 +124,6 @@ test('onLine sends printed messages after line and restores Output.send', () => 
   const originalOutputSend = (window as any).Output.send;
 
   client.Triggers.parseLine = jest.fn(() => {
-    expect((window as any).Output.send).not.toBe(originalOutputSend);
     client.print('printed');
     return 'processed';
   });
@@ -137,10 +136,10 @@ test('onLine sends printed messages after line and restores Output.send', () => 
   expect(originalOutputSend).not.toHaveBeenCalled();
 
   originalOutputSend(result);
-  client.sendEvent('line-sent');
+  client.sendEvent('output-sent');
 
   expect(originalOutputSend).toHaveBeenNthCalledWith(1, expected);
-  expect(originalOutputSend).toHaveBeenNthCalledWith(2, 'printed', undefined);
+  expect((global as any).clientAdapterMock.output).toHaveBeenCalledWith('printed', undefined);
 });
 
 test('onLine replaces reset sequences with preceding ANSI code', () => {
