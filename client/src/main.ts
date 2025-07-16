@@ -253,6 +253,7 @@ import initLeaderAttackWarning from './scripts/leaderAttackWarning'
 import initBreakItem from './scripts/breakItem'
 import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
+import initWeaponEvaluation from './scripts/weaponEvaluation'
 
 initLvlCalc(client, aliases)
 initItemCondition(client)
@@ -264,4 +265,5 @@ initLeaderAttackWarning(client)
 initBreakItem(client)
 initExternalScripts(client)
 initUserAliases(client, aliases)
+initWeaponEvaluation(client)
 
