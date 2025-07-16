@@ -112,14 +112,14 @@ export default class Client {
         })
 
         this.port = port
-    }
-
-    connect(port: any, initial: boolean) {
         port.onMessage.addListener((message) => {
             Object.entries(message).forEach(([key, value]) => {
                 this.eventTarget.dispatchEvent(new CustomEvent(key, {detail: value}))
             })
         })
+    }
+
+    connect(port: any, initial: boolean) {
         if (initial) {
             port.postMessage({type: 'GET_STORAGE', key: 'settings'})
             port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
