@@ -11,7 +11,7 @@ export default function initArmorShop(client: Client) {
         makeSplit: (width) => "-".repeat(Math.max(0, width)),
         makeHeader: (width, pad) => {
             const nameLine = `| ${pad('Nazwa towaru', width - 3)}|`;
-            const numbers = `| ${pad('Mithryl Zloto Srebro Miedz', width - 3)} |`;
+            const numbers = `| ${pad('Mithryl Zloto Srebro Miedz', width - 3)}|`;
             const padded = numbers + ' '.repeat(Math.max(0, width - numbers.length));
             return nameLine + '\n' + padded;
         },
