@@ -3,7 +3,7 @@ import {parseItems} from "./prettyContainers";
 import loadHerbs, {HerbsData} from "./herbsLoader";
 import {stripAnsiCodes} from "../Triggers";
 
-const STORAGE_KEY = "herb_summary";
+const STORAGE_KEY = "herb_counts";
 
 
 const polishNumbers: Record<string, number> = {
@@ -234,6 +234,29 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         client.sendCommand('policz swoje woreczki');
     }
 
+    async function take(herb: string, amount: number) {
+        await ensureData();
+        const form = herbs?.herb_id_to_odmiana[herb]?.biernik || herb;
+        let leftToTake = amount;
+        const bags = Object.keys(storedBags).map(n => parseInt(n)).sort((a, b) => a - b);
+        for (const num of bags) {
+            if (leftToTake <= 0) break;
+            const contents = storedBags[num];
+            const available = contents?.[herb] || 0;
+            if (available <= 0) continue;
+            const toTake = Math.min(available, leftToTake);
+            client.sendCommand(`otworz ${num}. woreczek`);
+            for (let i = 0; i < toTake; i++) {
+                client.sendCommand(`wez ${form} z ${num}. woreczka`);
+            }
+            client.sendCommand(`zamknij ${num}. woreczek`);
+            contents[herb] = available - toTake;
+            if (contents[herb] <= 0) delete contents[herb];
+            leftToTake -= toTake;
+        }
+        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: storedBags });
+    }
+
     if (aliases) {
         aliases.push({pattern: /\/ziola_buduj$/, callback: start});
         aliases.push({
@@ -254,6 +277,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
                 client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
             }
         });
+        aliases.push({ pattern: /^\/wezz ([a-z_]+) ([0-9]+)$/, callback: (m: RegExpMatchArray) => take(m[1].toLowerCase(), parseInt(m[2], 10)) });
+        aliases.push({ pattern: /^\/wezz ([a-zA-Z_]+)$/, callback: (m: RegExpMatchArray) => take(m[1].toLowerCase(), 1) });
     }
 
     // load herb data in background so it's ready after refresh
