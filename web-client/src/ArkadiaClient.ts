@@ -1,5 +1,6 @@
 import { parseAnsiPatterns } from './ansiParser';
-import { saveRecording, getRecording, getRecordingNames, deleteRecording, RecordedEvent } from './recordingStorage';
+import { RecordedEvent } from './recordingStorage';
+import Recorder from './Recorder';
 import {SKIP_LINE} from "@client/src/ControlConstants.ts";
 import {ClientAdapter} from "@client/src/Client.ts";
 
@@ -23,16 +24,11 @@ class ArkadiaClient implements ClientAdapter{
     private lastConnectManual = true;
     private pingTimer: number | null = null;
     private messageBuffer: {text: string, type: string}[] = []
-    private isRecording = false;
-    private recordedMessages: RecordedEvent[] = [];
-    private currentRecordingName: string | null = null;
-    private playbackTimeout: number | null = null;
-    private playbackIndex = 0;
-    private playbackDelay = 0;
-    private playbackStart = 0;
-    private pausedDelay = 0;
-    private isPlaying = false;
-    private paused = false;
+    private recorder = new Recorder({
+        processIncomingData: (d) => this.processIncomingData(d),
+        sendCommand: (cmd) => this.sendCommand(cmd),
+        emit: (ev, ...args) => this.emit(ev, ...args)
+    });
 
 
     /**
@@ -76,13 +72,7 @@ class ArkadiaClient implements ClientAdapter{
             this.socket.onmessage = (event: MessageEvent<string>) => {
                 try {
                     const decodedData = atob(event.data);
-                    if (this.isRecording) {
-                        this.recordedMessages.push({
-                            message: decodedData,
-                            timestamp: Date.now(),
-                            direction: 'in'
-                        });
-                    }
+                    this.recorder.handleIncoming(decodedData);
                     this.processIncomingData(decodedData);
                 } catch (error) {
                     console.error('Error processing incoming message:', error);
@@ -212,13 +202,7 @@ class ArkadiaClient implements ClientAdapter{
      * Compatibility wrapper matching old client API
      */
     sendCommand(command: string): void {
-        if (this.isRecording) {
-            this.recordedMessages.push({
-                message: command,
-                timestamp: Date.now(),
-                direction: 'out'
-            });
-        }
+        this.recorder.handleOutgoing(command);
         this.send(command);
     }
 
@@ -317,170 +301,65 @@ class ArkadiaClient implements ClientAdapter{
     }
 
     startRecording(name: string) {
-        this.recordedMessages = [];
-        this.currentRecordingName = name;
-        this.isRecording = true;
-        this.emit('recording.start', name);
+        this.recorder.startRecording(name);
     }
 
     async stopRecording(save?: boolean) {
-        this.isRecording = false;
-        if (save && this.currentRecordingName) {
-            await saveRecording(this.currentRecordingName, this.recordedMessages);
-        }
-        this.emit('recording.stop', save);
-        this.currentRecordingName = null;
+        await this.recorder.stopRecording(save);
     }
 
     async loadRecording(name: string) {
-        const data = await getRecording(name);
-        this.recordedMessages = data || [];
+        await this.recorder.loadRecording(name);
     }
 
     listRecordings() {
-        return getRecordingNames();
+        return this.recorder.listRecordings();
     }
 
     deleteRecording(name: string) {
-        return deleteRecording(name);
+        return this.recorder.deleteRecording(name);
     }
 
     stopPlayback() {
-        if (this.playbackTimeout !== null) {
-            clearTimeout(this.playbackTimeout);
-            this.playbackTimeout = null;
-        }
-        this.isPlaying = false;
-        this.paused = false;
-        this.playbackIndex = 0;
-        this.emit('playback.stop');
+        this.recorder.stopPlayback();
     }
 
     pausePlayback() {
-        if (!this.isPlaying || this.paused) return;
-        if (this.playbackTimeout !== null) {
-            clearTimeout(this.playbackTimeout);
-            this.playbackTimeout = null;
-            this.pausedDelay = Math.max(0, this.playbackDelay - (Date.now() - this.playbackStart));
-        }
-        this.paused = true;
-        this.emit('playback.pause');
+        this.recorder.pausePlayback();
     }
 
     resumePlayback() {
-        if (!this.isPlaying || !this.paused) return;
-        this.paused = false;
-        this.scheduleNext(this.pausedDelay);
-        this.emit('playback.resume');
+        this.recorder.resumePlayback();
     }
 
     stepForward() {
-        if (!this.isPlaying) return;
-        if (this.playbackTimeout !== null) {
-            clearTimeout(this.playbackTimeout);
-            this.playbackTimeout = null;
-        }
-        this.paused = true;
-        this.executeCurrent();
+        this.recorder.stepForward();
     }
 
     stepBack() {
-        if (!this.isPlaying || this.playbackIndex === 0) return;
-        if (this.playbackTimeout !== null) {
-            clearTimeout(this.playbackTimeout);
-            this.playbackTimeout = null;
-        }
-        this.paused = true;
-        if (this.playbackIndex >= 2) {
-            this.playbackIndex -= 2;
-        } else {
-            this.playbackIndex = 0;
-        }
-        this.executeCurrent();
+        this.recorder.stepBack();
     }
 
     replayLast() {
-        if (!this.isPlaying || this.playbackIndex === 0) return;
-        const ev = this.recordedMessages[this.playbackIndex - 1];
-        this.playEvent(ev);
+        this.recorder.replayLast();
     }
 
     getRecordedMessages() {
-        return this.recordedMessages.slice();
+        return this.recorder.getRecordedMessages();
     }
 
     setRecordedMessages(events: RecordedEvent[]) {
-        this.recordedMessages = events.slice();
+        this.recorder.setRecordedMessages(events);
     }
 
     replayRecordedMessages() {
-        if (this.recordedMessages.length === 0) return;
-        this.stopPlayback();
-        this.isPlaying = true;
-        this.emit('playback.start');
-        Output.send('== Playback start ==');
-        this.recordedMessages.forEach(ev => {
-            if (ev.direction === 'in') {
-                this.processIncomingData(ev.message);
-            } else {
-                Output.send('-> ' + ev.message);
-            }
-        });
-        Output.send('== Playback end ==');
-        this.stopPlayback();
+        this.recorder.replayRecordedMessages();
     }
 
     replayRecordedMessagesTimed() {
-        if (this.recordedMessages.length === 0) return;
-        this.stopPlayback();
-        this.isPlaying = true;
-        this.paused = false;
-        this.playbackIndex = 0;
-        this.emit('playback.start', this.recordedMessages.length);
-        Output.send('== Playback start ==');
-        this.emit('playback.index', 0, this.recordedMessages.length);
-        this.scheduleNext(0);
+        this.recorder.replayRecordedMessagesTimed();
     }
 
-    private playEvent(ev: RecordedEvent) {
-        if (ev.direction === 'in') {
-            this.processIncomingData(ev.message);
-        } else {
-            window.clientExtension.sendCommand(ev.message)
-            this.sendCommand(ev.message);
-        }
-    }
-
-    private executeCurrent() {
-        const ev = this.recordedMessages[this.playbackIndex];
-        if (!ev) {
-            Output.send('== Playback end ==');
-            this.stopPlayback();
-            return;
-        }
-        this.playEvent(ev);
-        this.playbackIndex++;
-        this.emit('playback.index', this.playbackIndex, this.recordedMessages.length);
-    }
-
-    private scheduleNext(initialDelay: number) {
-        if (!this.isPlaying) return;
-        const ev = this.recordedMessages[this.playbackIndex];
-        if (!ev) {
-            Output.send('== Playback end ==');
-            this.stopPlayback();
-            return;
-        }
-        const delay = this.playbackIndex === 0 ? initialDelay :
-            this.recordedMessages[this.playbackIndex].timestamp - this.recordedMessages[this.playbackIndex - 1].timestamp;
-        this.playbackDelay = delay;
-        this.playbackStart = Date.now();
-        this.playbackTimeout = window.setTimeout(() => {
-            if (!this.isPlaying || this.paused) return;
-            this.executeCurrent();
-            this.scheduleNext(0);
-        }, delay);
-    }
 }
 
 export default new ArkadiaClient();
