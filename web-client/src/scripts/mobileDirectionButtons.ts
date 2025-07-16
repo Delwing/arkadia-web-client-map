@@ -54,14 +54,12 @@ export default class MobileDirectionButtons {
         this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
-        this.clampToViewport();
         this.setupKeyboardHandlers();
 
         // Listen for window resize to check if mobile view
         window.addEventListener('resize', () => {
             this.checkMobile();
             this.scrollToBottom();
-            this.clampToViewport();
         });
 
         // Listen for UI settings changes
@@ -292,8 +290,6 @@ export default class MobileDirectionButtons {
                 console.error('Error parsing saved position:', e);
             }
         }
-        this.clampToViewport();
-
         // Add touch event listeners for long press and drag
         this.container.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
         this.container.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
@@ -419,8 +415,6 @@ export default class MobileDirectionButtons {
                 button.classList.remove('no-click');
             });
 
-            this.clampToViewport();
-
             // Prevent any click events immediately after dragging ends
             e.preventDefault();
         }
@@ -505,8 +499,6 @@ export default class MobileDirectionButtons {
             buttons.forEach(button => {
                 button.classList.remove('no-click');
             });
-
-            this.clampToViewport();
 
             // Prevent any click events immediately after dragging ends
             e.preventDefault();
@@ -605,31 +597,4 @@ export default class MobileDirectionButtons {
         });
     }
 
-    private clampToViewport = () => {
-        if (!this.container) return;
-        const rect = this.container.getBoundingClientRect();
-        const styles = window.getComputedStyle(this.container);
-        let newRight = parseFloat(styles.right || "5");
-        let newTop = parseFloat(styles.top || "5");
-
-        const margin = 5;
-        const maxRight = window.innerWidth - this.container.offsetWidth - margin;
-
-        if (rect.right > window.innerWidth) {
-            newRight = margin;
-        } else if (rect.left < 0) {
-            newRight = maxRight;
-        }
-
-        if (rect.bottom > window.innerHeight) {
-            newTop = window.innerHeight - this.container.offsetHeight - margin;
-        } else if (rect.top < 0) {
-            newTop = margin;
-        }
-
-        newRight = Math.min(maxRight, Math.max(margin, newRight));
-        newTop = Math.max(margin, newTop);
-        this.container.style.right = `${newRight}px`;
-        this.container.style.top = `${newTop}px`;
-    };
 }
