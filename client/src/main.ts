@@ -251,6 +251,7 @@ import initMagics from './scripts/magics'
 import registerGagTriggers from './scripts/gags'
 import initLeaderAttackWarning from './scripts/leaderAttackWarning'
 import initBreakItem from './scripts/breakItem'
+import initPriceEvaluation from './scripts/priceEvaluation'
 import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
@@ -261,6 +262,7 @@ initInvite(client)
 initObjectAliases(client, aliases)
 initMagicKeys(client)
 initMagics(client)
+initPriceEvaluation(client)
 initLeaderAttackWarning(client)
 initBreakItem(client)
 initExternalScripts(client)
