@@ -75,6 +75,7 @@ export default class MapHelper {
             Object.values(this.mapReader.roomIndex).forEach(room => this.hashes[room.hash] = room);
             const startId = this.savedRoomId ?? 1;
             window.dispatchEvent(new CustomEvent('map-ready-with-data', {detail: {mapData: event.detail.mapData, colors: event.detail.colors, startId: startId}}))
+            this.renderRoomById(startId)
         })
 
         this.client.addEventListener('gmcp.room.info', (event: CustomEvent) => {
