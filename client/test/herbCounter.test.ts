@@ -106,7 +106,9 @@ describe('herb counter', () => {
     initHerbCounter((client as unknown) as any, aliases);
     const show = aliases[1].callback as any;
     show();
-    client.dispatch('storage', { key: 'herb_summary', value: ['line1', 'line2'] });
-    expect(client.println).toHaveBeenCalledWith('line1\nline2');
+    client.dispatch('storage', { key: 'herb_counts', value: { 1: { deliona: 2 } } });
+    const printed = client.println.mock.calls[0][0];
+    expect(printed).toMatch(/2/);
+    expect(printed).toMatch(/deliona/);
   });
 });
