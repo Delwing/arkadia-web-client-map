@@ -1,5 +1,4 @@
 :root {
-
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
@@ -52,7 +51,7 @@ h1 {
 #main_text_output_msg_wrapper {
   flex: 1;
   overflow-y: auto;
-  margin: 2vh 2vw;
+  padding: 0.5vw 0.5vh;
   font-family: monospace;
   font-size: 0.775rem;
   overflow-wrap: break-word;
