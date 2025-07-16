@@ -5,6 +5,7 @@ import { stripAnsiCodes } from "../Triggers";
 
 const STORAGE_KEY = "herb_summary";
 const BAGS_KEY = "herb_bags";
+const TOTALS_KEY = "herb_bag_totals";
 
 const polishNumbers: Record<string, number> = {
   jeden: 1,
@@ -96,6 +97,7 @@ export default async function initHerbCounter(
   });
   let lastSummary: string[] = [];
   const bagContents: Record<number, Record<string, number>> = {};
+  const bagTotals: Record<number, Record<string, number>> = {};
   client.addEventListener("storage", (ev: CustomEvent) => {
     if (ev.detail.key === STORAGE_KEY) {
       lastSummary = Array.isArray(ev.detail.value) ? ev.detail.value : [];
@@ -107,10 +109,19 @@ export default async function initHerbCounter(
           bagContents[parseInt(k)] = { ...(v as Record<string, number>) };
         });
       }
+    } else if (ev.detail.key === TOTALS_KEY) {
+      const val = ev.detail.value || {};
+      Object.keys(bagTotals).forEach((k) => delete bagTotals[parseInt(k)]);
+      if (val && typeof val === "object") {
+        Object.entries(val).forEach(([k, v]) => {
+          bagTotals[parseInt(k)] = { ...(v as Record<string, number>) };
+        });
+      }
     }
   });
   client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
   client.port?.postMessage({ type: "GET_STORAGE", key: BAGS_KEY });
+  client.port?.postMessage({ type: "GET_STORAGE", key: TOTALS_KEY });
 
   async function ensureData() {
     if (!herbs) {
@@ -147,7 +158,6 @@ export default async function initHerbCounter(
   let awaiting = false;
   let left = 0;
   const totals: Record<string, number> = {};
-  const bagTotals: Record<number, Record<string, number>> = {};
   let currentBag = 0;
 
   function finish() {
@@ -232,11 +242,15 @@ export default async function initHerbCounter(
       key: BAGS_KEY,
       value: bagContents,
     });
+    client.port?.postMessage({
+      type: "SET_STORAGE",
+      key: TOTALS_KEY,
+      value: bagTotals,
+    });
     awaiting = false;
     left = 0;
     Object.keys(totals).forEach((k) => delete totals[k]);
     currentBag = 0;
-    Object.keys(bagTotals).forEach((k) => delete bagTotals[parseInt(k)]);
   }
 
   client.Triggers.registerTrigger(countRegex, (_r, _l, m) => {
@@ -316,6 +330,9 @@ export default async function initHerbCounter(
     lastSummary = [];
     currentBag = 0;
     Object.keys(bagTotals).forEach((k) => delete bagTotals[parseInt(k)]);
+    Object.keys(bagContents).forEach((k) => delete bagContents[parseInt(k)]);
+    client.port?.postMessage({ type: "SET_STORAGE", key: BAGS_KEY, value: {} });
+    client.port?.postMessage({ type: "SET_STORAGE", key: TOTALS_KEY, value: {} });
     client.sendCommand("policz swoje woreczki");
   }
 
