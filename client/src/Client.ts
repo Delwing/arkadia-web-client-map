@@ -2,22 +2,34 @@ import Triggers from "./Triggers";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
-import { Howl } from "howler";
+import {Howl} from "howler";
 import {
     FunctionalBind,
     LINE_START_EVENT,
     formatLabel,
 } from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
-import { rawInputSend, rawOutputSend } from "./main";
 import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
-import { beepSound } from "./sounds";
-import { attachGmcpListener } from "./gmcp";
+import {beepSound} from "./sounds";
+import {attachGmcpListener} from "./gmcp";
 import {color} from "./Colors";
 import {SKIP_LINE} from "./ControlConstants";
+import {stripPolishCharacters} from "./stripPolishCharacters";
+
+export interface LowLevelClient {
+    send(message: string): void
+
+    sendGmcp(path: string, payload: any): void
+
+    output(text?: string, type?: string): void
+
+    on(event: string, listener: EventListener): void;
+
+}
 
 export default class Client {
+    private lowLevelClient: LowLevelClient
     port?: any;
     eventTarget = new EventTarget();
     FunctionalBind = new FunctionalBind(this);
@@ -37,7 +49,7 @@ export default class Client {
         }),
     };
     aliases: { pattern: RegExp; callback: Function }[] = [];
-    lampBind = { key: "Digit4", ctrl: true } as {
+    lampBind = {key: "Digit4", ctrl: true} as {
         key: string;
         ctrl?: boolean;
         alt?: boolean;
@@ -45,9 +57,10 @@ export default class Client {
     };
     inLineProcess = false; //TODO figure out something else
     defaultColor = 255;
+    buffer: { text: string, type: string }[] = []
 
-
-    constructor() {
+    constructor(lowLevelClient: LowLevelClient) {
+        this.lowLevelClient = lowLevelClient
         attachGmcpListener(this);
         window.addEventListener('message', ({data: data}) => {
             if (data.payload) { //TODO doubtful!
@@ -86,12 +99,20 @@ export default class Client {
             }
             const lamp = ev.detail?.binds?.lamp
             if (lamp) {
-                this.lampBind = { ...lamp }
+                this.lampBind = {...lamp}
             }
         })
 
         this.addEventListener('gmcp.char.colors', (ev: CustomEvent) => {
             this.defaultColor = ev.detail.text ?? 255
+        })
+
+        this.addEventListener('output-sent', () => {
+            if (this.buffer.length > 0) {
+                this.buffer.forEach(item => this.lowLevelClient.output(item.text, item.type))
+                this.sendEvent('buffer-sent', this.buffer.length)
+                this.buffer = []
+            }
         })
     }
 
@@ -124,15 +145,16 @@ export default class Client {
     }
 
     send(command: string) {
-        rawInputSend(command)
+        this.lowLevelClient.send(command)
     }
 
     sendCommand(command: string) {
-        this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
+        command = stripPolishCharacters(command)
+        this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
-                Output.send('→ ' + command, 'command')
+                this.lowLevelClient.output('→ ' + command, 'command')
                 alias.callback(matches)
                 return true
             }
@@ -141,35 +163,19 @@ export default class Client {
         if (!isAlias) {
             command = this.Map.parseCommand(command)
             command.split(/[#;]/).forEach(part => {
-                rawInputSend(this.Map.move(part).direction)
+                this.lowLevelClient.send(this.Map.move(part).direction)
             })
         }
     }
 
-    sendGMCP(_: string, __?: any) {}
+    sendGMCP(type: string, payload?: any) {
+        this.lowLevelClient.sendGmcp(type, payload)
+    }
 
     onLine(line: string, type: string) {
         this.inLineProcess = true
         this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT))
-        const buffer: { out: string, type?: string }[] = []
-        const originalOutputSend = Output.send
-        Output.send = (out: string, outputType?: string): any => {
-            if (out) {
-                buffer.push({out, type: outputType})
-            } else {
-                rawOutputSend()
-            }
-        }
-
-        this.addEventListener('line-sent', () => {
-            if (buffer.length > 0) {
-                buffer.forEach(item => Output.send(item.out, item.type))
-                this.sendEvent('buffer-sent', buffer.length)
-            }
-        }, {once: true})
-
-        const ansiRegex =/\x1b\[[0-9;]*m/g
-
+        const ansiRegex = /\x1b\[[0-9;]*m/g
         line = this.Triggers.parseMultiline(line, type)
         let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).filter(line => line !== SKIP_LINE).join('\n')
         if (!result.startsWith("\x1b")) {
@@ -201,7 +207,6 @@ export default class Client {
         })
         let index = 0
         result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
-        Output.send = originalOutputSend
         this.inLineProcess = false
         return result
     }
@@ -216,6 +221,14 @@ export default class Client {
         }
     }
 
+    bufferOutput(output: string) {
+        if (output) {
+            this.buffer.push({text: output, type: 'output'})
+        } else {
+            this.lowLevelClient.output()
+        }
+    }
+
     createEvent(type, payload) {
         return {
             type: type,
@@ -227,9 +240,7 @@ export default class Client {
         if (typeof printable === 'object') {
             printable = JSON.stringify(printable)
         }
-        // @ts-ignore
-        const text = Text.parse_patterns(printable)
-        Output.send(text)
+        this.bufferOutput(printable)
         if (!this.inLineProcess) {
             this.sendEvent('output-sent', 1)
         }

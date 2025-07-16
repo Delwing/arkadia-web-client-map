@@ -36,6 +36,6 @@ fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     return originalDispatch(event);
 };
 fakeClient.fake = (text: string, type?: string) => {
-    window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type);
+    client.output(client.onLine(text, type), type);
     client.sendEvent('gmcp_msg.' + type, text);
 };

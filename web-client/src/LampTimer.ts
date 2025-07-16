@@ -1,8 +1,8 @@
 import ArkadiaClient from "./ArkadiaClient.ts";
 
 export default class LampTimer {
-  private container: HTMLElement | null;
-  constructor(client: typeof ArkadiaClient) {
+  private readonly container: HTMLElement | null;
+  constructor(client: ArkadiaClient) {
     this.container = document.getElementById("lamp-timer");
     client.on("lampTimer", (seconds: number | null) => this.update(seconds));
   }

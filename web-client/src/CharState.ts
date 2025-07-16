@@ -67,7 +67,7 @@ const DEFAULT_CONFIG: Record<keyof CharStateData, CharStateConfig> = {
 };
 
 export default class CharState {
-  private client: typeof ArkadiaClient;
+  private client: ArkadiaClient;
   private container: HTMLElement | null;
   private text: HTMLElement | null;
   private config: Record<keyof CharStateData, CharStateConfig>;
@@ -84,7 +84,7 @@ export default class CharState {
   }
 
   constructor(
-    client: typeof ArkadiaClient,
+    client: ArkadiaClient,
     overrides?: Partial<
       Record<keyof CharStateData, Partial<CharStateConfig>>
     >,

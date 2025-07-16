@@ -1,6 +1,5 @@
 import { parseAnsiPatterns } from './ansiParser';
 import { saveRecording, getRecording, getRecordingNames, deleteRecording, RecordedEvent } from './recordingStorage';
-import {SKIP_LINE} from "@client/src/ControlConstants.ts";
 
 // Event emitter types
 type EventListener = (...args: any[]) => void;
@@ -12,8 +11,7 @@ const GMCP_COMMAND_CODE = 201;
 const TELNET_OPTION_REGEX = /\u00FF\u00FA.*?\u00FF\u00F0|\u00FF.[^\u00FF]/g;
 
 
-
-class ArkadiaClient {
+export default class ArkadiaClient {
     private socket!: WebSocket;
     private events: EventMap = {};
     private receivedFirstGmcp: boolean = false;
@@ -172,7 +170,7 @@ class ArkadiaClient {
             this.socket.send(btoa(message + "\r\n"));
             // Only echo commands if we've received the first GMCP event
             if (this.receivedFirstGmcp && message) {
-                Output.send("-> " + message);
+                this.output("-> " + message);
             }
         } catch (error) {
             console.error('Error sending message:', error);
@@ -192,6 +190,10 @@ class ArkadiaClient {
             console.error('Error sending GMCP message:', error);
             this.emit('error', error);
         }
+    }
+
+    output(text: string, type?: string) {
+        this.emit("message", parseAnsiPatterns(text), type)
     }
 
     private startPing() {
@@ -304,7 +306,7 @@ class ArkadiaClient {
     private sendLine(text: string, type: string, i: number) {
         text = window.clientExtension.onLine(text, type)
         window.clientExtension.addEventListener('output-sent', () => window.clientExtension.sendEvent(`gmcp_msg.${type}`, text), {once: true})
-        Output.send(parseAnsiPatterns(text), type);
+        this.output(text, type);
         window.clientExtension.sendEvent('line-sent')
     }
 
@@ -410,15 +412,15 @@ class ArkadiaClient {
         this.stopPlayback();
         this.isPlaying = true;
         this.emit('playback.start');
-        Output.send('== Playback start ==');
+        this.output('== Playback start ==');
         this.recordedMessages.forEach(ev => {
             if (ev.direction === 'in') {
                 this.processIncomingData(ev.message);
             } else {
-                Output.send('-> ' + ev.message);
+                this.output('-> ' + ev.message);
             }
         });
-        Output.send('== Playback end ==');
+        this.output('== Playback end ==');
         this.stopPlayback();
     }
 
@@ -429,7 +431,7 @@ class ArkadiaClient {
         this.paused = false;
         this.playbackIndex = 0;
         this.emit('playback.start', this.recordedMessages.length);
-        Output.send('== Playback start ==');
+        this.output('== Playback start ==');
         this.emit('playback.index', 0, this.recordedMessages.length);
         this.scheduleNext(0);
     }
@@ -446,7 +448,7 @@ class ArkadiaClient {
     private executeCurrent() {
         const ev = this.recordedMessages[this.playbackIndex];
         if (!ev) {
-            Output.send('== Playback end ==');
+            this.output('== Playback end ==');
             this.stopPlayback();
             return;
         }
@@ -459,7 +461,7 @@ class ArkadiaClient {
         if (!this.isPlaying) return;
         const ev = this.recordedMessages[this.playbackIndex];
         if (!ev) {
-            Output.send('== Playback end ==');
+            this.output('== Playback end ==');
             this.stopPlayback();
             return;
         }
@@ -474,5 +476,3 @@ class ArkadiaClient {
         }, delay);
     }
 }
-
-export default new ArkadiaClient();

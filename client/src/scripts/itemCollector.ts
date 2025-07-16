@@ -35,6 +35,26 @@ export default class ItemCollector {
                 this.extra = [...s.collectExtra];
             }
         });
+
+        this.client.aliases.push({
+            pattern: /\/zbieraj_extra(.*)/,
+            callback: (matches: RegExpMatchArray) => {
+                const strTrim = (matches[1] || '').trim()
+                this.addExtra(strTrim)
+            }
+        })
+
+        this.client.aliases.push({
+            pattern: /\/nie_zbieraj_extra(.*)/,
+            callback: (matches: RegExpMatchArray) => {
+                const strTrim = (matches[1] || '').trim()
+                if (strTrim !== '') {
+                    this.removeExtra(strTrim, false)
+                } else {
+                    this.removeExtra('', true)
+                }
+            }
+        })
     }
 
     setMode(mode: number) {

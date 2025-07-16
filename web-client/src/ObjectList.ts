@@ -1,7 +1,7 @@
-import Client from "@client/src/Client";
+import ArkadiaClient from "./ArkadiaClient.ts";
 
 export default class ObjectList {
-    private client: Client;
+    private client: ArkadiaClient;
     private readonly container: HTMLElement | null;
     private isDragging = false;
     private startX = 0;
@@ -10,14 +10,14 @@ export default class ObjectList {
     private offsetTop = 0;
     private pointerId = 0;
 
-    constructor(client: Client) {
+    constructor(client: ArkadiaClient) {
         this.client = client;
         this.container = document.getElementById("objects-list");
         this.setupDraggable();
         window.addEventListener("resize", this.clampToViewport);
-        this.client.addEventListener("gmcp.objects.nums", () => this.render());
-        this.client.addEventListener("gmcp.objects.data", () => this.render());
-        this.client.addEventListener("gmcp.char.state", () => this.render());
+        this.client.on("gmcp.objects.nums", () => this.render());
+        this.client.on("gmcp.objects.data", () => this.render());
+        this.client.on("gmcp.char.state", () => this.render());
         this.render();
     }
 

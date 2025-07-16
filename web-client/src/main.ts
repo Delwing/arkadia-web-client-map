@@ -14,7 +14,6 @@ import NoSleep from 'nosleep.js';
 import {loadMapData, loadColors} from "./mapDataLoader.ts";
 import {loadNpcData} from "./npcDataLoader.ts";
 import "@map/embedded.js"
-const client = ArkadiaClient
 
 import {createElement} from 'react'
 import {createRoot} from 'react-dom/client'
@@ -24,7 +23,12 @@ import Scripts from "@options/src/Scripts.tsx"
 import Aliases from "@options/src/Aliases.tsx"
 import Recordings from "@options/src/Recordings.tsx"
 
-window.clientExtension.sendGMCP = client.sendGmcp
+const arkadiaClient = new ArkadiaClient()
+const client = new Client(arkadiaClient)
+
+window.clientExtension= client
+registerScripts(client)
+client.sendGMCP = arkadiaClient.sendGmcp
 
 // Prevent tab sleep on mobile when switching tabs
 let noSleepInstance: NoSleep | null = null;
@@ -70,18 +74,18 @@ function disableTabSleepPrevention() {
 }
 
 loadNpcData().then(npc => {
-    window.clientExtension.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
+    client.eventTarget.dispatchEvent(new CustomEvent("npc", {detail: npc}))
 })
 
 const port = new MockPort();
-window.clientExtension.connect(port as any, true);
-window.clientExtension.addEventListener('lampTimer', (ev: CustomEvent<number | null>) => {
-    client.emit('lampTimer', ev.detail);
+client.connect(port as any, true);
+client.addEventListener('lampTimer', (ev: CustomEvent<number | null>) => {
+    arkadiaClient.emit('lampTimer', ev.detail);
 });
-window.clientExtension.addEventListener('breakItem', (ev: CustomEvent<any>) => {
-    client.emit('breakItem', ev.detail);
+client.addEventListener('breakItem', (ev: CustomEvent<any>) => {
+    arkadiaClient.emit('breakItem', ev.detail);
 });
-window.clientExtension.addEventListener('settings', (ev: CustomEvent) => {
+client.addEventListener('settings', (ev: CustomEvent) => {
     if (ev.detail?.binds?.directions) {
         applyDirectionBinds(ev.detail.binds.directions);
     }
@@ -203,7 +207,7 @@ Promise.all([mapDataPromise, colorsPromise])
 
 
 // Set up message event listener for UI updates
-client.on('message', (message: string, type?: string) => {
+arkadiaClient.on('message', (message: string, type?: string) => {
     const wrapper = document.createElement('div');
     wrapper.classList.add('output_msg');
 
@@ -291,16 +295,16 @@ function updateConnectButtons() {
 }
 
 // Handle client connect event
-client.on('client.connect', () => {
+arkadiaClient.on('client.connect', () => {
     isConnected = true;
     isConnecting = false;
     updateConnectButtons();
-    window.clientExtension.sendEvent('refreshPositionWhenAble');
+    client.sendEvent('refreshPositionWhenAble');
     console.log('Client connected to Arkadia server.');
 });
 
 // Handle client disconnect event
-client.on('client.disconnect', () => {
+arkadiaClient.on('client.disconnect', () => {
     isConnected = false;
     isConnecting = false;
     updateConnectButtons();
@@ -309,7 +313,7 @@ client.on('client.disconnect', () => {
 
 // Ensure button state is correct when returning to the tab
 document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && client.isSocketOpen()) {
+    if (!document.hidden && arkadiaClient.isSocketOpen()) {
         isConnected = true;
         updateConnectButtons();
     }
@@ -359,7 +363,7 @@ document.addEventListener('keydown', (e) => {
                 (window as any).clientExtension.sendCommand(first);
             }
         } else {
-            Input.send(direction);
+            client.sendCommand(direction);
         }
     }
 });
@@ -473,52 +477,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (recordingButton) {
         recordingButton.addEventListener('click', () => {
-            client.stopRecording(true);
+            arkadiaClient.stopRecording(true);
         });
     }
 
     if (playbackPause) {
         playbackPause.addEventListener('click', () => {
             if (playbackPause.textContent === 'Pause') {
-                client.pausePlayback();
+                arkadiaClient.pausePlayback();
             } else {
-                client.resumePlayback();
+                arkadiaClient.resumePlayback();
             }
         });
     }
 
     if (playbackStop) {
         playbackStop.addEventListener('click', () => {
-            client.stopPlayback();
+            arkadiaClient.stopPlayback();
         });
     }
 
     if (playbackReplay) {
         playbackReplay.addEventListener('click', () => {
-            client.replayLast();
+            arkadiaClient.replayLast();
         });
     }
 
     if (playbackStepBack) {
         playbackStepBack.addEventListener('click', () => {
-            client.stepBack();
+            arkadiaClient.stepBack();
         });
     }
 
     if (playbackStep) {
         playbackStep.addEventListener('click', () => {
-            client.stepForward();
+            arkadiaClient.stepForward();
         });
     }
 
-    client.on('recording.start', () => {
+    arkadiaClient.on('recording.start', () => {
         if (recordingButton) recordingButton.style.display = 'block';
     });
-    client.on('recording.stop', () => {
+    arkadiaClient.on('recording.stop', () => {
         if (recordingButton) recordingButton.style.display = 'none';
     });
 
-    client.on('playback.start', (total: number) => {
+    arkadiaClient.on('playback.start', (total: number) => {
         playbackMode = true;
         if (playbackControls) playbackControls.style.display = 'flex';
         if (playbackInfo) playbackInfo.textContent = `0 / ${total}`;
@@ -526,21 +530,21 @@ document.addEventListener('DOMContentLoaded', () => {
         updateConnectButtons();
     });
 
-    client.on('playback.stop', () => {
+    arkadiaClient.on('playback.stop', () => {
         playbackMode = false;
         if (playbackControls) playbackControls.style.display = 'none';
         updateConnectButtons();
     });
 
-    client.on('playback.pause', () => {
+    arkadiaClient.on('playback.pause', () => {
         if (playbackPause) playbackPause.textContent = 'Resume';
     });
 
-    client.on('playback.resume', () => {
+    arkadiaClient.on('playback.resume', () => {
         if (playbackPause) playbackPause.textContent = 'Pause';
     });
 
-    client.on('playback.index', (index: number, total: number) => {
+    arkadiaClient.on('playback.index', (index: number, total: number) => {
         if (playbackInfo) playbackInfo.textContent = `${index} / ${total}`;
     });
 
@@ -561,20 +565,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = loginPassword?.value || '';
 
             // Password persistence removed
-            client.setStoredPassword(password || null);
-            client.setStoredCharacter(character || null);
+            arkadiaClient.setStoredPassword(password || null);
+            arkadiaClient.setStoredCharacter(character || null);
 
             const sendCreds = () => {
-                if (character) Input.send(character);
-                if (password) Input.send(password);
-                client.off('client.connect', sendCreds);
+                if (character) arkadiaClient.send(character);
+                if (password) arkadiaClient.send(password);
+                arkadiaClient.off('client.connect', sendCreds);
             };
 
             if (!isConnected) {
-                client.on('client.connect', sendCreds);
+                arkadiaClient.on('client.connect', sendCreds);
                 isConnecting = true;
                 updateConnectButtons();
-                client.connect();
+                arkadiaClient.connect();
             } else {
                 sendCreds();
             }
@@ -590,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = messageInput.value.trim();
         if (message) {
             // Only add command to history if we've received the first GMCP event
-            if (client.hasReceivedFirstGmcp()) {
+            if (arkadiaClient.hasReceivedFirstGmcp()) {
                 // Add command to history if it's different from the last one
                 if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== message) {
                     commandHistory.push(message);
@@ -599,15 +603,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 historyIndex = -1;
                 currentInput = '';
 
-                Input.send(message);
+                client.sendCommand(message);
                 messageInput.select();
             } else {
                 // If we haven't received the first GMCP event yet, clear the input field
-                Input.send(message);
+                client.sendCommand(message);
                 messageInput.value = '';
             }
         } else {
-            Input.send('');
+            client.sendCommand('');
         }
     }
 
@@ -625,7 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault(); // Prevent cursor from moving
 
             // Only allow command history navigation if we've received the first GMCP event
-            if (!client.hasReceivedFirstGmcp()) return;
+            if (!arkadiaClient.hasReceivedFirstGmcp()) return;
 
             if (commandHistory.length === 0) return;
 
@@ -667,11 +671,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle connect/disconnect button click
     connectButton.addEventListener('click', () => {
         if (isConnected) {
-            client.disconnect();
+            arkadiaClient.disconnect();
         } else {
             isConnecting = true;
             updateConnectButtons();
-            client.connect();
+            arkadiaClient.connect();
         }
     });
 
@@ -680,13 +684,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateConnectButtons();
 
     // Display character state and lamp timer
-    new CharState(client);
-    new LampTimer(client);
-    new BreakItemWarning(client);
-    new ObjectList(window.clientExtension as any);
-
-    // Initialize mobile direction buttons
-    new MobileDirectionButtons(window.clientExtension);
+    new CharState(arkadiaClient);
+    new LampTimer(arkadiaClient);
+    new BreakItemWarning(arkadiaClient);
+    new ObjectList(arkadiaClient);
+    new MobileDirectionButtons(client);
 
     initUiSettings();
 
@@ -742,10 +744,12 @@ window.addEventListener('resize', () => {
 });
 
 // @ts-ignore
-window.client = client
+window.client = arkadiaClient
 
 // background communication disabled
 
 import MobileDirectionButtons from "./scripts/mobileDirectionButtons"
 import Settings from "@options/src/Settings.tsx";
 import initUiSettings from "./uiSettings";
+import Client from "@client/src/Client.ts";
+import {registerScripts} from "@client/src/main.ts";
