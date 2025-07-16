@@ -82,10 +82,10 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     client.addEventListener('contentWidth', (ev: CustomEvent) => {
         width = ev.detail;
     });
-    let lastSummary: string[] = [];
+    let storedBags: Record<number, Record<string, number>> = {};
     client.addEventListener('storage', (ev: CustomEvent) => {
         if (ev.detail.key === STORAGE_KEY) {
-            lastSummary = Array.isArray(ev.detail.value) ? ev.detail.value : [];
+            storedBags = typeof ev.detail.value === 'object' && ev.detail.value ? ev.detail.value : {};
         }
     });
     client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
@@ -120,60 +120,69 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     const bagTotals: Record<number, Record<string, number>> = {};
     let currentBag = 0;
 
-    function finish() {
-        const entries = Object.entries(totals);
-        if (entries.length === 0) {
-            lastSummary = ['Brak ziol.'];
-            client.println(lastSummary.join('\n'));
-        } else {
-            const lines: string[] = [];
-            const normal = width >= 63;
-            if (normal) {
-                lines.push('------+--------------------+-----------------------------------');
-                lines.push('  ile |        nazwa       |              dzialanie            ');
-                lines.push('------+--------------------+-----------------------------------');
-            }
-
-            const prefixWidth = normal ? 28 : 0;
-
-            entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
-                const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
-
-                if (normal) {
-                    const base = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | `;
-                    const available = width - stripAnsiCodes(base).length;
-                    if (available >= stripAnsiCodes(uses).length) {
-                        lines.push(base + uses);
-                    } else if (available > 0) {
-                        lines.push(base + uses.slice(0, available));
-                        lines.push(' '.repeat(stripAnsiCodes(base).length) + uses.slice(available));
-                    } else {
-                        lines.push(`${String(c).padStart(5, ' ')} | ${id}`);
-                        lines.push(' '.repeat(prefixWidth) + uses);
-                    }
-                } else {
-                    const base = `${String(c).padStart(3, ' ')} ${id}`;
-                    lines.push(base);
-                    lines.push(' '.repeat(4) + uses);
-                }
+    function buildSummary(bags: Record<number, Record<string, number>>): string[] {
+        const totalsMap: Record<string, number> = {};
+        Object.values(bags).forEach(contents => {
+            Object.entries(contents).forEach(([id, c]) => {
+                totalsMap[id] = (totalsMap[id] || 0) + c;
             });
-            if (normal) {
-                lines.push('---------------------------------------------------------------');
-            }
-            if (Object.keys(bagTotals).length > 0) {
-                lines.push('');
-                Object.entries(bagTotals).forEach(([num, contents]) => {
-                    const parts = Object.entries(contents)
-                        .sort((a, b) => a[0].localeCompare(b[0]))
-                        .map(([id, c]) => `${c} ${id}`)
-                        .join(', ');
-                    lines.push(`${num}. ${parts || '(pusty)'}`);
-                });
-            }
-            lastSummary = lines;
-            client.println(lastSummary.join('\n'));
+        });
+        const entries = Object.entries(totalsMap);
+        if (entries.length === 0) {
+            return ['Brak ziol.'];
         }
-        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: lastSummary });
+        const lines: string[] = [];
+        const normal = width >= 63;
+        if (normal) {
+            lines.push('------+--------------------+---------------------------');
+            lines.push('  ile |        nazwa       |              dzialanie           ');
+            lines.push('------+--------------------+---------------------------');
+        }
+
+        const prefixWidth = normal ? 28 : 0;
+
+        entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([id, c]) => {
+            const uses = herbs?.herb_id_to_use[id]?.map(u => `${u.action}: ${u.effect}`).join(' | ') || '--';
+
+            if (normal) {
+                const base = `${String(c).padStart(5, ' ')} | ${id.padEnd(18, ' ')} | `;
+                const available = width - stripAnsiCodes(base).length;
+                if (available >= stripAnsiCodes(uses).length) {
+                    lines.push(base + uses);
+                } else if (available > 0) {
+                    lines.push(base + uses.slice(0, available));
+                    lines.push(' '.repeat(stripAnsiCodes(base).length) + uses.slice(available));
+                } else {
+                    lines.push(`${String(c).padStart(5, ' ')} | ${id}`);
+                    lines.push(' '.repeat(prefixWidth) + uses);
+                }
+            } else {
+                const base = `${String(c).padStart(3, ' ')} ${id}`;
+                lines.push(base);
+                lines.push(' '.repeat(4) + uses);
+            }
+        });
+        if (normal) {
+            lines.push('-----------------------------------------------------------');
+        }
+        if (Object.keys(bags).length > 0) {
+            lines.push('');
+            Object.entries(bags).forEach(([num, contents]) => {
+                const parts = Object.entries(contents)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .map(([id, c]) => `${c} ${id}`)
+                    .join(', ');
+                lines.push(`${num}. ${parts || '(pusty)'}`);
+            });
+        }
+        return lines;
+    }
+
+    function finish() {
+        storedBags = structuredClone(bagTotals);
+        const lines = buildSummary(storedBags);
+        client.println(lines.join('\n'));
+        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: storedBags });
         awaiting = false;
         left = 0;
         Object.keys(totals).forEach(k => delete totals[k]);
@@ -219,7 +228,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     async function start() {
         await ensureData();
         awaiting = true;
-        lastSummary = [];
+        storedBags = {};
         currentBag = 0;
         Object.keys(bagTotals).forEach(k => delete bagTotals[parseInt(k)]);
         client.sendCommand('policz swoje woreczki');
@@ -231,9 +240,10 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             pattern: /\/ziola_pokaz$/, callback: () => {
                 const listener = (ev: CustomEvent) => {
                     if (ev.detail.key === STORAGE_KEY) {
-                        const summary = Array.isArray(ev.detail.value) ? ev.detail.value : [];
-                        if (summary.length > 0) {
-                            client.println(summary.join('\n'));
+                        const bags = typeof ev.detail.value === 'object' && ev.detail.value ? ev.detail.value : {};
+                        const lines = buildSummary(bags);
+                        if (lines.length > 0) {
+                            client.println(lines.join('\n'));
                         } else {
                             client.println('Brak podsumowania.');
                         }
