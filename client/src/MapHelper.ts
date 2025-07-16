@@ -4,7 +4,7 @@ import Room = MapData.Room;
 
 const STORAGE_KEY = 'mapperRoomId';
 
-const polishToEnglish = {
+export const polishToEnglish = {
     ["polnoc"]: "north",
     ["poludnie"]: "south",
     ["wschod"]: "east",
@@ -61,7 +61,6 @@ export default class MapHelper {
     hashes = {};
     gmcpPosition: Position;
     savedRoomId: number | null = null;
-    pendingSpecial: string[] = [];
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
@@ -141,17 +140,12 @@ export default class MapHelper {
         return {direction: actualDirection, moved: false}
     }
 
-    followMove(direction: string, line: string) {
-        const prevId = this.currentRoom?.id
-        const result = this.move(direction)
-        if (result.moved) {
-            return result.direction
-        }
+    followMove(direction: string) {
         if (this.currentRoom?.userData?.team_follow_link) {
             const entries = this.currentRoom.userData.team_follow_link.split('#')
             for (const entry of entries) {
                 const [search, exit] = entry.split('*')
-                if (search && exit && line.includes(search)) {
+                if (search && exit && direction.includes(search)) {
                     const res = this.move(exit)
                     if (res.moved) {
                         return res.direction
@@ -162,7 +156,7 @@ export default class MapHelper {
         if (this.currentRoom?.specialExits) {
             const specials = Object.keys(this.currentRoom.specialExits)
             for (const ex of specials) {
-                if (line.includes(ex)) {
+                if (direction.includes(ex)) {
                     const res = this.move(ex)
                     if (res.moved) {
                         return res.direction
@@ -171,7 +165,7 @@ export default class MapHelper {
             }
             for (const ex of specials) {
                 const part = ex.substring(0, Math.ceil(ex.length * 0.7))
-                if (line.includes(part)) {
+                if (direction.includes(part)) {
                     const res = this.move(ex)
                     if (res.moved) {
                         return res.direction
@@ -179,7 +173,8 @@ export default class MapHelper {
                 }
             }
         }
-        return result.direction
+
+        return direction
     }
 
     refresh() {
