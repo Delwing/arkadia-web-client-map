@@ -193,8 +193,8 @@ Promise.all([mapDataPromise, colorsPromise])
             }
         }));
 
-        // Send map data to iframe
-        window.postMessage({mapData, colors}, '*');
+        // Send map data via custom event
+        window.dispatchEvent(new CustomEvent('extension-message', {detail: {mapData, colors}}));
     })
     .catch(error => {
         progressContainer.style.display = 'none';

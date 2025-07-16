@@ -41,8 +41,8 @@ Promise.all([mapPromise, colorsPromise])
     .then(([mapData, colors]) => {
         console.log('Map data and colors loaded successfully');
 
-        // Send map data to iframe
-        frame.contentWindow?.postMessage({mapData, colors}, '*');
+        // Send map data to iframe via custom event
+        frame.contentWindow?.dispatchEvent(new CustomEvent('extension-message', {detail: {mapData, colors}}));
 
         // Dispatch events
         window.dispatchEvent(new CustomEvent("extension-ready"));

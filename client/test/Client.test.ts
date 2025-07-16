@@ -63,7 +63,7 @@ beforeEach(() => {
   document.body.innerHTML = '<div id="panel_buttons_bottom"></div><iframe id="cm-frame"></iframe>';
   (window as any).Output = { flush_buffer: jest.fn(), send: jest.fn() };
   (window as any).Text = { parse_patterns: jest.fn((v: any) => v) };
-  (window as any).postMessage = jest.fn();
+  (window as any).dispatchEvent = jest.fn();
 });
 
 test('createEvent returns object with type and data', () => {

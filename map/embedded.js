@@ -151,4 +151,4 @@ const handleData = (data) => {
     }
 }
 
-window.addEventListener("message", (e) => handleData(e.data))
+window.addEventListener('extension-message', (e) => handleData(e.detail))

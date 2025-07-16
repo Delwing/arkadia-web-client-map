@@ -49,9 +49,10 @@ export default class Client {
 
     constructor() {
         attachGmcpListener(this);
-        window.addEventListener('message', ({data: data}) => {
-            if (data.payload) { //TODO doubtful!
-                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+        window.addEventListener('extension-message', (ev: Event) => {
+            const data: any = (ev as CustomEvent).detail;
+            if (data && data.data !== undefined) {
+                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.data}))
             }
         })
 
@@ -209,10 +210,11 @@ export default class Client {
     sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
         const frame = document.getElementById('cm-frame') as HTMLIFrameElement
+        const event = new CustomEvent('extension-message', {detail: this.createEvent(type, payload)})
         if (frame) {
-            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*')
+            frame.contentWindow?.dispatchEvent(event)
         } else {
-            window.postMessage(this.createEvent(type, payload))
+            window.dispatchEvent(event)
         }
     }
 
