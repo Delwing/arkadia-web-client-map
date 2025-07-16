@@ -31,9 +31,14 @@ body {
   height: 100svh;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 h1 {
