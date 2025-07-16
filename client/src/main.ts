@@ -3,12 +3,6 @@ import People from "./People";
 import registerLuaGagTriggers from "./scripts/./luaGags";
 import { stripPolishCharacters } from "./stripPolishCharacters";
 
-interface RecordedEvent {
-    message: string;
-    timestamp: number;
-    direction: 'in' | 'out';
-}
-
 const gmcpParseOption = Gmcp.parse_option_subnegotiation
 export const rawOutputSend = Output.send
 export const rawInputSend = Input.send

@@ -101,5 +101,5 @@ class ChromeLocalStorage implements Storage {
 
 }
 
-const storage: Storage = chrome.storage ? new ChromeLocalStorage() : new LocalStorage();
+const storage: Storage = typeof chrome !== "undefined" && chrome.storage ? new ChromeLocalStorage() : new LocalStorage();
 export default storage;
