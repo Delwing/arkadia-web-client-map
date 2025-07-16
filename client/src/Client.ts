@@ -9,15 +9,22 @@ import {
     formatLabel,
 } from "./scripts/functionalBind";
 import OutputHandler from "./OutputHandler";
-import { rawInputSend, rawOutputSend } from "./main";
 import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
 import { beepSound } from "./sounds";
 import { attachGmcpListener } from "./gmcp";
 import {color} from "./Colors";
 import {SKIP_LINE} from "./ControlConstants";
+import {stripPolishCharacters} from "./stripPolishCharacters";
+
+export interface ClientAdapter {
+    send(text: string): void;
+    output(text?: string, type?: string): void
+    sendGmcp(type: string, payload?: any): void
+}
 
 export default class Client {
+    clientAdapter: ClientAdapter;
     port?: any;
     eventTarget = new EventTarget();
     FunctionalBind = new FunctionalBind(this);
@@ -45,13 +52,16 @@ export default class Client {
     };
     inLineProcess = false; //TODO figure out something else
     defaultColor = 255;
+    buffer: { out: string, type?: string }[] = [];
 
 
-    constructor() {
+    constructor(clientAdapter: ClientAdapter, port: any) {
+        this.clientAdapter = clientAdapter
         attachGmcpListener(this);
-        window.addEventListener('message', ({data: data}) => {
-            if (data.payload) { //TODO doubtful!
-                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.payload}))
+        window.addEventListener('extension-message', (ev: Event) => {
+            const data: any = (ev as CustomEvent).detail;
+            if (data && data.data !== undefined) {
+                this.eventTarget.dispatchEvent(new CustomEvent(data.type, {detail: data.data}))
             }
         })
 
@@ -93,6 +103,15 @@ export default class Client {
         this.addEventListener('gmcp.char.colors', (ev: CustomEvent) => {
             this.defaultColor = ev.detail.text ?? 255
         })
+
+        this.addEventListener('output-sent', ()=> {
+            if (this.buffer.length == 0) return
+            this.buffer.forEach(item => this.clientAdapter.output(item.out, item.type))
+            this.sendEvent('buffer-sent', this.buffer.length)
+            this.buffer = []
+        })
+
+        this.port = port
     }
 
     connect(port: any, initial: boolean) {
@@ -124,15 +143,18 @@ export default class Client {
     }
 
     send(command: string) {
-        rawInputSend(command)
+        this.clientAdapter.send(command)
     }
 
     sendCommand(command: string) {
+        if (command) {
+            command = stripPolishCharacters(command)
+        }
         this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
-                Output.send('→ ' + command, 'command')
+                this.clientAdapter.output('→ ' + command, 'command')
                 alias.callback(matches)
                 return true
             }
@@ -141,33 +163,18 @@ export default class Client {
         if (!isAlias) {
             command = this.Map.parseCommand(command)
             command.split(/[#;]/).forEach(part => {
-                rawInputSend(this.Map.move(part).direction)
+                this.clientAdapter.send(this.Map.move(part).direction)
             })
         }
     }
 
-    sendGMCP(_: string, __?: any) {}
+    sendGMCP(type: string, payload?: any) {
+        this.clientAdapter.sendGmcp(type, payload)
+    }
 
     onLine(line: string, type: string) {
         this.inLineProcess = true
         this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT))
-        const buffer: { out: string, type?: string }[] = []
-        const originalOutputSend = Output.send
-        Output.send = (out: string, outputType?: string): any => {
-            if (out) {
-                buffer.push({out, type: outputType})
-            } else {
-                rawOutputSend()
-            }
-        }
-
-        this.addEventListener('line-sent', () => {
-            if (buffer.length > 0) {
-                buffer.forEach(item => Output.send(item.out, item.type))
-                this.sendEvent('buffer-sent', buffer.length)
-            }
-        }, {once: true})
-
         const ansiRegex =/\x1b\[[0-9;]*m/g
 
         line = this.Triggers.parseMultiline(line, type)
@@ -201,19 +208,13 @@ export default class Client {
         })
         let index = 0
         result = result.replace(/\x1b\[0m/g, () => restore[index++] || '\x1b[0m')
-        Output.send = originalOutputSend
         this.inLineProcess = false
         return result
     }
 
     sendEvent(type: string, payload?: any) {
         this.eventTarget.dispatchEvent(new CustomEvent(type, {detail: payload}))
-        const frame = document.getElementById('cm-frame') as HTMLIFrameElement
-        if (frame) {
-            frame?.contentWindow.postMessage(this.createEvent(type, payload), '*')
-        } else {
-            window.postMessage(this.createEvent(type, payload))
-        }
+        window.dispatchEvent(new CustomEvent(type, {detail: payload}))
     }
 
     createEvent(type, payload) {
@@ -229,7 +230,7 @@ export default class Client {
         }
         // @ts-ignore
         const text = Text.parse_patterns(printable)
-        Output.send(text)
+        this.buffer.push({out: text})
         if (!this.inLineProcess) {
             this.sendEvent('output-sent', 1)
         }

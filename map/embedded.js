@@ -4,7 +4,7 @@ import {MapReader, Renderer, Settings} from "mudlet-map-renderer";
 
 class EmbeddedMap {
 
-    constructor(mapData, colors) {
+    constructor(mapData, colors, startId) {
         this.destinations = []
         this.map = document.querySelector("#map");
         this.map.style.touchAction = 'none'
@@ -35,7 +35,15 @@ class EmbeddedMap {
         }
         this.zoom = zoom
 
-        this.renderRoomById(1)
+        this.renderRoomById(startId)
+
+        window.addEventListener('enterLocation', (ev) => {
+            this.renderRoomById(ev.detail.id);
+        })
+
+        window.addEventListener('leadTo', (ev) => {
+            this.leadTo(ev.detail.id);
+        })
     }
 
     _onTouchStart(ev) {
@@ -70,20 +78,6 @@ class EmbeddedMap {
             parsed.mapScale = this.zoom
             localStorage.setItem('uiSettings', JSON.stringify(parsed))
         } catch {}
-    }
-
-    handleMessage({type, data}) {
-        switch (type) {
-            case "enterLocation":
-                this.renderRoomById(data.id)
-                break;
-            case "restoredPosition":
-                this.renderRoomById(data.id)
-                break;
-            case "leadTo":
-                this.leadTo(data)
-                break;
-        }
     }
 
     renderRoomById(id) {
@@ -138,17 +132,8 @@ class EmbeddedMap {
 
 }
 
-const pendingMessages = []
-const handleData = (data) => {
-    if (window.embedded) {
-        window.embedded.handleMessage(data)
-    } else if (data.mapData !== undefined && data.colors !== undefined) {
-        window.embedded = new EmbeddedMap(data.mapData, data.colors)
-        pendingMessages.forEach(handleData)
-        pendingMessages.length = 0
-    } else {
-        pendingMessages.push(data)
-    }
+const createMap = (data) => {
+    window.embedded = new EmbeddedMap(data.mapData, data.colors, data.startId)
 }
 
-window.addEventListener("message", (e) => handleData(e.data))
+window.addEventListener('map-ready-with-data', (e) => createMap(e.detail))

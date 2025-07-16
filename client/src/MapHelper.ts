@@ -74,11 +74,7 @@ export default class MapHelper {
             // @ts-ignore
             Object.values(this.mapReader.roomIndex).forEach(room => this.hashes[room.hash] = room);
             const startId = this.savedRoomId ?? 1;
-            this.renderRoomById(startId, false)
-            this.client.sendEvent('restoredPosition', {
-                id: startId,
-                room: this.mapReader.getRoomById(startId),
-            });
+            window.dispatchEvent(new CustomEvent('map-ready-with-data', {detail: {mapData: event.detail.mapData, colors: event.detail.colors, startId: startId}}))
         })
 
         this.client.addEventListener('gmcp.room.info', (event: CustomEvent) => {
@@ -133,7 +129,7 @@ export default class MapHelper {
             const locationId = allExits[getLongDir(actualDirection)]
             if (locationId) {
                 this.locationHistory.push(locationId)
-                this.renderRoomById(locationId);
+                this.renderRoomById(locationId, true);
                 return {direction: actualDirection, moved: true}
             }
         }
