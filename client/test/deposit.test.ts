@@ -59,11 +59,6 @@ describe('deposits', () => {
       { count: 1, name: 'miecz' },
       { count: 1, name: 'tarcza' }
     ]);
-    expect(client.port.postMessage).toHaveBeenCalledWith({
-      type: 'SET_STORAGE',
-      key: 'deposits',
-      value: deposits,
-    });
   });
 
   test('handles empty deposit', () => {

@@ -96,11 +96,7 @@ function SettingsForm() {
 
     function handleSubmission() {
         storage.setItem("settings", settings)
-        if (chrome.runtime) {
-            window.close()
-        } else {
-            window.dispatchEvent(new Event('close-options'))
-        }
+        window.dispatchEvent(new Event('close-options'))
     }
 
     useEffect(() => {

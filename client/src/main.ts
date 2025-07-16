@@ -2,7 +2,6 @@ import Client from "./Client";
 import People from "./People";
 import registerLuaGagTriggers from "./scripts/./luaGags";
 import { stripPolishCharacters } from "./stripPolishCharacters";
-import Port = chrome.runtime.Port;
 
 interface RecordedEvent {
     message: string;
@@ -92,51 +91,6 @@ aliases.push(
         }
     }
 )
-
-//TODO to be extracted
-function backgroundConnector() {
-    function connectToBackground(extensionId: string, initial: boolean = false) {
-        const port: Port = chrome.runtime.connect(extensionId)
-        client.connect(port, initial)
-        port.onDisconnect.addListener(() => {
-            connectToBackground(extensionId)
-        })
-    }
-
-    window.addEventListener('extension-loaded', (event) => {
-        connectToBackground((<CustomEvent>event).detail, true)
-    })
-}
-
-backgroundConnector();
-
-// Only register message listener if the Chrome API is available
-if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-    chrome.runtime.onMessage.addListener((msg) => {
-        if (msg.type === 'PLAY_RECORDING' && Array.isArray(msg.events)) {
-            (msg.events as RecordedEvent[]).forEach(ev => {
-                if (ev.direction === 'out') {
-                    client.sendCommand(ev.message);
-                } else {
-                    client.print(ev.message);
-                }
-            });
-        } else if (msg.type === 'PLAY_RECORDING_TIMED' && Array.isArray(msg.events)) {
-            const events = msg.events as RecordedEvent[];
-            const start = events[0]?.timestamp || 0;
-            events.forEach(ev => {
-                const delay = ev.timestamp - start;
-                setTimeout(() => {
-                    if (ev.direction === 'out') {
-                        client.sendCommand(ev.message);
-                    } else {
-                        client.print(ev.message);
-                    }
-                }, delay);
-            });
-        }
-    });
-}
 
 /*
     Blockers

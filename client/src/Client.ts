@@ -18,7 +18,7 @@ import {color} from "./Colors";
 import {SKIP_LINE} from "./ControlConstants";
 
 export default class Client {
-    port: chrome.runtime.Port;
+    port?: any;
     eventTarget = new EventTarget();
     FunctionalBind = new FunctionalBind(this);
     Triggers = new Triggers(this);
@@ -95,7 +95,7 @@ export default class Client {
         })
     }
 
-    connect(port: chrome.runtime.Port, initial: boolean) {
+    connect(port: any, initial: boolean) {
         port.onMessage.addListener((message) => {
             Object.entries(message).forEach(([key, value]) => {
                 this.eventTarget.dispatchEvent(new CustomEvent(key, {detail: value}))

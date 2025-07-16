@@ -97,11 +97,7 @@ function Binds() {
             storage.getItem('settings').then(res => {
                 const settings = { ...(res.settings || {}), binds: { main: binds.main, lamp: binds.lamp, directions: binds.directions } };
                 storage.setItem('settings', settings).then(() => {
-                    if (chrome.runtime) {
-                        window.close();
-                    } else {
-                        window.dispatchEvent(new Event('close-options'));
-                    }
+                    window.dispatchEvent(new Event('close-options'));
             });
         });
     }
