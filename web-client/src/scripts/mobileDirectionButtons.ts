@@ -1,5 +1,4 @@
 import Client from "@client/src/Client";
-import { client } from "@client/src/main.ts";
 import { formatLabel } from "@client/src/scripts/functionalBind";
 
 export default class MobileDirectionButtons {
@@ -135,7 +134,7 @@ export default class MobileDirectionButtons {
         const button1 = document.getElementById('button-1');
         if (button1) {
             button1.addEventListener('click', () => {
-                client.sendCommand("wesprzyj")
+                this.client.sendCommand("wesprzyj")
             });
         }
 
@@ -144,7 +143,7 @@ export default class MobileDirectionButtons {
         if (button2) {
             button2.addEventListener('click', () => {
                 if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    client.sendCommand(`zabij ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
+                    this.client.sendCommand(`zabij ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
                 }
             });
         }
@@ -154,7 +153,7 @@ export default class MobileDirectionButtons {
         if (button3) {
             button3.addEventListener('click', () => {
                 if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
+                    this.client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
                 }
             });
         }
@@ -337,9 +336,6 @@ export default class MobileDirectionButtons {
 
         // If user is scrolling, don't start long press timer
         if (this.isScrolling) return;
-
-        // Store the target element to check if it's a button
-        const target = e.target as HTMLElement;
 
         // Get initial touch position for later use
         const touch = e.touches[0];
@@ -626,7 +622,7 @@ export default class MobileDirectionButtons {
         }
 
         if (rect.bottom > window.innerHeight) {
-            newTop = window.innerHeight - this.container.offsetHeight - margin - 100;
+            newTop = window.innerHeight - this.container.offsetHeight - margin;
         } else if (rect.top < 0) {
             newTop = margin;
         }

@@ -1,6 +1,7 @@
 import { parseAnsiPatterns } from './ansiParser';
 import { saveRecording, getRecording, getRecordingNames, deleteRecording, RecordedEvent } from './recordingStorage';
 import {SKIP_LINE} from "@client/src/ControlConstants.ts";
+import {ClientAdapter} from "@client/src/Client.ts";
 
 // Event emitter types
 type EventListener = (...args: any[]) => void;
@@ -13,7 +14,7 @@ const TELNET_OPTION_REGEX = /\u00FF\u00FA.*?\u00FF\u00F0|\u00FF.[^\u00FF]/g;
 
 
 
-class ArkadiaClient {
+class ArkadiaClient implements ClientAdapter{
     private socket!: WebSocket;
     private events: EventMap = {};
     private receivedFirstGmcp: boolean = false;
@@ -219,6 +220,10 @@ class ArkadiaClient {
             });
         }
         this.send(command);
+    }
+
+    output(text?: string, type?: string) {
+        this.emit('message', text, type)
     }
 
     /**
