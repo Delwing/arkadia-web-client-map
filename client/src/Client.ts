@@ -15,6 +15,7 @@ import ObjectManager from "./ObjectManager";
 import { beepSound } from "./sounds";
 import { attachGmcpListener } from "./gmcp";
 import {color} from "./Colors";
+import {SKIP_LINE} from "./ControlConstants";
 
 export default class Client {
     port: chrome.runtime.Port;
@@ -170,7 +171,7 @@ export default class Client {
         const ansiRegex =/\x1b\[[0-9;]*m/g
 
         line = this.Triggers.parseMultiline(line, type)
-        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).join('\n')
+        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).filter(line => line !== SKIP_LINE).join('\n')
         if (!result.startsWith("\x1b")) {
             result = color(255) + result
         }

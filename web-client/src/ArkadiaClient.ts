@@ -1,5 +1,6 @@
 import { parseAnsiPatterns } from './ansiParser';
 import { saveRecording, getRecording, getRecordingNames, deleteRecording, RecordedEvent } from './recordingStorage';
+import {SKIP_LINE} from "@client/src/ControlConstants.ts";
 
 // Event emitter types
 type EventListener = (...args: any[]) => void;
