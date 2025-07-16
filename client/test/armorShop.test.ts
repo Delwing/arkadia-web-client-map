@@ -37,10 +37,10 @@ describe('armor shop width adjustments', () => {
     expect(result).toBe('-'.repeat(client.contentWidth - 2));
   });
 
-  test('splits header and item lines when narrow', () => {
-    const h = parse(header).split('\n');
-    expect(h[0]).toMatch(/Nazwa towaru/);
-    expect(h[1]).toMatch(/Mithryl/);
+  test('splits item line when narrow', () => {
+    const h = parse(header);
+    expect(h).toMatch(/Nazwa towaru/);
+    expect(h).not.toMatch(/\n/);
 
     const it = parse(item).split('\n');
     expect(it[0]).toMatch(/rycerska/);
