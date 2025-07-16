@@ -123,8 +123,8 @@ h1 {
   font-size: 0.6rem;
   background-color: rgba(0, 0, 0, 0.4);
   border: 0.1vh solid silver;
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   cursor: move;
   touch-action: none;
   white-space: pre;
@@ -535,8 +535,8 @@ button:focus-visible {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
   z-index: 1010;
   display: none;
   align-items: center;
