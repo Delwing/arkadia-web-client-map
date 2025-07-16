@@ -230,8 +230,11 @@ class ArkadiaClient {
         }
 
         const leftOver = data.replace(TELNET_OPTION_REGEX, this.parseTelnetOption.bind(this)).trim();
+        const sanitized = leftOver.replace(/[ÿù]/g, "");
+        if (sanitized.length >= 0) {
+            this.emit('message', sanitized)
+        }
         this.flushMessageBuffer()
-        this.emit('message', leftOver.replace(/[ÿù]/g, ""))
     }
 
     /**

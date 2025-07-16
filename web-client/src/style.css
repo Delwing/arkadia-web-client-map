@@ -51,7 +51,7 @@ h1 {
 #main_text_output_msg_wrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 5px;
+  padding: 0 8px;
   font-family: monospace;
   font-size: 0.775rem;
   overflow-wrap: break-word;
@@ -60,7 +60,7 @@ h1 {
 
 #split-bottom {
   position: sticky;
-  bottom: -1px;
+  bottom: 0px;
   background-color: var(--bs-body-bg);
   z-index: 1;
   height: 15rem;
