@@ -160,17 +160,16 @@ registerLuaGagTriggers(client)
     Follows
  */
 
-const follows = [
-    /^.*[pP]odazasz (|skradajac sie )za (.* na (.*?))(?:,.*)?\.$/,
-    /^Wraz z ([A-Za-z ,'-]*) podazasz za (.* na (.*?))(?:,.*)?\.$/
-]
 
-follows.forEach(follow => {
-    client.Triggers.registerTrigger(follow, (_rawLine, line): undefined => {
-        const matches = line.match(follow)
-        client.Map.move(matches[3])
-    }, 'follow')
-})
+client.Triggers.registerTrigger(/^.*[pP]odazasz (|skradajac sie )za (.*)\.$/, (_, __, matches): undefined => {
+    const tokenized = matches[2].split(' ')
+    const direction = tokenized[tokenized.length - 1]
+    const result = client.Map.move(direction)
+    if (result.moved) {
+        return;
+    }
+    client.Map.followMove(matches[2])
+}, 'follow')
 
 client.Triggers.registerTrigger('Wykonuje komende \'idz ', (): undefined => {
     client.sendEvent('refreshPositionWhenAble')
