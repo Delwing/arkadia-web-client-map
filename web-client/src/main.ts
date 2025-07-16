@@ -87,6 +87,16 @@ window.clientExtension.addEventListener('settings', (ev: CustomEvent) => {
     }
 });
 
+    const baseOffset = window.outerHeight - window.visualViewport.height
+    const basePadding = parseInt(document.body.style.paddingTop.replace(/[A-Za-z]/g, ''));
+
+    window.visualViewport.addEventListener("resize", () => {
+        const offset = window.outerHeight - window.visualViewport.height - baseOffset
+        document.getElementById("iframe-container").style.top = offset + 'px'
+        console.log(offset)
+        document.getElementById("main-container").style.paddingTop = offset + 2 + 'px'
+    })
+
 const progressContainer = document.getElementById('map-progress-container')!;
 const progressBar = document.getElementById('map-progress-bar') as HTMLElement;
 

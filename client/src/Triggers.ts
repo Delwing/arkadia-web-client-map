@@ -24,7 +24,7 @@ export interface TriggerOptions {
 }
 
 export class Trigger {
-    id = crypto.randomUUID();
+    id = Math.random().toString(36).slice(2);
     children: Map<string, Trigger> = new Map();
     private openInstances: number[] = [];
 

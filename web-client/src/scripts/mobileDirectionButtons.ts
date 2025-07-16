@@ -626,7 +626,7 @@ export default class MobileDirectionButtons {
         }
 
         if (rect.bottom > window.innerHeight) {
-            newTop = window.innerHeight - this.container.offsetHeight - margin;
+            newTop = window.innerHeight - this.container.offsetHeight - margin - 100;
         } else if (rect.top < 0) {
             newTop = margin;
         }
