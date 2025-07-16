@@ -110,7 +110,8 @@ function backgroundConnector() {
 
 backgroundConnector();
 
-if (chrome.runtime && chrome.runtime.onMessage) {
+// Only register message listener if the Chrome API is available
+if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((msg) => {
         if (msg.type === 'PLAY_RECORDING' && Array.isArray(msg.events)) {
             (msg.events as RecordedEvent[]).forEach(ev => {
