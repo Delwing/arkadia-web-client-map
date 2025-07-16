@@ -140,7 +140,7 @@ export default class Client {
         if (!isAlias) {
             command = this.Map.parseCommand(command)
             command.split(/[#;]/).forEach(part => {
-                rawInputSend(this.Map.move(part))
+                rawInputSend(this.Map.move(part).direction)
             })
         }
     }

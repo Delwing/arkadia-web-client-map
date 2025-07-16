@@ -168,7 +168,7 @@ const follows = [
 follows.forEach(follow => {
     client.Triggers.registerTrigger(follow, (_rawLine, line): undefined => {
         const matches = line.match(follow)
-        client.Map.move(matches[3])
+        client.Map.followMove(matches[3], line)
     }, 'follow')
 })
 

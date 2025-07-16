@@ -135,9 +135,51 @@ export default class MapHelper {
             if (locationId) {
                 this.locationHistory.push(locationId)
                 this.renderRoomById(locationId);
+                return {direction: actualDirection, moved: true}
             }
         }
-        return actualDirection;
+        return {direction: actualDirection, moved: false}
+    }
+
+    followMove(direction: string, line: string) {
+        const prevId = this.currentRoom?.id
+        const result = this.move(direction)
+        if (result.moved) {
+            return result.direction
+        }
+        if (this.currentRoom?.userData?.team_follow_link) {
+            const entries = this.currentRoom.userData.team_follow_link.split('#')
+            for (const entry of entries) {
+                const [search, exit] = entry.split('*')
+                if (search && exit && line.includes(search)) {
+                    const res = this.move(exit)
+                    if (res.moved) {
+                        return res.direction
+                    }
+                }
+            }
+        }
+        if (this.currentRoom?.specialExits) {
+            const specials = Object.keys(this.currentRoom.specialExits)
+            for (const ex of specials) {
+                if (line.includes(ex)) {
+                    const res = this.move(ex)
+                    if (res.moved) {
+                        return res.direction
+                    }
+                }
+            }
+            for (const ex of specials) {
+                const part = ex.substring(0, Math.ceil(ex.length * 0.7))
+                if (line.includes(part)) {
+                    const res = this.move(ex)
+                    if (res.moved) {
+                        return res.direction
+                    }
+                }
+            }
+        }
+        return result.direction
     }
 
     refresh() {

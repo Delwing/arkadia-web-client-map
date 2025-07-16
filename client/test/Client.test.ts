@@ -53,7 +53,8 @@ jest.mock('../src/MapHelper', () => {
     __esModule: true,
     default: jest.fn().mockImplementation(() => ({
       parseCommand,
-      move: jest.fn((dir: string) => dir),
+      move: jest.fn((dir: string) => ({ direction: dir, moved: false })),
+      followMove: jest.fn(),
     })),
   };
 });
