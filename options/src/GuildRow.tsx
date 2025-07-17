@@ -69,6 +69,7 @@ export default function GuildRow({guild, selected, enemySelected, color, default
                     value={color ?? defaultColor}
                     onChange={handleColorChange}
                     disabled={enemySelected || color === undefined}
+                    className="form-control-color"
                     style={{width: '3rem'}}
                 />
             </div>
