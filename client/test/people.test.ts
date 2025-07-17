@@ -31,7 +31,9 @@ describe('people triggers enemy highlight', () => {
   test('colors enemy description red', () => {
     const result = parse('Widzisz wysoki mezczyzna tutaj.');
     const red = findClosestColor('#ff0000');
-    expect(result).toContain(color(red));
+    const highlight = color(red);
+    expect(result.split(highlight).length - 1).toBe(2);
+    expect(result).toContain(color(red) + '(Eamon CKN)' + RESET);
     expect(stripAnsiCodes(result)).toContain('(Eamon CKN)');
   });
 

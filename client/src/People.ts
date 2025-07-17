@@ -38,7 +38,13 @@ export default class People {
                 if (isEnemy) {
                     highlighted = color(RED) + token + RESET
                 }
-                return prefix + highlighted + ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)` + suffix
+
+                let suffixText = ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)`
+                if (isEnemy) {
+                    suffixText = ' ' + color(RED) + `(${replacement.name} ${replacement.guild})` + RESET
+                }
+
+                return prefix + highlighted + suffixText + suffix
             }
 
             this.client.Triggers.registerTokenTrigger(replacement.description, descCallback, this.tag)
