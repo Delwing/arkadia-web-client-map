@@ -8,12 +8,14 @@ export default class People {
     client: Client
     guildFilter: string[] = []
     enemyGuilds: string[] = []
+    guildColors: Record<string, string> = {}
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
         this.client.addEventListener('settings', (event: CustomEvent) => {
             this.guildFilter = event.detail.guilds || []
             this.enemyGuilds = event.detail.enemyGuilds || []
+            this.guildColors = event.detail.guildColors || {}
             this.registerPeopleTriggers()
         })
     }
@@ -25,6 +27,8 @@ export default class People {
         people.forEach(replacement => {
             const inGuild = this.guildFilter.includes(replacement.guild)
             const isEnemy = this.enemyGuilds.includes(replacement.guild)
+            const guildColorHex = this.guildColors[replacement.guild]
+            const guildColor = guildColorHex ? findClosestColor(guildColorHex) : undefined
             if (!inGuild && !isEnemy) {
                 return
             }
@@ -37,11 +41,16 @@ export default class People {
                 let highlighted = token
                 if (isEnemy) {
                     highlighted = color(RED) + token + RESET
+                } else if (inGuild && guildColor !== undefined) {
+                    // only color names, description remains uncolored
+                    highlighted = token
                 }
 
                 let suffixText = ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)`
                 if (isEnemy) {
                     suffixText = ' ' + color(RED) + `(${replacement.name} ${replacement.guild})` + RESET
+                } else if (inGuild && guildColor !== undefined) {
+                    suffixText = ' ' + color(guildColor) + `(${replacement.name} ${replacement.guild})` + RESET
                 }
 
                 return prefix + highlighted + suffixText + suffix
@@ -49,7 +58,7 @@ export default class People {
 
             this.client.Triggers.registerTokenTrigger(replacement.description, descCallback, this.tag)
 
-            if (isEnemy) {
+            if (isEnemy || (inGuild && guildColor !== undefined)) {
                 const key = `${replacement.name}|${replacement.guild}`
                 if (!addedNames.has(key) && replacement.name.length > 2) {
                     const nameCallback = (rawLine: string, _line: string, matches: RegExpMatchArray) => {
@@ -57,7 +66,8 @@ export default class People {
                         const token = matches[0]
                         const prefix = rawLine.substring(0, index)
                         const suffix = rawLine.substring(index + token.length)
-                        const highlighted = color(RED) + token + RESET
+                        const chosenColor = isEnemy ? RED : guildColor!
+                        const highlighted = color(chosenColor) + token + RESET
                         return prefix + highlighted + suffix
                     }
                     this.client.Triggers.registerTokenTrigger(replacement.name, nameCallback, this.tag)

@@ -5,13 +5,15 @@ import {Form} from "react-bootstrap";
 interface Props {
     selected: string[];
     enemySelected: string[];
+    colors: Record<string, string>;
     onChange: (guild: string, checked: boolean) => void;
     onEnemyChange: (guild: string, checked: boolean) => void;
+    onColorChange: (guild: string, color: string) => void;
     onChangeAll: (checked: boolean) => void;
     onChangeAllEnemy: (checked: boolean) => void;
 }
 
-export default function GuildSection({selected, enemySelected, onChange, onEnemyChange, onChangeAll, onChangeAllEnemy}: Props) {
+export default function GuildSection({selected, enemySelected, colors, onChange, onEnemyChange, onColorChange, onChangeAll, onChangeAllEnemy}: Props) {
     const allSelected = selected.length === guilds.length;
     const allEnemySelected = enemySelected.length === guilds.length;
     return (
@@ -42,8 +44,10 @@ export default function GuildSection({selected, enemySelected, onChange, onEnemy
                         guild={g}
                         selected={selected.includes(g)}
                         enemySelected={enemySelected.includes(g)}
+                        color={colors[g] || '#ffffff'}
                         onChange={onChange}
                         onEnemyChange={onEnemyChange}
+                        onColorChange={onColorChange}
                     />
                 ))}
             </div>

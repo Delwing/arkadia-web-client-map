@@ -20,6 +20,7 @@ const collectMoneyOptions = ["wszystkie", "srebrne", "zlote"]
 interface Settings {
     guilds: string[];
     enemyGuilds: string[];
+    guildColors: Record<string, string>;
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
@@ -35,6 +36,7 @@ function SettingsForm() {
     const [settings, setSettings] = useState<Settings>({
         guilds: [],
         enemyGuilds: [],
+        guildColors: {},
         packageHelper: false,
         replaceMap: false,
         inlineCompassRose: false,
@@ -82,6 +84,13 @@ function SettingsForm() {
         })
     }
 
+    function onColorChange(guild: string, color: string) {
+        setSettings(prev => ({
+            ...prev,
+            guildColors: {...prev.guildColors, [guild]: color}
+        }))
+    }
+
     function onChangeAllEnemy(checked: boolean) {
         setSettings(prev => ({
             ...prev,
@@ -96,7 +105,7 @@ function SettingsForm() {
 
     useEffect(() => {
         storage.getItem("settings").then(res => {
-            setSettings(Object.assign({}, settings, res.settings));
+            setSettings(Object.assign({}, settings, {guildColors: {}}, res.settings));
         })
     }, []);
 
@@ -105,8 +114,10 @@ function SettingsForm() {
             <GuildSection
                 selected={settings.guilds}
                 enemySelected={settings.enemyGuilds}
+                colors={settings.guildColors}
                 onChange={onChange}
                 onEnemyChange={onChangeEnemy}
+                onColorChange={onColorChange}
                 onChangeAll={onChangeAll}
                 onChangeAllEnemy={onChangeAllEnemy}
             />
