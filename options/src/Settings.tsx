@@ -2,13 +2,8 @@ import './App.css'
 import {ChangeEvent, useEffect, useState} from "react";
 import {Form, Button} from 'react-bootstrap';
 import storage from "./storage.ts";
-
-const guilds = [
-    "CKN", "ES", "SC", "KS", "KM", "OS",
-    "OHM", "SGW", "PE", "WKS", "LE", "KG",
-    "KGKS", "MC", "OK", "RA", "GL", "ZT",
-    "ZS", "ZH", "GP", "NPC"
-]
+import GuildSection from "./GuildSection";
+import guilds from "./guilds";
 
 const collectModeOptions = [
     "monety",
@@ -64,33 +59,33 @@ function SettingsForm() {
 
     function onChange(event: ChangeEvent<HTMLInputElement>, guild: string) {
         setSettings(prev => {
-            const guilds = event.target.checked
+            const next = event.target.checked
                 ? [...prev.guilds, guild]
                 : prev.guilds.filter(g => g !== guild)
-            return {...prev, guilds}
+            return {...prev, guilds: next}
         })
     }
 
-    function onChangeAll(event: ChangeEvent<HTMLInputElement>) {
+    function onChangeAll(checked: boolean) {
         setSettings(prev => ({
             ...prev,
-            guilds: event.target.checked ? [...guilds] : []
+            guilds: checked ? [...guilds] : []
         }))
     }
 
     function onChangeEnemy(event: ChangeEvent<HTMLInputElement>, guild: string) {
         setSettings(prev => {
-            const enemyGuilds = event.target.checked
+            const next = event.target.checked
                 ? [...prev.enemyGuilds, guild]
                 : prev.enemyGuilds.filter(g => g !== guild)
-            return {...prev, enemyGuilds}
+            return {...prev, enemyGuilds: next}
         })
     }
 
-    function onChangeAllEnemy(event: ChangeEvent<HTMLInputElement>) {
+    function onChangeAllEnemy(checked: boolean) {
         setSettings(prev => ({
             ...prev,
-            enemyGuilds: event.target.checked ? [...guilds] : []
+            enemyGuilds: checked ? [...guilds] : []
         }))
     }
 
@@ -107,56 +102,14 @@ function SettingsForm() {
 
     return (
         <div className="my-4 p-2">
-            <div className="mb-4 border rounded p-3">
-                <div className="d-flex justify-content-between mb-2">
-                    <h5 className="fw-bold">Ładowanie triggerów dla gildii</h5>
-                    <Form.Check
-                        type="checkbox"
-                        id="guild-all"
-                        label="Wszystkie"
-                        checked={allSelected}
-                        onChange={onChangeAll}
-                    />
-                </div>
-                <div className="d-flex flex-wrap gap-2">
-                    {guilds.map(guild => (
-                        <Form.Check
-                            type="checkbox"
-                            key={guild}
-                            id={`guild-${guild}`}
-                            label={guild}
-                            checked={settings.guilds.includes(guild)}
-                            onChange={ev => onChange(ev, guild)}
-                            className="me-2"
-                        />
-                    ))}
-                </div>
-            </div>
-            <div className="mb-4 border rounded p-3">
-                <div className="d-flex justify-content-between mb-2">
-                    <h5 className="fw-bold">Gildie wrogów (alarm ataku)</h5>
-                    <Form.Check
-                        type="checkbox"
-                        id="enemy-guild-all"
-                        label="Wszystkie"
-                        checked={allEnemySelected}
-                        onChange={onChangeAllEnemy}
-                    />
-                </div>
-                <div className="d-flex flex-wrap gap-2">
-                    {guilds.map(guild => (
-                        <Form.Check
-                            type="checkbox"
-                            key={`enemy-${guild}`}
-                            id={`enemy-guild-${guild}`}
-                            label={guild}
-                            checked={settings.enemyGuilds.includes(guild)}
-                            onChange={ev => onChangeEnemy(ev, guild)}
-                            className="me-2"
-                        />
-                    ))}
-                </div>
-            </div>
+            <GuildSection
+                selected={settings.guilds}
+                enemySelected={settings.enemyGuilds}
+                onChange={onChange}
+                onEnemyChange={onChangeEnemy}
+                onChangeAll={onChangeAll}
+                onChangeAllEnemy={onChangeAllEnemy}
+            />
             <div className="mb-4 border rounded p-3">
                 <h5 className="fw-bold mb-2">Pozostałe opcje</h5>
                 <div className="d-flex flex-wrap gap-3">
