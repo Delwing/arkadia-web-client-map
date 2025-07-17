@@ -5,6 +5,27 @@ import {stripAnsiCodes} from "../Triggers";
 
 const STORAGE_KEY = "herb_counts";
 
+const biernikDigits = new Set([2, 3, 4]);
+
+function getHerbCase(herbId: string, amount: number, herbsData?: HerbsData | null): string {
+    const forms = herbsData?.herb_id_to_odmiana[herbId];
+    if (!forms) return herbId;
+    const num = Number(amount);
+    if (num < 22) {
+        if (num === 1) {
+            return forms.biernik;
+        }
+        if (biernikDigits.has(num)) {
+            return forms.mnoga_biernik;
+        }
+        return forms.mnoga_dopelniacz;
+    }
+    if (num % 10 > 1 && num % 10 < 5) {
+        return forms.mnoga_biernik;
+    }
+    return forms.mnoga_dopelniacz;
+}
+
 
 const polishNumbers: Record<string, number> = {
     'jeden': 1, 'jedna': 1, 'jedno': 1,
@@ -236,7 +257,6 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
 
     async function take(herb: string, amount: number) {
         await ensureData();
-        const form = herbs?.herb_id_to_odmiana[herb]?.biernik || herb;
         let leftToTake = amount;
         const bags = Object.keys(storedBags).map(n => parseInt(n)).sort((a, b) => a - b);
         for (const num of bags) {
@@ -246,8 +266,11 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             if (available <= 0) continue;
             const toTake = Math.min(available, leftToTake);
             client.sendCommand(`otworz ${num}. woreczek`);
-            for (let i = 0; i < toTake; i++) {
+            const form = getHerbCase(herb, toTake, herbs);
+            if (toTake === 1) {
                 client.sendCommand(`wez ${form} z ${num}. woreczka`);
+            } else {
+                client.sendCommand(`wez ${toTake} ${form} z ${num}. woreczka`);
             }
             client.sendCommand(`zamknij ${num}. woreczek`);
             contents[herb] = available - toTake;
