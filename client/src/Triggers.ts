@@ -73,9 +73,11 @@ export class Trigger {
         if (this.pattern instanceof RegExp) {
             matches = line.match(this.pattern);
         } else if (typeof this.pattern === "string") {
-            const index = rawLine.toLowerCase().indexOf(this.pattern.toLowerCase());
+            const patternStr = this.pattern.toString();
+            const index = rawLine.toLowerCase().indexOf(patternStr.toLowerCase());
             if (index > -1) {
-                matches = [rawLine.substring(index, this.pattern.length)];
+                const end = index + patternStr.length;
+                matches = [rawLine.substring(index, end)];
                 matches.index = index;
             }
         } else if (typeof this.pattern === "function") {

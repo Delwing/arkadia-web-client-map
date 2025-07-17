@@ -99,4 +99,17 @@ describe('Triggers', () => {
 
     expect(cb).toHaveBeenCalledTimes(1);
   });
+
+  test('token trigger passes correct substring to callback', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn((raw, _line, matches) => {
+      return raw.substring(0, matches.index!) + '[' + matches[0] + ']' + raw.substring(matches.index! + matches[0].length);
+    });
+    triggers.registerTokenTrigger('Dargoth MC', cb);
+
+    const result = triggers.parseLine('Spotykasz Dargoth MC tutaj.', '');
+
+    expect(result).toBe('Spotykasz [Dargoth MC] tutaj.');
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
 });
