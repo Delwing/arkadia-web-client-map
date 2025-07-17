@@ -31,6 +31,7 @@ import initPriceEvaluation from './scripts/priceEvaluation'
 import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
+import initArmorEvaluation from './scripts/armorEvaluation'
 import initMapAliases from './scripts/mapAliases'
 import Client from "./Client";
 
@@ -119,5 +120,6 @@ export function registerScripts(client: Client) {
     initExternalScripts(client)
     initUserAliases(client, aliases)
     initWeaponEvaluation(client)
+    initArmorEvaluation(client)
 
 }

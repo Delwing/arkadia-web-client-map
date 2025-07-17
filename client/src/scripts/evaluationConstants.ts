@@ -1,0 +1,48 @@
+export const EFFECTIVENESS: Record<string, { value: number; label: string }> = {
+  "kompletnie nieskuteczn": { value: 1, label: "[1/14]" },
+  "strasznie nieskuteczn": { value: 2, label: "[2/14]" },
+  "bardzo nieskuteczn": { value: 3, label: "[3/14]" },
+  "raczej nieskuteczn": { value: 4, label: "[4/14]" },
+  "malo skuteczn": { value: 5, label: "[5/14]" },
+  "niezbyt skuteczn": { value: 6, label: "[6/14]" },
+  "raczej skuteczn": { value: 7, label: "[7/14]" },
+  "dosyc skuteczn": { value: 8, label: "[8/14]" },
+  "calkiem skuteczn": { value: 9, label: "[9/14]" },
+  "bardzo skuteczn": { value: 10, label: "[10/14]" },
+  "niezwykle skuteczn": { value: 11, label: "[11/14]" },
+  "wyjatkowo skuteczn": { value: 12, label: "[12/14]" },
+  "zabojczo skuteczn": { value: 13, label: "[13/14]" },
+  "fantastycznie skuteczn": { value: 14, label: "[14/14]" },
+};
+
+export const BALANCE: Record<string, { value: number; label: string }> = {
+  "wyjatkowo zle": { value: 1, label: "[1/14]" },
+  "bardzo zle": { value: 2, label: "[2/14]" },
+  zle: { value: 3, label: "[3/14]" },
+  "bardzo kiepsko": { value: 4, label: "[4/14]" },
+  kiepsko: { value: 5, label: "[5/14]" },
+  przyzwoicie: { value: 6, label: "[6/14]" },
+  srednio: { value: 7, label: "[7/14]" },
+  niezle: { value: 8, label: "[8/14]" },
+  "dosc dobrze": { value: 9, label: "[9/14]" },
+  dobrze: { value: 10, label: "[10/14]" },
+  "bardzo dobrze": { value: 11, label: "[11/14]" },
+  doskonale: { value: 12, label: "[12/14]" },
+  perfekcyjnie: { value: 13, label: "[13/14]" },
+  genialnie: { value: 14, label: "[14/14]" },
+};
+
+export const ARMOR_QUALITY: Record<string, { value: number; label: string }> = {
+  "wyjatkowo zle": { value: 1, label: "[1/12]" },
+  "bardzo zle": { value: 2, label: "[2/12]" },
+  zle: { value: 3, label: "[3/12]" },
+  "bardzo kiepsko": { value: 4, label: "[4/12]" },
+  kiepsko: { value: 5, label: "[5/12]" },
+  przyzwoicie: { value: 6, label: "[6/12]" },
+  niezle: { value: 7, label: "[7/12]" },
+  "dosc dobrze": { value: 8, label: "[8/12]" },
+  dobrze: { value: 9, label: "[9/12]" },
+  "bardzo dobrze": { value: 10, label: "[10/12]" },
+  doskonale: { value: 11, label: "[11/12]" },
+  perfekcyjnie: { value: 12, label: "[12/12]" },
+};
