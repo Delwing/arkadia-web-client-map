@@ -23,6 +23,7 @@ import Npc from "@options/src/Npc.tsx"
 import Scripts from "@options/src/Scripts.tsx"
 import Aliases from "@options/src/Aliases.tsx"
 import Recordings from "@options/src/Recordings.tsx"
+import Guilds from "@options/src/Guilds.tsx"
 
 const client = new Client(arkadiaClient, new MockPort())
 window.clientExtension = client;
@@ -373,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
     const npcButton = document.getElementById('npc-button') as HTMLButtonElement | null;
+    const guildsButton = document.getElementById('guilds-button') as HTMLButtonElement | null;
     const scriptsButton = document.getElementById('scripts-button') as HTMLButtonElement | null;
     const aliasesButton = document.getElementById('aliases-button') as HTMLButtonElement | null;
     const recordingsButton = document.getElementById('recordings-button') as HTMLButtonElement | null;
@@ -394,6 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const bindsModal = bindsModalElement ? new Modal(bindsModalElement) : null;
     const npcModalElement = document.getElementById('npc-modal');
     const npcModal = npcModalElement ? new Modal(npcModalElement) : null;
+    const guildsModalElement = document.getElementById('guilds-modal');
+    const guildsModal = guildsModalElement ? new Modal(guildsModalElement) : null;
     const scriptsModalElement = document.getElementById('scripts-modal');
     const scriptsModal = scriptsModalElement ? new Modal(scriptsModalElement) : null;
     const aliasesModalElement = document.getElementById('aliases-modal');
@@ -417,6 +421,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (npcModal) {
             npcModal.hide();
+        }
+        if (guildsModal) {
+            guildsModal.hide();
         }
         if (scriptsModal) {
             scriptsModal.hide();
@@ -445,6 +452,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (npcButton && npcModal) {
         npcButton.addEventListener('click', () => {
             npcModal.show();
+        });
+    }
+
+    if (guildsButton && guildsModal) {
+        guildsButton.addEventListener('click', () => {
+            guildsModal.show();
         });
     }
 
@@ -709,6 +722,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const npcRoot = document.getElementById('npc-options');
     if (npcRoot) {
         createRoot(npcRoot).render(createElement(Npc));
+    }
+
+    const guildsRoot = document.getElementById('guilds-options');
+    if (guildsRoot) {
+        createRoot(guildsRoot).render(createElement(Guilds));
     }
 
     const scriptsRoot = document.getElementById('scripts-options');
