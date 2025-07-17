@@ -1,4 +1,4 @@
-import initKillTrigger, { parseName, formatSessionTable, formatLifetimeTable } from '../src/scripts/kill';
+import { initKillCounter, parseName, formatSessionTable, formatLifetimeTable } from '../src/scripts/kill';
 import Triggers, { stripAnsiCodes } from '../src/Triggers';
 
 import { EventEmitter } from 'events';
@@ -27,7 +27,7 @@ describe('kill counter team kills', () => {
 
   beforeEach(() => {
     client = new FakeClient();
-    initKillTrigger((client as unknown) as any, []);
+    initKillCounter((client as unknown) as any, []);
     client.dispatch('storage', { key: 'kill_counter', value: {} });
   });
 
@@ -75,7 +75,7 @@ describe('kill counter scenario', () => {
   beforeEach(() => {
     const aliases: { pattern: RegExp; callback: () => void }[] = [];
     client = new FakeClient();
-    initKillTrigger((client as unknown) as any, aliases);
+    initKillCounter((client as unknown) as any, aliases);
     client.dispatch('storage', { key: 'kill_counter', value: {} });
     parse = (line: string) =>
       Triggers.prototype.parseLine.call(client.Triggers, line, '');

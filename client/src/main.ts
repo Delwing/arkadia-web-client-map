@@ -9,7 +9,7 @@ import initAttackBeep from './scripts/attackBeep'
 import initLamp from './scripts/lamp'
 import initBinds from './scripts/binds'
 import initIdz from './scripts/idz'
-import initKillTrigger from './scripts/kill'
+import { initKillCounter } from './scripts/kill'
 import initEscape from './scripts/escape'
 import { initItemCollector } from './scripts/itemCollector'
 import initContainers from './scripts/prettyContainers'
@@ -93,7 +93,7 @@ export function registerScripts(client: Client) {
     initLamp(client)
     initBinds(client, aliases)
     initIdz(client, aliases)
-    initKillTrigger(client, aliases)
+    initKillCounter(client, aliases)
     initEscape(client)
 
 
