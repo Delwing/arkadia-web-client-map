@@ -132,7 +132,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     }
 
     const countRegex = /^Doliczyl(?:es|as) sie (?<num>[0-9a-z ]+) sztuk\.$/;
-    const contentRegex = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W srodku dostrzegasz (?<content>.*)\.$/;
+    const contentRegex1 = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W srodku dostrzegasz (?<content>.*)\.$/;
+    const contentRegex2 = /^[> ]*Uwaznie ogladasz zawartosc[a-zA-Z -]*woreczka[a-z ]*\. W srodku dostrzegasz (?<content>[a-zA-Z0-9, -]+)\.$/;
     const emptyRegex = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W jego srodku nic jednak nie ma\.$/;
 
     let awaiting = false;
@@ -220,7 +221,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         return undefined;
     });
 
-    client.Triggers.registerTrigger(contentRegex, (_r, _l, m) => {
+    function extracHerbs(m: RegExpMatchArray) {
         if (!awaiting) return undefined;
         currentBag += 1;
         const items = parseItems(m.groups?.content || '');
@@ -235,6 +236,14 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         left -= 1;
         if (left <= 0) finish();
         return undefined;
+    }
+
+    client.Triggers.registerTrigger(contentRegex1, (_r, _l, m) => {
+        return extracHerbs(m);
+    });
+
+    client.Triggers.registerTrigger(contentRegex2, (_r, _l, m) => {
+        return extracHerbs(m);
     });
 
     client.Triggers.registerTrigger(emptyRegex, () => {
