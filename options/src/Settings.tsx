@@ -1,5 +1,5 @@
 import './App.css'
-import {ChangeEvent, useEffect, useState, useMemo} from "react";
+import {useEffect, useState, useMemo} from "react";
 import {Form, Button} from 'react-bootstrap';
 import storage from "./storage.ts";
 import GuildSection from "./GuildSection";
@@ -66,9 +66,9 @@ function SettingsForm() {
         })
     }
 
-    function onChange(event: ChangeEvent<HTMLInputElement>, guild: string) {
+    function onChange(guild: string, checked: boolean) {
         setSettings(prev => {
-            const next = event.target.checked
+            const next = checked
                 ? [...prev.guilds, guild]
                 : prev.guilds.filter(g => g !== guild)
             return {...prev, guilds: next}
@@ -82,9 +82,9 @@ function SettingsForm() {
         }))
     }
 
-    function onChangeEnemy(event: ChangeEvent<HTMLInputElement>, guild: string) {
+    function onChangeEnemy(guild: string, checked: boolean) {
         setSettings(prev => {
-            const next = event.target.checked
+            const next = checked
                 ? [...prev.enemyGuilds, guild]
                 : prev.enemyGuilds.filter(g => g !== guild)
             return {...prev, enemyGuilds: next}
