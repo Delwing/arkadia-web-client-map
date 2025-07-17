@@ -221,17 +221,26 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         }
     }
 
-    const truncate = (text: string, len: number) => {
+    const truncateColored = (text: string, len: number) => {
         const plain = stripAnsiCodes(text);
         if (plain.length <= len) return text;
-        const prefix = text.startsWith('\x1b') ? text.match(/^\x1b\[[0-9;]*m/)?.[0] || '' : '';
-        const suffix = text.endsWith('\x1b[0m') ? '\x1b[0m' : '';
+        const prefix = text.match(/^\x1b\[[0-9;]*m/)?.[0] || '';
+        const suffix = text.includes('\x1b[') ? '\x1b[0m' : '';
         return prefix + plain.slice(0, Math.max(0, len - 1)) + '…' + suffix;
     };
 
     const cell = (text: string) => {
         const maxLen = colWidth - padding * 2;
-        text = truncate(text, maxLen);
+        if (stripAnsiCodes(text).length > maxLen) {
+            const split = text.split(' | ');
+            if (split.length === 2) {
+                const prefix = split[0] + ' | ';
+                const available = maxLen - stripAnsiCodes(prefix).length;
+                text = prefix + truncateColored(split[1], available);
+            } else {
+                text = truncateColored(text, maxLen);
+            }
+        }
         return pad(`${padSpace}${text}${padSpace}`, colWidth);
     };
 
