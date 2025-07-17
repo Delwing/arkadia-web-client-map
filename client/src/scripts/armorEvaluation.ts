@@ -106,19 +106,19 @@ export default function initArmorEvaluation(client: Client) {
         `${colorString("Ciete", LABEL_COLOR)}: ${c.label.padEnd(pad, " ")}${colorString("Obuchowe", LABEL_COLOR)}: ${o.label}`,
         "",
       ];
+
       if (parry) {
         const key = Object.keys(EFFECTIVENESS).find((k) =>
           parry.toLowerCase().startsWith(k),
         );
         if (key) {
           const p = EFFECTIVENESS[key];
-          lines.push(
-            `${colorString("Parowanie", LABEL_COLOR)}: ${p.label}`,
-            "",
-          );
+          lines.push(`${colorString("Parowanie", LABEL_COLOR)}: ${p.label}`);
         }
       }
+
       lines.push(
+        "",
         `${colorString("Suma", LABEL_COLOR)}: ${String(sum).padEnd(pad + 5)}${colorString("Srednia", LABEL_COLOR)}: ${avg}`,
       );
       client.print(lines.join("\n"));
