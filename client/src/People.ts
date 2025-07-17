@@ -43,7 +43,9 @@ export default class People {
             if (isEnemy) {
                 const key = `${replacement.name}|${replacement.guild}`
                 if (!addedNames.has(key)) {
-                    this.client.Triggers.registerTokenTrigger(replacement.name, callback, this.tag)
+                    if (replacement.name.length > 2) {
+                        this.client.Triggers.registerTokenTrigger(replacement.name, callback, this.tag)
+                    }
                     addedNames.add(key)
                 }
             }

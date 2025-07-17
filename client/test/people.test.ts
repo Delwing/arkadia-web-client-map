@@ -5,7 +5,8 @@ import { color, RESET, findClosestColor } from '../src/Colors';
 jest.mock('../src/people.json', () => [
   { name: 'Eamon', description: 'wysoki mezczyzna', guild: 'CKN' },
   { name: 'Eamon', description: 'wysoki mezczyzna w kapturze', guild: 'CKN' },
-  { name: 'Mara', description: 'niska kobieta', guild: 'NPC' }
+  { name: 'Mara', description: 'niska kobieta', guild: 'NPC' },
+  { name: 'w', description: 'koscisty mezczyzna', guild: 'GP' }
 ], { virtual: true });
 
 class FakeClient {
@@ -45,6 +46,12 @@ describe('people triggers enemy highlight', () => {
     const matches = stripAnsiCodes(result).match(/\(Eamon CKN\)/g);
     expect(matches).not.toBeNull();
     expect(matches!.length).toBe(1);
+  });
+
+  test('ignores very short enemy names to avoid false positives', () => {
+    const result = parse('spotykasz w drodze przyjaciela.');
+    const red = findClosestColor('#ff0000');
+    expect(result).not.toContain(color(red));
   });
 });
 
