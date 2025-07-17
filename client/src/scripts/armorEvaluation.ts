@@ -89,10 +89,10 @@ export default function initArmorEvaluation(client: Client) {
         if (!k || !c || !o) return SKIP_LINE;
         const sum = k.value + c.value + o.value;
         const avg = Math.round((sum / 3) * 100) / 100;
-        const pad = 44;
+        const pad = 30;
         const lines: string[] = [
             `${colorString('Typ zbroi', LABEL_COLOR)}: ${equipmentType.padEnd(pad, ' ')}${colorString('Klute', LABEL_COLOR)}: ${k.label}`,
-            `${colorString(' Ciete', LABEL_COLOR)}: ${c.label.padEnd(pad, ' ')}${colorString('Obuchowe', LABEL_COLOR)}: ${o.label}`,
+            `${colorString('Ciete', LABEL_COLOR)}: ${c.label.padEnd(pad, ' ')}${colorString('Obuchowe', LABEL_COLOR)}: ${o.label}`,
             '',
         ];
         if (parry) {
@@ -101,7 +101,7 @@ export default function initArmorEvaluation(client: Client) {
                 lines.push(`${colorString('Parowanie', LABEL_COLOR)}: ${p.label}`, '');
             }
         }
-        lines.push(`${colorString('Suma', LABEL_COLOR)}: ${String(sum).padEnd(pad, ' ')}${colorString('Srednia', LABEL_COLOR)}: ${avg}`);
+        lines.push(`${colorString('Suma', LABEL_COLOR)}: ${String(sum).padEnd(pad + 5)}${colorString('Srednia', LABEL_COLOR)}: ${avg}`);
         client.print(lines.join('\n'));
         return SKIP_LINE;
     }, tag);
