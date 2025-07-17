@@ -205,7 +205,10 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         return [groupName, ...itemTexts];
     });
 
-    let colWidth = Math.max(title.length + padding * 2, ...allLines.map(l => l.length + padding * 2));
+    let colWidth = Math.max(
+        stripAnsiCodes(title).length + padding * 2,
+        ...allLines.map(l => stripAnsiCodes(l).length + padding * 2),
+    );
 
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
