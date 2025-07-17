@@ -190,43 +190,33 @@ function applyTransforms(
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     let columns = opts.columns ?? 1;
-    const padding = opts.padding ?? 1;
+    let padding = opts.padding ?? 1;
     const activeTransforms = opts.transforms ?? defaultTransforms;
     const maxWidth = opts.maxWidth;
-    const padSpace = ' '.repeat(padding);
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
 
-    const formatCount = (c: string | number, width: number) => {
-        const str = String(c);
-        return str.padStart(Math.max(width, str.length + 1), ' ');
-    };
-
-    const buildLines = (countWidth: number) => {
-        return entries.flatMap(([groupName, items]) => {
-            const itemTexts = items.map(it => {
-                const transformed = applyTransforms(it, groupName, activeTransforms);
-                return `${formatCount(it.count, countWidth)} | ${transformed}`;
-            });
-            return [groupName, ...itemTexts];
+    const allLines = entries.flatMap(([groupName, items]) => {
+        const itemTexts = items.map(it => {
+            const transformed = applyTransforms(it, groupName, activeTransforms);
+            return `${String(it.count).padStart(3, ' ')} | ${transformed}`;
         });
-    };
+        return [groupName, ...itemTexts];
+    });
 
-    const computeColWidth = (lines: string[]) => Math.max(
-        stripAnsiCodes(title).length + padding * 2,
-        ...lines.map(l => stripAnsiCodes(l).length + padding * 2),
+    const computeColWidth = (pad: number) => Math.max(
+        stripAnsiCodes(title).length + pad * 2,
+        ...allLines.map(l => stripAnsiCodes(l).length + pad * 2),
     );
 
-    let countWidth = 3;
-    let allLines = buildLines(countWidth);
-    let colWidth = computeColWidth(allLines);
+    let colWidth = computeColWidth(padding);
+
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
     if (maxWidth) {
-        while (calcWidth(colWidth) > maxWidth && countWidth > 1) {
-            countWidth -= 1;
-            allLines = buildLines(countWidth);
-            colWidth = computeColWidth(allLines);
+        while (calcWidth(colWidth) > maxWidth && padding > 0) {
+            padding -= 1;
+            colWidth = computeColWidth(padding);
         }
         if (calcWidth(colWidth) > maxWidth && columns > 1) {
             columns = 1;
@@ -235,6 +225,8 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             colWidth = Math.min(colWidth, maxWidth - 2);
         }
     }
+
+    const padSpace = ' '.repeat(padding);
 
     const truncateColored = (text: string, len: number) => {
         const plain = stripAnsiCodes(text);
@@ -287,7 +279,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 const grp = pair[c];
                 const item = grp && grp[1][i];
                 const name = item && grp ? applyTransforms(item, grp[0], activeTransforms) : '';
-                const text = item ? `${formatCount(item.count, countWidth)} | ${name}` : '';
+                const text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
