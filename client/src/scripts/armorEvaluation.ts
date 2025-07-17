@@ -70,6 +70,18 @@ function extractProtection(text: string): { prot: Protection; parry?: string } |
         return { prot, parry };
     }
 
+    const p4 = text.match(/(.*) przed obrazeniami (klutymi|cietymi|obuchowymi)\./);
+    if (p4) {
+        const quality = p4[1].trim();
+        const prot: Protection = {
+            klute: quality,
+            ciete: quality,
+            obuchowe: quality,
+        };
+        prot[DAMAGE_MAP[p4[2]]] = quality;
+        return { prot, parry };
+    }
+
     return undefined;
 }
 

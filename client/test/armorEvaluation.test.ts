@@ -27,4 +27,17 @@ describe('armor evaluation trigger', () => {
     expect(output).toContain('Suma: 32');
     expect(output).toContain('Srednia: 10.67');
   });
+
+  test('parses shield evaluation with parry', () => {
+    parse('Twoje doswiadczenie i umiejetnosci podpowiadaja ci, ze chroni ona doskonale przed obrazeniami cietymi. Ponadto jest dobrze w parowaniu ciosow.');
+
+    const output = stripAnsiCodes(client.print.mock.calls[0][0]);
+    expect(output).toContain('Typ zbroi: tarcza');
+    expect(output).toContain('Klute: doskonale [11/12]');
+    expect(output).toContain('Ciete: doskonale [11/12]');
+    expect(output).toContain('Obuchowe: doskonale [11/12]');
+    expect(output).toContain('Parowanie: dobrze [9/12]');
+    expect(output).toContain('Suma: 33');
+    expect(output).toContain('Srednia: 11');
+  });
 });
