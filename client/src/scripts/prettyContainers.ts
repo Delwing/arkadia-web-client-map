@@ -190,11 +190,11 @@ function applyTransforms(
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     let columns = opts.columns ?? 1;
-    const padding = opts.padding ?? 1;
+    let padSize = opts.padding ?? 1;
     const activeTransforms = opts.transforms ?? defaultTransforms;
     const maxWidth = opts.maxWidth;
     let countPad = 3;
-    const padSpace = ' '.repeat(padding);
+    let padSpace = ' '.repeat(padSize);
 
     const buildData = () => {
         const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
@@ -206,8 +206,8 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             return [groupName, ...itemTexts];
         });
         const colWidth = Math.max(
-            stripAnsiCodes(title).length + padding * 2,
-            ...allLines.map(l => stripAnsiCodes(l).length + padding * 2),
+            stripAnsiCodes(title).length + padSize * 2,
+            ...allLines.map(l => stripAnsiCodes(l).length + padSize * 2),
         );
         return { entries, colWidth };
     };
@@ -229,22 +229,42 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             countPad = 0;
             ({ entries, colWidth } = buildData());
         }
+        if (calcWidth(colWidth) > maxWidth && padSize > 0) {
+            padSize = 0;
+            padSpace = '';
+            ({ entries, colWidth } = buildData());
+        }
         if (calcWidth(colWidth) > maxWidth) {
             colWidth = Math.min(colWidth, maxWidth - 2);
         }
     }
 
+    const ansiRe = /\x1b\[[0-9;]*m/g;
     const truncate = (text: string, len: number) => {
         const plain = stripAnsiCodes(text);
         if (plain.length <= len) return text;
-        const prefixMatch = text.match(/^(?:\x1b\[[0-9;]*m)+/);
-        const prefix = prefixMatch ? prefixMatch[0] : '';
         const suffix = text.endsWith('\x1b[0m') ? '\x1b[0m' : '';
-        return prefix + plain.slice(0, Math.max(0, len - 1)) + '…' + suffix;
+        let printable = 0;
+        let result = '';
+        let last = 0;
+        for (const m of text.matchAll(ansiRe)) {
+            const chunk = text.slice(last, m.index!);
+            if (printable + chunk.length >= len) {
+                result += chunk.slice(0, len - printable - 1);
+                return result + '…' + suffix;
+            }
+            result += chunk + m[0];
+            printable += chunk.length;
+            last = m.index! + m[0].length;
+        }
+        if (printable < len - 1) {
+            result += text.slice(last, last + (len - printable - 1));
+        }
+        return result + '…' + suffix;
     };
 
     const cell = (text: string) => {
-        const maxLen = colWidth - padding * 2;
+        const maxLen = colWidth - padSize * 2;
         text = truncate(text, maxLen);
         return pad(`${padSpace}${text}${padSpace}`, colWidth);
     };
