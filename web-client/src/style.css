@@ -235,6 +235,19 @@ h1 {
   width: 100%;
 }
 
+#connect-button-float {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1103;
+  display: none;
+  white-space: nowrap;
+  padding: 0.25rem 0.5rem;
+  font-size: 1.25rem;
+  background-color: #f44336;
+  color: white;
+}
+
 #connect-button.connected {
   background-color: #4CAF50;
   color: white;
@@ -548,6 +561,19 @@ button:focus-visible {
   display: none;
   align-items: center;
   justify-content: center;
+}
+
+#auth-close,
+.overlay-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 1;
 }
 
 #login-form {

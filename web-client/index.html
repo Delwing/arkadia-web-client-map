@@ -182,9 +182,10 @@
     </div>
 
     <div id="auth-overlay">
+        <button id="auth-close" class="overlay-close" aria-label="Close">✖</button>
         <div id="auth-panel">
             <div id="connecting-spinner" class="spinner-border text-light" role="status"></div>
-            <button id="connect-button">Połącz</button>
+            <button id="connect-button">Connect</button>
             <div class="auth-or">- LUB -</div>
             <form id="login-form" class="d-flex flex-column gap-2">
                 <input id="login-character" class="form-control" placeholder="Postać">
@@ -193,6 +194,8 @@
             </form>
         </div>
     </div>
+
+    <button id="connect-button-float">🔌</button>
 
     <div id="ui-settings-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
