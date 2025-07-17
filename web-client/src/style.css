@@ -216,6 +216,16 @@ h1 {
   padding: 0;
 }
 
+@media (max-width: 768px) {
+  #history-buttons {
+    flex-direction: column;
+  }
+
+  #history-buttons button {
+    font-size: 1.25rem;
+  }
+}
+
 #input-area .dropdown-menu {
   display: none;
   flex-direction: column;
