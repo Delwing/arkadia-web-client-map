@@ -1,6 +1,6 @@
 import Client from "@client/src/Client.ts";
 import { registerScripts } from "@client/src/main.ts";
-import ArkadiaClient from "../web-client/src/ArkadiaClient.ts";
+import ArkadiaClient from "@web-client/src/ArkadiaClient.ts";
 import { FakeClient } from "./types/globals";
 import MockPort from "./MockPort.ts";
 
