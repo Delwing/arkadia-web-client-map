@@ -232,11 +232,16 @@ h1 {
 
 #connect-button {
   white-space: nowrap;
+  width: 100%;
+}
+
+#connect-button-float {
   position: fixed;
   top: 0.5rem;
   right: 0.5rem;
   z-index: 1012;
   display: none;
+  white-space: nowrap;
 }
 
 #connect-button.connected {
@@ -558,6 +563,7 @@ button:focus-visible {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
+  filter: invert(1);
 }
 
 #login-form {

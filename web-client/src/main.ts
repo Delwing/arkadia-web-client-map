@@ -257,19 +257,28 @@ let authClosed = false;
 
 // Function to update the connect button state
 function updateConnectButtons() {
-    const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
+    const connectButton = document.getElementById('connect-button') as HTMLButtonElement | null;
+    const connectButtonFloat = document.getElementById('connect-button-float') as HTMLButtonElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
     const authOverlay = document.getElementById('auth-overlay') as HTMLElement | null;
     const spinner = document.getElementById('connecting-spinner') as HTMLElement | null;
 
     if (connectButton) {
-        if (isConnected || isConnecting || !authClosed) {
+        if (isConnected || isConnecting || authClosed) {
             connectButton.style.display = 'none';
         } else {
             connectButton.style.display = '';
-            connectButton.textContent = '🔌 Connect';
+            connectButton.textContent = 'Connect';
             connectButton.classList.add('disconnected');
             connectButton.classList.remove('connected');
+        }
+    }
+
+    if (connectButtonFloat) {
+        if (!isConnected && !isConnecting && authClosed) {
+            connectButtonFloat.style.display = '';
+        } else {
+            connectButtonFloat.style.display = 'none';
         }
     }
 
@@ -371,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
+    const connectButtonFloat = document.getElementById('connect-button-float') as HTMLButtonElement;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
     const optionsButton = document.getElementById('options-button') as HTMLButtonElement;
     const bindsButton = document.getElementById('binds-button') as HTMLButtonElement | null;
@@ -675,7 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle connect/disconnect button click
-    connectButton.addEventListener('click', () => {
+    const handleConnect = () => {
         if (isConnected) {
             arkadiaClient.disconnect();
         } else {
@@ -683,7 +693,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateConnectButtons();
             arkadiaClient.connect();
         }
-    });
+    };
+    connectButton.addEventListener('click', handleConnect);
+    connectButtonFloat.addEventListener('click', handleConnect);
 
     if (authClose) {
         authClose.addEventListener('click', () => {
