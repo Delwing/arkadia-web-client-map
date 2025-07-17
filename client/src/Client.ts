@@ -154,7 +154,6 @@ export default class Client {
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
-                this.clientAdapter.output('→ ' + command, 'command')
                 alias.callback(matches)
                 return true
             }

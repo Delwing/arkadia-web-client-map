@@ -163,7 +163,7 @@ class ArkadiaClient implements ClientAdapter{
             this.socket.send(btoa(message + "\r\n"));
             // Only echo commands if we've received the first GMCP event
             if (this.receivedFirstGmcp && message) {
-                Output.send("-> " + message);
+                Output.send("→ " + message);
             }
         } catch (error) {
             console.error('Error sending message:', error);
