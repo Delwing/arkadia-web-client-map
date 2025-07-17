@@ -190,7 +190,8 @@ function applyTransforms(
 
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     let columns = opts.columns ?? 1;
-    let padding = opts.padding ?? 1;
+    let leftPadding = opts.padding ?? 1;
+    let rightPadding = opts.padding ?? 1;
     const activeTransforms = opts.transforms ?? defaultTransforms;
     const maxWidth = opts.maxWidth;
 
@@ -204,19 +205,23 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         return [groupName, ...itemTexts];
     });
 
-    const computeColWidth = (pad: number) => Math.max(
-        stripAnsiCodes(title).length + pad * 2,
-        ...allLines.map(l => stripAnsiCodes(l).length + pad * 2),
+    const computeColWidth = (lp: number, rp: number) => Math.max(
+        stripAnsiCodes(title).length + lp + rp,
+        ...allLines.map(l => stripAnsiCodes(l).length + lp + rp),
     );
 
-    let colWidth = computeColWidth(padding);
+    let colWidth = computeColWidth(leftPadding, rightPadding);
 
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
     if (maxWidth) {
-        while (calcWidth(colWidth) > maxWidth && padding > 0) {
-            padding -= 1;
-            colWidth = computeColWidth(padding);
+        while (calcWidth(colWidth) > maxWidth && leftPadding > 1) {
+            leftPadding -= 1;
+            colWidth = computeColWidth(leftPadding, rightPadding);
+        }
+        while (calcWidth(colWidth) > maxWidth && rightPadding > 1) {
+            rightPadding -= 1;
+            colWidth = computeColWidth(leftPadding, rightPadding);
         }
         if (calcWidth(colWidth) > maxWidth && columns > 1) {
             columns = 1;
@@ -226,7 +231,8 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
         }
     }
 
-    const padSpace = ' '.repeat(padding);
+    const padLeft = ' '.repeat(leftPadding);
+    const padRight = ' '.repeat(rightPadding);
 
     const truncateColored = (text: string, len: number) => {
         const plain = stripAnsiCodes(text);
@@ -237,7 +243,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     };
 
     const cell = (text: string) => {
-        const maxLen = colWidth - padding * 2;
+        const maxLen = colWidth - leftPadding - rightPadding;
         if (stripAnsiCodes(text).length > maxLen) {
             const split = text.split(' | ');
             if (split.length === 2) {
@@ -248,7 +254,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 text = truncateColored(text, maxLen);
             }
         }
-        return pad(`${padSpace}${text}${padSpace}`, colWidth);
+        return pad(`${padLeft}${text}${padRight}`, colWidth);
     };
 
     const width = calcWidth(colWidth);
