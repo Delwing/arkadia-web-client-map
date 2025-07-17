@@ -146,13 +146,13 @@ class ArkadiaClient implements ClientAdapter{
     /**
      * Send a message through the WebSocket
      */
-    send(message: string, recordCredentials: boolean = true): void {
+    send(message: string, echo: boolean = true): void {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error('WebSocket is not connected');
             return;
         }
 
-        if (recordCredentials && !this.receivedFirstGmcp) {
+        if (!this.receivedFirstGmcp) {
             if (!this.userCommand) {
                 this.userCommand = message;
             }
@@ -161,8 +161,8 @@ class ArkadiaClient implements ClientAdapter{
 
         try {
             this.socket.send(btoa(message + "\r\n"));
-            // Only echo commands if we've received the first GMCP event
-            if (this.receivedFirstGmcp && message) {
+            // Only echo commands if requested and we've received the first GMCP event
+            if (echo && this.receivedFirstGmcp && message) {
                 Output.send("-> " + message);
             }
         } catch (error) {
