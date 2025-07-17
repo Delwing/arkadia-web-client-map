@@ -54,8 +54,6 @@ function SettingsForm() {
         collectExtra: [],
     })
 
-    const allSelected = settings.guilds.length === guilds.length
-    const allEnemySelected = settings.enemyGuilds.length === guilds.length
     const [extraInput, setExtraInput] = useState<string>('')
 
     function onChangeSetting(modifier: (settings: Settings) => void) {
