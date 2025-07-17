@@ -237,7 +237,8 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     const truncate = (text: string, len: number) => {
         const plain = stripAnsiCodes(text);
         if (plain.length <= len) return text;
-        const prefix = text.startsWith('\x1b') ? text.match(/^\x1b\[[0-9;]*m/)?.[0] || '' : '';
+        const prefixMatch = text.match(/^(?:\x1b\[[0-9;]*m)+/);
+        const prefix = prefixMatch ? prefixMatch[0] : '';
         const suffix = text.endsWith('\x1b[0m') ? '\x1b[0m' : '';
         return prefix + plain.slice(0, Math.max(0, len - 1)) + '…' + suffix;
     };

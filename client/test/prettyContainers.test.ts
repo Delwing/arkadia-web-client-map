@@ -149,4 +149,16 @@ describe('prettyContainers', () => {
     const lines = table.split('\n').map(l => l.replace(/\x1b\[[0-9;]*m/g, ''));
     lines.forEach(l => expect(l.length).toBeLessThanOrEqual(40));
   });
+
+  test('formatTable keeps colors when truncated', () => {
+    const parsed = parseContainer('Otwarty skorzany plecak zawiera mithrylowa monete.')!;
+    const cat = categorizeItems(parsed.items, []);
+    const table = formatTable('POJEMNIK', cat, {
+      columns: 1,
+      maxWidth: 12,
+    });
+    const lines = table.split('\n').map(l => l.replace(/\x1b\[[0-9;]*m/g, ''));
+    lines.forEach(l => expect(l.length).toBeLessThanOrEqual(12));
+    expect(table).toMatch(/\x1b\[[0-9;]*m.*\x1b\[0m/);
+  });
 });
