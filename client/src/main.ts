@@ -11,7 +11,7 @@ import initBinds from './scripts/binds'
 import initIdz from './scripts/idz'
 import initKillTrigger from './scripts/kill'
 import initEscape from './scripts/escape'
-import ItemCollector from './scripts/itemCollector'
+import { initItemCollector } from './scripts/itemCollector'
 import initContainers from './scripts/prettyContainers'
 import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
@@ -97,28 +97,8 @@ export function registerScripts(client: Client) {
     initEscape(client)
 
 
-    const itemCollector = new ItemCollector(client);
+    const itemCollector = initItemCollector(client, aliases);
     (client as any).ItemCollector = itemCollector;
-
-    aliases.push({
-        pattern: /\/zbieraj_extra(.*)/,
-        callback: (matches: RegExpMatchArray) => {
-            const strTrim = (matches[1] || '').trim()
-            itemCollector.addExtra(strTrim)
-        }
-    })
-
-    aliases.push({
-        pattern: /\/nie_zbieraj_extra(.*)/,
-        callback: (matches: RegExpMatchArray) => {
-            const strTrim = (matches[1] || '').trim()
-            if (strTrim !== '') {
-                itemCollector.removeExtra(strTrim, false)
-            } else {
-                itemCollector.removeExtra('', true)
-            }
-        }
-    })
 
 
     initContainers(client)

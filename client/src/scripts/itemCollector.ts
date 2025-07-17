@@ -104,3 +104,34 @@ export default class ItemCollector {
         }
     }
 }
+
+export function initItemCollector(
+    client: Client,
+    aliases?: { pattern: RegExp; callback: Function }[]
+): ItemCollector {
+    const collector = new ItemCollector(client);
+
+    if (aliases) {
+        aliases.push({
+            pattern: /\/zbieraj_extra(.*)/,
+            callback: (matches: RegExpMatchArray) => {
+                const strTrim = (matches[1] || '').trim();
+                collector.addExtra(strTrim);
+            },
+        });
+
+        aliases.push({
+            pattern: /\/nie_zbieraj_extra(.*)/,
+            callback: (matches: RegExpMatchArray) => {
+                const strTrim = (matches[1] || '').trim();
+                if (strTrim !== '') {
+                    collector.removeExtra(strTrim, false);
+                } else {
+                    collector.removeExtra('', true);
+                }
+            },
+        });
+    }
+
+    return collector;
+}
