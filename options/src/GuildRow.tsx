@@ -1,4 +1,4 @@
-import {ChangeEvent} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
 
 interface Props {
@@ -18,6 +18,11 @@ interface Props {
 }
 
 export default function GuildRow({guild, selected, enemySelected, color, defaultColor, onChange, onEnemyChange, onColorChange}: Props) {
+    const [pickerColor, setPickerColor] = useState(color ?? defaultColor);
+
+    useEffect(() => {
+        setPickerColor(color ?? defaultColor);
+    }, [color, defaultColor]);
     function handleSelect(ev: ChangeEvent<HTMLInputElement>) {
         onChange(guild, ev.target.checked);
     }
@@ -27,11 +32,19 @@ export default function GuildRow({guild, selected, enemySelected, color, default
     }
 
     function handleColorChange(ev: ChangeEvent<HTMLInputElement>) {
-        onColorChange(guild, ev.target.value);
+        const newColor = ev.target.value;
+        setPickerColor(newColor);
+        if (color !== undefined) {
+            onColorChange(guild, newColor);
+        }
     }
 
     function handleColorToggle(ev: ChangeEvent<HTMLInputElement>) {
-        onColorChange(guild, ev.target.checked ? (color ?? defaultColor) : undefined);
+        if (ev.target.checked) {
+            onColorChange(guild, pickerColor);
+        } else {
+            onColorChange(guild, undefined);
+        }
     }
 
     return (
@@ -66,9 +79,9 @@ export default function GuildRow({guild, selected, enemySelected, color, default
                 <Form.Control
                     type="color"
                     id={`guild-color-${guild}`}
-                    value={color ?? defaultColor}
+                    value={pickerColor}
                     onChange={handleColorChange}
-                    disabled={enemySelected || color === undefined}
+                    disabled={enemySelected}
                     className="form-control-color"
                     style={{width: '3rem'}}
                 />
