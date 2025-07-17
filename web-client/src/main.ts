@@ -200,6 +200,9 @@ Promise.all([mapDataPromise, colorsPromise])
 
 // Set up message event listener for UI updates
 arkadiaClient.on('message', (message: string, type?: string) => {
+    if (message === "") {
+        return; //TODO investigate
+    }
     const wrapper = document.createElement('div');
     wrapper.classList.add('output_msg');
 
@@ -210,7 +213,6 @@ arkadiaClient.on('message', (message: string, type?: string) => {
     const messageDiv = document.createElement('div');
     messageDiv.innerHTML = message;
     messageDiv.classList.add('output_msg_text');
-    messageDiv.style.borderRadius = '4px';
     messageDiv.style.whiteSpace = 'pre-wrap';
 
     wrapper.appendChild(messageDiv);

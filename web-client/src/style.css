@@ -593,3 +593,6 @@ button:focus-visible {
   margin: 2vh 0;
 }
 
+.output_msg, .output_msg_text {
+    padding: 0;
+}
