@@ -174,7 +174,7 @@ h1 {
   border-top: 0.1vh solid rgba(255, 255, 255, 0.1);
   gap: 1vw;
   position: relative;
-  z-index: 1102;
+  z-index: 1001;
 }
 
 #message-input {
@@ -355,7 +355,7 @@ button:focus-visible {
   padding: 5px 5px;
   position: sticky;
   bottom: 0;
-  z-index: 1102;
+  z-index: 1001;
   }
 
   #message-input {
