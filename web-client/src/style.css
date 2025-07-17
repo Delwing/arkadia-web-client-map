@@ -244,6 +244,8 @@ h1 {
   white-space: nowrap;
   padding: 0.25rem 0.5rem;
   font-size: 1.25rem;
+  background-color: #f44336;
+  color: white;
 }
 
 #connect-button.connected {
