@@ -33,16 +33,16 @@ export const BALANCE: Record<string, { value: number; label: string }> = {
 };
 
 export const ARMOR_QUALITY: Record<string, { value: number; label: string }> = {
-  "wyjatkowo zle": { value: 1, label: "wyjatkowo zle [1/12]" },
-  "bardzo zle": { value: 2, label: "bardzo zle [2/12]" },
-  zle: { value: 3, label: "zle [3/12]" },
-  "bardzo kiepsko": { value: 4, label: "bardzo kiepsko [4/12]" },
-  kiepsko: { value: 5, label: "kiepsko [5/12]" },
-  przyzwoicie: { value: 6, label: "przyzwoicie [6/12]" },
-  niezle: { value: 7, label: "niezle [7/12]" },
-  "dosc dobrze": { value: 8, label: "dosc dobrze [8/12]" },
-  dobrze: { value: 9, label: "dobrze [9/12]" },
-  "bardzo dobrze": { value: 10, label: "bardzo dobrze [10/12]" },
-  doskonale: { value: 11, label: "doskonale [11/12]" },
-  perfekcyjnie: { value: 12, label: "perfekcyjnie [12/12]" },
+  "wyjatkowo zle": { value: 1, label: "[1/12]" },
+  "bardzo zle": { value: 2, label: "[2/12]" },
+  zle: { value: 3, label: "[3/12]" },
+  "bardzo kiepsko": { value: 4, label: "[4/12]" },
+  kiepsko: { value: 5, label: "[5/12]" },
+  przyzwoicie: { value: 6, label: "[6/12]" },
+  niezle: { value: 7, label: "[7/12]" },
+  "dosc dobrze": { value: 8, label: "[8/12]" },
+  dobrze: { value: 9, label: "[9/12]" },
+  "bardzo dobrze": { value: 10, label: "[10/12]" },
+  doskonale: { value: 11, label: "[11/12]" },
+  perfekcyjnie: { value: 12, label: "[12/12]" },
 };

@@ -100,11 +100,10 @@ export default function initArmorEvaluation(client: Client) {
       if (!k || !c || !o) return SKIP_LINE;
       const sum = k.value + c.value + o.value;
       const avg = Math.round((sum / 3) * 100) / 100;
-      const pad = 30;
+      const pad = 15;
       const lines: string[] = [
         `${colorString("Typ zbroi", LABEL_COLOR)}: ${equipmentType.padEnd(pad, " ")}${colorString("Klute", LABEL_COLOR)}: ${k.label}`,
-        `${colorString("Ciete", LABEL_COLOR)}: ${c.label.padEnd(pad, " ")}${colorString("Obuchowe", LABEL_COLOR)}: ${o.label}`,
-        "",
+        `${colorString("Ciete", LABEL_COLOR)}:     ${c.label.padEnd(pad, " ")}${colorString("Obuchowe", LABEL_COLOR)}: ${o.label}`,
       ];
 
       if (parry) {
