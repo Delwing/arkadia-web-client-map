@@ -1,7 +1,7 @@
 import Client from "../Client";
 import { colorString, findClosestColor } from "../Colors";
 import { SKIP_LINE } from "../ControlConstants";
-import { ARMOR_QUALITY, BALANCE } from "./evaluationConstants";
+import { ARMOR_QUALITY, EFFECTIVENESS } from "./evaluationConstants";
 
 const LABEL_COLOR = findClosestColor("#446fb1");
 
@@ -107,8 +107,11 @@ export default function initArmorEvaluation(client: Client) {
         "",
       ];
       if (parry) {
-        const p = BALANCE[parry.toLowerCase()];
-        if (p) {
+        const key = Object.keys(EFFECTIVENESS).find((k) =>
+          parry.toLowerCase().startsWith(k),
+        );
+        if (key) {
+          const p = EFFECTIVENESS[key];
           lines.push(
             `${colorString("Parowanie", LABEL_COLOR)}: ${p.label}`,
             "",

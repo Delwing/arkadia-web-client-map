@@ -33,7 +33,7 @@ describe("armor evaluation trigger", () => {
 
   test("parses shield evaluation with parry", () => {
     parse(
-      "Twoje doswiadczenie i umiejetnosci podpowiadaja ci, ze chroni ona doskonale przed obrazeniami cietymi. Ponadto jest dobrze w parowaniu ciosow.",
+      "Twoje doswiadczenie i umiejetnosci podpowiadaja ci, ze chroni ona doskonale przed obrazeniami cietymi. Ponadto jest bardzo skuteczna w parowaniu ciosow.",
     );
 
     const output = stripAnsiCodes(client.print.mock.calls[0][0]);
