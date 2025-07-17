@@ -153,7 +153,7 @@ function Recordings() {
                 <Form.Control
                     type="text"
                     size="sm"
-                    placeholder="Recording name"
+                    placeholder="Nazwa nagrania"
                     value={recordingName}
                     onChange={e => setRecordingName(e.target.value)}
                     disabled={recording}
@@ -161,11 +161,11 @@ function Recordings() {
                 />
                 {recording ? (
                     <>
-                        <Button size="sm" variant="secondary" onClick={() => stop(false)}>Stop</Button>
-                        <Button size="sm" onClick={() => stop(true)}>Stop &amp; Save</Button>
+                        <Button size="sm" variant="secondary" onClick={() => stop(false)}>Zatrzymaj</Button>
+                        <Button size="sm" onClick={() => stop(true)}>Zatrzymaj i zapisz</Button>
                     </>
                 ) : (
-                    <Button size="sm" onClick={start}>Start</Button>
+                    <Button size="sm" onClick={start}>Rozpocznij</Button>
                 )}
             </Form.Group>
             <Table bordered size="sm" className="table-zebra">
@@ -174,9 +174,9 @@ function Recordings() {
                     <tr key={n}>
                         <td>{n}</td>
                         <td className="d-flex gap-2">
-                            <Button size="sm" onClick={() => handlePlay(n)}>Play</Button>
-                            <Button size="sm" onClick={() => handlePlayTimed(n)}>Play timed</Button>
-                            <Button size="sm" variant="danger" onClick={() => handleDelete(n)}>Delete</Button>
+                            <Button size="sm" onClick={() => handlePlay(n)}>Odtwórz</Button>
+                            <Button size="sm" onClick={() => handlePlayTimed(n)}>Odtwórz w czasie</Button>
+                            <Button size="sm" variant="danger" onClick={() => handleDelete(n)}>Usuń</Button>
                         </td>
                     </tr>
                 ))}
@@ -184,7 +184,7 @@ function Recordings() {
             </Table>
             <div className="d-flex gap-2">
                 <Button size="sm" onClick={downloadRecordings}>Eksport</Button>
-                <Button size="sm" onClick={triggerFileInput}>Import</Button>
+                <Button size="sm" onClick={triggerFileInput}>Importuj</Button>
                 <input
                     ref={fileInput}
                     type="file"
