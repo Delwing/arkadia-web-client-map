@@ -1,4 +1,5 @@
 import Client from "../Client";
+import { longToShort } from "../MapHelper";
 
 export default function initMapAliases(client: Client, aliases: { pattern: RegExp; callback: Function }[]) {
     aliases.push(
@@ -30,6 +31,23 @@ export default function initMapAliases(client: Client, aliases: { pattern: RegEx
             pattern: /\/prowadz-$/,
             callback: () => {
                 client.sendEvent('leadTo');
+            }
+        },
+        {
+            pattern: /\/go$/,
+            callback: () => {
+                const embedded: any = (window as any).embedded;
+                const room: any = client.Map.currentRoom;
+                if (!embedded?.destinations?.length || !room) return;
+                const target = parseInt(embedded.destinations[0]);
+                const path = embedded.renderer?.controls?.pathFinder?.path(room.id, target);
+                if (!path || path.length < 2) return;
+                const next = parseInt(path[1]);
+                const allExits = Object.assign({}, room.exits ?? {}, room.specialExits ?? {});
+                const entry = Object.entries(allExits).find(([_, id]) => id === next);
+                if (!entry) return;
+                const dir = entry[0];
+                client.sendCommand(longToShort[dir] ?? dir);
             }
         },
         {
