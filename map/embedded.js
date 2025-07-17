@@ -13,18 +13,21 @@ class EmbeddedMap {
         this._debugTimerEl = document.getElementById('timer')
         this._touchPointEl = document.getElementById('touch-point')
         this._debugInterval = null
+        this._longPressStartX = 0
+        this._longPressStartY = 0
         this._touchStartDistance = null
         this._pinchZoom = this._pinchZoom.bind(this)
         this._onTouchStart = this._onTouchStart.bind(this)
         this._onTouchEnd = this._onTouchEnd.bind(this)
         this._onLongPressStart = this._onLongPressStart.bind(this)
+        this._onLongPressMove = this._onLongPressMove.bind(this)
         this._onLongPressEnd = this._onLongPressEnd.bind(this)
         this.map.addEventListener('touchstart', this._onTouchStart, {passive: false})
         this.map.addEventListener('touchmove', this._pinchZoom, {passive: false})
         this.map.addEventListener('touchend', this._onTouchEnd)
         this.map.addEventListener('touchcancel', this._onTouchEnd)
         this.map.addEventListener('touchstart', this._onLongPressStart)
-        this.map.addEventListener('touchmove', this._onLongPressEnd)
+        this.map.addEventListener('touchmove', this._onLongPressMove)
         this.map.addEventListener('touchend', this._onLongPressEnd)
         this.map.addEventListener('touchcancel', this._onLongPressEnd)
         this.reader = new MapReader(mapData, colors);
@@ -63,6 +66,8 @@ class EmbeddedMap {
         }
         const touch = ev.touches[0];
         this._longPressActive = true;
+        this._longPressStartX = touch.clientX;
+        this._longPressStartY = touch.clientY;
         if (this._touchPointEl) {
             this._touchPointEl.style.display = 'block'
             this._touchPointEl.style.left = `${touch.clientX - 10}px`
@@ -87,8 +92,8 @@ class EmbeddedMap {
             if (!this._longPressActive) return;
             this._longPressActive = false;
             const rect = this.map.getBoundingClientRect();
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
+            const x = this._longPressStartX - rect.left;
+            const y = this._longPressStartY - rect.top;
             const paper = this.renderer.paper;
             const view = this.renderer.controls.view;
             const point = view.viewToProject(new paper.Point(x, y));
@@ -100,6 +105,16 @@ class EmbeddedMap {
             if (this._touchPointEl) this._touchPointEl.style.display = 'none'
             if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
         }, 500);
+    }
+
+    _onLongPressMove(ev) {
+        if (!this._longPressActive || ev.touches.length !== 1) return;
+        const touch = ev.touches[0];
+        const dx = touch.clientX - this._longPressStartX;
+        const dy = touch.clientY - this._longPressStartY;
+        if (Math.hypot(dx, dy) > 10) {
+            this._onLongPressEnd();
+        }
     }
 
     _onLongPressEnd() {
