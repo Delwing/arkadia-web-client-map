@@ -21,6 +21,7 @@ class ArkadiaClient implements ClientAdapter{
     private receivedFirstGmcp: boolean = false;
     private userCommand: string | null = null;
     private passwordCommand: string | null = null;
+    private credentialsPossible: boolean = false;
     private lastConnectManual = true;
     private pingTimer: number | null = null;
     private messageBuffer: {text: string, type: string}[] = []
@@ -93,11 +94,15 @@ class ArkadiaClient implements ClientAdapter{
                 this.emit('open', event);
                 this.emit('client.connect');
                 this.startPing();
+                this.credentialsPossible = true;
                 if (!this.lastConnectManual && this.userCommand && this.passwordCommand) {
-                    this.send(this.userCommand, false);
+                    const prev = this.credentialsPossible;
+                    this.credentialsPossible = false;
+                    this.send(this.userCommand);
                     if (this.passwordCommand !== this.userCommand) {
-                        this.send(this.passwordCommand, false);
+                        this.send(this.passwordCommand);
                     }
+                    this.credentialsPossible = prev;
                 }
             };
         } catch (error) {
@@ -143,16 +148,20 @@ class ArkadiaClient implements ClientAdapter{
         this.userCommand = character;
     }
 
+    setCredentialsPossible(flag: boolean): void {
+        this.credentialsPossible = flag;
+    }
+
     /**
      * Send a message through the WebSocket
      */
-    send(message: string, recordCredentials: boolean = true): void {
+    send(message: string): void {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error('WebSocket is not connected');
             return;
         }
 
-        if (recordCredentials && !this.receivedFirstGmcp) {
+        if (this.credentialsPossible && !this.receivedFirstGmcp) {
             if (!this.userCommand) {
                 this.userCommand = message;
             }
@@ -161,10 +170,11 @@ class ArkadiaClient implements ClientAdapter{
 
         try {
             this.socket.send(btoa(message + "\r\n"));
-            // Only echo commands if we've received the first GMCP event
-            if (this.receivedFirstGmcp && message) {
+            // Only echo commands if we've received the first GMCP event and this isn't credential output
+            if (this.receivedFirstGmcp && message && !this.credentialsPossible) {
                 Output.send("-> " + message);
             }
+            this.emit('send', message);
         } catch (error) {
             console.error('Error sending message:', error);
             this.emit('error', error);

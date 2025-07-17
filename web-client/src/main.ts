@@ -587,8 +587,10 @@ document.addEventListener('DOMContentLoaded', () => {
             arkadiaClient.setStoredCharacter(character || null);
 
             const sendCreds = () => {
+                arkadiaClient.setCredentialsPossible(true);
                 if (character) client.send(character);
                 if (password) client.send(password);
+                arkadiaClient.setCredentialsPossible(false);
                 arkadiaClient.off('client.connect', sendCreds);
             };
 
