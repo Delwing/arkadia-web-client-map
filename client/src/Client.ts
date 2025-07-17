@@ -283,7 +283,9 @@ export default class Client {
         measure.style.fontFamily = style.fontFamily
         measure.style.fontSize = style.fontSize
         const charWidth = measure.getBoundingClientRect().width
-        const width = content.clientWidth
+        const paddingLeft = parseFloat(style.paddingLeft) || 0
+        const paddingRight = parseFloat(style.paddingRight) || 0
+        const width = content.clientWidth - paddingLeft - paddingRight
         if (charWidth > 0 && width > 0) {
             this.contentWidth = Math.floor(width / charWidth)
             this.sendEvent('contentWidth', this.contentWidth)
