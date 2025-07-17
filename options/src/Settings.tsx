@@ -1,9 +1,7 @@
 import './App.css'
-import {useEffect, useState, useMemo} from "react";
+import {useEffect, useState} from "react";
 import {Form, Button} from 'react-bootstrap';
 import storage from "./storage.ts";
-import GuildSection from "./GuildSection";
-import guilds from "./guilds";
 
 const collectModeOptions = [
     "monety",
@@ -18,9 +16,6 @@ const collectModeOptions = [
 const collectMoneyOptions = ["wszystkie", "srebrne", "zlote"]
 
 interface Settings {
-    guilds: string[];
-    enemyGuilds: string[];
-    guildColors: Record<string, string | undefined>;
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
@@ -32,18 +27,8 @@ interface Settings {
 }
 
 function SettingsForm() {
-    const defaultColors = useMemo(() => {
-        const map: Record<string, string> = {};
-        guilds.forEach(g => {
-            map[g] = '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
-        });
-        return map;
-    }, []);
 
     const [settings, setSettings] = useState<Settings>({
-        guilds: [],
-        enemyGuilds: [],
-        guildColors: {},
         packageHelper: false,
         replaceMap: false,
         inlineCompassRose: false,
@@ -64,49 +49,6 @@ function SettingsForm() {
         })
     }
 
-    function onChange(guild: string, checked: boolean) {
-        setSettings(prev => {
-            const next = checked
-                ? [...prev.guilds, guild]
-                : prev.guilds.filter(g => g !== guild)
-            return {...prev, guilds: next}
-        })
-    }
-
-    function onChangeAll(checked: boolean) {
-        setSettings(prev => ({
-            ...prev,
-            guilds: checked ? [...guilds] : []
-        }))
-    }
-
-    function onChangeEnemy(guild: string, checked: boolean) {
-        setSettings(prev => {
-            const next = checked
-                ? [...prev.enemyGuilds, guild]
-                : prev.enemyGuilds.filter(g => g !== guild)
-            return {...prev, enemyGuilds: next}
-        })
-    }
-
-    function onColorChange(guild: string, color?: string) {
-        setSettings(prev => {
-            const next = { ...prev.guildColors } as Record<string, string | undefined>;
-            if (color) {
-                next[guild] = color;
-            } else {
-                delete next[guild];
-            }
-            return { ...prev, guildColors: next };
-        })
-    }
-
-    function onChangeAllEnemy(checked: boolean) {
-        setSettings(prev => ({
-            ...prev,
-            enemyGuilds: checked ? [...guilds] : []
-        }))
-    }
 
     function handleSubmission() {
         storage.setItem("settings", settings)
@@ -115,23 +57,12 @@ function SettingsForm() {
 
     useEffect(() => {
         storage.getItem("settings").then(res => {
-            setSettings(Object.assign({}, settings, {guildColors: {}}, res.settings));
+            setSettings(Object.assign({}, settings, res.settings));
         })
     }, []);
 
     return (
         <div className="my-4 p-2">
-            <GuildSection
-                selected={settings.guilds}
-                enemySelected={settings.enemyGuilds}
-                colors={settings.guildColors}
-                defaultColors={defaultColors}
-                onChange={onChange}
-                onEnemyChange={onChangeEnemy}
-                onColorChange={onColorChange}
-                onChangeAll={onChangeAll}
-                onChangeAllEnemy={onChangeAllEnemy}
-            />
             <div className="mb-4 border rounded p-3">
                 <h5 className="fw-bold mb-2">Pozostałe opcje</h5>
                 <div className="d-flex flex-wrap gap-3">
