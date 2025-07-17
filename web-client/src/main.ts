@@ -381,6 +381,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const messageInput = document.getElementById('message-input') as HTMLInputElement;
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
+    const historyUpButton = document.getElementById('history-up-button') as HTMLButtonElement | null;
+    const historyDownButton = document.getElementById('history-down-button') as HTMLButtonElement | null;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     const connectButtonFloat = document.getElementById('connect-button-float') as HTMLButtonElement;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
@@ -608,6 +610,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let historyIndex = -1;
     let currentInput = '';
 
+    function navigateHistory(direction: 'up' | 'down') {
+        // Only allow command history navigation if we've received the first GMCP event
+        if (!arkadiaClient.hasReceivedFirstGmcp()) return;
+        if (commandHistory.length === 0) return;
+
+        if (historyIndex === -1) {
+            currentInput = messageInput.value;
+        }
+
+        if (direction === 'up') {
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                messageInput.select();
+            }
+        } else {
+            if (historyIndex > 0) {
+                historyIndex--;
+                messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                messageInput.select();
+            } else if (historyIndex === 0) {
+                historyIndex = -1;
+                messageInput.value = currentInput;
+                messageInput.select();
+            }
+        }
+    }
+
     function sendMessage() {
         const message = messageInput.value.trim();
         if (message) {
@@ -643,47 +673,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle up/down arrow keys for command history
     messageInput.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault(); // Prevent cursor from moving
-
-            // Only allow command history navigation if we've received the first GMCP event
-            if (!arkadiaClient.hasReceivedFirstGmcp()) return;
-
-            if (commandHistory.length === 0) return;
-
-            // Save current input if we're just starting to navigate history
-            if (historyIndex === -1) {
-                currentInput = messageInput.value;
-            }
-
-            if (e.key === 'ArrowUp') {
-                // Navigate backward in history
-                if (historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
-                    messageInput.select();
-                }
-            } else if (e.key === 'ArrowDown') {
-                // Navigate forward in history
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
-                    messageInput.select();
-                } else if (historyIndex === 0) {
-                    // Return to current input when reaching the end of history
-                    historyIndex = -1;
-                    messageInput.value = currentInput;
-                    messageInput.select();
-                }
-            }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            navigateHistory('up');
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            navigateHistory('down');
         }
     });
+
+    if (historyUpButton) {
+        historyUpButton.addEventListener('click', () => navigateHistory('up'));
+    }
+    if (historyDownButton) {
+        historyDownButton.addEventListener('click', () => navigateHistory('down'));
+    }
 
     // Scroll to bottom and select text when input field is focused
     messageInput.addEventListener('focus', () => {
         outputWrapper.scrollTop = outputWrapper.scrollHeight;
         // Delay selection to avoid mouse click clearing it on some browsers
         setTimeout(() => messageInput.select());
+        if (historyUpButton) historyUpButton.style.display = 'none';
+        if (historyDownButton) historyDownButton.style.display = 'none';
+    });
+
+    messageInput.addEventListener('blur', () => {
+        if (historyUpButton) historyUpButton.style.display = '';
+        if (historyDownButton) historyDownButton.style.display = '';
     });
 
     // Handle connect/disconnect button click
