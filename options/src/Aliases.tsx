@@ -71,7 +71,7 @@ function Aliases() {
                 <Form.Control
                     type="text"
                     size="sm"
-                    placeholder="Wzorzec"
+                    placeholder="Pattern"
                     value={pattern}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setPattern(e.target.value)}
                     style={{width: '100%', maxWidth: '8rem'}}
