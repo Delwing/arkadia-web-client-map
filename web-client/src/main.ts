@@ -276,7 +276,7 @@ function updateConnectButtons() {
 
     if (connectButtonFloat) {
         if (!isConnected && !isConnecting && authClosed) {
-            connectButtonFloat.style.display = '';
+            connectButtonFloat.style.display = 'block';
         } else {
             connectButtonFloat.style.display = 'none';
         }
