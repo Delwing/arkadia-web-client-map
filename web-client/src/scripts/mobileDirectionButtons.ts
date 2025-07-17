@@ -181,16 +181,20 @@ export default class MobileDirectionButtons {
         }
 
         // Setup direction buttons
-        this.setupDirectionButton('nw-button', 'nw');
-        this.setupDirectionButton('n-button', 'n');
-        this.setupDirectionButton('ne-button', 'ne');
-        this.setupDirectionButton('w-button', 'w');
-        this.setupDirectionButton('e-button', 'e');
-        this.setupDirectionButton('sw-button', 'sw');
-        this.setupDirectionButton('s-button', 's');
-        this.setupDirectionButton('se-button', 'se');
-        this.setupDirectionButton('u-button', 'u');
-        this.setupDirectionButton('d-button', 'd');
+        const directionButtons = [
+            { id: 'nw-button', cmd: 'nw' },
+            { id: 'n-button', cmd: 'n' },
+            { id: 'ne-button', cmd: 'ne' },
+            { id: 'w-button', cmd: 'w' },
+            { id: 'e-button', cmd: 'e' },
+            { id: 'sw-button', cmd: 'sw' },
+            { id: 's-button', cmd: 's' },
+            { id: 'se-button', cmd: 'se' },
+            { id: 'u-button', cmd: 'u' },
+            { id: 'd-button', cmd: 'd' },
+        ];
+
+        directionButtons.forEach(b => this.setupDirectionButton(b.id, b.cmd));
 
         // Setup special exit button below up/down
         const specialExitButton = document.getElementById('special-exit-button');
@@ -324,185 +328,106 @@ export default class MobileDirectionButtons {
         });
     }
 
-    private handleTouchStart(e: TouchEvent) {
+    private dragStart(x: number, y: number, preventDefault?: () => void) {
         if (!this.container) return;
 
-        // Don't prevent default immediately to allow button clicks
-        // We'll only prevent default after long press
-
-        // If user is scrolling, don't start long press timer
         if (this.isScrolling) return;
 
-        // Get initial touch position for later use
-        const touch = e.touches[0];
-        this.initialX = touch.clientX;
-        this.initialY = touch.clientY;
+        this.initialX = x;
+        this.initialY = y;
 
-        // Start long press timer
         this.longPressTimer = window.setTimeout(() => {
-            // Now prevent default behavior for all touch events
-            e.preventDefault();
+            if (preventDefault) preventDefault();
 
             this.isDragging = true;
             this.container.classList.add('dragging');
 
-            // Get current container position
             const rect = this.container.getBoundingClientRect();
             this.offsetX = window.innerWidth - rect.right;
             this.offsetY = rect.top;
 
-            // Add visual feedback for dragging state
             this.container.style.opacity = '0.8';
 
-            // Add a class to all buttons to temporarily disable their click events
             const buttons = this.container.querySelectorAll('button');
             buttons.forEach(button => {
                 button.classList.add('no-click');
             });
-        }, 500); // 500ms long press
+        }, 500);
+    }
+
+    private dragMove(x: number, y: number) {
+        if (!this.isDragging || !this.container) return;
+
+        this.currentX = x;
+        this.currentY = y;
+
+        const deltaX = this.initialX - this.currentX;
+        const deltaY = this.currentY - this.initialY;
+
+        const newRight = this.offsetX + deltaX;
+        const newTop = this.offsetY + deltaY;
+
+        const maxRight = window.innerWidth - this.container.offsetWidth - 5;
+        const clampedRight = Math.min(maxRight, Math.max(5, newRight));
+        const clampedTop = Math.max(5, newTop);
+
+        this.container.style.right = `${clampedRight}px`;
+        this.container.style.top = `${clampedTop}px`;
+    }
+
+    private dragEnd(preventDefault?: () => void) {
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = null;
+        }
+
+        if (this.isDragging && this.container) {
+            const rect = this.container.getBoundingClientRect();
+            const position = {
+                x: window.innerWidth - rect.right,
+                y: rect.top,
+            };
+            localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
+
+            this.isDragging = false;
+            this.container.classList.remove('dragging');
+            this.container.style.opacity = '1';
+
+            const buttons = this.container.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.classList.remove('no-click');
+            });
+
+            if (preventDefault) preventDefault();
+        }
+    }
+
+    private handleTouchStart(e: TouchEvent) {
+        const touch = e.touches[0];
+        this.dragStart(touch.clientX, touch.clientY, () => e.preventDefault());
     }
 
     private handleTouchMove(e: TouchEvent) {
-        if (!this.isDragging || !this.container) return;
-
-        // Prevent default to avoid scrolling while dragging
         e.preventDefault();
-
         const touch = e.touches[0];
-        this.currentX = touch.clientX;
-        this.currentY = touch.clientY;
-
-        // Calculate new position (from right and top)
-        const deltaX = this.initialX - this.currentX;
-        const deltaY = this.currentY - this.initialY;
-
-        const newRight = this.offsetX + deltaX;
-        const newTop = this.offsetY + deltaY;
-
-        const maxRight = window.innerWidth - this.container.offsetWidth - 5;
-        const clampedRight = Math.min(maxRight, Math.max(5, newRight));
-        const clampedTop = Math.max(5, newTop);
-
-        // Apply new position
-        this.container.style.right = `${clampedRight}px`;
-        this.container.style.top = `${clampedTop}px`;
+        this.dragMove(touch.clientX, touch.clientY);
     }
 
     private handleTouchEnd(e: TouchEvent) {
-        // Clear long press timer if touch ended before long press
-        if (this.longPressTimer) {
-            clearTimeout(this.longPressTimer);
-            this.longPressTimer = null;
-        }
-
-        if (this.isDragging && this.container) {
-            // Save position to localStorage
-            const rect = this.container.getBoundingClientRect();
-            const position = {
-                x: window.innerWidth - rect.right,
-                y: rect.top
-            };
-            localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
-
-            // Reset dragging state
-            this.isDragging = false;
-            this.container.classList.remove('dragging');
-            this.container.style.opacity = '1';
-
-            // Remove the no-click class from all buttons
-            const buttons = this.container.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.classList.remove('no-click');
-            });
-
-            // Prevent any click events immediately after dragging ends
-            e.preventDefault();
-        }
+        this.dragEnd(() => e.preventDefault());
     }
 
     private handleMouseDown(e: MouseEvent) {
-        if (!this.container || e.button !== 0) return; // Only handle left mouse button
-
-        // If user is scrolling, don't start long press timer
-        if (this.isScrolling) return;
-
-        // Get initial mouse position for later use
-        this.initialX = e.clientX;
-        this.initialY = e.clientY;
-
-        // Start long press timer
-        this.longPressTimer = window.setTimeout(() => {
-            this.isDragging = true;
-            this.container.classList.add('dragging');
-
-            // Get current container position
-            const rect = this.container.getBoundingClientRect();
-            this.offsetX = window.innerWidth - rect.right;
-            this.offsetY = rect.top;
-
-            // Add visual feedback for dragging state
-            this.container.style.opacity = '0.8';
-
-            // Add a class to all buttons to temporarily disable their click events
-            const buttons = this.container.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.classList.add('no-click');
-            });
-        }, 500); // 500ms long press
+        if (e.button !== 0) return;
+        this.dragStart(e.clientX, e.clientY);
     }
 
     private handleMouseMove(e: MouseEvent) {
-        if (!this.isDragging || !this.container) return;
-
-        this.currentX = e.clientX;
-        this.currentY = e.clientY;
-
-        // Calculate new position (from right and top)
-        const deltaX = this.initialX - this.currentX;
-        const deltaY = this.currentY - this.initialY;
-
-        const newRight = this.offsetX + deltaX;
-        const newTop = this.offsetY + deltaY;
-
-        const maxRight = window.innerWidth - this.container.offsetWidth - 5;
-        const clampedRight = Math.min(maxRight, Math.max(5, newRight));
-        const clampedTop = Math.max(5, newTop);
-
-        // Apply new position
-        this.container.style.right = `${clampedRight}px`;
-        this.container.style.top = `${clampedTop}px`;
+        this.dragMove(e.clientX, e.clientY);
     }
 
     private handleMouseUp(e: MouseEvent) {
-        // Clear long press timer if mouse up before long press
-        if (this.longPressTimer) {
-            clearTimeout(this.longPressTimer);
-            this.longPressTimer = null;
-        }
-
-        if (this.isDragging && this.container) {
-            // Save position to localStorage
-            const rect = this.container.getBoundingClientRect();
-            const position = {
-                x: window.innerWidth - rect.right,
-                y: rect.top
-            };
-            localStorage.setItem('mobileButtonsPosition', JSON.stringify(position));
-
-            // Reset dragging state
-            this.isDragging = false;
-            this.container.classList.remove('dragging');
-            this.container.style.opacity = '1';
-
-            // Remove the no-click class from all buttons
-            const buttons = this.container.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.classList.remove('no-click');
-            });
-
-            // Prevent any click events immediately after dragging ends
-            e.preventDefault();
-        }
+        this.dragEnd(() => e.preventDefault());
     }
 
     private scrollToBottom() {
@@ -557,44 +482,32 @@ export default class MobileDirectionButtons {
         this.updateToggleButton();
     }
 
-    private renderZList() {
-        if (!this.zList) return;
-        this.zList.innerHTML = '';
+    private renderList(target: HTMLDivElement | null, regex: RegExp, prefix: string) {
+        if (!target) return;
+        target.innerHTML = '';
         const objects = (window as any).clientExtension?.ObjectManager?.getObjectsOnLocation?.() || [];
-        const nums = Array.from(new Set(objects
-            .filter((o: any) => /^[0-9]+$/.test(o.shortcut))
+        const values = Array.from(new Set(objects
+            .filter((o: any) => regex.test(o.shortcut))
             .map((o: any) => o.shortcut)));
-        nums.forEach((n: string) => {
+        values.forEach((v: string) => {
             const b = document.createElement('button');
             b.className = 'mobile-button';
             this.applyButtonSize(b);
-            b.textContent = n;
+            b.textContent = v;
             b.addEventListener('click', () => {
-                window.Input.send(`/z ${n}`);
+                window.Input.send(`/${prefix} ${v}`);
                 this.hideLists();
             });
-            this.zList!.appendChild(b);
+            target.appendChild(b);
         });
     }
 
+    private renderZList() {
+        this.renderList(this.zList, /^[0-9]+$/, 'z');
+    }
+
     private renderZasList() {
-        if (!this.zasList) return;
-        this.zasList.innerHTML = '';
-        const objects = (window as any).clientExtension?.ObjectManager?.getObjectsOnLocation?.() || [];
-        const letters = Array.from(new Set(objects
-            .filter((o: any) => /^[A-Z]$/.test(o.shortcut))
-            .map((o: any) => o.shortcut)));
-        letters.forEach((l: string) => {
-            const b = document.createElement('button');
-            b.className = 'mobile-button';
-            this.applyButtonSize(b);
-            b.textContent = l;
-            b.addEventListener('click', () => {
-                window.Input.send(`/zas ${l}`);
-                this.hideLists();
-            });
-            this.zasList!.appendChild(b);
-        });
+        this.renderList(this.zasList, /^[A-Z]$/, 'zas');
     }
 
 }
