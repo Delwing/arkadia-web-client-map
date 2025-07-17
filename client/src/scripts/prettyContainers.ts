@@ -193,28 +193,41 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     const padding = opts.padding ?? 1;
     const activeTransforms = opts.transforms ?? defaultTransforms;
     const maxWidth = opts.maxWidth;
+    let countPad = 3;
     const padSpace = ' '.repeat(padding);
 
-    const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
-
-    const allLines = entries.flatMap(([groupName, items]) => {
-        const itemTexts = items.map(it => {
-            const transformed = applyTransforms(it, groupName, activeTransforms);
-            return `${String(it.count).padStart(3, ' ')} | ${transformed}`;
+    const buildData = () => {
+        const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
+        const allLines = entries.flatMap(([groupName, items]) => {
+            const itemTexts = items.map(it => {
+                const transformed = applyTransforms(it, groupName, activeTransforms);
+                return `${String(it.count).padStart(countPad, ' ')} | ${transformed}`;
+            });
+            return [groupName, ...itemTexts];
         });
-        return [groupName, ...itemTexts];
-    });
+        const colWidth = Math.max(
+            stripAnsiCodes(title).length + padding * 2,
+            ...allLines.map(l => stripAnsiCodes(l).length + padding * 2),
+        );
+        return { entries, colWidth };
+    };
 
-    let colWidth = Math.max(
-        stripAnsiCodes(title).length + padding * 2,
-        ...allLines.map(l => stripAnsiCodes(l).length + padding * 2),
-    );
+    let { entries, colWidth } = buildData();
 
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
     if (maxWidth) {
         if (calcWidth(colWidth) > maxWidth && columns > 1) {
             columns = 1;
+            ({ entries, colWidth } = buildData());
+        }
+        if (calcWidth(colWidth) > maxWidth && countPad > 1) {
+            countPad = 1;
+            ({ entries, colWidth } = buildData());
+        }
+        if (calcWidth(colWidth) > maxWidth && countPad > 0) {
+            countPad = 0;
+            ({ entries, colWidth } = buildData());
         }
         if (calcWidth(colWidth) > maxWidth) {
             colWidth = Math.min(colWidth, maxWidth - 2);
@@ -263,7 +276,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 const grp = pair[c];
                 const item = grp && grp[1][i];
                 const name = item && grp ? applyTransforms(item, grp[0], activeTransforms) : '';
-                const text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
+                const text = item ? `${String(item.count).padStart(countPad, ' ')} | ${name}` : '';
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
