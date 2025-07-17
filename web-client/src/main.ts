@@ -147,11 +147,6 @@ function closeHistoryScrollback() {
     outputWrapper.scrollTop = outputWrapper.scrollHeight;
 }
 
-outputWrapper.addEventListener('mouseup', (e) => {
-    if (e.button === 1) {
-        closeHistoryScrollback();
-    }
-});
 
 let lastTap = 0;
 outputWrapper.addEventListener('touchend', (e) => {
