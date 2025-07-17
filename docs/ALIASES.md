@@ -36,3 +36,4 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/idz** - wybiera przeciwne wyjście w pomieszczeniu.
 - **/ziola_buduj** - przegląda wszystkie woreczki z ziołami i podsumowuje ich zawartość.
 - **/ziola_pokaz** - wyświetla ostatnie podsumowanie ziół.
+- **/wezz _ziolo_ [_ilosc_]** - wyjmuje wskazaną liczbę zioła z woreczków (domyślnie jedną sztukę).
