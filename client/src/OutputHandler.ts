@@ -41,10 +41,12 @@ export default class OutputHandler {
                     if (hasTitle) {
                         el.title = el.textContent.substring(clickTitleSeparator + 1, closerIndex)
                     }
-                    const callbackIndex = el.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex)
+                    const callbackIndex = parseInt(el.textContent.substring(clickIndex + 7, hasTitle ? clickTitleSeparator : closerIndex))
                     el.textContent = el.textContent.substring(0, clickIndex) + el.textContent.substring(closerIndex + 1)
+                    const cb = this.clickerCallbacks[callbackIndex]
+                    this.clickerCallbacks[callbackIndex] = undefined as any
                     el.onclick = () => {
-                        this.clickerCallbacks[callbackIndex]?.apply(null)
+                        cb?.apply(null)
                     }
                 })
                 if (msg.textContent && msg.textContent.indexOf("{click:") > -1) {
@@ -78,8 +80,10 @@ export default class OutputHandler {
                                 span.title = match[2]
                             }
                             const cbIndex = parseInt(match[1])
+                            const cb = this.clickerCallbacks[cbIndex]
+                            this.clickerCallbacks[cbIndex] = undefined as any
                             span.onclick = () => {
-                                this.clickerCallbacks[cbIndex]?.apply(null)
+                                cb?.apply(null)
                             }
                             frag.appendChild(span)
                             text = text.substring(nextIndex)
