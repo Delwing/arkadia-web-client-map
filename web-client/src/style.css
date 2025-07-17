@@ -239,7 +239,7 @@ h1 {
   position: fixed;
   top: 0.5rem;
   right: 0.5rem;
-  z-index: 1012;
+  z-index: 1103;
   display: none;
   white-space: nowrap;
 }
@@ -559,11 +559,17 @@ button:focus-visible {
   justify-content: center;
 }
 
-#auth-close {
+#auth-close,
+.overlay-close {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  filter: invert(1);
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 1;
 }
 
 #login-form {
