@@ -8,14 +8,22 @@ class EmbeddedMap {
         this.destinations = []
         this.map = document.querySelector("#map");
         this.map.style.touchAction = 'none'
+        this._longPressTimer = null
+        this._longPressActive = false
         this._touchStartDistance = null
         this._pinchZoom = this._pinchZoom.bind(this)
         this._onTouchStart = this._onTouchStart.bind(this)
         this._onTouchEnd = this._onTouchEnd.bind(this)
+        this._onLongPressStart = this._onLongPressStart.bind(this)
+        this._onLongPressEnd = this._onLongPressEnd.bind(this)
         this.map.addEventListener('touchstart', this._onTouchStart, {passive: false})
         this.map.addEventListener('touchmove', this._pinchZoom, {passive: false})
         this.map.addEventListener('touchend', this._onTouchEnd)
         this.map.addEventListener('touchcancel', this._onTouchEnd)
+        this.map.addEventListener('touchstart', this._onLongPressStart)
+        this.map.addEventListener('touchmove', this._onLongPressEnd)
+        this.map.addEventListener('touchend', this._onLongPressEnd)
+        this.map.addEventListener('touchcancel', this._onLongPressEnd)
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
@@ -44,6 +52,37 @@ class EmbeddedMap {
         window.addEventListener('leadTo', (ev) => {
             this.leadTo(ev.detail);
         })
+    }
+
+    _onLongPressStart(ev) {
+        if (ev.touches.length !== 1 || !this.renderer) {
+            return;
+        }
+        const touch = ev.touches[0];
+        this._longPressActive = true;
+        this._longPressTimer = window.setTimeout(() => {
+            if (!this._longPressActive) return;
+            this._longPressActive = false;
+            const rect = this.map.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            const paper = this.renderer.paper;
+            const view = this.renderer.controls.view;
+            const point = view.viewToProject(new paper.Point(x, y));
+            const room = this.renderer.area.rooms.find(r => r.render && r.render.contains(point));
+            if (room) {
+                const ce = (window.parent && window.parent.clientExtension) || window.clientExtension;
+                ce?.Map?.setMapRoomById?.(room.id);
+            }
+        }, 500);
+    }
+
+    _onLongPressEnd() {
+        this._longPressActive = false;
+        if (this._longPressTimer) {
+            clearTimeout(this._longPressTimer);
+            this._longPressTimer = null;
+        }
     }
 
     _onTouchStart(ev) {
