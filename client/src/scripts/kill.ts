@@ -220,63 +220,96 @@ function formatLifetimeTable(counts: KillCounts): string {
 
 export { parseName, formatSessionTable, formatLifetimeTable };
 
-export default function init(
-    client: Client,
-    aliases?: { pattern: RegExp; callback: Function }[]
-) {
-    let kills: KillCounts = {};
-    const loadTotals = (totals: Record<string, number> = {}) => {
+class KillCounter {
+    private client: Client;
+    private kills: KillCounts = {};
+
+    constructor(client: Client) {
+        this.client = client;
+
+        this.client.addEventListener("storage", (event: CustomEvent) => {
+            if (event.detail.key === STORAGE_KEY) {
+                this.loadTotals(event.detail.value ?? {});
+            }
+        });
+
+        window.addEventListener("beforeunload", this.persistTotals);
+
+        const myKillRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ()!,]+))\.$/;
+        const teamKillRegex = /^[ >]*(?<player>[a-zA-Z (),!]+) zabil(?:a)? (?<name>[a-zA-Z (),!]+)\.$/;
+
+        this.client.Triggers.registerTrigger(
+            myKillRegex,
+            (rawLine, _line, matches): string => {
+                const mob = parseName(matches.groups?.name ?? "");
+                const entry = this.recordKill(mob, true);
+                (this.client as any).ItemCollector?.killedAction();
+                return this.formatPrefix(rawLine, entry, "[  ZABILES  ] ");
+            }
+        );
+
+        this.client.Triggers.registerTrigger(
+            teamKillRegex,
+            (rawLine, _line, matches): string => {
+                const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
+                const mob = parseName(matches.groups?.name ?? "");
+                const entry = this.client.TeamManager.isInTeam(player)
+                    ? this.recordKill(mob, false)
+                    : null;
+                if (entry) {
+                    (this.client as any).ItemCollector?.teamKilledAction(mob);
+                }
+                return this.formatPrefix(rawLine, entry, "[   ZABIL   ] ");
+            }
+        );
+
+        this.client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
+    }
+
+    private loadTotals(totals: Record<string, number> = {}): void {
         Object.entries(totals).forEach(([name, total]) => {
-            const entry = kills[name] ?? {
+            const entry = this.kills[name] ?? {
                 mySession: 0,
                 myTotal: 0,
                 teamSession: 0,
             };
             entry.myTotal = total as number;
-            kills[name] = entry;
+            this.kills[name] = entry;
         });
-    };
+    }
 
-    client.addEventListener("storage", (event: CustomEvent) => {
-        if (event.detail.key === STORAGE_KEY) {
-            loadTotals(event.detail.value ?? {});
-        }
-    });
-
-    const persistTotals = () => {
+    private persistTotals = () => {
         const totals: Record<string, number> = {};
-        Object.entries(kills).forEach(([name, entry]) => {
+        Object.entries(this.kills).forEach(([name, entry]) => {
             totals[name] = entry.myTotal;
         });
-        client.port?.postMessage({
+        this.client.port?.postMessage({
             type: "SET_STORAGE",
             key: STORAGE_KEY,
             value: totals,
         });
     };
 
-    window.addEventListener("beforeunload", persistTotals);
-
-    const ensureEntry = (name: string): KillEntry => {
-        if (!kills[name]) {
-            kills[name] = { mySession: 0, myTotal: 0, teamSession: 0 };
+    private ensureEntry(name: string): KillEntry {
+        if (!this.kills[name]) {
+            this.kills[name] = { mySession: 0, myTotal: 0, teamSession: 0 };
         }
-        return kills[name];
-    };
+        return this.kills[name];
+    }
 
-    const recordKill = (mob: string, self: boolean): KillEntry => {
-        const entry = ensureEntry(mob);
+    private recordKill(mob: string, self: boolean): KillEntry {
+        const entry = this.ensureEntry(mob);
         if (self) {
             entry.mySession += 1;
             entry.myTotal += 1;
-            persistTotals();
+            this.persistTotals();
         } else {
             entry.teamSession += 1;
         }
         return entry;
-    };
+    }
 
-    const formatPrefix = (line: string, entry: KillEntry | null, label: string) => {
+    private formatPrefix(line: string, entry: KillEntry | null, label: string) {
         const color = KILL_PREFIX_COLOR;
         const counts = entry
             ? ` (${entry.mySession} / ${entry.mySession + entry.teamSession})`
@@ -284,51 +317,30 @@ export default function init(
         const modified = line + counts;
         return (
             "  \n" +
-            client.prefix(modified, colorString(label, color)) +
+            this.client.prefix(modified, colorString(label, color)) +
             "\n  "
         );
-    };
+    }
 
-    const myKillRegex = /^[ >]*(Zabil(?:es|as) (?<name>[A-Za-z ()!,]+))\.$/;
-    const teamKillRegex = /^[ >]*(?<player>[a-zA-Z (),!]+) zabil(?:a)? (?<name>[a-zA-Z (),!]+)\.$/;
+    showSession() {
+        this.client.print("\n" + formatSessionTable(this.kills) + "\n");
+    }
 
-    client.Triggers.registerTrigger(
-        myKillRegex,
-        (rawLine, _line, matches): string => {
-            const mob = parseName(matches.groups?.name ?? "");
-            const entry = recordKill(mob, true);
-            (client as any).ItemCollector?.killedAction();
-            return formatPrefix(rawLine, entry, "[  ZABILES  ] ");
-        }
-    );
-
-    client.Triggers.registerTrigger(
-        teamKillRegex,
-        (rawLine, _line, matches): string => {
-            const player = stripAnsiCodes(matches.groups?.player ?? "").trim();
-            const mob = parseName(matches.groups?.name ?? "");
-            const entry = client.TeamManager.isInTeam(player)
-                ? recordKill(mob, false)
-                : null;
-            if (entry) {
-                (client as any).ItemCollector?.teamKilledAction(mob);
-            }
-            return formatPrefix(rawLine, entry, "[   ZABIL   ] ");
-        }
-    );
-
-    if (aliases) {
-        aliases.push({
-            pattern: /\/zabici$/,
-            callback: () => {
-                client.print("\n" + formatSessionTable(kills) + "\n");
-            },
-        });
-        aliases.push({
-            pattern: /\/zabici2$/,
-            callback: () => {
-                client.print("\n" + formatLifetimeTable(kills) + "\n");
-            },
-        });
+    showLifetime() {
+        this.client.print("\n" + formatLifetimeTable(this.kills) + "\n");
     }
 }
+
+export function initKillCounter(
+    client: Client,
+    aliases?: { pattern: RegExp; callback: Function }[]
+): KillCounter {
+    const counter = new KillCounter(client);
+    if (aliases) {
+        aliases.push({ pattern: /\/zabici$/, callback: () => counter.showSession() });
+        aliases.push({ pattern: /\/zabici2$/, callback: () => counter.showLifetime() });
+    }
+    return counter;
+}
+
+export default KillCounter;
