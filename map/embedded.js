@@ -12,6 +12,7 @@ class EmbeddedMap {
         this._longPressActive = false
         this._debugTimerEl = document.getElementById('timer')
         this._touchPointEl = document.getElementById('touch-point')
+        this._debugMapPoint = null
         this._debugInterval = null
         this._longPressStartX = 0
         this._longPressStartY = 0
@@ -68,6 +69,10 @@ class EmbeddedMap {
         this._longPressActive = true;
         this._longPressStartX = touch.clientX;
         this._longPressStartY = touch.clientY;
+        if (this._debugMapPoint) {
+            this._debugMapPoint.remove();
+            this._debugMapPoint = null;
+        }
         if (this._touchPointEl) {
             this._touchPointEl.style.display = 'block'
             this._touchPointEl.style.left = `${touch.clientX - 10}px`
@@ -97,6 +102,18 @@ class EmbeddedMap {
             const paper = this.renderer.paper;
             const view = this.renderer.controls.view;
             const point = view.viewToProject(new paper.Point(x, y));
+            if (this._debugMapPoint) {
+                this._debugMapPoint.remove();
+                this._debugMapPoint = null;
+            }
+            this.renderer.overlayLayer.activate();
+            this._debugMapPoint = new paper.Path.Circle(point, 5);
+            this._debugMapPoint.strokeColor = 'red';
+            this._debugMapPoint.fillColor = new paper.Color(1, 0, 0, 0.3);
+            setTimeout(() => {
+                this._debugMapPoint?.remove();
+                this._debugMapPoint = null;
+            }, 1000);
             const room = this.renderer.area.rooms.find(r => r.render && r.render.contains(point));
             if (room) {
                 const ce = (window.parent && window.parent.clientExtension) || window.clientExtension;
@@ -129,6 +146,10 @@ class EmbeddedMap {
         }
         if (this._touchPointEl) this._touchPointEl.style.display = 'none'
         if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
+        if (this._debugMapPoint) {
+            this._debugMapPoint.remove()
+            this._debugMapPoint = null
+        }
     }
 
     _onTouchStart(ev) {
