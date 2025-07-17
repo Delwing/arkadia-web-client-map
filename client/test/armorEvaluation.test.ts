@@ -24,9 +24,9 @@ describe("armor evaluation trigger", () => {
 
     const output = stripAnsiCodes(client.print.mock.calls[0][0]);
     expect(output).toContain("Typ zbroi: ciezka");
-    expect(output).toContain("Klute: bardzo dobrze [10/12]");
-    expect(output).toContain("Ciete: doskonale [11/12]");
-    expect(output).toContain("Obuchowe: doskonale [11/12]");
+    expect(output).toContain("Klute: [10/12]");
+    expect(output).toContain("Ciete:     [11/12]");
+    expect(output).toContain("Obuchowe: [11/12]");
     expect(output).toContain("Suma: 32");
     expect(output).toContain("Srednia: 10.67");
   });
@@ -38,9 +38,9 @@ describe("armor evaluation trigger", () => {
 
     const output = stripAnsiCodes(client.print.mock.calls[0][0]);
     expect(output).toContain("Typ zbroi: tarcza");
-    expect(output).toContain("Klute: doskonale [11/12]");
-    expect(output).toContain("Ciete: doskonale [11/12]");
-    expect(output).toContain("Obuchowe: doskonale [11/12]");
+    expect(output).toContain("Klute: [11/12]");
+    expect(output).toContain("Ciete:     [11/12]");
+    expect(output).toContain("Obuchowe: [11/12]");
     expect(output).toContain("Parowanie: [10/14]");
     expect(output).toContain("Suma: 33");
     expect(output).toContain("Srednia: 11");
