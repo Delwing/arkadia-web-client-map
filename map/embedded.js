@@ -10,6 +10,9 @@ class EmbeddedMap {
         this.map.style.touchAction = 'none'
         this._longPressTimer = null
         this._longPressActive = false
+        this._debugTimerEl = document.getElementById('timer')
+        this._touchPointEl = document.getElementById('touch-point')
+        this._debugInterval = null
         this._touchStartDistance = null
         this._pinchZoom = this._pinchZoom.bind(this)
         this._onTouchStart = this._onTouchStart.bind(this)
@@ -60,6 +63,26 @@ class EmbeddedMap {
         }
         const touch = ev.touches[0];
         this._longPressActive = true;
+        if (this._touchPointEl) {
+            this._touchPointEl.style.display = 'block'
+            this._touchPointEl.style.left = `${touch.clientX - 10}px`
+            this._touchPointEl.style.top = `${touch.clientY - 10}px`
+        }
+        if (this._debugTimerEl) {
+            this._debugTimerEl.style.display = 'block'
+            this._debugTimerEl.textContent = '500'
+        }
+        const start = Date.now()
+        if (this._debugTimerEl) {
+            this._debugInterval = window.setInterval(() => {
+                const remaining = 500 - (Date.now() - start)
+                if (remaining <= 0) {
+                    clearInterval(this._debugInterval)
+                    this._debugInterval = null
+                }
+                this._debugTimerEl.textContent = Math.max(0, remaining).toString()
+            }, 50)
+        }
         this._longPressTimer = window.setTimeout(() => {
             if (!this._longPressActive) return;
             this._longPressActive = false;
@@ -74,6 +97,8 @@ class EmbeddedMap {
                 const ce = (window.parent && window.parent.clientExtension) || window.clientExtension;
                 ce?.Map?.setMapRoomById?.(room.id);
             }
+            if (this._touchPointEl) this._touchPointEl.style.display = 'none'
+            if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
         }, 500);
     }
 
@@ -83,6 +108,12 @@ class EmbeddedMap {
             clearTimeout(this._longPressTimer);
             this._longPressTimer = null;
         }
+        if (this._debugInterval) {
+            clearInterval(this._debugInterval)
+            this._debugInterval = null
+        }
+        if (this._touchPointEl) this._touchPointEl.style.display = 'none'
+        if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
     }
 
     _onTouchStart(ev) {
