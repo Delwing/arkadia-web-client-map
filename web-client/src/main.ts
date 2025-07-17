@@ -253,6 +253,7 @@ arkadiaClient.on('message', (message: string, type?: string) => {
 let isConnected = false;
 let isConnecting = false;
 let playbackMode = false;
+let authClosed = false;
 
 // Function to update the connect button state
 function updateConnectButtons() {
@@ -262,11 +263,11 @@ function updateConnectButtons() {
     const spinner = document.getElementById('connecting-spinner') as HTMLElement | null;
 
     if (connectButton) {
-        if (isConnected || isConnecting) {
+        if (isConnected || isConnecting || !authClosed) {
             connectButton.style.display = 'none';
         } else {
             connectButton.style.display = '';
-            connectButton.textContent = 'Connect';
+            connectButton.textContent = '🔌 Connect';
             connectButton.classList.add('disconnected');
             connectButton.classList.remove('connected');
         }
@@ -282,7 +283,7 @@ function updateConnectButtons() {
     }
 
     if (authOverlay) {
-        authOverlay.style.display = (isConnected || playbackMode) ? 'none' : 'flex';
+        authOverlay.style.display = (!isConnected && !playbackMode && !authClosed) ? 'flex' : 'none';
     }
 }
 
@@ -407,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginCharacter = document.getElementById('login-character') as HTMLInputElement | null;
     const loginPassword = document.getElementById('login-password') as HTMLInputElement | null;
     const loginForm = document.getElementById('login-form') as HTMLFormElement | null;
+    const authClose = document.getElementById('auth-close') as HTMLButtonElement | null;
 
     if (menuButton) {
         new Dropdown(menuButton);
@@ -682,6 +684,13 @@ document.addEventListener('DOMContentLoaded', () => {
             arkadiaClient.connect();
         }
     });
+
+    if (authClose) {
+        authClose.addEventListener('click', () => {
+            authClosed = true;
+            updateConnectButtons();
+        });
+    }
 
 
     // Initialize button state

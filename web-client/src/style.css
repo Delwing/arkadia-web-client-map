@@ -232,7 +232,11 @@ h1 {
 
 #connect-button {
   white-space: nowrap;
-  width: 100%;
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1012;
+  display: none;
 }
 
 #connect-button.connected {
@@ -548,6 +552,12 @@ button:focus-visible {
   display: none;
   align-items: center;
   justify-content: center;
+}
+
+#auth-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 #login-form {
