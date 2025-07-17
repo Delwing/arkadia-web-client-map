@@ -31,6 +31,7 @@ import initPriceEvaluation from './scripts/priceEvaluation'
 import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
+import initMapAliases from './scripts/mapAliases'
 import Client from "./Client";
 
 
@@ -38,51 +39,14 @@ export function registerScripts(client: Client) {
 
 
     const aliases = client.aliases
-    aliases.push(
-        {
-            pattern: /\/fake (.*)/,
-            callback: (matches: RegExpMatchArray) => {
-                // @ts-ignore
-                return Output.send(Text.parse_patterns(client.onLine(matches[1])))
-            }
-        },
-        {
-            pattern: /\/cofnij$/,
-            callback: () => {
-                client.Map.moveBack()
-            }
-        },
-        {
-            pattern: /\/move (.*)$/,
-            callback: (matches: RegExpMatchArray) => {
-                client.Map.move(matches[1])
-            }
-        },
-        {
-            pattern: /\/ustaw (.*)$/,
-            callback: (matches: RegExpMatchArray) => {
-                client.Map.setMapRoomById(parseInt(matches[1]))
-            }
-        },
-        {
-            pattern: /\/prowadz (.*)$/,
-            callback: (matches: RegExpMatchArray) => {
-                client.sendEvent('leadTo', matches[1])
-            }
-        },
-        {
-            pattern: /\/prowadz-$/,
-            callback: () => {
-                client.sendEvent('leadTo')
-            }
-        },
-        {
-            pattern: /\/zlok$/,
-            callback: () => {
-                client.Map.refresh()
-            }
+    aliases.push({
+        pattern: /\/fake (.*)/,
+        callback: (matches: RegExpMatchArray) => {
+            // @ts-ignore
+            return Output.send(Text.parse_patterns(client.onLine(matches[1])))
         }
-    )
+    })
+    initMapAliases(client, aliases)
 
     blockers.forEach(blocker => {
         let blockerPattern = blocker.type === "0" ? blocker.pattern : new RegExp(blocker.pattern)
