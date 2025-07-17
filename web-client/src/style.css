@@ -208,8 +208,8 @@ h1 {
 
 #history-buttons {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 #history-buttons button {
