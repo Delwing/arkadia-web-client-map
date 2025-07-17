@@ -8,6 +8,7 @@ Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 - **/ustaw _id_** - ustawia bieżącą pozycję na mapie na podany identyfikator.
 - **/prowadz _id_** - rozpoczyna prowadzenie innej osoby do wskazanego pokoju.
 - **/prowadz-** - kończy prowadzenie rozpoczęte komendą `/prowadz`.
+- **/go** - gdy aktywne jest prowadzenie, wybiera wyjście zgodnie z wyznaczoną trasą.
 - **/zlok** - wymusza odświeżenie bieżącej pozycji na mapie.
 - **/zabici** - pokazuje tabelę z liczbą twoich zabitych istot w bieżącej sesji.
 - **/zabici2** - wyświetla podsumowanie liczby zabitych istot.

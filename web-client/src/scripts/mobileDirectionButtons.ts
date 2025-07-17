@@ -156,6 +156,13 @@ export default class MobileDirectionButtons {
             });
         }
 
+        const goButton = document.getElementById('go-button');
+        if (goButton) {
+            goButton.addEventListener('click', () => {
+                this.client.sendCommand('/go');
+            });
+        }
+
         if (this.zToggle) {
             this.zToggle.addEventListener('click', () => {
                 if (this.zList && this.zList.style.display === 'grid') {
