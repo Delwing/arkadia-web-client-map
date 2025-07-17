@@ -197,22 +197,37 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
 
-    const allLines = entries.flatMap(([groupName, items]) => {
-        const itemTexts = items.map(it => {
-            const transformed = applyTransforms(it, groupName, activeTransforms);
-            return `${String(it.count).padStart(3, ' ')} | ${transformed}`;
-        });
-        return [groupName, ...itemTexts];
-    });
+    const formatCount = (c: string | number, width: number) => {
+        const str = String(c);
+        return str.padStart(Math.max(width, str.length + 1), ' ');
+    };
 
-    let colWidth = Math.max(
+    const buildLines = (countWidth: number) => {
+        return entries.flatMap(([groupName, items]) => {
+            const itemTexts = items.map(it => {
+                const transformed = applyTransforms(it, groupName, activeTransforms);
+                return `${formatCount(it.count, countWidth)} | ${transformed}`;
+            });
+            return [groupName, ...itemTexts];
+        });
+    };
+
+    const computeColWidth = (lines: string[]) => Math.max(
         stripAnsiCodes(title).length + padding * 2,
-        ...allLines.map(l => stripAnsiCodes(l).length + padding * 2),
+        ...lines.map(l => stripAnsiCodes(l).length + padding * 2),
     );
 
+    let countWidth = 3;
+    let allLines = buildLines(countWidth);
+    let colWidth = computeColWidth(allLines);
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
     if (maxWidth) {
+        while (calcWidth(colWidth) > maxWidth && countWidth > 1) {
+            countWidth -= 1;
+            allLines = buildLines(countWidth);
+            colWidth = computeColWidth(allLines);
+        }
         if (calcWidth(colWidth) > maxWidth && columns > 1) {
             columns = 1;
         }
@@ -272,7 +287,7 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
                 const grp = pair[c];
                 const item = grp && grp[1][i];
                 const name = item && grp ? applyTransforms(item, grp[0], activeTransforms) : '';
-                const text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
+                const text = item ? `${formatCount(item.count, countWidth)} | ${name}` : '';
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
