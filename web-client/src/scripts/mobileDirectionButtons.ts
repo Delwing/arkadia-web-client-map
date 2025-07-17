@@ -502,7 +502,7 @@ export default class MobileDirectionButtons {
             this.applyButtonSize(b);
             b.textContent = v;
             b.addEventListener('click', () => {
-                window.Input.send(`/${prefix} ${v}`);
+                this.client.sendCommand(`/${prefix} ${v}`);
                 this.hideLists();
             });
             target.appendChild(b);
