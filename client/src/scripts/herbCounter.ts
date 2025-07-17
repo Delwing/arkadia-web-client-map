@@ -3,7 +3,28 @@ import {parseItems} from "./prettyContainers";
 import loadHerbs, {HerbsData} from "./herbsLoader";
 import {stripAnsiCodes} from "../Triggers";
 
-const STORAGE_KEY = "herb_summary";
+const STORAGE_KEY = "herb_counts";
+
+const biernikDigits = new Set([2, 3, 4]);
+
+function getHerbCase(herbId: string, amount: number, herbsData?: HerbsData | null): string {
+    const forms = herbsData?.herb_id_to_odmiana[herbId];
+    if (!forms) return herbId;
+    const num = Number(amount);
+    if (num < 22) {
+        if (num === 1) {
+            return forms.biernik;
+        }
+        if (biernikDigits.has(num)) {
+            return forms.mnoga_biernik;
+        }
+        return forms.mnoga_dopelniacz;
+    }
+    if (num % 10 > 1 && num % 10 < 5) {
+        return forms.mnoga_biernik;
+    }
+    return forms.mnoga_dopelniacz;
+}
 
 
 const polishNumbers: Record<string, number> = {
@@ -111,7 +132,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
     }
 
     const countRegex = /^Doliczyl(?:es|as) sie (?<num>[0-9a-z ]+) sztuk\.$/;
-    const contentRegex = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W srodku dostrzegasz (?<content>.*)\.$/;
+    const contentRegex1 = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W srodku dostrzegasz (?<content>.*)\.$/;
+    const contentRegex2 = /^[> ]*Uwaznie ogladasz zawartosc[a-zA-Z -]*woreczka[a-z ]*\. W srodku dostrzegasz (?<content>[a-zA-Z0-9, -]+)\.$/;
     const emptyRegex = /^Rozwiazujesz na chwile rzemyk, sprawdzajac zawartosc swojego.*woreczka.* W jego srodku nic jednak nie ma\.$/;
 
     let awaiting = false;
@@ -199,7 +221,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         return undefined;
     });
 
-    client.Triggers.registerTrigger(contentRegex, (_r, _l, m) => {
+    function extracHerbs(m: RegExpMatchArray) {
         if (!awaiting) return undefined;
         currentBag += 1;
         const items = parseItems(m.groups?.content || '');
@@ -214,6 +236,14 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         left -= 1;
         if (left <= 0) finish();
         return undefined;
+    }
+
+    client.Triggers.registerTrigger(contentRegex1, (_r, _l, m) => {
+        return extracHerbs(m);
+    });
+
+    client.Triggers.registerTrigger(contentRegex2, (_r, _l, m) => {
+        return extracHerbs(m);
     });
 
     client.Triggers.registerTrigger(emptyRegex, () => {
@@ -232,6 +262,31 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         currentBag = 0;
         Object.keys(bagTotals).forEach(k => delete bagTotals[parseInt(k)]);
         client.sendCommand('policz swoje woreczki');
+    }
+
+    async function take(herb: string, amount: number) {
+        await ensureData();
+        let leftToTake = amount;
+        const bags = Object.keys(storedBags).map(n => parseInt(n)).sort((a, b) => a - b);
+        for (const num of bags) {
+            if (leftToTake <= 0) break;
+            const contents = storedBags[num];
+            const available = contents?.[herb] || 0;
+            if (available <= 0) continue;
+            const toTake = Math.min(available, leftToTake);
+            client.sendCommand(`otworz ${num}. woreczek`);
+            const form = getHerbCase(herb, toTake, herbs);
+            if (toTake === 1) {
+                client.sendCommand(`wez ${form} z ${num}. woreczka`);
+            } else {
+                client.sendCommand(`wez ${toTake} ${form} z ${num}. woreczka`);
+            }
+            client.sendCommand(`zamknij ${num}. woreczek`);
+            contents[herb] = available - toTake;
+            if (contents[herb] <= 0) delete contents[herb];
+            leftToTake -= toTake;
+        }
+        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: storedBags });
     }
 
     if (aliases) {
@@ -254,6 +309,8 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
                 client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
             }
         });
+        aliases.push({ pattern: /^\/wezz ([a-z_]+) ([0-9]+)$/, callback: (m: RegExpMatchArray) => take(m[1].toLowerCase(), parseInt(m[2], 10)) });
+        aliases.push({ pattern: /^\/wezz ([a-zA-Z_]+)$/, callback: (m: RegExpMatchArray) => take(m[1].toLowerCase(), 1) });
     }
 
     // load herb data in background so it's ready after refresh
