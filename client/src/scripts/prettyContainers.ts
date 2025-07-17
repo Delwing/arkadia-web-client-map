@@ -217,21 +217,20 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
     const calcWidth = (cw: number) => columns * cw + (columns - 1) * 3 + 2;
 
     if (maxWidth) {
-        if (calcWidth(colWidth) > maxWidth && columns > 1) {
-            columns = 1;
-            ({ entries, colWidth } = buildData());
-        }
-        if (calcWidth(colWidth) > maxWidth && countPad > 1) {
-            countPad = 1;
-            ({ entries, colWidth } = buildData());
-        }
-        if (calcWidth(colWidth) > maxWidth && countPad > 0) {
-            countPad = 0;
-            ({ entries, colWidth } = buildData());
-        }
-        if (calcWidth(colWidth) > maxWidth && padSize > 0) {
-            padSize = 0;
-            padSpace = '';
+        while (calcWidth(colWidth) > maxWidth) {
+            if (columns > 1) {
+                columns = 1;
+            } else if (countPad > 1) {
+                countPad = 1;
+            } else if (countPad > 0) {
+                countPad = 0;
+            } else if (padSize > 0) {
+                padSize = 0;
+                padSpace = '';
+            } else {
+                colWidth = Math.min(colWidth, maxWidth - 2);
+                break;
+            }
             ({ entries, colWidth } = buildData());
         }
         if (calcWidth(colWidth) > maxWidth) {
