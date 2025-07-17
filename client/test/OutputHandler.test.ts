@@ -38,5 +38,6 @@ describe('OutputHandler clickable text', () => {
     expect(msg.textContent).toBe('Click');
     span!.onclick!(new MouseEvent('click'));
     expect(cb).toHaveBeenCalledTimes(1);
+    expect((handler as any).clickerCallbacks[0]).toBeUndefined();
   });
 });
