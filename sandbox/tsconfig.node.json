@@ -26,6 +26,9 @@
     ],
     "@options/*": [
       "../options/*"
+    ],
+    "@web-client/*": [
+      "../web-client/*"
     ]
   },
   "include": [
