@@ -7,12 +7,14 @@ import guilds from "./guilds";
 function Guilds() {
     const [selected, setSelected] = useState<string[]>([]);
     const [enemySelected, setEnemySelected] = useState<string[]>([]);
+    const [colors, setColors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         storage.getItem("settings").then(res => {
             if (res && res.settings) {
                 setSelected(res.settings.guilds || []);
                 setEnemySelected(res.settings.enemyGuilds || []);
+                setColors(res.settings.guildColors || {});
             }
         });
     }, []);
@@ -25,6 +27,10 @@ function Guilds() {
         setEnemySelected(prev => checked ? [...prev, guild] : prev.filter(g => g !== guild));
     }
 
+    function onColorChange(guild: string, color: string) {
+        setColors(prev => ({...prev, [guild]: color}));
+    }
+
     function onChangeAll(checked: boolean) {
         setSelected(checked ? [...guilds] : []);
     }
@@ -35,7 +41,7 @@ function Guilds() {
 
     function save() {
         storage.getItem("settings").then(res => {
-            const settings = { ...(res.settings || {}), guilds: selected, enemyGuilds: enemySelected };
+            const settings = { ...(res.settings || {}), guilds: selected, enemyGuilds: enemySelected, guildColors: colors };
             storage.setItem("settings", settings).then(() => {
                 window.dispatchEvent(new Event('close-options'));
             });
@@ -47,8 +53,10 @@ function Guilds() {
             <GuildSection
                 selected={selected}
                 enemySelected={enemySelected}
+                colors={colors}
                 onChange={onChange}
                 onEnemyChange={onEnemyChange}
+                onColorChange={onColorChange}
                 onChangeAll={onChangeAll}
                 onChangeAllEnemy={onChangeAllEnemy}
             />
