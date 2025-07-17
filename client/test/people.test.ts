@@ -35,17 +35,19 @@ describe('people triggers enemy highlight', () => {
     expect(stripAnsiCodes(result)).toContain('(Eamon CKN)');
   });
 
-  test('colors enemy name red', () => {
+  test('colors enemy name red without suffix', () => {
     const result = parse('Eamon wita cie.');
     const red = findClosestColor('#ff0000');
     expect(result).toContain(color(red) + 'Eamon' + RESET);
+    expect(stripAnsiCodes(result)).not.toContain('(Eamon CKN)');
   });
 
-  test('enemy name suffix appears only once', () => {
+  test('enemy name is highlighted only once despite duplicates', () => {
     const result = parse('Eamon wita cie.');
-    const matches = stripAnsiCodes(result).match(/\(Eamon CKN\)/g);
-    expect(matches).not.toBeNull();
-    expect(matches!.length).toBe(1);
+    const red = findClosestColor('#ff0000');
+    const highlight = color(red) + 'Eamon' + RESET;
+    const parts = result.split(highlight);
+    expect(parts.length - 1).toBe(1);
   });
 
   test('ignores very short enemy names to avoid false positives', () => {

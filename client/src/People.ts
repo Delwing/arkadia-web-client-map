@@ -28,7 +28,8 @@ export default class People {
             if (!inGuild && !isEnemy) {
                 return
             }
-            const callback = (rawLine: string, _line: string, matches: RegExpMatchArray) => {
+
+            const descCallback = (rawLine: string, _line: string, matches: RegExpMatchArray) => {
                 const index = matches.index || 0
                 const token = matches[0]
                 const prefix = rawLine.substring(0, index)
@@ -39,13 +40,21 @@ export default class People {
                 }
                 return prefix + highlighted + ` \x1B[22;38;5;228m(${replacement.name} \x1B[22;38;5;210m${replacement.guild}\x1B[22;38;5;228m)` + suffix
             }
-            this.client.Triggers.registerTokenTrigger(replacement.description, callback, this.tag)
+
+            this.client.Triggers.registerTokenTrigger(replacement.description, descCallback, this.tag)
+
             if (isEnemy) {
                 const key = `${replacement.name}|${replacement.guild}`
-                if (!addedNames.has(key)) {
-                    if (replacement.name.length > 2) {
-                        this.client.Triggers.registerTokenTrigger(replacement.name, callback, this.tag)
+                if (!addedNames.has(key) && replacement.name.length > 2) {
+                    const nameCallback = (rawLine: string, _line: string, matches: RegExpMatchArray) => {
+                        const index = matches.index || 0
+                        const token = matches[0]
+                        const prefix = rawLine.substring(0, index)
+                        const suffix = rawLine.substring(index + token.length)
+                        const highlighted = color(RED) + token + RESET
+                        return prefix + highlighted + suffix
                     }
+                    this.client.Triggers.registerTokenTrigger(replacement.name, nameCallback, this.tag)
                     addedNames.add(key)
                 }
             }
