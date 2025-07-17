@@ -5,13 +5,19 @@ interface Props {
     guild: string;
     selected: boolean;
     enemySelected: boolean;
-    color: string;
+    /** currently active color, undefined when disabled */
+    color?: string;
+    /** default color for the guild */
+    defaultColor: string;
     onChange: (guild: string, checked: boolean) => void;
     onEnemyChange: (guild: string, checked: boolean) => void;
-    onColorChange: (guild: string, color: string) => void;
+    /**
+     * when color is undefined color should be disabled
+     */
+    onColorChange: (guild: string, color?: string) => void;
 }
 
-export default function GuildRow({guild, selected, enemySelected, color, onChange, onEnemyChange, onColorChange}: Props) {
+export default function GuildRow({guild, selected, enemySelected, color, defaultColor, onChange, onEnemyChange, onColorChange}: Props) {
     function handleSelect(ev: ChangeEvent<HTMLInputElement>) {
         onChange(guild, ev.target.checked);
     }
@@ -24,10 +30,14 @@ export default function GuildRow({guild, selected, enemySelected, color, onChang
         onColorChange(guild, ev.target.value);
     }
 
+    function handleColorToggle(ev: ChangeEvent<HTMLInputElement>) {
+        onColorChange(guild, ev.target.checked ? (color ?? defaultColor) : undefined);
+    }
+
     return (
         <div className="mb-2">
             <h6 className="fw-bold mb-1">{guild}</h6>
-            <div className="d-flex flex-wrap gap-2 ms-2">
+            <div className="d-flex align-items-center flex-wrap gap-2 ms-2">
                 <Form.Check
                     type="checkbox"
                     id={`guild-${guild}`}
@@ -44,17 +54,23 @@ export default function GuildRow({guild, selected, enemySelected, color, onChang
                     onChange={handleEnemySelect}
                     className="me-2"
                 />
-                <Form.Group className="d-flex align-items-center me-2">
-                    <Form.Label className="me-1 mb-0">Kolor:</Form.Label>
-                    <Form.Control
-                        type="color"
-                        id={`guild-color-${guild}`}
-                        value={color}
-                        onChange={handleColorChange}
-                        disabled={enemySelected}
-                        style={{width: '3rem'}}
-                    />
-                </Form.Group>
+                <Form.Check
+                    type="checkbox"
+                    id={`guild-color-enabled-${guild}`}
+                    label="Kolor"
+                    checked={color !== undefined}
+                    onChange={handleColorToggle}
+                    className="me-2"
+                    disabled={enemySelected}
+                />
+                <Form.Control
+                    type="color"
+                    id={`guild-color-${guild}`}
+                    value={color ?? defaultColor}
+                    onChange={handleColorChange}
+                    disabled={enemySelected || color === undefined}
+                    style={{width: '3rem'}}
+                />
             </div>
         </div>
     );

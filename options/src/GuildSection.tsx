@@ -5,15 +5,18 @@ import {Form} from "react-bootstrap";
 interface Props {
     selected: string[];
     enemySelected: string[];
-    colors: Record<string, string>;
+    /** map of enabled colors */
+    colors?: Record<string, string | undefined>;
+    /** default colors for display */
+    defaultColors: Record<string, string>;
     onChange: (guild: string, checked: boolean) => void;
     onEnemyChange: (guild: string, checked: boolean) => void;
-    onColorChange: (guild: string, color: string) => void;
+    onColorChange: (guild: string, color?: string) => void;
     onChangeAll: (checked: boolean) => void;
     onChangeAllEnemy: (checked: boolean) => void;
 }
 
-export default function GuildSection({selected, enemySelected, colors, onChange, onEnemyChange, onColorChange, onChangeAll, onChangeAllEnemy}: Props) {
+export default function GuildSection({selected, enemySelected, colors = {}, defaultColors, onChange, onEnemyChange, onColorChange, onChangeAll, onChangeAllEnemy}: Props) {
     const allSelected = selected.length === guilds.length;
     const allEnemySelected = enemySelected.length === guilds.length;
     return (
@@ -44,7 +47,8 @@ export default function GuildSection({selected, enemySelected, colors, onChange,
                         guild={g}
                         selected={selected.includes(g)}
                         enemySelected={enemySelected.includes(g)}
-                        color={colors[g] || '#ffffff'}
+                        color={colors[g]}
+                        defaultColor={defaultColors[g]}
                         onChange={onChange}
                         onEnemyChange={onEnemyChange}
                         onColorChange={onColorChange}

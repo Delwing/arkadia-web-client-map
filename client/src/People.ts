@@ -8,7 +8,7 @@ export default class People {
     client: Client
     guildFilter: string[] = []
     enemyGuilds: string[] = []
-    guildColors: Record<string, string> = {}
+    guildColors: Record<string, string | undefined> = {}
 
     constructor(clientExtension: Client) {
         this.client = clientExtension

@@ -1,5 +1,5 @@
 import './App.css'
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState, useMemo} from "react";
 import {Form, Button} from 'react-bootstrap';
 import storage from "./storage.ts";
 import GuildSection from "./GuildSection";
@@ -20,7 +20,7 @@ const collectMoneyOptions = ["wszystkie", "srebrne", "zlote"]
 interface Settings {
     guilds: string[];
     enemyGuilds: string[];
-    guildColors: Record<string, string>;
+    guildColors: Record<string, string | undefined>;
     packageHelper: boolean;
     replaceMap: boolean;
     inlineCompassRose: boolean;
@@ -32,6 +32,13 @@ interface Settings {
 }
 
 function SettingsForm() {
+    const defaultColors = useMemo(() => {
+        const map: Record<string, string> = {};
+        guilds.forEach(g => {
+            map[g] = '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+        });
+        return map;
+    }, []);
 
     const [settings, setSettings] = useState<Settings>({
         guilds: [],
@@ -84,11 +91,16 @@ function SettingsForm() {
         })
     }
 
-    function onColorChange(guild: string, color: string) {
-        setSettings(prev => ({
-            ...prev,
-            guildColors: {...prev.guildColors, [guild]: color}
-        }))
+    function onColorChange(guild: string, color?: string) {
+        setSettings(prev => {
+            const next = { ...prev.guildColors } as Record<string, string | undefined>;
+            if (color) {
+                next[guild] = color;
+            } else {
+                delete next[guild];
+            }
+            return { ...prev, guildColors: next };
+        })
     }
 
     function onChangeAllEnemy(checked: boolean) {
@@ -115,6 +127,7 @@ function SettingsForm() {
                 selected={settings.guilds}
                 enemySelected={settings.enemyGuilds}
                 colors={settings.guildColors}
+                defaultColors={defaultColors}
                 onChange={onChange}
                 onEnemyChange={onChangeEnemy}
                 onColorChange={onColorChange}
