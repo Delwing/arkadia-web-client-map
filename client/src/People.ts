@@ -21,6 +21,7 @@ export default class People {
     registerPeopleTriggers() {
         this.client.Triggers.removeByTag(this.tag)
         const RED = findClosestColor('#ff0000')
+        const addedNames = new Set<string>()
         people.forEach(replacement => {
             const inGuild = this.guildFilter.includes(replacement.guild)
             const isEnemy = this.enemyGuilds.includes(replacement.guild)
@@ -30,8 +31,8 @@ export default class People {
             const callback = (rawLine: string, _line: string, matches: RegExpMatchArray) => {
                 const index = matches.index || 0
                 const token = matches[0]
-                let prefix = rawLine.substring(0, index)
-                let suffix = rawLine.substring(index + token.length)
+                const prefix = rawLine.substring(0, index)
+                const suffix = rawLine.substring(index + token.length)
                 let highlighted = token
                 if (isEnemy) {
                     highlighted = color(RED) + token + RESET
@@ -40,7 +41,11 @@ export default class People {
             }
             this.client.Triggers.registerTokenTrigger(replacement.description, callback, this.tag)
             if (isEnemy) {
-                this.client.Triggers.registerTokenTrigger(replacement.name, callback, this.tag)
+                const key = `${replacement.name}|${replacement.guild}`
+                if (!addedNames.has(key)) {
+                    this.client.Triggers.registerTokenTrigger(replacement.name, callback, this.tag)
+                    addedNames.add(key)
+                }
             }
         })
     }

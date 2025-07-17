@@ -4,6 +4,7 @@ import { color, RESET, findClosestColor } from '../src/Colors';
 
 jest.mock('../src/people.json', () => [
   { name: 'Eamon', description: 'wysoki mezczyzna', guild: 'CKN' },
+  { name: 'Eamon', description: 'wysoki mezczyzna w kapturze', guild: 'CKN' },
   { name: 'Mara', description: 'niska kobieta', guild: 'NPC' }
 ], { virtual: true });
 
@@ -37,6 +38,13 @@ describe('people triggers enemy highlight', () => {
     const result = parse('Eamon wita cie.');
     const red = findClosestColor('#ff0000');
     expect(result).toContain(color(red) + 'Eamon' + RESET);
+  });
+
+  test('enemy name suffix appears only once', () => {
+    const result = parse('Eamon wita cie.');
+    const matches = stripAnsiCodes(result).match(/\(Eamon CKN\)/g);
+    expect(matches).not.toBeNull();
+    expect(matches!.length).toBe(1);
   });
 });
 
