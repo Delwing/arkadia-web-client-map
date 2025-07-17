@@ -1,10 +1,12 @@
-import { client } from "@client/src/main.ts";
+import Client from "@client/src/Client.ts";
+import { registerScripts } from "@client/src/main.ts";
+import ArkadiaClient from "@web-client/src/ArkadiaClient.ts";
 import { FakeClient } from "./types/globals";
 import MockPort from "./MockPort.ts";
 
-export const fakeClient = client as FakeClient;
-
 const port = new MockPort();
+export const fakeClient = new Client(ArkadiaClient, port) as FakeClient;
+registerScripts(fakeClient);
 fakeClient.connect(port as any, true);
 
 //TODO fix dispatch
@@ -36,6 +38,6 @@ fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     return originalDispatch(event);
 };
 fakeClient.fake = (text: string, type?: string) => {
-    window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type);
-    client.sendEvent('gmcp_msg.' + type, text);
+    window.Output.send(window.Text.parse_patterns(fakeClient.onLine(text, type)), type);
+    fakeClient.sendEvent('gmcp_msg.' + type, text);
 };
