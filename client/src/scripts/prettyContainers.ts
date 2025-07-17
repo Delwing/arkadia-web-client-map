@@ -173,6 +173,21 @@ export type FormatOptions = {
     maxWidth?: number;
 };
 
+function applyTransforms(
+    item: ContainerItem,
+    group: string,
+    transforms: TransformDefinition[],
+): string {
+    let result = item.name;
+    for (const tr of transforms) {
+        if (tr.check(item.name, item.count, group)) {
+            result = tr.transform(result);
+            break;
+        }
+    }
+    return result;
+}
+
 export function formatTable(title: string, groups: Record<string, ContainerItem[]>, opts: FormatOptions = {}): string {
     let columns = opts.columns ?? 1;
     const padding = opts.padding ?? 1;
@@ -182,18 +197,12 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
 
     const entries = Object.entries(groups).filter(([, it]) => it.length > 0);
 
-    const allLines = entries.flatMap(([name, items]) => {
+    const allLines = entries.flatMap(([groupName, items]) => {
         const itemTexts = items.map(it => {
-            let name = it.name;
-            for (const tr of activeTransforms) {
-                if (tr.check(it.name, it.count, name)) {
-                    name = tr.transform(name);
-                    break;
-                }
-            }
-            return `${String(it.count).padStart(3, ' ')} | ${name}`;
+            const transformed = applyTransforms(it, groupName, activeTransforms);
+            return `${String(it.count).padStart(3, ' ')} | ${transformed}`;
         });
-        return [name, ...itemTexts];
+        return [groupName, ...itemTexts];
     });
 
     let colWidth = Math.max(title.length + padding * 2, ...allLines.map(l => l.length + padding * 2));
@@ -250,16 +259,8 @@ export function formatTable(title: string, groups: Record<string, ContainerItem[
             for (let c = 0; c < columns; c++) {
                 const grp = pair[c];
                 const item = grp && grp[1][i];
-                let name = item ? item.name : '';
-                if (item && grp) {
-                    for (const tr of activeTransforms) {
-                        if (tr.check(item.name, item.count, grp[0])) {
-                            name = tr.transform(name);
-                            break;
-                        }
-                    }
-                }
-                let text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
+                const name = item && grp ? applyTransforms(item, grp[0], activeTransforms) : '';
+                const text = item ? `${String(item.count).padStart(3, ' ')} | ${name}` : '';
                 rowLine += cell(text);
                 rowLine += c === columns - 1 ? '' : ' | ';
             }
