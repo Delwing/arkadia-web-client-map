@@ -1,4 +1,5 @@
 import Modal from "bootstrap/js/dist/modal";
+import { setXtermPalette } from './ansiParser';
 
 interface UiSettings {
     contentFontSize: number;
@@ -8,6 +9,7 @@ interface UiSettings {
     showButtons: boolean;
     mapHeight: number;
     emojiLabels: boolean;
+    xtermProper: boolean;
 }
 
 const defaultSettings: UiSettings = {
@@ -18,6 +20,7 @@ const defaultSettings: UiSettings = {
     showButtons: true,
     mapHeight: typeof window !== 'undefined' && window.innerWidth < 768 ? 25 : 30,
     emojiLabels: false,
+    xtermProper: false,
 };
 
 function apply(settings: UiSettings) {
@@ -56,6 +59,7 @@ function apply(settings: UiSettings) {
         (window as any).embedded.setZoom?.(settings.mapScale);
         (window as any).embedded.refresh();
     }
+    setXtermPalette(settings.xtermProper ? 'xtermProper' : 'xtermArkadia');
     if ((window as any).clientExtension?.eventTarget) {
         (window as any).clientExtension.eventTarget.dispatchEvent(
             new CustomEvent('uiSettings', { detail: { mobileDirectionButtons: settings.showButtons, emojiLabels: settings.emojiLabels } })
@@ -72,7 +76,7 @@ function load(): UiSettings {
                 const value = Math.abs(parseFloat(parsed.mapScale));
                 return value > 0 ? value : defaultSettings.mapScale;
             })();
-            return { ...defaultSettings, ...parsed, mapScale, emojiLabels: !!parsed.emojiLabels };
+            return { ...defaultSettings, ...parsed, mapScale, emojiLabels: !!parsed.emojiLabels, xtermProper: !!parsed.xtermProper };
         }
     } catch {
         // ignore malformed data
@@ -97,6 +101,7 @@ export default function initUiSettings() {
     const mapHeightInput = modalEl.querySelector('#ui-map-height') as HTMLInputElement;
     const showButtonsInput = modalEl.querySelector('#ui-show-buttons') as HTMLInputElement;
     const emojiLabelsInput = modalEl.querySelector('#ui-emoji-labels') as HTMLInputElement;
+    const xtermPaletteInput = modalEl.querySelector('#ui-xterm-palette') as HTMLSelectElement;
     const saveBtn = modalEl.querySelector('#ui-settings-save') as HTMLButtonElement;
 
     let current = load();
@@ -107,6 +112,7 @@ export default function initUiSettings() {
     mapHeightInput.value = String(current.mapHeight);
     showButtonsInput.checked = current.showButtons;
     emojiLabelsInput.checked = current.emojiLabels;
+    xtermPaletteInput.value = current.xtermProper ? 'xtermProper' : 'xtermArkadia';
     apply(current);
 
     function read(): UiSettings {
@@ -125,6 +131,7 @@ export default function initUiSettings() {
             mapHeight: parseFloat(mapHeightInput.value) || defaultSettings.mapHeight,
             showButtons: showButtonsInput.checked,
             emojiLabels: emojiLabelsInput.checked,
+            xtermProper: xtermPaletteInput.value === 'xtermProper',
         };
     }
 
