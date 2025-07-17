@@ -273,6 +273,8 @@ button {
   font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
+  color: inherit;
+  -webkit-appearance: none;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;

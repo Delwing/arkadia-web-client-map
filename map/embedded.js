@@ -42,7 +42,7 @@ class EmbeddedMap {
         })
 
         window.addEventListener('leadTo', (ev) => {
-            this.leadTo(ev.detail.id);
+            this.leadTo(ev.detail);
         })
     }
 
