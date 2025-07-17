@@ -38,7 +38,7 @@ function Aliases() {
         const c = command.trim();
         if (!p || !c) return;
         if (aliases.some((a, i) => i !== editIndex && a.pattern === p)) {
-            alert("Alias already exists");
+            alert("Alias już istnieje");
             return;
         }
         const updated = [...aliases];
@@ -60,7 +60,7 @@ function Aliases() {
     }
 
     function remove(idx: number) {
-        if (!confirm("Are you sure you want to delete this alias?")) return;
+        if (!confirm("Czy na pewno chcesz usunąć ten alias?")) return;
         const updated = aliases.filter((_, i) => i !== idx);
         saveList(updated);
     }
@@ -79,7 +79,7 @@ function Aliases() {
                 <Form.Control
                     type="text"
                     size="sm"
-                    placeholder="Command"
+                    placeholder="Komenda"
                     value={command}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setCommand(e.target.value)}
                     style={{width: '100%', maxWidth: '12rem'}}

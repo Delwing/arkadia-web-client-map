@@ -37,21 +37,21 @@
         <span id="break-item-warning"></span>
     </div>
     <div id="objects-list"></div>
-    <button id="recording-button" class="btn btn-danger btn-sm" style="position:absolute;top:0.5rem;right:0.5rem;z-index:1012;display:none;">Stop &amp; Save</button>
+    <button id="recording-button" class="btn btn-danger btn-sm" style="position:absolute;top:0.5rem;right:0.5rem;z-index:1012;display:none;">Zatrzymaj i zapisz</button>
     <div id="playback-controls" class="btn-group btn-group-sm" style="position:absolute;top:2.5rem;right:0.5rem;z-index:1013;display:none;">
-        <button id="playback-pause" class="btn btn-secondary">Pause</button>
-        <button id="playback-stop" class="btn btn-secondary">Stop</button>
+        <button id="playback-pause" class="btn btn-secondary">Pauza</button>
+        <button id="playback-stop" class="btn btn-secondary">Zatrzymaj</button>
         <span id="playback-info" class="px-1 text-light"></span>
-        <button id="playback-replay" class="btn btn-secondary">Replay</button>
-        <button id="playback-step-back" class="btn btn-secondary">Back</button>
-        <button id="playback-step" class="btn btn-secondary">Step</button>
+        <button id="playback-replay" class="btn btn-secondary">Powtórz</button>
+        <button id="playback-step-back" class="btn btn-secondary">Wstecz</button>
+        <button id="playback-step" class="btn btn-secondary">Krok</button>
     </div>
     <span id="content-width-measure" style="visibility:hidden;position:absolute;white-space:pre">M</span>
     <div id="options-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Options</h5>
+                    <h5 class="modal-title">Opcje</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -148,7 +148,7 @@
                     <button class="w-100 p-1" id="options-button">Ustawienia</button>
                 </li>
                 <li>
-                    <button class="w-100 p-1" id="ui-settings-button">UI</button>
+                    <button class="w-100 p-1" id="ui-settings-button">Interfejs</button>
                 </li>
                 <li>
                     <button class="w-100 p-1" id="binds-button">Bindowanie</button>
@@ -169,16 +169,13 @@
                     <button class="w-100 p-1" id="recordings-button">Nagrania</button>
                 </li>
                 <li>
-                    <button class="w-100 p-1" id="docs-button">Docs</button>
+                    <button class="w-100 p-1" id="docs-button">Dokumentacja</button>
                 </li>
                 <li>
-                    <button class="w-100 p-1" id="debug-button">Debug</button>
+                    <button class="w-100 p-1" id="debug-button">Debugowanie</button>
                 </li>
                 <li>
-                    <button class="w-100 p-1" id="fullscreen-button" title="Fullscreen">⛶</button>
-                </li>
-                <li>
-                    <button class="w-100 p-1" id="wake-lock-button">NoSleep OFF</button>
+                    <button class="w-100 p-1" id="fullscreen-button" title="Pełny ekran">⛶</button>
                 </li>
             </ul>
         </div>
@@ -187,12 +184,12 @@
     <div id="auth-overlay">
         <div id="auth-panel">
             <div id="connecting-spinner" class="spinner-border text-light" role="status"></div>
-            <button id="connect-button">Connect</button>
-            <div class="auth-or">- OR -</div>
+            <button id="connect-button">Połącz</button>
+            <div class="auth-or">- LUB -</div>
             <form id="login-form" class="d-flex flex-column gap-2">
-                <input id="login-character" class="form-control" placeholder="Character">
-                <input id="login-password" type="password" class="form-control" placeholder="Password">
-                <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
+                <input id="login-character" class="form-control" placeholder="Postać">
+                <input id="login-password" type="password" class="form-control" placeholder="Hasło">
+                <button id="login-submit" class="btn btn-primary" type="submit">Zaloguj</button>
             </form>
         </div>
     </div>
@@ -201,36 +198,36 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">UI Settings</h5>
+                    <h5 class="modal-title">Ustawienia UI</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex flex-column gap-2">
-                    <label class="form-label">Content font size (rem)
+                    <label class="form-label">Rozmiar czcionki treści (rem)
                         <input id="ui-content-font" type="number" step="0.1" class="form-control" />
                     </label>
-                    <label class="form-label">Objects list font size (rem)
+                    <label class="form-label">Rozmiar czcionki listy obiektów (rem)
                         <input id="ui-objects-font" type="number" step="0.1" class="form-control" />
                     </label>
-                    <label class="form-label">Mobile button size (%)
+                    <label class="form-label">Rozmiar przycisków mobilnych (%)
                         <input id="ui-button-size" type="number" step="0.1" class="form-control" />
                     </label>
                     <label class="form-label">
                         <input id="ui-show-buttons" type="checkbox" class="form-check-input me-2" />
-                        Show on-screen buttons
+                        Pokaż przyciski na ekranie
                     </label>
                     <label class="form-label">
                         <input id="ui-emoji-labels" type="checkbox" class="form-check-input me-2" />
-                        Emoji labels in char state
+                        Etykiety emoji w stanie postaci
                     </label>
-                    <label class="form-label">Map zoom
+                    <label class="form-label">Powiększenie mapy
                         <input id="ui-map-scale" type="number" step="0.05" min="0.05" class="form-control" />
                     </label>
-                    <label class="form-label">Map height (vh)
+                    <label class="form-label">Wysokość mapy (vh)
                         <input id="ui-map-height" type="number" step="1" class="form-control" />
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="ui-settings-save">Save</button>
+                    <button type="button" class="btn btn-primary" id="ui-settings-save">Zapisz</button>
                 </div>
             </div>
         </div>
