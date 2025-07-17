@@ -16,6 +16,7 @@ class EmbeddedMap {
         this._debugInterval = null
         this._longPressStartX = 0
         this._longPressStartY = 0
+        this._mapPosEl = document.getElementById('map-position')
         this._touchStartDistance = null
         this._pinchZoom = this._pinchZoom.bind(this)
         this._onTouchStart = this._onTouchStart.bind(this)
@@ -73,6 +74,10 @@ class EmbeddedMap {
             this._debugMapPoint.remove();
             this._debugMapPoint = null;
         }
+        if (this._mapPosEl) {
+            this._mapPosEl.style.display = 'none'
+            this._mapPosEl.textContent = ''
+        }
         if (this._touchPointEl) {
             this._touchPointEl.style.display = 'block'
             this._touchPointEl.style.left = `${touch.clientX - 10}px`
@@ -110,10 +115,12 @@ class EmbeddedMap {
             this._debugMapPoint = new paper.Path.Circle(point, 5);
             this._debugMapPoint.strokeColor = 'red';
             this._debugMapPoint.fillColor = new paper.Color(1, 0, 0, 0.3);
-            setTimeout(() => {
-                this._debugMapPoint?.remove();
-                this._debugMapPoint = null;
-            }, 1000);
+            if (this._mapPosEl) {
+                this._mapPosEl.style.display = 'block'
+                this._mapPosEl.style.left = `${x + 8}px`
+                this._mapPosEl.style.top = `${y + 8}px`
+                this._mapPosEl.textContent = `${Math.round(point.x)}, ${Math.round(point.y)}`
+            }
             const room = this.renderer.area.rooms.find(r => r.render && r.render.contains(point));
             if (room) {
                 const ce = (window.parent && window.parent.clientExtension) || window.clientExtension;
@@ -121,6 +128,7 @@ class EmbeddedMap {
             }
             if (this._touchPointEl) this._touchPointEl.style.display = 'none'
             if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
+            this._longPressTimer = null
         }, 500);
     }
 
@@ -135,6 +143,7 @@ class EmbeddedMap {
     }
 
     _onLongPressEnd() {
+        const cancel = this._longPressTimer !== null;
         this._longPressActive = false;
         if (this._longPressTimer) {
             clearTimeout(this._longPressTimer);
@@ -146,9 +155,12 @@ class EmbeddedMap {
         }
         if (this._touchPointEl) this._touchPointEl.style.display = 'none'
         if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
-        if (this._debugMapPoint) {
+        if (cancel && this._debugMapPoint) {
             this._debugMapPoint.remove()
             this._debugMapPoint = null
+        }
+        if (cancel && this._mapPosEl) {
+            this._mapPosEl.style.display = 'none'
         }
     }
 
