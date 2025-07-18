@@ -99,6 +99,10 @@ class EmbeddedMap {
             this.renderer.backgroundLayer.remove()
 
             this.currentRoom = room;
+            const label = document.getElementById('location-label');
+            if (label && area) {
+                label.textContent = `#${room.id} ${area.areaName}`;
+            }
 
             if (this.destinations.indexOf(room.id) > -1) {
                 this.destinations.splice(this.destinations.indexOf(room.id), 1)
