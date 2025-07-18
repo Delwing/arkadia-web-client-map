@@ -155,6 +155,13 @@ export default class Client {
             command = stripPolishCharacters(command)
         }
         this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
+        const split = command.split(/[#;]/)
+        if (split.length > 1) {
+            split.forEach(part => this.sendCommand(part))
+            return
+        }
+
+        command = this.Map.parseCommand(command)
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
@@ -164,15 +171,7 @@ export default class Client {
             return false
         })
         if (!isAlias) {
-            command = this.Map.parseCommand(command)
-            const split = command.split(/[#;]/)
-            if (split.length > 1) {
-                split.forEach(part => {
-                    this.sendCommand(part)
-                })
-            } else {
-                this.clientAdapter.send(this.Map.move(command).direction)
-            }
+            this.clientAdapter.send(this.Map.move(command).direction)
         }
     }
 
