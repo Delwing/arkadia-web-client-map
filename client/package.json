@@ -12,7 +12,7 @@
     "@types/chrome": "^0.0.326",
     "howler": "^2.2.4",
     "lua-in-js": "^2.2.5",
-    "mudlet-map-renderer": "^0.0.25"
+    "mudlet-map-renderer": "github:Delwing/js-mudlet-map-renderer#memory-leak-issues"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",

@@ -11,6 +11,8 @@ declare module "mudlet-map-renderer" {
 
         getRoomById(id: number): Room;
 
+        getPath(from: number, to: number): string[];
+
     }
 
 }

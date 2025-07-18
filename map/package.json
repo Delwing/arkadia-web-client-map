@@ -9,7 +9,7 @@
     "watch": "watchify embedded.js -o ../extension/dist/embedded.js -v"
   },
   "dependencies": {
-    "mudlet-map-renderer": "^0.0.25"
+    "mudlet-map-renderer": "github:Delwing/js-mudlet-map-renderer#memory-leak-issues"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

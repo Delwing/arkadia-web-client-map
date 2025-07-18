@@ -34,7 +34,7 @@ class EmbeddedMap {
             // ignore malformed data
         }
         this.zoom = zoom
-
+        this.renderer = new Renderer(this.map, this.reader, this.settings)
         this.renderRoomById(startId)
 
         window.addEventListener('enterLocation', (ev) => {
@@ -93,9 +93,9 @@ class EmbeddedMap {
                 yMax: room.y + limit
             });
             this.renderer?.clear();
-            this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
+            this.renderer.renderArea(area)
             this.renderer.controls.centerRoom(room.id);
-            this.renderer.controls.view.zoom = this.zoom;
+            this.renderer.controls.setZoom(this.zoom)
             this.renderer.backgroundLayer.remove()
 
             this.currentRoom = room;
@@ -121,7 +121,7 @@ class EmbeddedMap {
     setZoom(zoom) {
         this.zoom = zoom
         if (this.renderer?.controls) {
-            this.renderer.controls.view.zoom = this.zoom
+            this.renderer.controls.setZoom(this.zoom)
         }
     }
 
@@ -137,7 +137,7 @@ class EmbeddedMap {
 }
 
 const createMap = (data) => {
-    window.embedded = new EmbeddedMap(data.mapData, data.colors, data.startId)
+    window.embedded = new EmbeddedMap(data.mapData, data.colors, data.startId ?? 1)
 }
 
 window.addEventListener('map-ready-with-data', (e) => createMap(e.detail))

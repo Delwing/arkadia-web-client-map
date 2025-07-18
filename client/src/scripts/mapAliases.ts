@@ -40,7 +40,7 @@ export default function initMapAliases(client: Client, aliases: { pattern: RegEx
                 const room: any = client.Map.currentRoom;
                 if (!embedded?.destinations?.length || !room) return;
                 const target = parseInt(embedded.destinations[0]);
-                const path = embedded.renderer?.controls?.pathFinder?.path(room.id, target);
+                const path = client.Map.mapReader.getPath(room.id, target);
                 if (!path || path.length < 2) return;
                 const next = parseInt(path[1]);
                 const allExits = Object.assign({}, room.exits ?? {}, room.specialExits ?? {});
