@@ -39,6 +39,7 @@ import initWeaponEvaluation from './scripts/weaponEvaluation'
 import initArmorEvaluation from './scripts/armorEvaluation'
 import initMapAliases from './scripts/mapAliases'
 import initCompareAll from './scripts/compareAll'
+import initFollowSpecialExits from './scripts/followSpecialExits'
 import Client from "./Client";
 
 
@@ -103,6 +104,7 @@ export function registerScripts(client: Client) {
     initIdz(client, aliases)
     initKillCounter(client, aliases)
     initEscape(client)
+    initFollowSpecialExits(client)
 
 
     const itemCollector = initItemCollector(client, aliases);
