@@ -20,6 +20,7 @@ import initArmorShop from './scripts/armorShop'
 import initHerbCounter from './scripts/herbCounter'
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
+import initDurability from './scripts/durability'
 import initInvite from './scripts/invite'
 import initObjectAliases from './scripts/objectAliases'
 import initMagicKeys from './scripts/magicKeys'
@@ -111,6 +112,7 @@ export function registerScripts(client: Client) {
     initHerbCounter(client, aliases)
     initLvlCalc(client, aliases)
     initItemCondition(client)
+    initDurability(client)
     initInvite(client)
     initObjectAliases(client, aliases)
     initMagicKeys(client)
