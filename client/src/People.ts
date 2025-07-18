@@ -1,6 +1,7 @@
 import people from './people.json'
 import Client from "./Client";
 import { color, RESET, findClosestColor } from './Colors';
+import { stripAnsiCodes } from './Triggers';
 
 export default class People {
 
@@ -38,6 +39,12 @@ export default class People {
                 const token = matches[0]
                 const prefix = rawLine.substring(0, index)
                 const suffix = rawLine.substring(index + token.length)
+                const nextWord = stripAnsiCodes(suffix)
+                    .toLowerCase()
+                    .replace(/^\s+/, '')
+                if (nextWord.startsWith('chaosu')) {
+                    return rawLine
+                }
                 let highlighted = token
                 if (isEnemy) {
                     highlighted = color(RED) + token + RESET
