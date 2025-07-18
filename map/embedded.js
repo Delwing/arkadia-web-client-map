@@ -1,4 +1,4 @@
-const limit = 25;
+const DEFAULT_LIMIT = 25;
 
 import {MapReader, Renderer, Settings} from "mudlet-map-renderer";
 
@@ -22,6 +22,7 @@ class EmbeddedMap {
         this.settings.scale = 90
         this.settings.borders = true
         let zoom = 0.30
+        let storedLimit = DEFAULT_LIMIT
         try {
             const raw = localStorage.getItem('uiSettings')
             if (raw) {
@@ -29,11 +30,15 @@ class EmbeddedMap {
                 if (typeof parsed.mapScale === 'number' && parsed.mapScale > 0) {
                     zoom = parsed.mapScale
                 }
+                if (typeof parsed.mapRenderLimit === 'number' && parsed.mapRenderLimit > 0) {
+                    storedLimit = parsed.mapRenderLimit
+                }
             }
         } catch {
             // ignore malformed data
         }
         this.zoom = zoom
+        this.limit = storedLimit
 
         this.renderRoomById(startId)
 
@@ -80,6 +85,15 @@ class EmbeddedMap {
         } catch {}
     }
 
+    _saveLimit() {
+        try {
+            const raw = localStorage.getItem('uiSettings')
+            const parsed = raw ? JSON.parse(raw) : {}
+            parsed.mapRenderLimit = this.limit
+            localStorage.setItem('uiSettings', JSON.stringify(parsed))
+        } catch {}
+    }
+
     renderRoomById(id) {
         this.renderRoom(this.reader.getRoomById(id));
     }
@@ -87,10 +101,10 @@ class EmbeddedMap {
     renderRoom(room) {
         if (room) {
             const area = this.reader.getAreaByRoomId(room.id, {
-                xMin: room.x - limit,
-                xMax: room.x + limit,
-                yMin: room.y - limit,
-                yMax: room.y + limit
+                xMin: room.x - this.limit,
+                xMax: room.x + this.limit,
+                yMin: room.y - this.limit,
+                yMax: room.y + this.limit
             });
             this.renderer?.clear();
             this.renderer = new Renderer(this.map, this.reader, area, this.reader.getColors(), this.settings);
@@ -123,6 +137,12 @@ class EmbeddedMap {
         if (this.renderer?.controls) {
             this.renderer.controls.view.zoom = this.zoom
         }
+    }
+
+    setLimit(newLimit) {
+        this.limit = newLimit
+        this._saveLimit()
+        this.refresh()
     }
 
     leadTo(id) {
