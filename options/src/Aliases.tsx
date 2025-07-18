@@ -89,6 +89,9 @@ function Aliases() {
                     <Button size="sm" variant="secondary" onClick={resetForm}>Anuluj</Button>
                 )}
             </Form.Group>
+            <small className="text-secondary">
+                Pattern jest wyrażeniem regularnym. Użyj <code>$1</code>, <code>$2</code> itd. w komendzie, aby wstawić odpowiednie grupy.
+            </small>
             <ul className="list-unstyled ms-3">
                 {aliases.map((a, i) => (
                     <li key={i} className="d-flex align-items-center gap-2 alias-list-item">
