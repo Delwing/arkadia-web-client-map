@@ -158,7 +158,6 @@ export default class Client {
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
-                this.clientAdapter.output('→ ' + command, 'command')
                 alias.callback(matches)
                 return true
             }
@@ -166,9 +165,14 @@ export default class Client {
         })
         if (!isAlias) {
             command = this.Map.parseCommand(command)
-            command.split(/[#;]/).forEach(part => {
-                this.clientAdapter.send(this.Map.move(part).direction)
-            })
+            const split = command.split(/[#;]/)
+            if (split.length > 1) {
+                split.forEach(part => {
+                    this.sendCommand(part)
+                })
+            } else {
+                this.clientAdapter.send(this.Map.move(command).direction)
+            }
         }
     }
 

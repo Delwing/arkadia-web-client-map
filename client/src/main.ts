@@ -17,6 +17,7 @@ import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
 import initHerbShop from './scripts/herbShop'
 import initArmorShop from './scripts/armorShop'
+import initSmith from './scripts/smith'
 import initHerbCounter from './scripts/herbCounter'
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
@@ -110,6 +111,7 @@ export function registerScripts(client: Client) {
     initDeposits(client, aliases)
     initHerbShop(client)
     initArmorShop(client)
+    initSmith(client, aliases)
     initHerbCounter(client, aliases)
     initLvlCalc(client, aliases)
     initItemCondition(client)
