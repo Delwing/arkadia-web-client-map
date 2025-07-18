@@ -19,6 +19,11 @@
 <div id="main-container">
     <div id="iframe-container">
         <canvas id="map" resize="true"></canvas>
+        <div id="long-press-debug" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+            <div id="touch-point" style="display:none;position:absolute;width:20px;height:20px;border-radius:10px;border:2px solid red;"></div>
+            <div id="timer" style="display:none;position:absolute;top:10px;left:10px;color:red;font-family:monospace;"></div>
+            <div id="map-position" style="display:none;position:absolute;color:red;font-family:monospace;background:rgba(255,255,255,0.7);padding:2px;font-size:12px;"></div>
+        </div>
         <div id="map-progress-container" class="position-absolute top-50 start-50 translate-middle w-75">
             <div class="progress">
                 <div id="map-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"

@@ -8,14 +8,30 @@ class EmbeddedMap {
         this.destinations = []
         this.map = document.querySelector("#map");
         this.map.style.touchAction = 'none'
+        this._longPressTimer = null
+        this._longPressActive = false
+        this._debugTimerEl = document.getElementById('timer')
+        this._touchPointEl = document.getElementById('touch-point')
+        this._debugMapPoint = null
+        this._debugInterval = null
+        this._longPressStartX = 0
+        this._longPressStartY = 0
+        this._mapPosEl = document.getElementById('map-position')
         this._touchStartDistance = null
         this._pinchZoom = this._pinchZoom.bind(this)
         this._onTouchStart = this._onTouchStart.bind(this)
         this._onTouchEnd = this._onTouchEnd.bind(this)
+        this._onLongPressStart = this._onLongPressStart.bind(this)
+        this._onLongPressMove = this._onLongPressMove.bind(this)
+        this._onLongPressEnd = this._onLongPressEnd.bind(this)
         this.map.addEventListener('touchstart', this._onTouchStart, {passive: false})
         this.map.addEventListener('touchmove', this._pinchZoom, {passive: false})
         this.map.addEventListener('touchend', this._onTouchEnd)
         this.map.addEventListener('touchcancel', this._onTouchEnd)
+        this.map.addEventListener('touchstart', this._onLongPressStart)
+        this.map.addEventListener('touchmove', this._onLongPressMove)
+        this.map.addEventListener('touchend', this._onLongPressEnd)
+        this.map.addEventListener('touchcancel', this._onLongPressEnd)
         this.reader = new MapReader(mapData, colors);
         this.settings = new Settings();
         this.settings.areaName = false
@@ -44,6 +60,108 @@ class EmbeddedMap {
         window.addEventListener('leadTo', (ev) => {
             this.leadTo(ev.detail);
         })
+    }
+
+    _onLongPressStart(ev) {
+        if (ev.touches.length !== 1 || !this.renderer) {
+            return;
+        }
+        const touch = ev.touches[0];
+        this._longPressActive = true;
+        this._longPressStartX = touch.clientX;
+        this._longPressStartY = touch.clientY;
+        if (this._debugMapPoint) {
+            this._debugMapPoint.remove();
+            this._debugMapPoint = null;
+        }
+        if (this._mapPosEl) {
+            this._mapPosEl.style.display = 'none'
+            this._mapPosEl.textContent = ''
+        }
+        if (this._touchPointEl) {
+            this._touchPointEl.style.display = 'block'
+            this._touchPointEl.style.left = `${touch.clientX - 10}px`
+            this._touchPointEl.style.top = `${touch.clientY - 10}px`
+        }
+        if (this._debugTimerEl) {
+            this._debugTimerEl.style.display = 'block'
+            this._debugTimerEl.textContent = '500'
+        }
+        const start = Date.now()
+        if (this._debugTimerEl) {
+            this._debugInterval = window.setInterval(() => {
+                const remaining = 500 - (Date.now() - start)
+                if (remaining <= 0) {
+                    clearInterval(this._debugInterval)
+                    this._debugInterval = null
+                }
+                this._debugTimerEl.textContent = Math.max(0, remaining).toString()
+            }, 50)
+        }
+        this._longPressTimer = window.setTimeout(() => {
+            if (!this._longPressActive) return;
+            this._longPressActive = false;
+            const rect = this.map.getBoundingClientRect();
+            const x = this._longPressStartX - rect.left;
+            const y = this._longPressStartY - rect.top;
+            const paper = this.renderer.paper;
+            const view = this.renderer.controls.view;
+            const point = view.viewToProject(new paper.Point(x, y));
+            if (this._debugMapPoint) {
+                this._debugMapPoint.remove();
+                this._debugMapPoint = null;
+            }
+            this.renderer.overlayLayer.activate();
+            this._debugMapPoint = new paper.Path.Circle(point, 5);
+            this._debugMapPoint.strokeColor = 'red';
+            this._debugMapPoint.fillColor = new paper.Color(1, 0, 0, 0.3);
+            if (this._mapPosEl) {
+                this._mapPosEl.style.display = 'block'
+                this._mapPosEl.style.left = `${x + 8}px`
+                this._mapPosEl.style.top = `${y + 8}px`
+                this._mapPosEl.textContent = `${Math.round(point.x)}, ${Math.round(point.y)}`
+            }
+            const room = this.renderer.area.rooms.find(r => r.render && r.render.contains(point));
+            if (room) {
+                const ce = (window.parent && window.parent.clientExtension) || window.clientExtension;
+                ce?.Map?.setMapRoomById?.(room.id);
+            }
+            if (this._touchPointEl) this._touchPointEl.style.display = 'none'
+            if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
+            this._longPressTimer = null
+        }, 500);
+    }
+
+    _onLongPressMove(ev) {
+        if (!this._longPressActive || ev.touches.length !== 1) return;
+        const touch = ev.touches[0];
+        const dx = touch.clientX - this._longPressStartX;
+        const dy = touch.clientY - this._longPressStartY;
+        if (Math.hypot(dx, dy) > 10) {
+            this._onLongPressEnd();
+        }
+    }
+
+    _onLongPressEnd() {
+        const cancel = this._longPressTimer !== null;
+        this._longPressActive = false;
+        if (this._longPressTimer) {
+            clearTimeout(this._longPressTimer);
+            this._longPressTimer = null;
+        }
+        if (this._debugInterval) {
+            clearInterval(this._debugInterval)
+            this._debugInterval = null
+        }
+        if (this._touchPointEl) this._touchPointEl.style.display = 'none'
+        if (this._debugTimerEl) this._debugTimerEl.style.display = 'none'
+        if (cancel && this._debugMapPoint) {
+            this._debugMapPoint.remove()
+            this._debugMapPoint = null
+        }
+        if (cancel && this._mapPosEl) {
+            this._mapPosEl.style.display = 'none'
+        }
     }
 
     _onTouchStart(ev) {
