@@ -16,20 +16,20 @@ describe('attack beep triggers', () => {
     client = new FakeClient();
     initAttackBeep((client as unknown) as any);
     parse = (line: string) => Triggers.prototype.parseLine.call(client.Triggers, line, '');
-    // initialize with some enemy guilds so beeping is enabled
+    // initialize with enemy guilds so beeping is enabled only for configured guilds
     const handler = client.addEventListener.mock.calls[0]?.[1];
     if (handler) {
-      handler({ detail: { enemyGuilds: ['foo'] } } as any);
+      handler({ detail: { enemyGuilds: ['CKN'] } } as any);
     }
     jest.clearAllMocks();
   });
 
   test('beeps and highlights on attack', () => {
-    const result = parse('Wojownik atakuje cie!');
+    const result = parse('Intia atakuje cie!');
     expect(client.playSound).toHaveBeenCalledTimes(1);
     const prefix = `\x1B[22;38;5;${findClosestColor('#ff0000')}m`;
     expect(result.startsWith(prefix)).toBe(true);
-    expect(result).toContain('Wojownik ATAKUJE CIE!');
+    expect(result).toContain('Intia ATAKUJE CIE!');
     expect(result.endsWith('\x1B[0m')).toBe(true);
   });
 

@@ -378,7 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button') as HTMLButtonElement;
     const historyUpButton = document.getElementById('history-up-button') as HTMLButtonElement | null;
     const historyDownButton = document.getElementById('history-down-button') as HTMLButtonElement | null;
-    const historyButtons = document.getElementById('history-buttons') as HTMLDivElement | null;
     const connectButton = document.getElementById('connect-button') as HTMLButtonElement;
     const connectButtonFloat = document.getElementById('connect-button-float') as HTMLButtonElement;
     const menuButton = document.getElementById('menu-button') as HTMLButtonElement | null;
@@ -613,6 +612,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (historyIndex === -1) {
             currentInput = messageInput.value;
+            // Skip the just sent command if the input wasn't modified
+            if (
+                direction === 'up' &&
+                commandHistory.length > 1 &&
+                messageInput.value === commandHistory[commandHistory.length - 1]
+            ) {
+                historyIndex = 1;
+                messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                messageInput.select();
+                return;
+            }
         }
 
         if (direction === 'up') {
@@ -690,11 +700,6 @@ document.addEventListener('DOMContentLoaded', () => {
         outputWrapper.scrollTop = outputWrapper.scrollHeight;
         // Delay selection to avoid mouse click clearing it on some browsers
         setTimeout(() => messageInput.select());
-        if (historyButtons) historyButtons.style.display = 'none';
-    });
-
-    messageInput.addEventListener('blur', () => {
-        if (historyButtons) historyButtons.style.display = '';
     });
 
     // Handle connect/disconnect button click

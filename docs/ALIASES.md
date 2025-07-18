@@ -2,6 +2,8 @@
 
 Poniższa lista opisuje dostępne aliasy w rozszerzeniu:
 
+Możliwe jest także tworzenie własnych aliasów w ustawieniach klienta. Wzorzec jest wyrażeniem regularnym, a w komendzie można używać `$1`, `$2` itd. aby odwołać się do odpowiednich grup z dopasowania.
+
 - **/fake _tekst_** - wyświetla podany tekst jak zwykłą wiadomość klienta.
 - **/cofnij** - cofa postać do poprzedniego pomieszczenia na mapie.
 - **/move _kierunek_** - przesuwa postać w wybranym kierunku.
