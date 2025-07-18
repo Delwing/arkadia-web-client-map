@@ -505,6 +505,10 @@ button:focus-visible {
   background-color: #6CA6CD; /* Match 'zerknij' button color */
 }
 
+.direction-button.exit-available {
+  background-color: #2fa7c5;
+}
+
 .mobile-button-text {
   font-size: 9px; /* Smaller font for 'zerknij' text */
   padding: 1px; /* Minimal padding */
