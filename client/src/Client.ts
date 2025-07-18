@@ -17,6 +17,7 @@ import { attachGmcpListener } from "./gmcp";
 import {color} from "./Colors";
 import {SKIP_LINE} from "./ControlConstants";
 import {stripPolishCharacters} from "./stripPolishCharacters";
+import Storage from "./Storage";
 
 export interface ClientAdapter {
     send(text: string): void;
@@ -36,6 +37,7 @@ export default class Client {
     TeamManager = new TeamManager(this);
     ObjectManager = new ObjectManager(this);
     inlineCompassRose = new InlineCompassRose(this);
+    storage = new Storage(this);
     panel = document.getElementById("panel_buttons_bottom");
     contentWidth = 0;
     sounds: Record<string, Howl> = {
@@ -69,6 +71,12 @@ export default class Client {
         this.updateContentWidth()
         window.addEventListener('resize', () => this.updateContentWidth())
         this.addEventListener('uiSettings', () => this.updateContentWidth())
+
+        this.storage.request('settings')
+        this.storage.request('kill_counter')
+        this.storage.request('containers')
+        this.storage.request('deposits')
+        this.storage.request('scripts')
 
         Object.values(this.sounds).forEach((sound) => sound.load())
 
@@ -123,14 +131,7 @@ export default class Client {
         })
     }
 
-    connect(port: any, initial: boolean) {
-        if (initial) {
-            port.postMessage({type: 'GET_STORAGE', key: 'settings'})
-            port.postMessage({type: 'GET_STORAGE', key: 'kill_counter'})
-            port.postMessage({type: 'GET_STORAGE', key: 'containers'})
-            port.postMessage({type: 'GET_STORAGE', key: 'deposits'})
-            port.postMessage({type: 'GET_STORAGE', key: 'scripts'})
-        }
+    connect(port: any) {
         this.port = port
         this.eventTarget.dispatchEvent(new CustomEvent('port-connected'))
         console.log("Client connected to background service.")

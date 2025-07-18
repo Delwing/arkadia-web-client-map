@@ -263,7 +263,7 @@ class KillCounter {
             }
         );
 
-        this.client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
+        this.client.storage.request(STORAGE_KEY);
     }
 
     private loadTotals(totals: Record<string, number> = {}): void {
@@ -283,11 +283,7 @@ class KillCounter {
         Object.entries(this.kills).forEach(([name, entry]) => {
             totals[name] = entry.myTotal;
         });
-        this.client.port?.postMessage({
-            type: "SET_STORAGE",
-            key: STORAGE_KEY,
-            value: totals,
-        });
+        this.client.storage.setItem(STORAGE_KEY, totals);
     };
 
     private ensureEntry(name: string): KillEntry {

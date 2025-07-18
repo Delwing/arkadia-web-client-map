@@ -27,10 +27,10 @@ export default function initDeposits(client: Client, aliases?: { pattern: RegExp
         }
     });
 
-    client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
+    client.storage.request(STORAGE_KEY);
 
     const persist = () => {
-        client.port?.postMessage({ type: "SET_STORAGE", key: STORAGE_KEY, value: deposits });
+        client.storage.setItem(STORAGE_KEY, deposits);
     };
 
     let columns = 1;

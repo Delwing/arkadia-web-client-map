@@ -109,7 +109,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             storedBags = typeof ev.detail.value === 'object' && ev.detail.value ? ev.detail.value : {};
         }
     });
-    client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
+    client.storage.request(STORAGE_KEY);
 
     async function ensureData() {
         if (!herbs) {
@@ -204,7 +204,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
         storedBags = structuredClone(bagTotals);
         const lines = buildSummary(storedBags);
         client.println(lines.join('\n'));
-        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: storedBags });
+        client.storage.setItem(STORAGE_KEY, storedBags);
         awaiting = false;
         left = 0;
         Object.keys(totals).forEach(k => delete totals[k]);
@@ -286,7 +286,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
             if (contents[herb] <= 0) delete contents[herb];
             leftToTake -= toTake;
         }
-        client.port?.postMessage({ type: 'SET_STORAGE', key: STORAGE_KEY, value: storedBags });
+        client.storage.setItem(STORAGE_KEY, storedBags);
     }
 
     if (aliases) {
@@ -306,7 +306,7 @@ export default async function initHerbCounter(client: Client, aliases?: { patter
                     }
                 };
                 client.addEventListener('storage', listener);
-                client.port?.postMessage({ type: 'GET_STORAGE', key: STORAGE_KEY });
+                client.storage.request(STORAGE_KEY);
             }
         });
         aliases.push({ pattern: /^\/wezz ([a-z_]+) ([0-9]+)$/, callback: (m: RegExpMatchArray) => take(m[1].toLowerCase(), parseInt(m[2], 10)) });

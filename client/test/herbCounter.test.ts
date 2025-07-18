@@ -8,6 +8,10 @@ class FakeClient {
   sendCommand = jest.fn();
   println = jest.fn();
   contentWidth = 80;
+  storage = {
+    setItem: jest.fn(),
+    request: jest.fn()
+  } as any;
   addEventListener(event: string, cb: any) { this.emitter.on(event, cb); }
   removeEventListener(event: string, cb: any) { this.emitter.off(event, cb); }
   dispatch(event: string, detail: any) { this.emitter.emit(event, { detail }); }

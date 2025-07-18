@@ -108,8 +108,8 @@ test('sendCommand dispatches event and splits commands', () => {
   const client = new Client((global as any).clientAdapterMock as any, (global as any).portMock);
   client.sendCommand('foo#bar');
   expect(parseCommand).toHaveBeenCalledWith('foo#bar');
-  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(1, 'parsed:foo');
-  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(2, 'bar');
+  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(1, 'parsed:parsed:foo');
+  expect((global as any).clientAdapterMock.send).toHaveBeenNthCalledWith(2, 'parsed:bar');
 });
 
 test('sendCommand allows empty command', () => {

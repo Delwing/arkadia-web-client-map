@@ -70,7 +70,7 @@ function getBagForms(bag: string) {
 }
 
 function saveConfig(client: Client) {
-    client.port?.postMessage({ type: "SET_STORAGE", key: STORAGE_KEY, value: containerConfig });
+    client.storage.setItem(STORAGE_KEY, containerConfig);
 }
 
 function setContainer(type: keyof ContainerConfig, bag: string, client: Client) {
@@ -203,7 +203,7 @@ export default function initBagManager(
             Object.assign(containerConfig, ev.detail.value);
         }
     });
-    client.port?.postMessage({ type: "GET_STORAGE", key: STORAGE_KEY });
+    client.storage.request(STORAGE_KEY);
     window.addEventListener("beforeunload", () => saveConfig(client));
 
     if (aliases) {

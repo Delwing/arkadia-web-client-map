@@ -31,11 +31,7 @@ export default function initExternalScripts(client: Client) {
         handled = true;
         if (!known.includes(param)) {
             known.push(param);
-            client.port?.postMessage({
-                type: "SET_STORAGE",
-                key: STORAGE_KEY,
-                value: known,
-            });
+            client.storage.setItem(STORAGE_KEY, known);
             apply(known);
         }
         const params = new URLSearchParams(window.location.search);

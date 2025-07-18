@@ -15,6 +15,10 @@ class FakeClient {
   println = jest.fn();
   print = jest.fn();
   port = { postMessage: jest.fn() } as any;
+  storage = {
+    setItem: jest.fn((key: string, value: any) => this.port.postMessage({ type: 'SET_STORAGE', key, value })),
+    request: jest.fn()
+  } as any;
   sendCommand = jest.fn();
   contentWidth = 80;
 

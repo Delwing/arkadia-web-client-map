@@ -8,6 +8,10 @@ class FakeClient {
   sendCommand = jest.fn();
   println = jest.fn();
   port = { postMessage: jest.fn() } as any;
+  storage = {
+    setItem: jest.fn((key: string, value: any) => this.port.postMessage({ type: 'SET_STORAGE', key, value })),
+    request: jest.fn()
+  } as any;
   addEventListener(event: string, cb: any) { this.emitter.on(event, cb); }
   removeEventListener(event: string, cb: any) { this.emitter.off(event, cb); }
   dispatch(event: string, detail: any) { this.emitter.emit(event, { detail }); }
