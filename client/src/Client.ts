@@ -3,6 +3,7 @@ import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
 import { Howl } from "howler";
+import { setXtermPalette } from "./Colors";
 import {
     FunctionalBind,
     LINE_START_EVENT,
@@ -97,6 +98,9 @@ export default class Client {
             const lamp = ev.detail?.binds?.lamp
             if (lamp) {
                 this.lampBind = { ...lamp }
+            }
+            if (ev.detail?.xtermPalette) {
+                setXtermPalette(ev.detail.xtermPalette);
             }
         })
 
