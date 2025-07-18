@@ -37,6 +37,7 @@ import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
 import initArmorEvaluation from './scripts/armorEvaluation'
 import initMapAliases from './scripts/mapAliases'
+import initCompareAll from './scripts/compareAll'
 import Client from "./Client";
 
 
@@ -114,6 +115,7 @@ export function registerScripts(client: Client) {
     initSmith(client, aliases)
     initHerbCounter(client, aliases)
     initLvlCalc(client, aliases)
+    initCompareAll(client, aliases)
     initItemCondition(client)
     initDurability(client)
     initWearUsed(client)

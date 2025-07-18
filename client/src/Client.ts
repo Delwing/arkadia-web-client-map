@@ -19,7 +19,7 @@ import {SKIP_LINE} from "./ControlConstants";
 import {stripPolishCharacters} from "./stripPolishCharacters";
 
 export interface ClientAdapter {
-    send(text: string): void;
+    send(text: string, echo?: boolean): void;
     output(text?: string, type?: string): void
     sendGmcp(type: string, payload?: any): void
 }
@@ -146,18 +146,18 @@ export default class Client {
         this.eventTarget.removeEventListener(event, listener)
     }
 
-    send(command: string) {
-        this.clientAdapter.send(command)
+    send(command: string, echo: boolean = true) {
+        this.clientAdapter.send(command, echo)
     }
 
-    sendCommand(command: string) {
+    sendCommand(command: string, echo: boolean = true) {
         if (command) {
             command = stripPolishCharacters(command)
         }
         this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
         const split = command.split(/[#;]/)
         if (split.length > 1) {
-            split.forEach(part => this.sendCommand(part))
+            split.forEach(part => this.sendCommand(part, echo))
             return
         }
 
@@ -171,7 +171,7 @@ export default class Client {
             return false
         })
         if (!isAlias) {
-            this.clientAdapter.send(this.Map.move(command).direction)
+            this.clientAdapter.send(this.Map.move(command).direction, echo)
         }
     }
 
