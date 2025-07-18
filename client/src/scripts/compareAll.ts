@@ -1,4 +1,5 @@
 import Client from "../Client";
+import {SKIP_LINE} from "../ControlConstants";
 
 export interface ComparisonStats {
     sil?: number;
@@ -89,7 +90,7 @@ export default function initCompareAll(
         }
         comparisonResults[osoba][item.stat] = val;
         pending--;
-        return undefined;
+        return SKIP_LINE;
     }, "compare-all");
 
     function send(statWord: string, stat: keyof ComparisonStats, id: string) {
