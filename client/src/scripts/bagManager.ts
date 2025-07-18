@@ -46,7 +46,8 @@ const bagPronouns: Record<string, { biernik: string; dopelniacz: string }> = {
     kaletka: { biernik: "swoja", dopelniacz: "swojej" },
 };
 
-type ContainerConfig = Record<(typeof availableTypes)[number], string>;
+export type ContainerType = (typeof availableTypes)[number];
+type ContainerConfig = Record<ContainerType, string>;
 
 const containerConfig: ContainerConfig = {
     money: "plecak",
@@ -54,6 +55,10 @@ const containerConfig: ContainerConfig = {
     food: "plecak",
     other: "plecak",
 };
+
+export function getContainer(type: keyof ContainerConfig): string {
+    return containerConfig[type];
+}
 
 function getBagForms(bag: string) {
     return {
