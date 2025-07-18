@@ -33,7 +33,8 @@ export default function initAttackBeep(client: Client) {
             return false; // If no enemy guilds selected no beep needed
         }
         const guild = findPersonGuild(attackerName);
-        return guild ? enemyGuilds.includes(guild) : true; // If guild not found, beep anyway
+        // Beep only when we know the attacker belongs to an enemy guild
+        return !!guild && enemyGuilds.includes(guild);
     }
 
     const beep = (raw: string, _line: string, matches: RegExpMatchArray): string => {
