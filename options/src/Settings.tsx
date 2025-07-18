@@ -24,6 +24,7 @@ interface Settings {
     collectMode: number;
     collectMoneyType: number;
     collectExtra: string[];
+    xtermPalette: 'arkadia' | 'proper';
 }
 
 function SettingsForm() {
@@ -37,6 +38,7 @@ function SettingsForm() {
         collectMode: 3,
         collectMoneyType: 1,
         collectExtra: [],
+        xtermPalette: 'arkadia',
     })
 
     const [extraInput, setExtraInput] = useState<string>('')
@@ -90,6 +92,18 @@ function SettingsForm() {
                         onChange={e => onChangeSetting(s => s.inlineCompassRose = e.target.checked)}
                         className="me-2"
                     />
+                    <Form.Group className="d-flex align-items-center">
+                        <Form.Label className="me-1 mb-0">Paleta kolorów:</Form.Label>
+                        <Form.Select
+                            size="sm"
+                            value={settings.xtermPalette}
+                            onChange={e => onChangeSetting(s => s.xtermPalette = e.target.value as any)}
+                            className="w-auto"
+                        >
+                            <option value="arkadia">Arkadia</option>
+                            <option value="proper">XTerm</option>
+                        </Form.Select>
+                    </Form.Group>
                 </div>
             </div>
             <div className="mb-4 border rounded p-3">
