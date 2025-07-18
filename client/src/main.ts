@@ -3,6 +3,7 @@ import registerLuaGagTriggers from "./scripts/./luaGags";
 
 import blockers from './blockers.json'
 import initShips from './scripts/ships'
+import initTransportStops from './scripts/transportStops'
 import initBuses from './scripts/buses'
 import initGates from './scripts/gates'
 import initAttackBeep from './scripts/attackBeep'
@@ -93,6 +94,7 @@ export function registerScripts(client: Client) {
     })
 
     initShips(client)
+    initTransportStops(client)
     initBuses(client)
     initGates(client)
     initAttackBeep(client)
