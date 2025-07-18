@@ -53,9 +53,15 @@ export default function initBuses(client: Client) {
         return undefined;
     };
 
-    client.Triggers.registerTrigger(/.*dylizans powoli zatrzymuje sie.*/, boardDylizans, "buses");
-    client.Triggers.registerTrigger(/.*i wsiada do.*dylizansu/, boardDylizans, "buses");
-    client.Triggers.registerTrigger(/[A-Za-z]+ stojacy dylizans/, boardDylizans, "buses");
+    client.Triggers.registerTrigger(
+        [
+            /.*dylizans powoli zatrzymuje sie.*/,
+            /.*i wsiada do.*dylizansu/,
+            /[A-Za-z]+ stojacy dylizans/,
+        ],
+        boardDylizans,
+        "buses"
+    );
 
     const boardPowozPatterns: Array<RegExp | string> = [
         /.*(?:po)?woz.*powoli zatrzymuje sie\./,
@@ -63,19 +69,20 @@ export default function initBuses(client: Client) {
         "Drewniany stojacy woz",
         "Otwarty stojacy powoz",
         "Kupiecki stojacy woz z plandeka",
+        /.*i wsiada do.*powozu/,
     ];
-    boardPowozPatterns.forEach(p =>
-        client.Triggers.registerTrigger(p, boardPowoz, "buses")
+    client.Triggers.registerTrigger(boardPowozPatterns, boardPowoz, "buses");
+
+    client.Triggers.registerTrigger(exitPowozPatterns, exitPowoz, "buses");
+
+    client.Triggers.registerTrigger(
+        [/^.*siada w .*bryczce\.$/, /^.*siada na .*wozie\.$/],
+        boardBryczka,
+        "buses"
     );
-
-    exitPowozPatterns.forEach(p =>
-        client.Triggers.registerTrigger(p, exitPowoz, "buses")
+    client.Triggers.registerTrigger(
+        [/^.*zsiada z .*bryczki\.$/, /^.*zsiada z .*wozu\.$/],
+        exitBryczka,
+        "buses"
     );
-
-    client.Triggers.registerTrigger(/.*i wsiada do.*powozu/, boardPowoz, "buses");
-
-    client.Triggers.registerTrigger(/^.*siada w .*bryczce\.$/, boardBryczka, "buses");
-    client.Triggers.registerTrigger(/^.*zsiada z .*bryczki\.$/, exitBryczka, "buses");
-    client.Triggers.registerTrigger(/^.*siada na .*wozie\.$/, boardBryczka, "buses");
-    client.Triggers.registerTrigger(/^.*zsiada z .*wozu\.$/, exitBryczka, "buses");
 }
