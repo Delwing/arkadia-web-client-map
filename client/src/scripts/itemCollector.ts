@@ -1,4 +1,5 @@
 import Client from "../Client";
+import { containerAction, getContainer, ContainerType } from "./bagManager";
 
 export default class ItemCollector {
     private client: Client;
@@ -52,21 +53,32 @@ export default class ItemCollector {
     keyPressed(force = false, index?: number) {
         const from = index != null ? `${index}. ciala` : "ciala";
         if (this.checkBody || force) {
+            let money = false;
+            let gems = false;
+            const extras: string[] = [];
             if ([1, 3, 4, 6].includes(this.currentMode)) {
                 if (this.moneyType === 1) {
                     this.client.sendCommand(`wez monety z ${from}`);
+                    money = true;
                 } else if (this.moneyType === 2) {
                     this.client.sendCommand(`wez srebrne monety z ${from}`);
                     this.client.sendCommand(`wez zlote monety z ${from}`);
+                    money = true;
                 } else if (this.moneyType === 3) {
                     this.client.sendCommand(`wez zlote monety z ${from}`);
+                    money = true;
                 }
             }
             if ([2, 3, 5, 6].includes(this.currentMode)) {
                 this.client.sendCommand(`wez kamienie z ${from}`);
                 this.client.sendCommand("ocen kamienie");
+                gems = true;
             }
-            this.extra.forEach((it) => this.client.sendCommand(`wez ${it} z ${from}`));
+            this.extra.forEach((it) => {
+                this.client.sendCommand(`wez ${it} z ${from}`);
+                extras.push(it);
+            });
+            this.depositCollected(money, gems, extras);
             this.checkBody = false;
         }
     }
@@ -102,6 +114,26 @@ export default class ItemCollector {
         if (item) {
             this.extra = this.extra.filter((e) => e !== item);
         }
+    }
+
+    private depositCollected(money: boolean, gems: boolean, extras: string[]) {
+        const bagItems: Record<string, { type: ContainerType; items: string[] }> = {};
+        const add = (type: ContainerType, item: string) => {
+            const bag = getContainer(type);
+            if (!bag) return;
+            if (!bagItems[bag]) {
+                bagItems[bag] = { type, items: [] };
+            }
+            bagItems[bag].items.push(item);
+        };
+
+        if (money) add("money", "monety");
+        if (gems) add("gems", "kamienie");
+        extras.forEach((it) => add("other", it));
+
+        Object.values(bagItems).forEach(({ type, items }) => {
+            containerAction(this.client, type, "put", items.join(","));
+        });
     }
 }
 
