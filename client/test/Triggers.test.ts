@@ -112,4 +112,28 @@ describe('Triggers', () => {
     expect(result).toBe('Spotykasz [Dargoth MC] tutaj.');
     expect(cb).toHaveBeenCalledTimes(1);
   });
+
+  test('array of patterns uses first match and stops checking further', () => {
+    const triggers = new Triggers({} as any);
+    const second = jest.fn();
+    const cb = jest.fn();
+    triggers.registerTrigger([/foo/, second], cb);
+
+    triggers.parseLine('foo', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  test('array of patterns matches later pattern when earlier fails', () => {
+    const triggers = new Triggers({} as any);
+    const cb = jest.fn();
+    triggers.registerTrigger([/foo/, /bar/], cb);
+
+    triggers.parseLine('bar', '');
+
+    expect(cb).toHaveBeenCalledTimes(1);
+    const matches = cb.mock.calls[0][2];
+    expect(matches[0]).toBe('bar');
+  });
 });
