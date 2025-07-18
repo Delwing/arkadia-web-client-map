@@ -45,19 +45,27 @@ export default function initShips(client: Client) {
 
     client.Triggers.registerTrigger(/.*przybija wielki trojmasztowy galeon\.$/, board(true), "ships");
 
-    [
-        /.*(rypa|ratwa|rom|arka) przybija do brzegu\.$/,
-        /^Tratwa(\.|,| i)/,
-        /^Rzeczna tratwa(\.|,| i)/,
-    ].forEach(p => client.Triggers.registerTrigger(p, board(true), "ships"));
+    client.Triggers.registerTrigger(
+        [
+            /.*(rypa|ratwa|rom|arka) przybija do brzegu\.$/,
+            /^Tratwa(\.|,| i)/,
+            /^Rzeczna tratwa(\.|,| i)/,
+        ],
+        board(true),
+        "ships"
+    );
 
     client.Triggers.registerTrigger(/^(?!Ktos|Jakis|Jakas).*(Doplynelismy.*(Mozna|w calej swej)|Marynarze sprawnie cumuja)/, disembark, "ships");
 
-    [
-        /^[a-zA-Z]+ [a-z]+ prom(?:$|[^a-z])/,
-        /^Prom(\.|,| i)/,
-        /^Barka(\.|,| i)/,
-    ].forEach(p => client.Triggers.registerTrigger(p, board(true), "ships"));
+    client.Triggers.registerTrigger(
+        [
+            /^[a-zA-Z]+ [a-z]+ prom(?:$|[^a-z])/,
+            /^Prom(\.|,| i)/,
+            /^Barka(\.|,| i)/,
+        ],
+        board(true),
+        "ships"
+    );
 
     const statki = [
         /^([A-Za-z]+) (statek|knara)(\.|,| i)/,
@@ -80,5 +88,5 @@ export default function initShips(client: Client) {
         /Dluga niezgrabna barka/,
         /Plaskodenny skeid/,
     ];
-    statki.forEach(p => client.Triggers.registerTrigger(p, board(false), "ships"));
+    client.Triggers.registerTrigger(statki, board(false), "ships");
 }
