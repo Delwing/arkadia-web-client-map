@@ -358,15 +358,20 @@ button:focus-visible {
 
 #location-label {
   position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
+  top: 0.5rem;
+  left: 0.5rem;
   font-family: monospace;
   font-size: 0.75rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 0.2rem 0.4rem;
   z-index: 1011;
   pointer-events: none;
+  border: 1px solid;
+  border-radius: 7px;
+  backdrop-filter: blur(2px);
+  opacity: 0.75;
+
 }
 
 /* Mobile-specific styles */
