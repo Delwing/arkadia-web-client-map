@@ -97,10 +97,20 @@ export default function initCompareAll(
         client.sendCommand(`porownaj ${statWord} z ob_${id}`, false);
     }
 
-    function run() {
+    function findByShortcut(short: string): string | undefined {
+        const lower = short.toLowerCase();
+        const obj = client
+            .ObjectManager
+            .getObjectsOnLocation()
+            .find(o => o.shortcut?.toLowerCase() === lower);
+        return obj ? String(obj.num) : undefined;
+    }
+
+    function run(short?: string) {
         comparisonResults = {};
         queue = [];
-        const targets = getTargets(client);
+        const id = short ? findByShortcut(short) : undefined;
+        const targets = short ? (id ? [id] : []) : getTargets(client);
         pending = targets.length * 3;
         if (pending === 0) {
             client.print("No one else is here to compare with.");
@@ -115,7 +125,10 @@ export default function initCompareAll(
     }
 
     if (aliases) {
-        aliases.push({ pattern: /^\/porownaj_ze_wszystkimi$/, callback: run });
+        aliases.push({
+            pattern: /^\/por(?: ([A-Za-z0-9]+))?$/,
+            callback: (m: RegExpMatchArray) => run(m[1])
+        });
     }
 }
 
