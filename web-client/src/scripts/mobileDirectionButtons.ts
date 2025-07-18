@@ -31,6 +31,39 @@ export default class MobileDirectionButtons {
     private isScrolling = false;
     private lastScrollTop = 0;
     private collapsed = false;
+    private directionButtons: Record<string, HTMLButtonElement | null> = {};
+
+    private readonly polishToEnglish: Record<string, string> = {
+        "polnoc": "north",
+        "poludnie": "south",
+        "wschod": "east",
+        "zachod": "west",
+        "polnocny-wschod": "northeast",
+        "polnocny-zachod": "northwest",
+        "poludniowy-wschod": "southeast",
+        "poludniowy-zachod": "southwest",
+        "dol": "down",
+        "gora": "up",
+        "gore": "up",
+    };
+
+    private readonly longToShort: Record<string, string> = {
+        north: "n",
+        south: "s",
+        east: "e",
+        west: "w",
+        northeast: "ne",
+        northwest: "nw",
+        southeast: "se",
+        southwest: "sw",
+        up: "u",
+        down: "d",
+    };
+
+    private getShortDir(dir: string): string {
+        const long = this.polishToEnglish[dir] ?? dir;
+        return this.longToShort[long] ?? dir;
+    }
 
     constructor(client: Client) {
         this.client = client;
@@ -49,12 +82,32 @@ export default class MobileDirectionButtons {
             return;
         }
 
+        this.directionButtons = {
+            nw: document.getElementById('nw-button') as HTMLButtonElement | null,
+            n: document.getElementById('n-button') as HTMLButtonElement | null,
+            ne: document.getElementById('ne-button') as HTMLButtonElement | null,
+            w: document.getElementById('w-button') as HTMLButtonElement | null,
+            e: document.getElementById('e-button') as HTMLButtonElement | null,
+            sw: document.getElementById('sw-button') as HTMLButtonElement | null,
+            s: document.getElementById('s-button') as HTMLButtonElement | null,
+            se: document.getElementById('se-button') as HTMLButtonElement | null,
+            u: document.getElementById('u-button') as HTMLButtonElement | null,
+            d: document.getElementById('d-button') as HTMLButtonElement | null,
+        };
+
         this.setupEventHandlers();
         this.updateBracketRightButton();
         this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
         this.setupKeyboardHandlers();
+
+        this.client.addEventListener('gmcp.room.info', (ev: CustomEvent) => {
+            const exits = Array.isArray(ev.detail?.exits) ? ev.detail.exits : [];
+            this.highlightExits(exits);
+        });
+
+        this.highlightExits([]);
 
         // Listen for window resize to check if mobile view
         window.addEventListener('resize', () => {
@@ -487,6 +540,18 @@ export default class MobileDirectionButtons {
             this.container.classList.remove('collapsed');
         }
         this.updateToggleButton();
+    }
+
+    private highlightExits(exits: string[]) {
+        const available = new Set(exits.map((e) => this.getShortDir(e)));
+        Object.entries(this.directionButtons).forEach(([dir, btn]) => {
+            if (!btn) return;
+            if (available.has(dir)) {
+                btn.classList.add('exit-available');
+            } else {
+                btn.classList.remove('exit-available');
+            }
+        });
     }
 
     private renderList(target: HTMLDivElement | null, regex: RegExp, prefix: string) {
