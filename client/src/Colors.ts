@@ -1,5 +1,6 @@
 import xtermArkadia from "./xtermArkadia";
 import xtermProper from "./xtermProper";
+import SettingsStorage from "./SettingsStorage";
 
 function hexToRgb(hex: string): [number, number, number] {
     const value = parseInt(hex.replace(/^#/, ''), 16);
@@ -17,13 +18,10 @@ export const colorCodes = {
 }
 
 const palette = (() => {
-    try {
-        const raw = localStorage.getItem('settings');
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            return parsed.xtermPalette === 'proper' ? 'proper' : 'arkadia';
-        }
-    } catch {}
+    const data = SettingsStorage.load('settings', {} as any);
+    if (data && (data as any).xtermPalette === 'proper') {
+        return 'proper';
+    }
     return 'arkadia';
 })();
 colorCodes.xterm = palette === 'proper' ? colorCodes.xtermProper : colorCodes.xtermArkadia;

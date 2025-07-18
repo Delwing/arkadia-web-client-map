@@ -165,14 +165,9 @@ export default class Client {
         })
         if (!isAlias) {
             command = this.Map.parseCommand(command)
-            const split = command.split(/[#;]/)
-            if (split.length > 1) {
-                split.forEach(part => {
-                    this.sendCommand(part)
-                })
-            } else {
-                this.clientAdapter.send(this.Map.move(command).direction)
-            }
+            command.split(/[#;]/).forEach(part => {
+                this.clientAdapter.send(this.Map.move(part).direction)
+            })
         }
     }
 

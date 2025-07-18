@@ -1,4 +1,5 @@
 import storage from "@options/src/storage.ts";
+import SettingsStorage from "@client/src/SettingsStorage";
 
 export default class MockPort {
     listeners: Array<(msg: any) => void> = [];
@@ -25,16 +26,15 @@ export default class MockPort {
 
     postMessage(message: any) {
         if (message.type === 'NEW_NPC') {
-            const raw = localStorage.getItem('npc');
-            const npc = raw ? JSON.parse(raw) : [];
+            const npc = SettingsStorage.load('npc', [] as any[]);
             npc.push({name: message.name, loc: message.loc});
-            localStorage.setItem('npc', JSON.stringify(npc));
+            SettingsStorage.save('npc', npc);
             this.dispatch({npc});
             this.dispatch({storage: {key: 'npc', value: npc}});
             return;
         }
         if (message.type === 'SET_STORAGE') {
-            localStorage.setItem(message.key, JSON.stringify(message.value));
+            SettingsStorage.save(message.key, message.value);
             this.dispatch({storage: {key: message.key, value: message.value}});
             if (message.key === 'settings' || message.key === 'npc') {
                 this.dispatch({[message.key]: message.value});
@@ -46,16 +46,11 @@ export default class MockPort {
     }
 
     private sendStorage(key: string) {
-        const raw = localStorage.getItem(key);
-        if (raw !== null) {
-            try {
-                const value = JSON.parse(raw);
-                this.dispatch({storage: {key, value}});
-                if (key === 'settings' || key === 'npc') {
-                    this.dispatch({[key]: value});
-                }
-            } catch {
-                // ignore malformed json
+        const value = SettingsStorage.load<any>(key, null as any);
+        if (value !== null && value !== undefined) {
+            this.dispatch({storage: {key, value}});
+            if (key === 'settings' || key === 'npc') {
+                this.dispatch({[key]: value});
             }
         }
     };

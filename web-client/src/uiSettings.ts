@@ -1,4 +1,5 @@
 import Modal from "bootstrap/js/dist/modal";
+import SettingsStorage from "@client/src/SettingsStorage";
 
 interface UiSettings {
     contentFontSize: number;
@@ -71,28 +72,20 @@ function apply(settings: UiSettings) {
 }
 
 function load(): UiSettings {
-    try {
-        const raw = localStorage.getItem('uiSettings');
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            const mapScale = (() => {
-                const value = Math.abs(parseFloat(parsed.mapScale));
-                return value > 0 ? value : defaultSettings.mapScale;
-            })();
-            const mapLimit = (() => {
-                const value = parseInt(parsed.mapLimit);
-                return value > 0 ? value : defaultSettings.mapLimit;
-            })();
-            return { ...defaultSettings, ...parsed, mapScale, mapLimit, emojiLabels: !!parsed.emojiLabels };
-        }
-    } catch {
-        // ignore malformed data
-    }
-    return { ...defaultSettings };
+    const stored = SettingsStorage.load('uiSettings', defaultSettings);
+    const mapScale = (() => {
+        const value = Math.abs(parseFloat(String((stored as any).mapScale)));
+        return value > 0 ? value : defaultSettings.mapScale;
+    })();
+    const mapLimit = (() => {
+        const value = parseInt(String((stored as any).mapLimit));
+        return value > 0 ? value : defaultSettings.mapLimit;
+    })();
+    return { ...defaultSettings, ...stored, mapScale, mapLimit, emojiLabels: !!(stored as any).emojiLabels };
 }
 
 function save(settings: UiSettings) {
-    localStorage.setItem('uiSettings', JSON.stringify(settings));
+    SettingsStorage.save('uiSettings', settings);
 }
 
 export default function initUiSettings() {
