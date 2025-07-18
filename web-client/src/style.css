@@ -603,6 +603,7 @@ button:focus-visible {
   display: none;
   align-items: center;
   justify-content: center;
+  top: -25%
 }
 
 #auth-close,
@@ -622,7 +623,8 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 1vh;
-  width: 200px;
+  max-width: 400px;
+  width: 100%;
 }
 
 #login-submit {
@@ -637,4 +639,10 @@ button:focus-visible {
 
 .output_msg, .output_msg_text {
     padding: 0;
+}
+
+.logo {
+  width: auto;
+  height: auto;
+  max-width: 75vw;
 }
