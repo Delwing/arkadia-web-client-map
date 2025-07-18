@@ -2,7 +2,7 @@ import { saveRecording, getRecording, getRecordingNames, deleteRecording, Record
 
 export interface RecorderHooks {
     processIncomingData(data: string): void;
-    sendCommand(command: string): void;
+    sendCommand(command: string, echo?: boolean): void;
     emit(event: string, ...args: any[]): void;
 }
 

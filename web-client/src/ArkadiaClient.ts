@@ -201,9 +201,9 @@ class ArkadiaClient implements ClientAdapter{
     /**
      * Compatibility wrapper matching old client API
      */
-    sendCommand(command: string): void {
+    sendCommand(command: string, echo: boolean = true): void {
         this.recorder.handleOutgoing(command);
-        this.send(command);
+        this.send(command, echo);
     }
 
     output(text?: string, type?: string) {
