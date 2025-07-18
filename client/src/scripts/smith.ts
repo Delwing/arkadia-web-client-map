@@ -21,27 +21,25 @@ export default function initSmith(client: Client, aliases?: { pattern: RegExp; c
         }, 1000);
     };
 
-    const startWork = () => {
+    const startWork = (): undefined => {
         working = true;
     };
 
-    const endWork = () => {
+    const endWork = (): undefined => {
         if (working) {
             working = false;
             client.FunctionalBind.set(REPAIR_CMD);
-            scheduleDefault();
         }
     };
 
-    const nothingToRepair = () => {
+    const nothingToRepair = (): undefined => {
         working = false;
-        client.FunctionalBind.set(REPAIR_CMD);
         scheduleDefault();
     };
 
     client.Triggers.registerTrigger(/konczy prace\.$/, endWork, tag);
     client.Triggers.registerTrigger(/daje ci/, endWork, tag);
-    client.Triggers.registerTrigger(/do ciebie: nie (?:nadaj|wymaga).* (?:ostrzenia|naprawy)/, nothingToRepair, tag);
+    client.Triggers.registerTrigger(/do ciebie: .+ nie (?:nadaj|wymaga).* (?:ostrzenia|naprawy)/, nothingToRepair, tag);
     client.Triggers.registerTrigger(/do ciebie: Zobacze co da sie zrobic\./, startWork, tag);
 
     if (aliases) {
