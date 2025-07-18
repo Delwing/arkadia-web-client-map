@@ -612,6 +612,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (historyIndex === -1) {
             currentInput = messageInput.value;
+            // Skip the just sent command if the input wasn't modified
+            if (
+                direction === 'up' &&
+                commandHistory.length > 1 &&
+                messageInput.value === commandHistory[commandHistory.length - 1]
+            ) {
+                historyIndex = 1;
+                messageInput.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                messageInput.select();
+                return;
+            }
         }
 
         if (direction === 'up') {
