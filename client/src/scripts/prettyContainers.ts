@@ -393,19 +393,19 @@ const defaultTransforms: TransformDefinition[] = [
 ]
 
 
-async function loadMagicAndKeysFilter() {
+async function loadMagicAndKeysFilter(client: Client) {
     try {
         const [keys, magics] = await Promise.all([loadMagicKeys(), loadMagics()]);
         const keyRegexp = createRegexpFilter(keys);
         defs.push({ name: "klucze", filter: keyRegexp });
         defaultTransforms.push({
             check: keyRegexp,
-            transform: (item) => colorString(item, KEYS_COLOR),
+            transform: (item) => colorString(client.OutputHandler.makeStringClickable(item, () => client.sendCommand(`wybierz ${item}`)), KEYS_COLOR),
         });
         const magicRegexp = createRegexpFilter(magics);
         defaultTransforms.push({
             check: magicRegexp,
-            transform: (item) => colorString(item, MAGICS_COLOR),
+            transform: (item) => colorString(client.OutputHandler.makeStringClickable(item, () => client.sendCommand(`wybierz ${item}`)), MAGICS_COLOR),
         });
         magicAndKeysFilter = (item: ContainerItem) =>
             keyRegexp(item.name) || magicRegexp(item.name);
@@ -416,7 +416,7 @@ async function loadMagicAndKeysFilter() {
 
 
 export default function initContainers(client: Client) {
-    loadMagicAndKeysFilter();
+    loadMagicAndKeysFilter(client);
     const tag = 'prettyContainers';
     let enabled = false;
     let columns = 1;
