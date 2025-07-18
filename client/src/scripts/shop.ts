@@ -15,7 +15,7 @@ export interface ShopOptions {
 
 export const MITHRIL_COLOR = findClosestColor('#afeeee');
 export const GOLD_COLOR = findClosestColor('#FFD700');
-export const SILVER_COLOR = findClosestColor('#C0C0C0');
+export const SILVER_COLOR = findClosestColor('#dadada');
 export const COPPER_COLOR = findClosestColor('#8B4513');
 export const CURRENCY_COLORS = [
     MITHRIL_COLOR,

@@ -9,8 +9,8 @@ export default function initCoinColors(client: Client) {
         { regex: /[Zz]lot(a|e|ych) monet(y|e|a|)/, color: GOLD_COLOR },
         { regex: /(\w+\s+)?mithrylow(a|e|ych) monet(y|e|a|)/i, color: MITHRIL_COLOR },
         { regex: /[Mm]ithrylow(a|e|ych) monet(y|e|a|)/, color: MITHRIL_COLOR },
-        { regex: /srebrn(a|e|ych) monet(y|e|a|)/i, color: SILVER_COLOR },
         { regex: /(\w+\s+)?srebrn(a|e|ych) monet(y|e|a|)/i, color: SILVER_COLOR },
+        { regex: /srebrn(a|e|ych) monet(y|e|a|)/i, color: SILVER_COLOR },
         { regex: /(\w+\s+)?miedzian(a|e|ych) monet(y|e|a|)/i, color: COPPER_COLOR },
         { regex: /miedzian(a|e|ych) monet(y|e|a|)/i, color: COPPER_COLOR }
     ];
