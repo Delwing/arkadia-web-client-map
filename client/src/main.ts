@@ -21,6 +21,7 @@ import initHerbCounter from './scripts/herbCounter'
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
 import initDurability from './scripts/durability'
+import initWearUsed from './scripts/wearUsed'
 import initInvite from './scripts/invite'
 import initObjectAliases from './scripts/objectAliases'
 import initMagicKeys from './scripts/magicKeys'
@@ -113,6 +114,7 @@ export function registerScripts(client: Client) {
     initLvlCalc(client, aliases)
     initItemCondition(client)
     initDurability(client)
+    initWearUsed(client)
     initInvite(client)
     initObjectAliases(client, aliases)
     initMagicKeys(client)
