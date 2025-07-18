@@ -47,6 +47,10 @@ function apply(settings: UiSettings) {
         btn.style.fontSize = baseFont * settings.buttonSize + 'px';
     });
 
+    if (content) {
+        content.scrollTop = content.scrollHeight;
+    }
+
     // Adjust grid row size for dynamically created Z buttons
     document.querySelectorAll<HTMLDivElement>('.mobile-z-buttons').forEach(div => {
         const baseRow = 36; // default row height in px
