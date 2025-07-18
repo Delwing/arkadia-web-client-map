@@ -52,8 +52,9 @@ export default class PackageHelper {
 
     init() {
         this.enabled = true;
-        this.client.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (_rawLine, __, matches): undefined => {
+        this.client.Triggers.registerTrigger(/^Wypisano na niej duzymi literami: ([a-zA-Z ]+).*$/, (rawLine, __, matches): string => {
             this.leadToPackage(toTitleCase(matches[1]));
+            return colorStringInLine(rawLine, matches[1], KNOWN_NPC_COLOR)
         }, tag)
         this.client.Triggers.registerMultilineTrigger(packageTableRegex, this.packageTableCallback(), tag)
     }
