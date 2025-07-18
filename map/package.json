@@ -2,12 +2,6 @@
   "name": "arkadia-www-client-map",
   "version": "0.0.1",
   "license": "MIT",
-  "scripts": {
-    "prebuild": "mkdirp ../extension/dist/",
-    "prepublish": "yarn run build",
-    "build": "browserify embedded.js > ../extension/dist/embedded.js",
-    "watch": "watchify embedded.js -o ../extension/dist/embedded.js -v"
-  },
   "dependencies": {
     "mudlet-map-renderer": "github:Delwing/js-mudlet-map-renderer#memory-leak-issues"
   },
