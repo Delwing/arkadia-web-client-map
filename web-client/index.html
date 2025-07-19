@@ -255,8 +255,62 @@
                     <h5 class="modal-title">Przyciski mobilne</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body d-flex flex-column gap-2">
-                    <div class="mobile-button-config" data-button-id="z-list-toggle">
+                <div class="modal-body position-relative d-flex flex-column align-items-center gap-2">
+                    <div id="mobile-buttons-preview" class="mobile-direction-buttons">
+                        <div class="mobile-attack-buttons">
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="z-list-toggle">/z</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="zas-list-toggle">/zas</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="go-button">/go</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="buttons-toggle">⇩</button>
+                        </div>
+                        <div class="mobile-top-buttons">
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="bracket-right-button">]</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="button-1">wesprzyj</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="button-2">/z cel</button>
+                            <button class="mobile-button mobile-button-text top-button" data-button-id="button-3">/zas cel</button>
+                        </div>
+                        <div class="mobile-direction-main">
+                            <div class="mobile-direction-grid">
+                                <button class="mobile-button direction-button" data-button-id="nw-button">↖</button>
+                                <button class="mobile-button direction-button" data-button-id="n-button">↑</button>
+                                <button class="mobile-button direction-button" data-button-id="ne-button">↗</button>
+                                <button class="mobile-button direction-button" data-button-id="w-button">←</button>
+                                <button class="mobile-button mobile-button-text direction-button" data-button-id="c-button">zerknij</button>
+                                <button class="mobile-button direction-button" data-button-id="e-button">→</button>
+                                <button class="mobile-button direction-button" data-button-id="sw-button">↙</button>
+                                <button class="mobile-button direction-button" data-button-id="s-button">↓</button>
+                                <button class="mobile-button direction-button" data-button-id="se-button">↘</button>
+                            </div>
+                            <div class="mobile-right-buttons">
+                                <button class="mobile-button mobile-button-text direction-button" data-button-id="u-button">u</button>
+                                <button class="mobile-button mobile-button-text direction-button" data-button-id="d-button">d</button>
+                                <button class="mobile-button mobile-button-text direction-button" data-button-id="special-exit-button" title="">3</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="mobile-buttons-configs">
+                        <div class="mobile-button-config d-none" data-button-id="z-list-toggle">
+                            <label class="form-label">Makro
+                                <select class="form-select form-select-sm mobile-button-macro">
+                                    <option value="functional">Send functional</option>
+                                    <option value="zList">Create /z dropdown list</option>
+                                    <option value="zaList">Create /za dropdown list</option>
+                                    <option value="command">Send command</option>
+                            </select>
+                        </label>
+                        <label class="form-label">Etykieta
+                            <input type="text" class="form-control form-control-sm mobile-button-label" />
+                        </label>
+                        <label class="form-label d-flex align-items-center gap-1">Kolor
+                            <input type="color" class="form-control form-control-color form-control-sm mobile-button-color flex-grow-1" />
+                            <button type="button" class="btn btn-sm btn-secondary mobile-button-color-reset">↺</button>
+                        </label>
+                        <label class="form-label mobile-button-command-label">
+                            Komenda
+                            <textarea class="form-control form-control-sm mobile-button-command"></textarea>
+                        </label>
+                    </div>
+                    <div class="mobile-button-config d-none" data-button-id="zas-list-toggle">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>
@@ -277,7 +331,7 @@
                             <textarea class="form-control form-control-sm mobile-button-command"></textarea>
                         </label>
                     </div>
-                    <div class="mobile-button-config" data-button-id="zas-list-toggle">
+                    <div class="mobile-button-config d-none" data-button-id="go-button">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>
@@ -298,7 +352,7 @@
                             <textarea class="form-control form-control-sm mobile-button-command"></textarea>
                         </label>
                     </div>
-                    <div class="mobile-button-config" data-button-id="go-button">
+                    <div class="mobile-button-config d-none" data-button-id="bracket-right-button">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>
@@ -319,7 +373,7 @@
                             <textarea class="form-control form-control-sm mobile-button-command"></textarea>
                         </label>
                     </div>
-                    <div class="mobile-button-config" data-button-id="bracket-right-button">
+                    <div class="mobile-button-config d-none" data-button-id="button-1">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>
@@ -340,7 +394,7 @@
                             <textarea class="form-control form-control-sm mobile-button-command"></textarea>
                         </label>
                     </div>
-                    <div class="mobile-button-config" data-button-id="button-1">
+                    <div class="mobile-button-config d-none" data-button-id="button-2">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>
@@ -361,28 +415,7 @@
                             <textarea class="form-control form-control-sm mobile-button-command"></textarea>
                         </label>
                     </div>
-                    <div class="mobile-button-config" data-button-id="button-2">
-                        <label class="form-label">Makro
-                            <select class="form-select form-select-sm mobile-button-macro">
-                                <option value="functional">Send functional</option>
-                                <option value="zList">Create /z dropdown list</option>
-                                <option value="zaList">Create /za dropdown list</option>
-                                <option value="command">Send command</option>
-                            </select>
-                        </label>
-                        <label class="form-label">Etykieta
-                            <input type="text" class="form-control form-control-sm mobile-button-label" />
-                        </label>
-                        <label class="form-label d-flex align-items-center gap-1">Kolor
-                            <input type="color" class="form-control form-control-color form-control-sm mobile-button-color flex-grow-1" />
-                            <button type="button" class="btn btn-sm btn-secondary mobile-button-color-reset">↺</button>
-                        </label>
-                        <label class="form-label mobile-button-command-label">
-                            Komenda
-                            <textarea class="form-control form-control-sm mobile-button-command"></textarea>
-                        </label>
-                    </div>
-                    <div class="mobile-button-config" data-button-id="button-3">
+                    <div class="mobile-button-config d-none" data-button-id="button-3">
                         <label class="form-label">Makro
                             <select class="form-select form-select-sm mobile-button-macro">
                                 <option value="functional">Send functional</option>

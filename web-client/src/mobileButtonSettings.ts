@@ -56,6 +56,16 @@ export default function initMobileButtonSettings() {
     const saveBtn = modalEl.querySelector('#mobile-buttons-save') as HTMLButtonElement;
 
     const sections = Array.from(modalEl.querySelectorAll<HTMLElement>('.mobile-button-config'));
+    const previewButtons = Array.from(modalEl.querySelectorAll<HTMLButtonElement>('#mobile-buttons-preview button[data-button-id]'));
+    const modalBody = modalEl.querySelector('.modal-body') as HTMLElement;
+    let activeConfig: HTMLElement | null = null;
+
+    const hideConfig = () => {
+        if (activeConfig) {
+            activeConfig.style.display = 'none';
+            activeConfig = null;
+        }
+    };
 
     let current = loadSettings();
     sections.forEach(section => {
@@ -87,6 +97,35 @@ export default function initMobileButtonSettings() {
         }
         update();
     });
+
+    previewButtons.forEach(btn => {
+        const id = btn.dataset.buttonId!;
+        const config = sections.find(s => s.dataset.buttonId === id);
+        if (!config) return;
+        btn.addEventListener('click', ev => {
+            ev.stopPropagation();
+            if (activeConfig === config) {
+                hideConfig();
+                return;
+            }
+            hideConfig();
+            const rect = btn.getBoundingClientRect();
+            const bodyRect = modalBody.getBoundingClientRect();
+            config.style.left = rect.left - bodyRect.left + 'px';
+            config.style.top = rect.bottom - bodyRect.top + 4 + 'px';
+            config.style.display = 'block';
+            activeConfig = config;
+        });
+    });
+
+    modalEl.addEventListener('click', (ev) => {
+        if (activeConfig && !activeConfig.contains(ev.target as Node)) {
+            const isButton = (ev.target as HTMLElement).closest('#mobile-buttons-preview button');
+            if (!isButton) hideConfig();
+        }
+    });
+
+    modalEl.addEventListener('hide.bs.modal', hideConfig);
 
     const read = (): Record<string, ButtonSetting> => {
         const result: Record<string, ButtonSetting> = {};
