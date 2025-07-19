@@ -86,10 +86,11 @@ function getFromLocalStorage(key: string, ttl?: number) {
 
 export interface LoadOptions {
     url: string;
-    localStorageKey: string;
+    localStorageKey?: string;
     indexedDB?: IndexedDBConfig;
     ttl?: number;
     onProgress?: (progress: number, loaded?: number, total?: number) => void;
+    cacheInLocalStorage?: boolean;
 }
 
 export async function loadCachedJSON<T>(options: LoadOptions): Promise<T> {
@@ -98,18 +99,22 @@ export async function loadCachedJSON<T>(options: LoadOptions): Promise<T> {
             const data = await getFromIndexedDB(options.indexedDB, options.ttl);
             if (data) {
                 options.onProgress?.(100);
-                storeInLocalStorage(options.localStorageKey, data);
+                if (options.cacheInLocalStorage !== false && options.localStorageKey) {
+                    storeInLocalStorage(options.localStorageKey, data);
+                }
                 return data as T;
             }
         } catch (e) {
-            console.warn('Failed to load from IndexedDB, falling back to localStorage:', e);
+            console.warn('Failed to load from IndexedDB:', e);
         }
     }
 
-    const localData = getFromLocalStorage(options.localStorageKey, options.ttl);
-    if (localData) {
-        options.onProgress?.(100);
-        return localData as T;
+    if (options.cacheInLocalStorage !== false && options.localStorageKey) {
+        const localData = getFromLocalStorage(options.localStorageKey, options.ttl);
+        if (localData) {
+            options.onProgress?.(100);
+            return localData as T;
+        }
     }
 
     const response = await fetch(options.url);
@@ -147,6 +152,8 @@ export async function loadCachedJSON<T>(options: LoadOptions): Promise<T> {
             console.warn('Failed to store in IndexedDB:', e);
         }
     }
-    storeInLocalStorage(options.localStorageKey, data);
+    if (options.cacheInLocalStorage !== false && options.localStorageKey) {
+        storeInLocalStorage(options.localStorageKey, data);
+    }
     return data;
 }

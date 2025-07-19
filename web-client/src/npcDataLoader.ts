@@ -9,5 +9,6 @@ export function loadNpcData() {
         localStorageKey: 'npc',
         indexedDB: { dbName: 'ArkadiaNpcDB', storeName: 'npcData', key: 'npc' },
         ttl: TTL,
+        cacheInLocalStorage: false,
     });
 }

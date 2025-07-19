@@ -6,5 +6,6 @@ export function loadNpcData() {
         url: './data/npc.json',
         localStorageKey: 'npc',
         indexedDB: { dbName: 'ArkadiaNpcDB', storeName: 'npcData', key: 'npc' },
+        cacheInLocalStorage: false,
     });
 }

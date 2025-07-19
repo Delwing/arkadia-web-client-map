@@ -7,6 +7,7 @@ export function loadMapData(onProgress?: (progress: number, loaded?: number, tot
         localStorageKey: 'cachedMapData',
         indexedDB: { dbName: 'ArkadiaMapDB', storeName: 'mapData', key: 'mapExport' },
         onProgress,
+        cacheInLocalStorage: false,
     });
 }
 

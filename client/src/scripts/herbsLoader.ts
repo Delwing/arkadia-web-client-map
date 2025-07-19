@@ -96,20 +96,10 @@ export default async function loadHerbs(): Promise<HerbsData | null> {
     try {
         const indexed = await getFromIndexedDB();
         if (indexed) {
-            localStorage.setItem('herbs_data', JSON.stringify(indexed));
             return indexed;
         }
     } catch (e) {
-        console.warn('Failed to load herbs from IndexedDB, falling back to localStorage:', e);
-    }
-
-    const cached = localStorage.getItem('herbs_data');
-    if (cached) {
-        try {
-            return JSON.parse(cached) as HerbsData;
-        } catch {
-            console.error('Failed to parse cached herbs');
-        }
+        console.warn('Failed to load herbs from IndexedDB:', e);
     }
 
     try {
@@ -125,12 +115,7 @@ export default async function loadHerbs(): Promise<HerbsData | null> {
             await storeInIndexedDB(data);
             console.log('Successfully stored herbs in IndexedDB');
         } catch (e) {
-            console.warn('Failed to store herbs in IndexedDB, falling back to localStorage:', e);
-        }
-        try {
-            localStorage.setItem('herbs_data', JSON.stringify(data));
-        } catch (lsErr) {
-            console.error('Failed to cache herbs in localStorage:', lsErr);
+            console.warn('Failed to store herbs in IndexedDB:', e);
         }
         return data as HerbsData;
     } catch (e) {
