@@ -581,14 +581,22 @@ export default class MobileDirectionButtons {
                     document.dispatchEvent(event);
                     break;
                 case 'zList':
-                    this.hideLists();
-                    this.renderZList();
-                    if (this.zList) this.zList.style.display = 'grid';
+                    if (this.zList && this.zList.style.display === 'grid') {
+                        this.hideLists();
+                    } else {
+                        this.hideLists();
+                        this.renderZList();
+                        if (this.zList) this.zList.style.display = 'grid';
+                    }
                     break;
                 case 'zaList':
-                    this.hideLists();
-                    this.renderZasList();
-                    if (this.zasList) this.zasList.style.display = 'grid';
+                    if (this.zasList && this.zasList.style.display === 'grid') {
+                        this.hideLists();
+                    } else {
+                        this.hideLists();
+                        this.renderZasList();
+                        if (this.zasList) this.zasList.style.display = 'grid';
+                    }
                     break;
                 case 'command':
                     if (cfg.command) this.client.sendCommand(cfg.command);
