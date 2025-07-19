@@ -11,7 +11,7 @@ export default class MobileDirectionButtons {
     private readonly zasList: HTMLDivElement | null = null;
     private readonly zToggle: HTMLButtonElement | null = null;
     private readonly zasToggle: HTMLButtonElement | null = null;
-    private readonly bracketRightButton: HTMLButtonElement | null = null;
+    private bracketRightButton: HTMLButtonElement | null = null;
     private readonly toggleButton: HTMLButtonElement | null = null;
     private boundKey = 'BracketRight';
     private boundCtrl = false;
