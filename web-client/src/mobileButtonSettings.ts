@@ -62,7 +62,7 @@ export default function initMobileButtonSettings() {
 
     const hideConfig = () => {
         if (activeConfig) {
-            activeConfig.style.display = 'none';
+            activeConfig.classList.add('d-none');
             activeConfig = null;
         }
     };
@@ -113,7 +113,7 @@ export default function initMobileButtonSettings() {
             const bodyRect = modalBody.getBoundingClientRect();
             config.style.left = rect.left - bodyRect.left + 'px';
             config.style.top = rect.bottom - bodyRect.top + 4 + 'px';
-            config.style.display = 'block';
+            config.classList.remove('d-none');
             activeConfig = config;
         });
     });

@@ -445,9 +445,6 @@ button:focus-visible {
 
 #mobile-buttons-preview {
   position: static;
-}
-#mobile-buttons-preview .mobile-direction-buttons {
-  position: static;
   display: flex;
 }
 
