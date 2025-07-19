@@ -57,6 +57,11 @@ export default function initMobileButtonSettings() {
 
     const sections = Array.from(modalEl.querySelectorAll<HTMLElement>('.mobile-button-config'));
     const previewButtons = Array.from(modalEl.querySelectorAll<HTMLButtonElement>('#mobile-buttons-preview button[data-button-id]'));
+    const previewMap: Record<string, HTMLButtonElement> = {};
+    previewButtons.forEach(btn => {
+        const id = btn.dataset.buttonId!;
+        previewMap[id] = btn;
+    });
     const modalBody = modalEl.querySelector('.modal-body') as HTMLElement;
     let activeConfig: HTMLElement | null = null;
 
@@ -71,6 +76,7 @@ export default function initMobileButtonSettings() {
     sections.forEach(section => {
         const id = section.dataset.buttonId!;
         const cfg = current[id] || defaultSettings[id];
+        const preview = previewMap[id];
         const macro = section.querySelector('.mobile-button-macro') as HTMLSelectElement;
         const label = section.querySelector('.mobile-button-label') as HTMLInputElement;
         const color = section.querySelector('.mobile-button-color') as HTMLInputElement;
@@ -82,6 +88,10 @@ export default function initMobileButtonSettings() {
         label.value = cfg.label;
         color.value = cfg.color;
         if (command) command.value = cfg.command || '';
+        if (preview) {
+            preview.textContent = label.value;
+            preview.style.backgroundColor = color.value;
+        }
         const update = () => {
             if (macro.value === 'command') {
                 cmdLabel.style.display = '';
@@ -93,8 +103,15 @@ export default function initMobileButtonSettings() {
         if (reset) {
             reset.addEventListener('click', () => {
                 color.value = defaultSettings[id].color;
+                if (preview) preview.style.backgroundColor = color.value;
             });
         }
+        label.addEventListener('input', () => {
+            if (preview) preview.textContent = label.value;
+        });
+        color.addEventListener('input', () => {
+            if (preview) preview.style.backgroundColor = color.value;
+        });
         update();
     });
 
