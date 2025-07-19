@@ -1,4 +1,5 @@
-import Triggers, {stripAnsiCodes} from "./Triggers";
+import Triggers from "./Triggers";
+import { stripAnsiCodes } from "./stripAnsiCodes";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
