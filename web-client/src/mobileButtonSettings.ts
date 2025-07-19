@@ -55,14 +55,6 @@ export default function initMobileButtonSettings() {
     const modal = new Modal(modalEl);
     const saveBtn = modalEl.querySelector('#mobile-buttons-save') as HTMLButtonElement;
 
-    const mobileButtons = document.getElementById('mobile-direction-buttons') as HTMLDivElement | null;
-    modalEl.addEventListener('show.bs.modal', () => {
-        if (mobileButtons) mobileButtons.style.display = 'flex';
-    });
-    modalEl.addEventListener('hidden.bs.modal', () => {
-        if (mobileButtons) mobileButtons.style.display = 'none';
-    });
-
     const sections = Array.from(modalEl.querySelectorAll<HTMLElement>('.mobile-button-config'));
     const previewButtons = Array.from(modalEl.querySelectorAll<HTMLButtonElement>('#mobile-buttons-preview button[data-button-id]'));
     const previewMap: Record<string, HTMLButtonElement> = {};
