@@ -22,10 +22,10 @@ describe('herbs loader', () => {
         });
     });
 
-    test('loads herbs and caches', async () => {
+    test('loads herbs without using localStorage', async () => {
         const data = await loadHerbs();
         expect(fetch).toHaveBeenCalled();
         expect(data?.version).toBe(1);
-        expect(localStorage.getItem('herbs_data')).not.toBeNull();
+        expect(localStorage.getItem('herbs_data')).toBeNull();
     });
 });

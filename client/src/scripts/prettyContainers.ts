@@ -311,7 +311,9 @@ export function prettyPrintContainer(
     const categorized = categorizeItems(parsed.items, defs);
     const tableTitle = title || parsed.container;
     filter = defaultFilter
-    return formatTable(tableTitle, categorized, {columns, padding, maxWidth});
+    const result = formatTable(tableTitle, categorized, {columns, padding, maxWidth});
+    plugLinks = false;
+    return result;
 }
 
 
@@ -392,20 +394,30 @@ const defaultTransforms: TransformDefinition[] = [
     { check: (item: string) => item.match("miedzian\\w+ monet") != null, transform: (item) => colorString(item, COPPER_COLOR)}
 ]
 
+let plugLinks = false;
 
-async function loadMagicAndKeysFilter() {
+
+async function loadMagicAndKeysFilter(client: Client) {
     try {
         const [keys, magics] = await Promise.all([loadMagicKeys(), loadMagics()]);
         const keyRegexp = createRegexpFilter(keys);
         defs.push({ name: "klucze", filter: keyRegexp });
         defaultTransforms.push({
             check: keyRegexp,
-            transform: (item) => colorString(item, KEYS_COLOR),
+            transform: (item) => colorString(
+                plugLinks ?
+                    client.OutputHandler.makeStringClickable(item, () => client.sendCommand(`wybierz ${item}`)) :
+                    item,
+                KEYS_COLOR),
         });
         const magicRegexp = createRegexpFilter(magics);
         defaultTransforms.push({
             check: magicRegexp,
-            transform: (item) => colorString(item, MAGICS_COLOR),
+            transform: (item) => colorString(
+                plugLinks ?
+                    client.OutputHandler.makeStringClickable(item, () => client.sendCommand(`wybierz ${item}`)) :
+                    item,
+                MAGICS_COLOR),
         });
         magicAndKeysFilter = (item: ContainerItem) =>
             keyRegexp(item.name) || magicRegexp(item.name);
@@ -416,7 +428,7 @@ async function loadMagicAndKeysFilter() {
 
 
 export default function initContainers(client: Client) {
-    loadMagicAndKeysFilter();
+    loadMagicAndKeysFilter(client);
     const tag = 'prettyContainers';
     let enabled = false;
     let columns = 1;
@@ -450,6 +462,7 @@ export default function initContainers(client: Client) {
     client.aliases.push({
         pattern: /\/przejrzyj/, callback: () => {
             filter = magicAndKeysFilter
+            plugLinks = true
             client.send("ob skrzynie");
         }
     })

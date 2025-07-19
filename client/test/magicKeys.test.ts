@@ -10,11 +10,11 @@ describe('magic keys', () => {
         });
     });
 
-    test('registers triggers from remote list', async () => {
+    test('registers triggers from remote list without localStorage', async () => {
         const client = { Triggers: { registerTokenTrigger: jest.fn() } } as any;
         await initMagicKeys(client);
         expect(fetch).toHaveBeenCalled();
-        expect(localStorage.getItem('magic_keys')).not.toBeNull();
+        expect(localStorage.getItem('magic_keys')).toBeNull();
         expect(client.Triggers.registerTokenTrigger).toHaveBeenCalledTimes(2);
         const call = client.Triggers.registerTokenTrigger.mock.calls[0];
         const pattern = call[0];

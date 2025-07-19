@@ -15,8 +15,8 @@ const defaultSettings: Record<string, ButtonSetting> = {
     'go-button': { macro: 'command', label: '/go', color: '#87CEEB', command: '/go' },
     'bracket-right-button': { macro: 'functional', label: ']', color: '#87CEEB' },
     'button-1': { macro: 'command', label: 'wesprzyj', color: '#87CEEB', command: 'wesprzyj' },
-    'button-2': { macro: 'command', label: '/z cel', color: '#87CEEB', command: '/z cel' },
-    'button-3': { macro: 'command', label: '/zas cel', color: '#87CEEB', command: '/zas cel' },
+    'button-2': { macro: 'command', label: '/z cel', color: '#87CEEB', command: '/z' },
+    'button-3': { macro: 'command', label: '/za cel', color: '#87CEEB', command: '/za' },
 };
 
 export function loadSettings(): Record<string, ButtonSetting> {

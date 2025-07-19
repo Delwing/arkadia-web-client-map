@@ -99,6 +99,11 @@ export default class OutputHandler {
         }
     }
 
+    makeStringClickable(string: string, callback: Function, title?: string) {
+        this.clickerCallbacks.push(callback)
+        return `{click:${this.clickerCallbacks.length - 1}${title ? ":" + title : ""}}${string}`
+    }
+
     makeClickable(rawLine: string, string: string, callback: Function, title?: string) {
         const matchIndex = rawLine.indexOf(string)
         this.clickerCallbacks.push(callback)
