@@ -10,6 +10,9 @@ export interface ButtonSetting {
 }
 
 const defaultSettings: Record<string, ButtonSetting> = {
+    'z-list-toggle': { macro: 'zList', label: '/z', color: '#87CEEB' },
+    'zas-list-toggle': { macro: 'zaList', label: '/zas', color: '#87CEEB' },
+    'go-button': { macro: 'command', label: '/go', color: '#87CEEB', command: '/go' },
     'bracket-right-button': { macro: 'functional', label: ']', color: '#87CEEB' },
     'button-1': { macro: 'command', label: 'wesprzyj', color: '#87CEEB', command: 'wesprzyj' },
     'button-2': { macro: 'command', label: '/z cel', color: '#87CEEB', command: '/z cel' },
@@ -63,6 +66,7 @@ export default function initMobileButtonSettings() {
         const color = section.querySelector('.mobile-button-color') as HTMLInputElement;
         const command = section.querySelector('.mobile-button-command') as HTMLTextAreaElement;
         const cmdLabel = section.querySelector('.mobile-button-command-label') as HTMLElement;
+        const reset = section.querySelector('.mobile-button-color-reset') as HTMLButtonElement | null;
 
         macro.value = cfg.macro;
         label.value = cfg.label;
@@ -76,6 +80,11 @@ export default function initMobileButtonSettings() {
             }
         };
         macro.addEventListener('change', update);
+        if (reset) {
+            reset.addEventListener('click', () => {
+                color.value = defaultSettings[id].color;
+            });
+        }
         update();
     });
 

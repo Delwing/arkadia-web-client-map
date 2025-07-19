@@ -134,7 +134,7 @@ export default class MobileDirectionButtons {
 
         this.client.addEventListener('mobileButtonsSettings', (ev: CustomEvent) => {
             this.buttonSettings = ev.detail || this.buttonSettings;
-            ['bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+            ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
                 const b = document.getElementById(id) as HTMLButtonElement | null;
                 if (b) this.applyConfigToButton(id, b);
             });
@@ -177,42 +177,11 @@ export default class MobileDirectionButtons {
             });
         }
 
-        ['bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+        ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
             const btn = document.getElementById(id) as HTMLButtonElement | null;
             if (!btn) return;
             this.applyConfigToButton(id, btn);
         });
-
-        const goButton = document.getElementById('go-button');
-        if (goButton) {
-            goButton.addEventListener('click', () => {
-                this.client.sendCommand('/go');
-            });
-        }
-
-        if (this.zToggle) {
-            this.zToggle.addEventListener('click', () => {
-                if (this.zList && this.zList.style.display === 'grid') {
-                    this.hideLists();
-                } else {
-                    this.hideLists();
-                    this.renderZList();
-                    if (this.zList) this.zList.style.display = 'grid';
-                }
-            });
-        }
-
-        if (this.zasToggle) {
-            this.zasToggle.addEventListener('click', () => {
-                if (this.zasList && this.zasList.style.display === 'grid') {
-                    this.hideLists();
-                } else {
-                    this.hideLists();
-                    this.renderZasList();
-                    if (this.zasList) this.zasList.style.display = 'grid';
-                }
-            });
-        }
 
         // Setup direction buttons
         const directionButtons = [
