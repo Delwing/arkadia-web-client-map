@@ -1,7 +1,6 @@
 import Client from "./Client";
-
-export const stripAnsiCodes = (str: string) =>
-    str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]|{click:\d+}/g, "");
+import { stripAnsiCodes } from "./stripAnsiCodes";
+export { stripAnsiCodes };
 
 type TriggerCallback = (
     rawLine: string,
@@ -17,7 +16,8 @@ type TriggerMatchFunction = (
     type: string
 ) => RegExpMatchArray | undefined;
 
-type TriggerPattern = string | RegExp | TriggerMatchFunction;
+type TriggerSubPattern = string | RegExp | TriggerMatchFunction;
+type TriggerPattern = TriggerSubPattern | TriggerSubPattern[];
 
 export interface TriggerOptions {
     stayOpenLines?: number;
@@ -70,18 +70,24 @@ export class Trigger {
         const line = stripAnsiCodes(rawLine).replace(/\s$/g, "");
         this.openInstances = this.openInstances.map(v => v - 1).filter(v => v > 0);
         let matches: RegExpMatchArray | undefined;
-        if (this.pattern instanceof RegExp) {
-            matches = line.match(this.pattern);
-        } else if (typeof this.pattern === "string") {
-            const patternStr = this.pattern.toString();
-            const index = rawLine.toLowerCase().indexOf(patternStr.toLowerCase());
-            if (index > -1) {
-                const end = index + patternStr.length;
-                matches = [rawLine.substring(index, end)];
-                matches.index = index;
+        const patterns = Array.isArray(this.pattern) ? this.pattern : [this.pattern];
+        for (const pattern of patterns) {
+            if (pattern instanceof RegExp) {
+                matches = line.match(pattern);
+            } else if (typeof pattern === "string") {
+                const patternStr = pattern.toString();
+                const index = rawLine.toLowerCase().indexOf(patternStr.toLowerCase());
+                if (index > -1) {
+                    const end = index + patternStr.length;
+                    matches = [rawLine.substring(index, end)];
+                    matches.index = index;
+                }
+            } else if (typeof pattern === "function") {
+                matches = pattern(rawLine, line, undefined, type);
             }
-        } else if (typeof this.pattern === "function") {
-            matches = this.pattern(rawLine, line, undefined, type);
+            if (matches) {
+                break;
+            }
         }
         let matched = false;
         if (matches) {

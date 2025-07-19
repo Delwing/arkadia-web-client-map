@@ -5,6 +5,7 @@ interface UiSettings {
     objectsFontSize: number;
     buttonSize: number;
     mapScale: number;
+    mapLimit: number;
     showButtons: boolean;
     mapHeight: number;
     emojiLabels: boolean;
@@ -15,6 +16,7 @@ const defaultSettings: UiSettings = {
     objectsFontSize: 0.6,
     buttonSize: 1,
     mapScale: 0.30,
+    mapLimit: 25,
     showButtons: true,
     mapHeight: typeof window !== 'undefined' && window.innerWidth < 768 ? 25 : 30,
     emojiLabels: false,
@@ -58,6 +60,7 @@ function apply(settings: UiSettings) {
     });
     if ((window as any).embedded?.renderer?.controls) {
         (window as any).embedded.setZoom?.(settings.mapScale);
+        (window as any).embedded.setLimit?.(settings.mapLimit);
         (window as any).embedded.refresh();
     }
     if ((window as any).clientExtension?.eventTarget) {
@@ -76,7 +79,11 @@ function load(): UiSettings {
                 const value = Math.abs(parseFloat(parsed.mapScale));
                 return value > 0 ? value : defaultSettings.mapScale;
             })();
-            return { ...defaultSettings, ...parsed, mapScale, emojiLabels: !!parsed.emojiLabels };
+            const mapLimit = (() => {
+                const value = parseInt(parsed.mapLimit);
+                return value > 0 ? value : defaultSettings.mapLimit;
+            })();
+            return { ...defaultSettings, ...parsed, mapScale, mapLimit, emojiLabels: !!parsed.emojiLabels };
         }
     } catch {
         // ignore malformed data
@@ -99,6 +106,7 @@ export default function initUiSettings() {
     const buttonInput = modalEl.querySelector('#ui-button-size') as HTMLInputElement;
     const mapInput = modalEl.querySelector('#ui-map-scale') as HTMLInputElement;
     const mapHeightInput = modalEl.querySelector('#ui-map-height') as HTMLInputElement;
+    const mapLimitInput = modalEl.querySelector('#ui-map-limit') as HTMLInputElement;
     const showButtonsInput = modalEl.querySelector('#ui-show-buttons') as HTMLInputElement;
     const emojiLabelsInput = modalEl.querySelector('#ui-emoji-labels') as HTMLInputElement;
     const saveBtn = modalEl.querySelector('#ui-settings-save') as HTMLButtonElement;
@@ -109,6 +117,7 @@ export default function initUiSettings() {
     buttonInput.value = String(current.buttonSize);
     mapInput.value = String(current.mapScale);
     mapHeightInput.value = String(current.mapHeight);
+    mapLimitInput.value = String(current.mapLimit);
     showButtonsInput.checked = current.showButtons;
     emojiLabelsInput.checked = current.emojiLabels;
     apply(current);
@@ -121,11 +130,19 @@ export default function initUiSettings() {
             return scale;
         })();
 
+        const mapLimit = (() => {
+            const value = parseInt(mapLimitInput.value);
+            const limit = value > 0 ? value : defaultSettings.mapLimit;
+            mapLimitInput.value = String(limit);
+            return limit;
+        })();
+
         return {
             contentFontSize: parseFloat(contentInput.value) || defaultSettings.contentFontSize,
             objectsFontSize: parseFloat(objectsInput.value) || defaultSettings.objectsFontSize,
             buttonSize: parseFloat(buttonInput.value) || defaultSettings.buttonSize,
             mapScale,
+            mapLimit,
             mapHeight: parseFloat(mapHeightInput.value) || defaultSettings.mapHeight,
             showButtons: showButtonsInput.checked,
             emojiLabels: emojiLabelsInput.checked,

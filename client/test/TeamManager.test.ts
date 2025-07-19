@@ -74,6 +74,22 @@ describe('TeamManager', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
+  test('emits event when leader attacks and avatar does not', () => {
+    const callback = jest.fn();
+    client.addEventListener('teamLeaderTargetNoAvatar', callback);
+    client.sendEvent('gmcp.objects.data', {
+      '1': {
+        desc: 'Eamon',
+        living: true,
+        team: true,
+        team_leader: true,
+        attack_num: '3',
+      },
+      '99': { desc: 'You', living: true, team: true, attack_num: false },
+    });
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
   test('does not emit event when targets match', () => {
     const noAvatar = jest.fn();
     const avatar = jest.fn();

@@ -67,7 +67,7 @@ export default class TeamManager {
                 this.avatarAttackTargetId = typeof obj.attack_num == "boolean" ? undefined : String(obj.attack_num)
             }
         });
-        if (this.avatarAttackTargetId && this.leaderAttackTargetId && this.avatarAttackTargetId !== this.leaderAttackTargetId) {
+        if (this.leaderAttackTargetId && this.avatarAttackTargetId !== this.leaderAttackTargetId) {
             this.client.sendEvent('teamLeaderTargetNoAvatar', this.leaderAttackTargetId);
         } else  {
             this.client.sendEvent('teamLeaderTargetAvatar');

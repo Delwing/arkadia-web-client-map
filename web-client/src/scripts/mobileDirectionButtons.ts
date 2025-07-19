@@ -1,5 +1,6 @@
 import Client from "@client/src/Client";
 import { formatLabel } from "@client/src/scripts/functionalBind";
+import { loadSettings as loadMobileButtonSettings, ButtonSetting } from "../mobileButtonSettings";
 
 export default class MobileDirectionButtons {
     private client: Client;
@@ -31,6 +32,40 @@ export default class MobileDirectionButtons {
     private isScrolling = false;
     private lastScrollTop = 0;
     private collapsed = false;
+    private directionButtons: Record<string, HTMLButtonElement | null> = {};
+    private buttonSettings: Record<string, ButtonSetting> = loadMobileButtonSettings();
+
+    private readonly polishToEnglish: Record<string, string> = {
+        "polnoc": "north",
+        "poludnie": "south",
+        "wschod": "east",
+        "zachod": "west",
+        "polnocny-wschod": "northeast",
+        "polnocny-zachod": "northwest",
+        "poludniowy-wschod": "southeast",
+        "poludniowy-zachod": "southwest",
+        "dol": "down",
+        "gora": "up",
+        "gore": "up",
+    };
+
+    private readonly longToShort: Record<string, string> = {
+        north: "n",
+        south: "s",
+        east: "e",
+        west: "w",
+        northeast: "ne",
+        northwest: "nw",
+        southeast: "se",
+        southwest: "sw",
+        up: "u",
+        down: "d",
+    };
+
+    private getShortDir(dir: string): string {
+        const long = this.polishToEnglish[dir] ?? dir;
+        return this.longToShort[long] ?? dir;
+    }
 
     constructor(client: Client) {
         this.client = client;
@@ -49,12 +84,32 @@ export default class MobileDirectionButtons {
             return;
         }
 
+        this.directionButtons = {
+            nw: document.getElementById('nw-button') as HTMLButtonElement | null,
+            n: document.getElementById('n-button') as HTMLButtonElement | null,
+            ne: document.getElementById('ne-button') as HTMLButtonElement | null,
+            w: document.getElementById('w-button') as HTMLButtonElement | null,
+            e: document.getElementById('e-button') as HTMLButtonElement | null,
+            sw: document.getElementById('sw-button') as HTMLButtonElement | null,
+            s: document.getElementById('s-button') as HTMLButtonElement | null,
+            se: document.getElementById('se-button') as HTMLButtonElement | null,
+            u: document.getElementById('u-button') as HTMLButtonElement | null,
+            d: document.getElementById('d-button') as HTMLButtonElement | null,
+        };
+
         this.setupEventHandlers();
         this.updateBracketRightButton();
         this.updateToggleButton();
         this.setupDraggable();
         this.checkMobile();
         this.setupKeyboardHandlers();
+
+        this.client.addEventListener('gmcp.room.info', (ev: CustomEvent) => {
+            const exits = Array.isArray(ev.detail?.exits) ? ev.detail.exits : [];
+            this.highlightExits(exits);
+        });
+
+        this.highlightExits([]);
 
         // Listen for window resize to check if mobile view
         window.addEventListener('resize', () => {
@@ -75,6 +130,14 @@ export default class MobileDirectionButtons {
             } else {
                 this.enable();
             }
+        });
+
+        this.client.addEventListener('mobileButtonsSettings', (ev: CustomEvent) => {
+            this.buttonSettings = ev.detail || this.buttonSettings;
+            ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+                const b = document.getElementById(id) as HTMLButtonElement | null;
+                if (b) this.applyConfigToButton(id, b);
+            });
         });
 
         // Listen for bind settings changes
@@ -106,21 +169,7 @@ export default class MobileDirectionButtons {
     }
 
     private setupEventHandlers() {
-        // Setup bracket right button
-        if (this.bracketRightButton) {
-            this.bracketRightButton.addEventListener('click', () => {
-                const event = new KeyboardEvent('keydown', {
-                    code: this.boundKey,
-                    key: this.boundKey,
-                    ctrlKey: this.boundCtrl,
-                    altKey: this.boundAlt,
-                    shiftKey: this.boundShift,
-                    bubbles: true,
-                    cancelable: true
-                });
-                document.dispatchEvent(event);
-            });
-        }
+
 
         if (this.toggleButton) {
             this.toggleButton.addEventListener('click', () => {
@@ -128,64 +177,11 @@ export default class MobileDirectionButtons {
             });
         }
 
-        // Setup button 1 (unassigned)
-        const button1 = document.getElementById('button-1');
-        if (button1) {
-            button1.addEventListener('click', () => {
-                this.client.sendCommand("wesprzyj")
-            });
-        }
-
-        // Setup button 2 (unassigned)
-        const button2 = document.getElementById('button-2');
-        if (button2) {
-            button2.addEventListener('click', () => {
-                if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    this.client.sendCommand(`zabij ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
-                }
-            });
-        }
-
-        // Setup button 3 (unassigned)
-        const button3 = document.getElementById('button-3');
-        if (button3) {
-            button3.addEventListener('click', () => {
-                if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    this.client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
-                }
-            });
-        }
-
-        const goButton = document.getElementById('go-button');
-        if (goButton) {
-            goButton.addEventListener('click', () => {
-                this.client.sendCommand('/go');
-            });
-        }
-
-        if (this.zToggle) {
-            this.zToggle.addEventListener('click', () => {
-                if (this.zList && this.zList.style.display === 'grid') {
-                    this.hideLists();
-                } else {
-                    this.hideLists();
-                    this.renderZList();
-                    if (this.zList) this.zList.style.display = 'grid';
-                }
-            });
-        }
-
-        if (this.zasToggle) {
-            this.zasToggle.addEventListener('click', () => {
-                if (this.zasList && this.zasList.style.display === 'grid') {
-                    this.hideLists();
-                } else {
-                    this.hideLists();
-                    this.renderZasList();
-                    if (this.zasList) this.zasList.style.display = 'grid';
-                }
-            });
-        }
+        ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+            const btn = document.getElementById(id) as HTMLButtonElement | null;
+            if (!btn) return;
+            this.applyConfigToButton(id, btn);
+        });
 
         // Setup direction buttons
         const directionButtons = [
@@ -489,6 +485,18 @@ export default class MobileDirectionButtons {
         this.updateToggleButton();
     }
 
+    private highlightExits(exits: string[]) {
+        const available = new Set(exits.map((e) => this.getShortDir(e)));
+        Object.entries(this.directionButtons).forEach(([dir, btn]) => {
+            if (!btn) return;
+            if (available.has(dir)) {
+                btn.classList.add('exit-available');
+            } else {
+                btn.classList.remove('exit-available');
+            }
+        });
+    }
+
     private renderList(target: HTMLDivElement | null, regex: RegExp, prefix: string) {
         if (!target) return;
         target.innerHTML = '';
@@ -515,6 +523,56 @@ export default class MobileDirectionButtons {
 
     private renderZasList() {
         this.renderList(this.zasList, /^[A-Z]$/, 'zas');
+    }
+
+    private applyConfigToButton(id: string, btn: HTMLButtonElement) {
+        const cfg = this.buttonSettings[id];
+        if (!cfg) return;
+        btn.textContent = cfg.label;
+        btn.style.backgroundColor = cfg.color;
+        const clone = btn.cloneNode(true) as HTMLButtonElement;
+        btn.replaceWith(clone);
+        const newBtn = clone;
+        this.applyButtonSize(newBtn);
+        if (id === 'bracket-right-button') this.bracketRightButton = newBtn;
+        const handler = () => {
+            switch (cfg.macro) {
+                case 'functional':
+                    const event = new KeyboardEvent('keydown', {
+                        code: this.boundKey,
+                        key: this.boundKey,
+                        ctrlKey: this.boundCtrl,
+                        altKey: this.boundAlt,
+                        shiftKey: this.boundShift,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    document.dispatchEvent(event);
+                    break;
+                case 'zList':
+                    if (this.zList && this.zList.style.display === 'grid') {
+                        this.hideLists();
+                    } else {
+                        this.hideLists();
+                        this.renderZList();
+                        if (this.zList) this.zList.style.display = 'grid';
+                    }
+                    break;
+                case 'zaList':
+                    if (this.zasList && this.zasList.style.display === 'grid') {
+                        this.hideLists();
+                    } else {
+                        this.hideLists();
+                        this.renderZasList();
+                        if (this.zasList) this.zasList.style.display = 'grid';
+                    }
+                    break;
+                case 'command':
+                    if (cfg.command) this.client.sendCommand(cfg.command);
+                    break;
+            }
+        };
+        newBtn.addEventListener('click', handler);
     }
 
 }

@@ -3,6 +3,7 @@ import registerLuaGagTriggers from "./scripts/./luaGags";
 
 import blockers from './blockers.json'
 import initShips from './scripts/ships'
+import initTransportStops from './scripts/transportStops'
 import initBuses from './scripts/buses'
 import initGates from './scripts/gates'
 import initAttackBeep from './scripts/attackBeep'
@@ -17,9 +18,12 @@ import initBagManager from './scripts/bagManager'
 import initDeposits from './scripts/deposits'
 import initHerbShop from './scripts/herbShop'
 import initArmorShop from './scripts/armorShop'
+import initSmith from './scripts/smith'
 import initHerbCounter from './scripts/herbCounter'
 import initLvlCalc from './scripts/lvlCalc'
 import initItemCondition from './scripts/itemCondition'
+import initDurability from './scripts/durability'
+import initWearUsed from './scripts/wearUsed'
 import initInvite from './scripts/invite'
 import initObjectAliases from './scripts/objectAliases'
 import initMagicKeys from './scripts/magicKeys'
@@ -33,7 +37,10 @@ import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
 import initArmorEvaluation from './scripts/armorEvaluation'
+import initGps from './scripts/gps'
 import initMapAliases from './scripts/mapAliases'
+import initCompareAll from './scripts/compareAll'
+import initFollowSpecialExits from './scripts/followSpecialExits'
 import Client from "./Client";
 
 
@@ -89,6 +96,7 @@ export function registerScripts(client: Client) {
     })
 
     initShips(client)
+    initTransportStops(client)
     initBuses(client)
     initGates(client)
     initAttackBeep(client)
@@ -97,6 +105,8 @@ export function registerScripts(client: Client) {
     initIdz(client, aliases)
     initKillCounter(client, aliases)
     initEscape(client)
+    initGps(client)
+    initFollowSpecialExits(client)
 
 
     const itemCollector = initItemCollector(client, aliases);
@@ -108,9 +118,13 @@ export function registerScripts(client: Client) {
     initDeposits(client, aliases)
     initHerbShop(client)
     initArmorShop(client)
+    initSmith(client, aliases)
     initHerbCounter(client, aliases)
     initLvlCalc(client, aliases)
+    initCompareAll(client, aliases)
     initItemCondition(client)
+    initDurability(client)
+    initWearUsed(client)
     initInvite(client)
     initObjectAliases(client, aliases)
     initMagicKeys(client)

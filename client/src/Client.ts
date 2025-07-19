@@ -1,9 +1,10 @@
 import Triggers from "./Triggers";
+import { stripAnsiCodes } from "./stripAnsiCodes";
 import PackageHelper from "./PackageHelper";
 import MapHelper from "./MapHelper";
 import InlineCompassRose from "./scripts/inlineCompassRose";
-import { Howl } from "howler";
-import { setXtermPalette } from "./Colors";
+import {Howl} from "howler";
+import {setXtermPalette} from "./Colors";
 import {
     FunctionalBind,
     LINE_START_EVENT,
@@ -12,15 +13,17 @@ import {
 import OutputHandler from "./OutputHandler";
 import TeamManager from "./TeamManager";
 import ObjectManager from "./ObjectManager";
-import { beepSound } from "./sounds";
-import { attachGmcpListener } from "./gmcp";
+import {beepSound} from "./sounds";
+import {attachGmcpListener} from "./gmcp";
 import {color} from "./Colors";
 import {SKIP_LINE} from "./ControlConstants";
 import {stripPolishCharacters} from "./stripPolishCharacters";
 
 export interface ClientAdapter {
-    send(text: string): void;
+    send(text: string, echo?: boolean): void;
+
     output(text?: string, type?: string): void
+
     sendGmcp(type: string, payload?: any): void
 }
 
@@ -45,7 +48,7 @@ export default class Client {
         }),
     };
     aliases: { pattern: RegExp; callback: Function }[] = [];
-    lampBind = { key: "Digit4", ctrl: true } as {
+    lampBind = {key: "Digit4", ctrl: true} as {
         key: string;
         ctrl?: boolean;
         alt?: boolean;
@@ -97,7 +100,7 @@ export default class Client {
             }
             const lamp = ev.detail?.binds?.lamp
             if (lamp) {
-                this.lampBind = { ...lamp }
+                this.lampBind = {...lamp}
             }
             if (ev.detail?.xtermPalette) {
                 setXtermPalette(ev.detail.xtermPalette);
@@ -108,7 +111,7 @@ export default class Client {
             this.defaultColor = ev.detail.text ?? 255
         })
 
-        this.addEventListener('output-sent', ()=> {
+        this.addEventListener('output-sent', () => {
             if (this.buffer.length == 0) return
             this.buffer.forEach(item => this.clientAdapter.output(item.out, item.type))
             this.sendEvent('buffer-sent', this.buffer.length)
@@ -146,29 +149,32 @@ export default class Client {
         this.eventTarget.removeEventListener(event, listener)
     }
 
-    send(command: string) {
-        this.clientAdapter.send(command)
+    send(command: string, echo: boolean = true) {
+        this.clientAdapter.send(command, echo)
     }
 
-    sendCommand(command: string) {
+    sendCommand(command: string, echo: boolean = true) {
         if (command) {
             command = stripPolishCharacters(command)
         }
-        this.eventTarget.dispatchEvent(new CustomEvent('command', { detail: command }))
+        this.eventTarget.dispatchEvent(new CustomEvent('command', {detail: command}))
+        const split = command.split(/[#;]/)
+        if (split.length > 1) {
+            split.forEach(part => this.sendCommand(part, echo))
+            return
+        }
+
+        command = this.Map.parseCommand(command)
         const isAlias = this.aliases.find(alias => {
             const matches = command.match(alias.pattern)
             if (matches) {
-                this.clientAdapter.output('→ ' + command, 'command')
                 alias.callback(matches)
                 return true
             }
             return false
         })
         if (!isAlias) {
-            command = this.Map.parseCommand(command)
-            command.split(/[#;]/).forEach(part => {
-                this.clientAdapter.send(this.Map.move(part).direction)
-            })
+            this.clientAdapter.send(this.Map.move(command).direction, echo)
         }
     }
 
@@ -179,10 +185,14 @@ export default class Client {
     onLine(line: string, type: string) {
         this.inLineProcess = true
         this.eventTarget.dispatchEvent(new CustomEvent(LINE_START_EVENT))
-        const ansiRegex =/\x1b\[[0-9;]*m/g
+        const ansiRegex = /\x1b\[[0-9;]*m/g
 
         line = this.Triggers.parseMultiline(line, type)
-        let result = line.split('\n').map(partial => this.Triggers.parseLine(partial, type)).filter(line => line !== SKIP_LINE).join('\n')
+        let split = line.split('\n')
+        if (stripAnsiCodes(split[split.length - 1]) === '') {
+            split.pop()
+        }
+        let result = split.map(partial => this.Triggers.parseLine(partial, type)).filter(line => line !== SKIP_LINE).join('\n')
         if (!result.startsWith("\x1b")) {
             result = color(255) + result
         }

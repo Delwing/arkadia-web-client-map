@@ -14,6 +14,7 @@ const pickCommand = "wybierz paczke"
 const packageLineRegex = /^ \|\s*(?<heavy>\*)?\s*(?<number>\d+)\. (?<name>.*?)(?:, (?<city>[\w' ]+?))?\s+(?<gold>\d+)\/\s?(?<silver>\d+)\/\s?(?<copper>\d+)\s+(?:nieogr\.|(?<time>\d+))/
 const packageTableRegex = /Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:[\s\S]*?Symbolem \* oznaczono przesylki ciezkie\./
 const shortInfo = 'Tablica zawiera liste adresatow przesylek, ktore mozesz tutaj pobrac:'
+const notTrustedMessage = 'Nie ufam ci na tyle, aby powierzyc ci dostarczenie tej przesylki.'
 
 const KNOWN_NPC_COLOR = findClosestColor('#63ba41');
 const UNKNOWN_NPC_COLOR = findClosestColor('#aaaaaa');
@@ -33,6 +34,8 @@ export default class PackageHelper {
     private currentPackage: { name: string; time?: number };
 
     deliveryTrigger: Trigger;
+    private pickTrigger: Trigger;
+    private failTrigger: Trigger;
 
     constructor(clientExtension: Client) {
         this.client = clientExtension
@@ -70,7 +73,11 @@ export default class PackageHelper {
             return;
         }
         this.pick = parseInt(command.substring(pickCommand.length + 1).trim())
-        this.client.Triggers.registerOneTimeTrigger(/^.* przekazuje ci jakas paczke\./, (): undefined => {
+        this.pickTrigger = this.client.Triggers.registerOneTimeTrigger(/^.* przekazuje ci jakas paczke\./, (): undefined => {
+            if (this.failTrigger) {
+                this.client.Triggers.removeTrigger(this.failTrigger)
+                this.failTrigger = undefined
+            }
             this.currentPackage = this.packages[this.pick - 1]
             this.leadToPackage(this.currentPackage.name)
             this.deliveryTrigger = this.client.Triggers.registerOneTimeTrigger(/^(Oddajesz|Zwracasz) pocztowa paczke/, (_, __, matches): undefined => {
@@ -86,6 +93,12 @@ export default class PackageHelper {
                 }
                 this.currentPackage = undefined;
             })
+        })
+        this.failTrigger = this.client.Triggers.registerOneTimeTrigger(notTrustedMessage, (): undefined => {
+            if (this.pickTrigger) {
+                this.client.Triggers.removeTrigger(this.pickTrigger)
+                this.pickTrigger = undefined
+            }
         })
     }
 
