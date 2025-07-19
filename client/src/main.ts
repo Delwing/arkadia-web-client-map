@@ -37,6 +37,7 @@ import initExternalScripts from './scripts/externalScripts'
 import initUserAliases from './scripts/userAliases'
 import initWeaponEvaluation from './scripts/weaponEvaluation'
 import initArmorEvaluation from './scripts/armorEvaluation'
+import initGps from './scripts/gps'
 import initMapAliases from './scripts/mapAliases'
 import initCompareAll from './scripts/compareAll'
 import initFollowSpecialExits from './scripts/followSpecialExits'
@@ -104,6 +105,7 @@ export function registerScripts(client: Client) {
     initIdz(client, aliases)
     initKillCounter(client, aliases)
     initEscape(client)
+    initGps(client)
     initFollowSpecialExits(client)
 
 
