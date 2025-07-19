@@ -1,10 +1,30 @@
-import { client } from "@client/src/main.ts";
+import { registerScripts } from "@client/src/main.ts";
+import Client, { ClientAdapter } from "@client/src/Client.ts";
 import { FakeClient } from "./types/globals";
 import MockPort from "./MockPort.ts";
 
-export const fakeClient = client as FakeClient;
+class SandboxAdapter implements ClientAdapter {
+    send(text: string, echo: boolean = true): void {
+        if (echo) {
+            window.Input.send(text);
+        } else {
+            window.Input.send(text);
+        }
+    }
+
+    output(text?: string, type?: string): void {
+        window.Output.send(text, type);
+    }
+
+    sendGmcp(type: string, payload?: any): void {
+        // no-op in sandbox
+    }
+}
 
 const port = new MockPort();
+const adapter = new SandboxAdapter();
+export const fakeClient = new Client(adapter, port) as FakeClient;
+registerScripts(fakeClient);
 fakeClient.connect(port as any, true);
 
 //TODO fix dispatch
@@ -36,6 +56,6 @@ fakeClient.eventTarget.dispatchEvent = (event: Event) => {
     return originalDispatch(event);
 };
 fakeClient.fake = (text: string, type?: string) => {
-    window.Output.send(window.Text.parse_patterns(client.onLine(text, type)), type);
-    client.sendEvent('gmcp_msg.' + type, text);
+    window.Output.send(window.Text.parse_patterns(fakeClient.onLine(text, type)), type);
+    fakeClient.sendEvent('gmcp_msg.' + type, text);
 };
