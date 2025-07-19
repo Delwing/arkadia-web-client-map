@@ -4,6 +4,8 @@ function isIndexedDBSupported() {
   return 'indexedDB' in window;
 }
 
+const TTL = 24 * 60 * 60 * 1000; // 24h
+
 async function storeNpcInIndexedDB(data: any) {
   return new Promise<void>((resolve, reject) => {
     if (!isIndexedDBSupported()) {
@@ -25,7 +27,7 @@ async function storeNpcInIndexedDB(data: any) {
       const transaction = db.transaction(['npcData'], 'readwrite');
       const store = transaction.objectStore('npcData');
 
-      const storeRequest = store.put({ id: 'npc', data });
+      const storeRequest = store.put({ id: 'npc', data, timestamp: Date.now() });
       storeRequest.onsuccess = () => resolve();
       storeRequest.onerror = () => reject(new Error('Failed to store data in IndexedDB'));
     };
@@ -59,7 +61,7 @@ async function getNpcFromIndexedDB() {
 
       const getRequest = store.get('npc');
       getRequest.onsuccess = () => {
-        if (getRequest.result) {
+        if (getRequest.result && getRequest.result.timestamp && getRequest.result.timestamp + TTL > Date.now()) {
           resolve(getRequest.result.data);
         } else {
           resolve(null);
@@ -80,7 +82,7 @@ export async function loadNpcData() {
   try {
     const indexedData = await getNpcFromIndexedDB();
     if (indexedData) {
-      localStorage.setItem('npc', JSON.stringify(indexedData));
+      localStorage.setItem('npc', JSON.stringify({ data: indexedData, timestamp: Date.now() }));
       return indexedData;
     }
   } catch (e) {
@@ -90,14 +92,17 @@ export async function loadNpcData() {
   const cached = localStorage.getItem('npc');
   if (cached) {
     try {
-      return JSON.parse(cached);
+      const parsed = JSON.parse(cached);
+      if (parsed.timestamp && parsed.timestamp + TTL > Date.now()) {
+        return parsed.data;
+      }
     } catch {
       console.error('Failed to parse cached npc data');
     }
   }
 
   try {
-    const response = await fetch('./data/npc.json');
+    const response = await fetch('https://delwing.github.io/arkadia-mapa/data/npc.json');
     const data = await response.json();
     try {
       await storeNpcInIndexedDB(data);
@@ -105,12 +110,12 @@ export async function loadNpcData() {
     } catch (e) {
       console.warn('Failed to store NPC data in IndexedDB, falling back to localStorage:', e);
       try {
-        localStorage.setItem('npc', JSON.stringify(data));
+        localStorage.setItem('npc', JSON.stringify({ data, timestamp: Date.now() }));
       } catch (lsErr) {
         console.error('Failed to cache NPC data in localStorage:', lsErr);
       }
     }
-    localStorage.setItem('npc', JSON.stringify(data));
+    localStorage.setItem('npc', JSON.stringify({ data, timestamp: Date.now() }));
     return data;
   } catch (e) {
     console.error('Failed to load npc data:', e);

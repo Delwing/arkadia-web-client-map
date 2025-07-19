@@ -9,6 +9,8 @@ function isIndexedDBSupported() {
   return 'indexedDB' in window;
 }
 
+const TTL = 24 * 60 * 60 * 1000; // 24h
+
 /**
  * Stores map data in IndexedDB
  * @param data The map data to store
@@ -35,7 +37,7 @@ async function storeInIndexedDB(data) {
       const transaction = db.transaction(['mapData'], 'readwrite');
       const store = transaction.objectStore('mapData');
 
-      const storeRequest = store.put({ id: 'mapExport', data });
+      const storeRequest = store.put({ id: 'mapExport', data, timestamp: Date.now() });
 
       storeRequest.onsuccess = () => {
         resolve();
@@ -80,7 +82,7 @@ async function getFromIndexedDB() {
       const getRequest = store.get('mapExport');
 
       getRequest.onsuccess = () => {
-        if (getRequest.result) {
+        if (getRequest.result && getRequest.result.timestamp && getRequest.result.timestamp + TTL > Date.now()) {
           resolve(getRequest.result.data);
         } else {
           resolve(null);
@@ -119,8 +121,10 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
   if (cachedData) {
     try {
       const parsed = JSON.parse(cachedData);
-      onProgress?.(100);
-      return parsed;
+      if (parsed.timestamp && parsed.timestamp + TTL > Date.now()) {
+        onProgress?.(100);
+        return parsed.data;
+      }
     } catch (e) {
       console.error('Failed to parse cached map data:', e);
       // Continue to fetch from file if parsing fails
@@ -168,14 +172,14 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
 
       // Fall back to localStorage if IndexedDB fails
       try {
-        localStorage.setItem('cachedMapData', JSON.stringify(data));
+        localStorage.setItem('cachedMapData', JSON.stringify({ data, timestamp: Date.now() }));
       } catch (localStorageError) {
         console.warn('Failed to cache map data in localStorage, attempting to clear cache and retry:', localStorageError);
         try {
           // Clear the existing cache to free up space
           localStorage.removeItem('cachedMapData');
           // Try again
-          localStorage.setItem('cachedMapData', JSON.stringify(data));
+          localStorage.setItem('cachedMapData', JSON.stringify({ data, timestamp: Date.now() }));
           console.log('Successfully cached map data in localStorage after clearing old cache');
         } catch (retryError) {
           // If it still fails, the data is likely too large for localStorage
@@ -196,9 +200,27 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
  * @returns Promise that resolves with the colors data
  */
 export async function loadColors() {
+  const cached = localStorage.getItem('cachedColors');
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed.timestamp && parsed.timestamp + TTL > Date.now()) {
+        return parsed.data;
+      }
+    } catch (e) {
+      console.error('Failed to parse cached colors:', e);
+    }
+  }
+
   try {
     const response = await fetch('https://delwing.github.io/arkadia-mapa/data/colors.json');
-    return await response.json();
+    const data = await response.json();
+    try {
+      localStorage.setItem('cachedColors', JSON.stringify({ data, timestamp: Date.now() }));
+    } catch (e) {
+      console.warn('Failed to cache colors data:', e);
+    }
+    return data;
   } catch (e) {
     console.error('Failed to load colors data:', e);
     throw e;
