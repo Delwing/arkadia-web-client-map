@@ -58,9 +58,14 @@ export default function initMobileButtonSettings() {
     const sections = Array.from(modalEl.querySelectorAll<HTMLElement>('.mobile-button-config'));
     const previewButtons = Array.from(modalEl.querySelectorAll<HTMLButtonElement>('#mobile-buttons-preview button[data-button-id]'));
     const previewMap: Record<string, HTMLButtonElement> = {};
+    const realMap: Record<string, HTMLButtonElement> = {};
     previewButtons.forEach(btn => {
         const id = btn.dataset.buttonId!;
         previewMap[id] = btn;
+    });
+    Object.keys(defaultSettings).forEach(id => {
+        const el = document.getElementById(id) as HTMLButtonElement | null;
+        if (el) realMap[id] = el;
     });
     const modalBody = modalEl.querySelector('.modal-body') as HTMLElement;
     let activeConfig: HTMLElement | null = null;
@@ -73,6 +78,13 @@ export default function initMobileButtonSettings() {
     };
 
     let current = loadSettings();
+    const applyLive = (id: string, labelVal: string, colorVal: string) => {
+        const btn = realMap[id];
+        if (btn) {
+            btn.textContent = labelVal;
+            btn.style.backgroundColor = colorVal;
+        }
+    };
     sections.forEach(section => {
         const id = section.dataset.buttonId!;
         const cfg = current[id] || defaultSettings[id];
@@ -92,6 +104,7 @@ export default function initMobileButtonSettings() {
             preview.textContent = label.value;
             preview.style.backgroundColor = color.value;
         }
+        applyLive(id, label.value, color.value);
         const update = () => {
             if (macro.value === 'command') {
                 cmdLabel.style.display = '';
@@ -104,13 +117,16 @@ export default function initMobileButtonSettings() {
             reset.addEventListener('click', () => {
                 color.value = defaultSettings[id].color;
                 if (preview) preview.style.backgroundColor = color.value;
+                applyLive(id, label.value, color.value);
             });
         }
         label.addEventListener('input', () => {
             if (preview) preview.textContent = label.value;
+            applyLive(id, label.value, color.value);
         });
         color.addEventListener('input', () => {
             if (preview) preview.style.backgroundColor = color.value;
+            applyLive(id, label.value, color.value);
         });
         update();
     });
