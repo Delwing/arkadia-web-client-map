@@ -1,12 +1,13 @@
 import Modal from "bootstrap/js/dist/modal";
 
-export type MacroType = 'functional' | 'zList' | 'zaList' | 'command' | 'specialExit';
+export type MacroType = 'functional' | 'zList' | 'zaList' | 'command' | 'specialExit' | 'kierunek';
 
 export interface ButtonSetting {
     macro: MacroType;
     label: string;
     color: string;
     command?: string;
+    direction?: string;
 }
 
 const defaultSettings: Record<string, ButtonSetting> = {
@@ -18,17 +19,17 @@ const defaultSettings: Record<string, ButtonSetting> = {
     'button-2': { macro: 'command', label: '/z cel', color: '#87CEEB', command: '/z' },
     'button-3': { macro: 'command', label: '/za cel', color: '#87CEEB', command: '/za' },
     'c-button': { macro: 'command', label: 'zerknij', color: '#6CA6CD', command: 'zerknij' },
-    'u-button': { macro: 'command', label: 'u', color: '#6CA6CD', command: 'u' },
-    'd-button': { macro: 'command', label: 'd', color: '#6CA6CD', command: 'd' },
+    'u-button': { macro: 'kierunek', label: 'u', color: '#6CA6CD', command: 'u', direction: 'u' },
+    'd-button': { macro: 'kierunek', label: 'd', color: '#6CA6CD', command: 'd', direction: 'd' },
     'special-exit-button': { macro: 'specialExit', label: 'sp ex', color: '#6CA6CD' },
-    'nw-button': { macro: 'command', label: '↖', color: '#6CA6CD', command: 'nw' },
-    'n-button': { macro: 'command', label: '↑', color: '#6CA6CD', command: 'n' },
-    'ne-button': { macro: 'command', label: '↗', color: '#6CA6CD', command: 'ne' },
-    'w-button': { macro: 'command', label: '←', color: '#6CA6CD', command: 'w' },
-    'e-button': { macro: 'command', label: '→', color: '#6CA6CD', command: 'e' },
-    'sw-button': { macro: 'command', label: '↙', color: '#6CA6CD', command: 'sw' },
-    's-button': { macro: 'command', label: '↓', color: '#6CA6CD', command: 's' },
-    'se-button': { macro: 'command', label: '↘', color: '#6CA6CD', command: 'se' },
+    'nw-button': { macro: 'kierunek', label: '↖', color: '#6CA6CD', command: 'nw', direction: 'nw' },
+    'n-button': { macro: 'kierunek', label: '↑', color: '#6CA6CD', command: 'n', direction: 'n' },
+    'ne-button': { macro: 'kierunek', label: '↗', color: '#6CA6CD', command: 'ne', direction: 'ne' },
+    'w-button': { macro: 'kierunek', label: '←', color: '#6CA6CD', command: 'w', direction: 'w' },
+    'e-button': { macro: 'kierunek', label: '→', color: '#6CA6CD', command: 'e', direction: 'e' },
+    'sw-button': { macro: 'kierunek', label: '↙', color: '#6CA6CD', command: 'sw', direction: 'sw' },
+    's-button': { macro: 'kierunek', label: '↓', color: '#6CA6CD', command: 's', direction: 's' },
+    'se-button': { macro: 'kierunek', label: '↘', color: '#6CA6CD', command: 'se', direction: 'se' },
 };
 
 export function loadSettings(): Record<string, ButtonSetting> {
@@ -51,6 +52,11 @@ export function applySettings(settings: Record<string, ButtonSetting>) {
         if (!el) return;
         el.textContent = cfg.label;
         el.style.backgroundColor = cfg.color;
+        if (cfg.direction) {
+            el.dataset.direction = cfg.direction;
+        } else {
+            el.removeAttribute('data-direction');
+        }
     });
     if ((window as any).clientExtension?.eventTarget) {
         (window as any).clientExtension.eventTarget.dispatchEvent(
@@ -106,12 +112,15 @@ export default function initMobileButtonSettings() {
         const color = section.querySelector('.mobile-button-color') as HTMLInputElement;
         const command = section.querySelector('.mobile-button-command') as HTMLTextAreaElement;
         const cmdLabel = section.querySelector('.mobile-button-command-label') as HTMLElement;
+        const direction = section.querySelector('.mobile-button-direction') as HTMLSelectElement;
+        const dirLabel = section.querySelector('.mobile-button-direction-label') as HTMLElement;
         const reset = section.querySelector('.mobile-button-color-reset') as HTMLButtonElement | null;
 
         macro.value = cfg.macro;
         label.value = cfg.label;
         color.value = cfg.color;
         if (command) command.value = cfg.command || '';
+        if (direction) direction.value = cfg.direction || '';
         if (preview) {
             preview.textContent = label.value;
             preview.style.backgroundColor = color.value;
@@ -122,6 +131,11 @@ export default function initMobileButtonSettings() {
                 cmdLabel.style.display = '';
             } else {
                 cmdLabel.style.display = 'none';
+            }
+            if (macro.value === 'kierunek') {
+                dirLabel.style.display = '';
+            } else {
+                dirLabel.style.display = 'none';
             }
         };
         macro.addEventListener('change', update);
@@ -180,7 +194,8 @@ export default function initMobileButtonSettings() {
             const label = (section.querySelector('.mobile-button-label') as HTMLInputElement).value;
             const color = (section.querySelector('.mobile-button-color') as HTMLInputElement).value;
             const command = (section.querySelector('.mobile-button-command') as HTMLTextAreaElement).value;
-            result[id] = { macro, label, color, command };
+            const direction = (section.querySelector('.mobile-button-direction') as HTMLSelectElement).value;
+            result[id] = { macro, label, color, command, direction };
         });
         return result;
     };
