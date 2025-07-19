@@ -56,25 +56,41 @@ describe('PackageHelper', () => {
     expect(client.Triggers.registerOneTimeTrigger).not.toHaveBeenCalled();
   });
 
-  test('handleCommand registers one-time trigger when picking package', () => {
+  test('handleCommand registers triggers when picking package', () => {
     helper['packages'] = [{ name: 'Bob' }];
     jest.spyOn(helper as any, 'leadToPackage').mockImplementation();
     client.Triggers.registerOneTimeTrigger
-      .mockReturnValueOnce('first')
+      .mockReturnValueOnce('pickTrigger')
+      .mockReturnValueOnce('failTrigger')
       .mockReturnValueOnce('delivery');
 
     helper['handleCommand']('wybierz paczke 1');
 
     expect(helper['pick']).toBe(1);
-    expect(client.Triggers.registerOneTimeTrigger).toHaveBeenCalledTimes(1);
+    expect(client.Triggers.registerOneTimeTrigger).toHaveBeenCalledTimes(2);
 
-    const cb = client.Triggers.registerOneTimeTrigger.mock.calls[0][1];
-    cb('', '', {} as any);
+    const successCb = client.Triggers.registerOneTimeTrigger.mock.calls[0][1];
+    successCb('', '', {} as any);
 
     expect(helper.leadToPackage).toHaveBeenCalledWith('Bob');
     expect(helper.currentPackage).toEqual({ name: 'Bob', time: undefined });
-    expect(client.Triggers.registerOneTimeTrigger).toHaveBeenCalledTimes(2);
+    expect(client.Triggers.registerOneTimeTrigger).toHaveBeenCalledTimes(3);
+    expect(client.Triggers.removeTrigger).toHaveBeenCalledWith('failTrigger');
     expect(helper.deliveryTrigger).toBe('delivery');
+  });
+
+  test('handleCommand cancels pick when not trusted', () => {
+    helper['packages'] = [{ name: 'Bob' }];
+    client.Triggers.registerOneTimeTrigger
+      .mockReturnValueOnce('pickTrigger')
+      .mockReturnValueOnce('failTrigger');
+
+    helper['handleCommand']('wybierz paczke 1');
+
+    const failCb = client.Triggers.registerOneTimeTrigger.mock.calls[1][1];
+    failCb('', '', {} as any);
+
+    expect(client.Triggers.removeTrigger).toHaveBeenCalledWith('pickTrigger');
   });
 
   test('packageTableCallback simplifies output when width is small', () => {
