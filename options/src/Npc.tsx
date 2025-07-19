@@ -15,17 +15,22 @@ function Npc() {
     const [filter, setFilter] = useState<string>('')
 
     useEffect(() => {
-        storage.getItem('npc').then((value: { npc: NpcProps[] }) => {
-            if (value && value.npc) {
-                setNpcs(value.npc)
+        storage.getItem('npc').then((value: { npc?: any }) => {
+            let list = value?.npc as any;
+            if (list && !Array.isArray(list) && Array.isArray(list.value)) {
+                list = list.value;
+            }
+            if (Array.isArray(list)) {
+                setNpcs(list);
             }
         })
     }, []);
 
     function downloadNpcs() {
         storage.downloadItem('https://delwing.github.io/arkadia-mapa/data/npc.json', 60 * 60 * 24).then(value => {
-            setNpcs(value.value)
-            storage.setItem('npc', value.value)
+            const list = Array.isArray(value.value) ? value.value : []
+            setNpcs(list)
+            storage.setItem('npc', list)
         })
     }
 
