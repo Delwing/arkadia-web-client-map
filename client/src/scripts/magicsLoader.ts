@@ -76,20 +76,10 @@ export default async function loadMagics(): Promise<string[]> {
     try {
         const indexed = await getFromIndexedDB();
         if (indexed) {
-            localStorage.setItem('magics', JSON.stringify(indexed));
             return indexed;
         }
     } catch (e) {
-        console.warn('Failed to load magics from IndexedDB, falling back to localStorage:', e);
-    }
-
-    const cached = localStorage.getItem('magics');
-    if (cached) {
-        try {
-            return JSON.parse(cached);
-        } catch {
-            console.error('Failed to parse cached magics');
-        }
+        console.warn('Failed to load magics from IndexedDB:', e);
     }
 
     try {
@@ -112,12 +102,7 @@ export default async function loadMagics(): Promise<string[]> {
             await storeInIndexedDB(magics);
             console.log('Successfully stored magics in IndexedDB');
         } catch (e) {
-            console.warn('Failed to store magics in IndexedDB, falling back to localStorage:', e);
-        }
-        try {
-            localStorage.setItem('magics', JSON.stringify(magics));
-        } catch (lsErr) {
-            console.error('Failed to cache magics in localStorage:', lsErr);
+            console.warn('Failed to store magics in IndexedDB:', e);
         }
         return magics;
     } catch (e) {
