@@ -443,6 +443,24 @@ button:focus-visible {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow by default */
 }
 
+#mobile-buttons-preview {
+  position: static;
+  display: flex;
+}
+
+#mobile-buttons-modal .modal-body {
+  position: relative;
+}
+
+.mobile-button-config {
+  position: absolute;
+  background-color: var(--bs-body-bg);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+}
+
 .mobile-top-buttons {
   display: flex;
   justify-content: center;

@@ -56,11 +56,39 @@ export default function initMobileButtonSettings() {
     const saveBtn = modalEl.querySelector('#mobile-buttons-save') as HTMLButtonElement;
 
     const sections = Array.from(modalEl.querySelectorAll<HTMLElement>('.mobile-button-config'));
+    const previewButtons = Array.from(modalEl.querySelectorAll<HTMLButtonElement>('#mobile-buttons-preview button[data-button-id]'));
+    const previewMap: Record<string, HTMLButtonElement> = {};
+    const realMap: Record<string, HTMLButtonElement> = {};
+    previewButtons.forEach(btn => {
+        const id = btn.dataset.buttonId!;
+        previewMap[id] = btn;
+    });
+    Object.keys(defaultSettings).forEach(id => {
+        const el = document.getElementById(id) as HTMLButtonElement | null;
+        if (el) realMap[id] = el;
+    });
+    const modalBody = modalEl.querySelector('.modal-body') as HTMLElement;
+    let activeConfig: HTMLElement | null = null;
+
+    const hideConfig = () => {
+        if (activeConfig) {
+            activeConfig.classList.add('d-none');
+            activeConfig = null;
+        }
+    };
 
     let current = loadSettings();
+    const applyLive = (id: string, labelVal: string, colorVal: string) => {
+        const btn = realMap[id];
+        if (btn) {
+            btn.textContent = labelVal;
+            btn.style.backgroundColor = colorVal;
+        }
+    };
     sections.forEach(section => {
         const id = section.dataset.buttonId!;
         const cfg = current[id] || defaultSettings[id];
+        const preview = previewMap[id];
         const macro = section.querySelector('.mobile-button-macro') as HTMLSelectElement;
         const label = section.querySelector('.mobile-button-label') as HTMLInputElement;
         const color = section.querySelector('.mobile-button-color') as HTMLInputElement;
@@ -72,6 +100,11 @@ export default function initMobileButtonSettings() {
         label.value = cfg.label;
         color.value = cfg.color;
         if (command) command.value = cfg.command || '';
+        if (preview) {
+            preview.textContent = label.value;
+            preview.style.backgroundColor = color.value;
+        }
+        applyLive(id, label.value, color.value);
         const update = () => {
             if (macro.value === 'command') {
                 cmdLabel.style.display = '';
@@ -83,10 +116,49 @@ export default function initMobileButtonSettings() {
         if (reset) {
             reset.addEventListener('click', () => {
                 color.value = defaultSettings[id].color;
+                if (preview) preview.style.backgroundColor = color.value;
+                applyLive(id, label.value, color.value);
             });
         }
+        label.addEventListener('input', () => {
+            if (preview) preview.textContent = label.value;
+            applyLive(id, label.value, color.value);
+        });
+        color.addEventListener('input', () => {
+            if (preview) preview.style.backgroundColor = color.value;
+            applyLive(id, label.value, color.value);
+        });
         update();
     });
+
+    previewButtons.forEach(btn => {
+        const id = btn.dataset.buttonId!;
+        const config = sections.find(s => s.dataset.buttonId === id);
+        if (!config) return;
+        btn.addEventListener('click', ev => {
+            ev.stopPropagation();
+            if (activeConfig === config) {
+                hideConfig();
+                return;
+            }
+            hideConfig();
+            const rect = btn.getBoundingClientRect();
+            const bodyRect = modalBody.getBoundingClientRect();
+            config.style.left = rect.left - bodyRect.left + 'px';
+            config.style.top = rect.bottom - bodyRect.top + 4 + 'px';
+            config.classList.remove('d-none');
+            activeConfig = config;
+        });
+    });
+
+    modalEl.addEventListener('click', (ev) => {
+        if (activeConfig && !activeConfig.contains(ev.target as Node)) {
+            const isButton = (ev.target as HTMLElement).closest('#mobile-buttons-preview button');
+            if (!isButton) hideConfig();
+        }
+    });
+
+    modalEl.addEventListener('hide.bs.modal', hideConfig);
 
     const read = (): Record<string, ButtonSetting> => {
         const result: Record<string, ButtonSetting> = {};
