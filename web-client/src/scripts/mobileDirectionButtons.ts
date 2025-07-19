@@ -96,6 +96,9 @@ export default class MobileDirectionButtons {
             u: document.getElementById('u-button') as HTMLButtonElement | null,
             d: document.getElementById('d-button') as HTMLButtonElement | null,
         };
+        Object.entries(this.directionButtons).forEach(([dir, btn]) => {
+            if (btn) btn.dataset.direction = dir;
+        });
 
         this.setupEventHandlers();
         this.updateBracketRightButton();
@@ -430,8 +433,11 @@ export default class MobileDirectionButtons {
 
     private highlightExits(exits: string[]) {
         const available = new Set(exits.map((e) => this.getShortDir(e)));
-        Object.entries(this.directionButtons).forEach(([dir, btn]) => {
-            if (!btn) return;
+        const buttons = this.container.querySelectorAll<HTMLButtonElement>(
+            'button[data-direction]'
+        );
+        buttons.forEach(btn => {
+            const dir = btn.dataset.direction || '';
             if (available.has(dir)) {
                 btn.classList.add('exit-available');
             } else {
@@ -482,7 +488,13 @@ export default class MobileDirectionButtons {
             const dirKey = id.replace('-button', '');
             if (Object.prototype.hasOwnProperty.call(this.directionButtons, dirKey)) {
                 this.directionButtons[dirKey] = newBtn;
+                newBtn.dataset.direction = dirKey;
             }
+        }
+        if (cfg.macro === 'kierunek' && cfg.direction) {
+            newBtn.dataset.direction = this.getShortDir(cfg.direction);
+        } else if (!newBtn.dataset.direction) {
+            newBtn.removeAttribute('data-direction');
         }
 
         const handler = () => {
@@ -519,6 +531,13 @@ export default class MobileDirectionButtons {
                     break;
                 case 'command':
                     if (cfg.command) this.client.sendCommand(cfg.command);
+                    break;
+                case 'kierunek':
+                    if (cfg.command) {
+                        this.client.sendCommand(cfg.command);
+                    } else if (cfg.direction) {
+                        this.client.sendCommand(cfg.direction);
+                    }
                     break;
                 case 'specialExit':
                     const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
