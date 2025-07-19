@@ -55,7 +55,7 @@ export default function initGps(client: Client) {
                                 client.Map.setMapRoomById(room.id);
                                 client.println(colorString(` Map Sync: gps ${gpsId}`, COLOR));
                             } else {
-                                current = 1;
+                                current = 0;
                             }
                             return undefined;
                         },
