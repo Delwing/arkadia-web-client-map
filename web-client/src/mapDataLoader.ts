@@ -129,7 +129,7 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
 
   // Fetch the map data from the file
   try {
-    const response = await fetch('./data/mapExport.json');
+    const response = await fetch('https://delwing.github.io/arkadia-mapa/data/mapExport.json');
 
     let data;
 
@@ -197,7 +197,7 @@ export async function loadMapData(onProgress?: (progress: number, loaded?: numbe
  */
 export async function loadColors() {
   try {
-    const response = await fetch('./data/colors.json');
+    const response = await fetch('https://delwing.github.io/arkadia-mapa/data/colors.json');
     return await response.json();
   } catch (e) {
     console.error('Failed to load colors data:', e);
