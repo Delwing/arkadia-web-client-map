@@ -1,6 +1,6 @@
 import Modal from "bootstrap/js/dist/modal";
 
-export type MacroType = 'functional' | 'zList' | 'zaList' | 'command';
+export type MacroType = 'functional' | 'zList' | 'zaList' | 'command' | 'specialExit';
 
 export interface ButtonSetting {
     macro: MacroType;
@@ -17,6 +17,18 @@ const defaultSettings: Record<string, ButtonSetting> = {
     'button-1': { macro: 'command', label: 'wesprzyj', color: '#87CEEB', command: 'wesprzyj' },
     'button-2': { macro: 'command', label: '/z cel', color: '#87CEEB', command: '/z' },
     'button-3': { macro: 'command', label: '/za cel', color: '#87CEEB', command: '/za' },
+    'c-button': { macro: 'command', label: 'zerknij', color: '#6CA6CD', command: 'zerknij' },
+    'u-button': { macro: 'command', label: 'u', color: '#6CA6CD', command: 'u' },
+    'd-button': { macro: 'command', label: 'd', color: '#6CA6CD', command: 'd' },
+    'special-exit-button': { macro: 'specialExit', label: 'sp ex', color: '#6CA6CD' },
+    'nw-button': { macro: 'command', label: '↖', color: '#6CA6CD', command: 'nw' },
+    'n-button': { macro: 'command', label: '↑', color: '#6CA6CD', command: 'n' },
+    'ne-button': { macro: 'command', label: '↗', color: '#6CA6CD', command: 'ne' },
+    'w-button': { macro: 'command', label: '←', color: '#6CA6CD', command: 'w' },
+    'e-button': { macro: 'command', label: '→', color: '#6CA6CD', command: 'e' },
+    'sw-button': { macro: 'command', label: '↙', color: '#6CA6CD', command: 'sw' },
+    's-button': { macro: 'command', label: '↓', color: '#6CA6CD', command: 's' },
+    'se-button': { macro: 'command', label: '↘', color: '#6CA6CD', command: 'se' },
 };
 
 export function loadSettings(): Record<string, ButtonSetting> {

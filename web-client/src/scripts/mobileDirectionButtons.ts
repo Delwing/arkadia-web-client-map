@@ -134,7 +134,7 @@ export default class MobileDirectionButtons {
 
         this.client.addEventListener('mobileButtonsSettings', (ev: CustomEvent) => {
             this.buttonSettings = ev.detail || this.buttonSettings;
-            ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+            Object.keys(this.buttonSettings).forEach(id => {
                 const b = document.getElementById(id) as HTMLButtonElement | null;
                 if (b) this.applyConfigToButton(id, b);
             });
@@ -177,72 +177,15 @@ export default class MobileDirectionButtons {
             });
         }
 
-        ['z-list-toggle', 'zas-list-toggle', 'go-button', 'bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+        Object.keys(this.buttonSettings).forEach(id => {
             const btn = document.getElementById(id) as HTMLButtonElement | null;
             if (!btn) return;
             this.applyConfigToButton(id, btn);
         });
 
-        // Setup direction buttons
-        const directionButtons = [
-            { id: 'nw-button', cmd: 'nw' },
-            { id: 'n-button', cmd: 'n' },
-            { id: 'ne-button', cmd: 'ne' },
-            { id: 'w-button', cmd: 'w' },
-            { id: 'e-button', cmd: 'e' },
-            { id: 'sw-button', cmd: 'sw' },
-            { id: 's-button', cmd: 's' },
-            { id: 'se-button', cmd: 'se' },
-            { id: 'u-button', cmd: 'u' },
-            { id: 'd-button', cmd: 'd' },
-        ];
-
-        directionButtons.forEach(b => this.setupDirectionButton(b.id, b.cmd));
-
-        // Setup special exit button below up/down
-        const specialExitButton = document.getElementById('special-exit-button');
-        if (specialExitButton) {
-            specialExitButton.addEventListener('click', () => {
-                const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
-                const firstExit = Object.keys(specialExits)[0];
-                if (firstExit) {
-                    this.client.sendCommand(firstExit);
-                }
-            });
-
-            const updateLabel = () => {
-                const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
-                const firstExit = Object.keys(specialExits)[0];
-                if (firstExit) {
-                    specialExitButton.textContent = firstExit.length > 5 ? firstExit.slice(0, 4) + '…' : firstExit;
-                    specialExitButton.title = firstExit;
-                } else {
-                    specialExitButton.textContent = 'sp ex';
-                    specialExitButton.title = '';
-                }
-            };
-
-            this.client.addEventListener('enterLocation', updateLabel as EventListener);
-            updateLabel();
-        }
-
-        // Setup center button (zerknij)
-        const centerButton = document.getElementById('c-button');
-        if (centerButton) {
-            centerButton.addEventListener('click', () => {
-                this.client.sendCommand('zerknij');
-            });
-        }
+        // Center and special exit buttons configured via settings
     }
 
-    private setupDirectionButton(buttonId: string, direction: string) {
-        const button = document.getElementById(buttonId);
-        if (button) {
-            button.addEventListener('click', () => {
-                this.client.sendCommand(direction);
-            });
-        }
-    }
 
     enable() {
         if (this.enabled) return;
@@ -535,6 +478,13 @@ export default class MobileDirectionButtons {
         const newBtn = clone;
         this.applyButtonSize(newBtn);
         if (id === 'bracket-right-button') this.bracketRightButton = newBtn;
+        if (id.endsWith('-button')) {
+            const dirKey = id.replace('-button', '');
+            if (Object.prototype.hasOwnProperty.call(this.directionButtons, dirKey)) {
+                this.directionButtons[dirKey] = newBtn;
+            }
+        }
+
         const handler = () => {
             switch (cfg.macro) {
                 case 'functional':
@@ -570,9 +520,32 @@ export default class MobileDirectionButtons {
                 case 'command':
                     if (cfg.command) this.client.sendCommand(cfg.command);
                     break;
+                case 'specialExit':
+                    const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
+                    const firstExit = Object.keys(specialExits)[0];
+                    if (firstExit) {
+                        this.client.sendCommand(firstExit);
+                    }
+                    break;
             }
         };
         newBtn.addEventListener('click', handler);
+
+        if (cfg.macro === 'specialExit') {
+            const updateLabel = () => {
+                const specialExits = this.client.Map.currentRoom?.specialExits ?? {};
+                const firstExit = Object.keys(specialExits)[0];
+                if (firstExit) {
+                    newBtn.textContent = firstExit.length > 5 ? firstExit.slice(0, 4) + '…' : firstExit;
+                    newBtn.title = firstExit;
+                } else {
+                    newBtn.textContent = cfg.label;
+                    newBtn.title = '';
+                }
+            };
+            this.client.addEventListener('enterLocation', updateLabel as EventListener);
+            updateLabel();
+        }
     }
 
 }
