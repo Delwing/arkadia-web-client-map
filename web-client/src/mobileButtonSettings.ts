@@ -106,3 +106,5 @@ export default function initMobileButtonSettings() {
     applySettings(current);
 }
 
+document.addEventListener('DOMContentLoaded', initMobileButtonSettings);
+
