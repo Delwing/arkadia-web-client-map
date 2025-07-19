@@ -524,7 +524,7 @@ button:focus-visible {
 }
 
 .direction-button.exit-available {
-  background-color: #2fa7c5;
+  background-color: #2fa7c5 !important;
 }
 
 .mobile-button-text {
