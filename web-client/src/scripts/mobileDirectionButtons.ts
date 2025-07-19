@@ -1,5 +1,6 @@
 import Client from "@client/src/Client";
 import { formatLabel } from "@client/src/scripts/functionalBind";
+import { loadSettings as loadMobileButtonSettings, ButtonSetting } from "../mobileButtonSettings";
 
 export default class MobileDirectionButtons {
     private client: Client;
@@ -32,6 +33,7 @@ export default class MobileDirectionButtons {
     private lastScrollTop = 0;
     private collapsed = false;
     private directionButtons: Record<string, HTMLButtonElement | null> = {};
+    private buttonSettings: Record<string, ButtonSetting> = loadMobileButtonSettings();
 
     private readonly polishToEnglish: Record<string, string> = {
         "polnoc": "north",
@@ -130,6 +132,14 @@ export default class MobileDirectionButtons {
             }
         });
 
+        this.client.addEventListener('mobileButtonsSettings', (ev: CustomEvent) => {
+            this.buttonSettings = ev.detail || this.buttonSettings;
+            ['bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+                const b = document.getElementById(id) as HTMLButtonElement | null;
+                if (b) this.applyConfigToButton(id, b);
+            });
+        });
+
         // Listen for bind settings changes
         this.client.addEventListener('settings', (ev: CustomEvent) => {
             const bind = ev.detail?.binds?.main;
@@ -159,21 +169,7 @@ export default class MobileDirectionButtons {
     }
 
     private setupEventHandlers() {
-        // Setup bracket right button
-        if (this.bracketRightButton) {
-            this.bracketRightButton.addEventListener('click', () => {
-                const event = new KeyboardEvent('keydown', {
-                    code: this.boundKey,
-                    key: this.boundKey,
-                    ctrlKey: this.boundCtrl,
-                    altKey: this.boundAlt,
-                    shiftKey: this.boundShift,
-                    bubbles: true,
-                    cancelable: true
-                });
-                document.dispatchEvent(event);
-            });
-        }
+
 
         if (this.toggleButton) {
             this.toggleButton.addEventListener('click', () => {
@@ -181,33 +177,11 @@ export default class MobileDirectionButtons {
             });
         }
 
-        // Setup button 1 (unassigned)
-        const button1 = document.getElementById('button-1');
-        if (button1) {
-            button1.addEventListener('click', () => {
-                this.client.sendCommand("wesprzyj")
-            });
-        }
-
-        // Setup button 2 (unassigned)
-        const button2 = document.getElementById('button-2');
-        if (button2) {
-            button2.addEventListener('click', () => {
-                if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    this.client.sendCommand(`zabij ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
-                }
-            });
-        }
-
-        // Setup button 3 (unassigned)
-        const button3 = document.getElementById('button-3');
-        if (button3) {
-            button3.addEventListener('click', () => {
-                if (window.clientExtension.TeamManager.getAttackTargetId()) {
-                    this.client.sendCommand(`zaslon ob_${window.clientExtension.TeamManager.getAttackTargetId()}`)
-                }
-            });
-        }
+        ['bracket-right-button', 'button-1', 'button-2', 'button-3'].forEach(id => {
+            const btn = document.getElementById(id) as HTMLButtonElement | null;
+            if (!btn) return;
+            this.applyConfigToButton(id, btn);
+        });
 
         const goButton = document.getElementById('go-button');
         if (goButton) {
@@ -580,6 +554,48 @@ export default class MobileDirectionButtons {
 
     private renderZasList() {
         this.renderList(this.zasList, /^[A-Z]$/, 'zas');
+    }
+
+    private applyConfigToButton(id: string, btn: HTMLButtonElement) {
+        const cfg = this.buttonSettings[id];
+        if (!cfg) return;
+        btn.textContent = cfg.label;
+        btn.style.backgroundColor = cfg.color;
+        const clone = btn.cloneNode(true) as HTMLButtonElement;
+        btn.replaceWith(clone);
+        const newBtn = clone;
+        this.applyButtonSize(newBtn);
+        if (id === 'bracket-right-button') this.bracketRightButton = newBtn;
+        const handler = () => {
+            switch (cfg.macro) {
+                case 'functional':
+                    const event = new KeyboardEvent('keydown', {
+                        code: this.boundKey,
+                        key: this.boundKey,
+                        ctrlKey: this.boundCtrl,
+                        altKey: this.boundAlt,
+                        shiftKey: this.boundShift,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    document.dispatchEvent(event);
+                    break;
+                case 'zList':
+                    this.hideLists();
+                    this.renderZList();
+                    if (this.zList) this.zList.style.display = 'grid';
+                    break;
+                case 'zaList':
+                    this.hideLists();
+                    this.renderZasList();
+                    if (this.zasList) this.zasList.style.display = 'grid';
+                    break;
+                case 'command':
+                    if (cfg.command) this.client.sendCommand(cfg.command);
+                    break;
+            }
+        };
+        newBtn.addEventListener('click', handler);
     }
 
 }
