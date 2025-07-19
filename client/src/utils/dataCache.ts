@@ -119,7 +119,8 @@ export async function loadCachedJSON<T>(options: LoadOptions): Promise<T> {
 
     const response = await fetch(options.url);
     let data: T;
-    const total = parseInt(response.headers.get('Content-Length') || '0', 10);
+    const totalHeader = (response as any).headers?.get?.('Content-Length');
+    const total = parseInt(totalHeader || '0', 10);
     if (response.body && total) {
         const reader = response.body.getReader();
         const chunks: Uint8Array[] = [];
